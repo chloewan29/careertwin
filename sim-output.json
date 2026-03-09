@@ -1,0 +1,22 @@
+{
+  "profileSkills": [
+    "SQL",
+    "Tableau",
+    "Power BI",
+    "Data Analysis"
+  ],
+  "missingSkills": [
+    "Python"
+  ],
+  "simulatedImprovements": [
+    {
+      "added_skill_or_capability": "Python",
+      "gap_type": "skill",
+      "score_before": 76,
+      "score_after": 88,
+      "score_delta": 12,
+      "new_match_label": "Strong match",
+      "explanation": "Adding Python to your profile unlocks 1 additional required skill match(es), improving your coverage score."
+    }
+  ]
+}
