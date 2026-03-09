@@ -1,6 +1,6 @@
-import type { ProfileInput, RoleMatchResult } from "./role-matcher";
+import type { ProfileInput, RoleMatchResult } from "../matching/role-matcher";
 import type { ParsedJobDescription } from "./jd-parser";
-import type { GapReport, GapItem } from "./gap-prioritizer";
+import type { GapReport, GapItem } from "../scoring/gap-prioritizer";
 
 export interface CareerStrategy {
     resume_improvements: string[];      // top 3 resume-level changes

@@ -1,4 +1,4 @@
-import { ParsedResume } from "./resume-parser";
+import { ParsedResume } from "./parsing/resume-parser";
 
 export interface CareerProfile {
     current_title: string;

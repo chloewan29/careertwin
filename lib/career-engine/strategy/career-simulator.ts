@@ -1,9 +1,9 @@
-import type { ProfileInput, RoleMatchResult } from "./role-matcher";
+import type { ProfileInput, RoleMatchResult } from "../matching/role-matcher";
 import type { ParsedJobDescription } from "./jd-parser";
-import type { GapReport, GapItem } from "./gap-prioritizer";
-import { matchRoles } from "./role-matcher";
-import { prioritizeGaps } from "./gap-prioritizer";
-import { normalizeSkill } from "./skill-normalizer";
+import type { GapReport, GapItem } from "../scoring/gap-prioritizer";
+import { matchRoles } from "../matching/role-matcher";
+import { prioritizeGaps } from "../scoring/gap-prioritizer";
+import { normalizeSkill } from "../parsing/skill-normalizer";
 
 export interface SimulatedImprovement {
     added_skill_or_capability: string;

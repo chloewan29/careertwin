@@ -1,6 +1,6 @@
-import type { ParsedResume } from "./resume-parser";
+import type { ParsedResume } from "../parsing/resume-parser";
 import type { ParsedJobDescription } from "./jd-parser";
-import type { GapReport } from "./gap-prioritizer";
+import type { GapReport } from "../scoring/gap-prioritizer";
 
 export interface RewrittenRole {
     company: string;

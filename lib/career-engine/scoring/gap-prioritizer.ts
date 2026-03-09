@@ -1,5 +1,5 @@
-import type { ParsedJobDescription } from "./jd-parser";
-import type { RoleMatchResult, ProfileInput } from "./role-matcher";
+import type { ParsedJobDescription } from "../parsing/jd-parser";
+import type { RoleMatchResult, ProfileInput } from "../matching/role-matcher";
 
 export type GapPriority = "critical" | "important" | "nice-to-have";
 
@@ -16,6 +16,8 @@ export interface GapReport {
     priority_gaps: GapItem[];      // top 3, ordered critical → important
     quick_wins: GapItem[];         // low-effort improvements
     stretch_gaps: GapItem[];       // nice-to-have / longer-term
+    critical_gaps: GapItem[];      // true blockers, additive for backward compatibility
+    evidence_gaps: GapItem[];      // likely capability exists but weakly evidenced
     summary: string;
 }
 
@@ -63,27 +65,92 @@ function skillGapItem(
     };
 }
 
+function evidenceGapItem(skill: string): GapItem {
+    const isQuick = QUICK_LEARN_SKILLS.has(skill);
+    return {
+        skill,
+        type: "skill",
+        priority: "important",
+        label: `Evidence Gap: ${skill}`,
+        gap_description: `Potentially relevant experience exists, but evidence for ${skill} is not explicit enough.`,
+        action: isQuick
+            ? `Make ${skill} explicit in your resume using outcomes, metrics, and role-specific examples.`
+            : `Add concrete examples and impact statements that clearly demonstrate ${skill}.`,
+    };
+}
+
+function keyOf(skill: string): string {
+    return skill.trim().toLowerCase();
+}
+
 export function prioritizeGaps(
     profile: ProfileInput,
     jd: ParsedJobDescription,
     match: RoleMatchResult
 ): GapReport {
     const allGaps: GapItem[] = [];
+    const critical_gaps: GapItem[] = [];
+    const evidence_gaps: GapItem[] = [];
 
-    // --- 1. Required skill gaps ---
-    const requiredSkillNames = new Set(jd.required_skills.map(s => s.normalized));
-    for (const skill of match.missing_skills) {
-        const isHighDemand = HIGH_DEMAND_SKILLS.has(skill);
-        const isRequired = requiredSkillNames.has(skill);
-        allGaps.push(skillGapItem(skill, isRequired, isHighDemand));
+    const requiredSkillNames = new Set(jd.required_skills.map(s => keyOf(s.normalized)));
+    const classifiedTrueGaps = new Set(
+        (match.gap_classification ?? [])
+            .filter(g => g.status === "true_gap")
+            .map(g => keyOf(g.skill))
+    );
+
+    const classifiedEvidenceGaps = new Set(
+        (match.gap_classification ?? [])
+            .filter(g => g.status === "evidence_gap")
+            .map(g => keyOf(g.skill))
+    );
+
+    // Backward-compatible fallback for callers that don't provide gap_classification.
+    // Treat unclassified missing required skills as true gaps.
+    if ((match.gap_classification ?? []).length === 0) {
+        for (const skill of match.missing_skills) {
+            const skillKey = keyOf(skill);
+            if (requiredSkillNames.has(skillKey)) {
+                classifiedTrueGaps.add(skillKey);
+            }
+        }
     }
 
-    // --- 2. Preferred skill gaps (add as nice-to-have) ---
-    const missingSet = new Set(match.missing_skills);
+    // --- 1. Required skill gaps ---
+    for (const req of jd.required_skills) {
+        const skill = req.normalized;
+        const skillKey = keyOf(skill);
+
+        if (classifiedTrueGaps.has(skillKey)) {
+            const isHighDemand = HIGH_DEMAND_SKILLS.has(skill);
+            const trueGap = skillGapItem(skill, true, isHighDemand);
+            allGaps.push(trueGap);
+            critical_gaps.push(trueGap);
+            continue;
+        }
+
+        if (classifiedEvidenceGaps.has(skillKey)) {
+            const evidenceGap = evidenceGapItem(skill);
+            allGaps.push(evidenceGap);
+            evidence_gaps.push(evidenceGap);
+        }
+    }
+
+    // --- 2. Preferred skill gaps (add as nice-to-have if true gap) ---
     for (const ps of jd.preferred_skills) {
-        if (!missingSet.has(ps.normalized)) continue; // already covered or matched
-        const isHighDemand = HIGH_DEMAND_SKILLS.has(ps.normalized);
-        allGaps.push(skillGapItem(ps.normalized, false, isHighDemand));
+        const skill = ps.normalized;
+        const skillKey = keyOf(skill);
+        if (!classifiedTrueGaps.has(skillKey) && !classifiedEvidenceGaps.has(skillKey)) continue;
+
+        if (classifiedEvidenceGaps.has(skillKey)) {
+            const evidenceGap = evidenceGapItem(skill);
+            allGaps.push(evidenceGap);
+            evidence_gaps.push(evidenceGap);
+            continue;
+        }
+
+        const isHighDemand = HIGH_DEMAND_SKILLS.has(skill);
+        allGaps.push(skillGapItem(skill, false, isHighDemand));
     }
 
     // --- 3. Seniority gap ---
@@ -116,16 +183,16 @@ export function prioritizeGaps(
         });
     }
 
-    // --- 5. Experience evidence gap (skills present in JD but likely not evidenced in resume summary) ---
-    // Detect if resume has < 30% of required skills — signal of broader evidence gap
-    if (match.skill_score < 30 && jd.required_skills.length > 3) {
+    // --- 5. Broad evidence risk ---
+    // Detect if resume has very low coverage while multiple required skills exist.
+    if (evidence_gaps.length >= 2 && jd.required_skills.length > 3) {
         allGaps.push({
             skill: null,
             type: "experience",
-            priority: "critical",
+            priority: "important",
             label: "Low Experience Evidence",
-            gap_description: "Your resume covers fewer than 30% of the required skills.",
-            action: "Consider whether this role aligns with your current trajectory, or build targeted portfolio work to demonstrate the required competencies.",
+            gap_description: "Multiple required skills appear under-evidenced in your resume.",
+            action: "Strengthen role-specific evidence using concrete outcomes, ownership, and measurable impact.",
         });
     }
 
@@ -149,7 +216,16 @@ export function prioritizeGaps(
 
     const stretch_gaps = deduped.filter(g => g.priority === "nice-to-have").slice(0, 5);
 
-    const criticalCount = priority_gaps.filter(g => g.priority === "critical").length;
+    const dedupedCritical = deduped.filter(g =>
+        (g.type === "skill" && g.skill && classifiedTrueGaps.has(keyOf(g.skill)))
+        || g.priority === "critical"
+    );
+
+    const dedupedEvidence = deduped.filter(g =>
+        g.type === "skill" && g.skill && classifiedEvidenceGaps.has(keyOf(g.skill))
+    );
+
+    const criticalCount = dedupedCritical.length;
     const summary = criticalCount >= 2
         ? `${criticalCount} critical gaps found. Focus on closing these before applying.`
         : criticalCount === 1
@@ -158,5 +234,12 @@ export function prioritizeGaps(
                 ? "No critical gaps, but important improvements can meaningfully boost your match score."
                 : "Your profile is well-aligned. Focus on preferred skills and presentation polish.";
 
-    return { priority_gaps, quick_wins, stretch_gaps, summary };
+    return {
+        priority_gaps,
+        quick_wins,
+        stretch_gaps,
+        critical_gaps: dedupedCritical,
+        evidence_gaps: dedupedEvidence,
+        summary,
+    };
 }

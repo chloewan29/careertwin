@@ -74,8 +74,8 @@ export async function POST(request: NextRequest) {
 
         // 3. Process with Career Engine
         console.log("1. Raw text exists:", !!rawText && rawText.length > 0);
-        const { parseResumeText } = await import("@/lib/career-engine/resume-parser");
-        const { extractSkills } = await import("@/lib/career-engine/skill-extractor");
+        const { parseResumeText } = await import("@/lib/career-engine/parsing/resume-parser");
+        const { extractSkills } = await import("@/lib/career-engine/parsing/skill-extractor");
         const { buildCareerProfile } = await import("@/lib/career-engine/profile-builder");
 
         let parsedResume;
@@ -96,7 +96,7 @@ export async function POST(request: NextRequest) {
         const careerProfile = buildCareerProfile(rawText, parsedResume, extractedSkills);
 
         // 4a. Generate profile narrative
-        const { buildProfileNarrative } = await import("@/lib/career-engine/profile-narrative");
+        const { buildProfileNarrative } = await import("@/lib/career-engine/profile/profile-narrative");
         const profileNarrative = buildProfileNarrative(
             {
                 current_title: parsedResume.current_title,

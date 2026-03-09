@@ -1,7 +1,7 @@
-import type { ProfileInput } from "./role-matcher";
+import type { ProfileInput } from "../matching/role-matcher";
 import type { ParsedJobDescription } from "./jd-parser";
-import type { RoleMatchResult } from "./role-matcher";
-import type { GapReport, GapItem } from "./gap-prioritizer";
+import type { RoleMatchResult } from "../matching/role-matcher";
+import type { GapReport, GapItem } from "../scoring/gap-prioritizer";
 import type { CareerStrategy } from "./career-strategy";
 
 export interface ActionPlan {

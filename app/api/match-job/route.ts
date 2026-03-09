@@ -70,8 +70,8 @@ export async function POST(request: NextRequest) {
         const parsedJD = parseJobDescription(jobDescription);
 
         // 4. Normalize profile skills + title
-        const { normalizeSkills } = await import("@/lib/career-engine/skill-normalizer");
-        const { normalizeTitle } = await import("@/lib/career-engine/title-normalizer");
+        const { normalizeSkills } = await import("@/lib/career-engine/parsing/skill-normalizer");
+        const { normalizeTitle } = await import("@/lib/career-engine/parsing/title-normalizer");
 
         // Trace skills hierarchy
         const parsedSkills = parsedResumeJson?.skills || [];
@@ -108,7 +108,7 @@ export async function POST(request: NextRequest) {
         const normalizedTitle = profile.current_title ? normalizeTitle(profile.current_title) : null;
 
         // 5. Build profile input
-        const { matchRoles } = await import("@/lib/career-engine/role-matcher");
+        const { matchRoles } = await import("@/lib/career-engine/matching/role-matcher");
         const profileInput = {
             current_title: profile.current_title ?? null,
             years_experience: profile.years_experience != null ? parseFloat(profile.years_experience) : null,
@@ -128,7 +128,7 @@ export async function POST(request: NextRequest) {
         console.log("===============================");
 
         // --- 5b. LLM Evidence Mapping for Capabilities ---
-        const { extractCapabilitiesWithLLM } = await import("@/lib/career-engine/llm-evidence-mapper");
+        const { extractCapabilitiesWithLLM } = await import("@/lib/career-engine/matching/llm-evidence-mapper");
 
         // Extract recent bullets roughly using line breaks from raw text
         // (A fully parsed bullet array is ideal, but raw text lines work as a proxy for the LLM)
@@ -160,15 +160,15 @@ export async function POST(request: NextRequest) {
         console.log("====================================");
 
         // 6. Prioritize gaps
-        const { prioritizeGaps } = await import("@/lib/career-engine/gap-prioritizer");
+        const { prioritizeGaps } = await import("@/lib/career-engine/scoring/gap-prioritizer");
         const gapReport = prioritizeGaps(profileInput, parsedJD, matchResult);
 
         // 7. Build career strategy
-        const { buildCareerStrategy } = await import("@/lib/career-engine/career-strategy");
+        const { buildCareerStrategy } = await import("@/lib/career-engine/strategy/career-strategy");
         const strategy = buildCareerStrategy(profileInput, parsedJD, matchResult, gapReport);
 
         // 7b. Build action plan
-        const { buildActionPlan } = await import("@/lib/career-engine/action-plan");
+        const { buildActionPlan } = await import("@/lib/career-engine/strategy/action-plan");
         const actionPlan = buildActionPlan(profileInput, parsedJD, matchResult, gapReport, strategy);
 
         // 8. Map evidence from resume text
@@ -190,7 +190,7 @@ export async function POST(request: NextRequest) {
         const twinScore = calculateCareerTwinScore(profileInput, matchResult, gapReport);
 
         // 11. Resume Rewrite
-        const { rewriteResume } = await import("@/lib/career-engine/resume-rewriter");
+        const { rewriteResume } = await import("@/lib/career-engine/profile/resume-rewriter");
         const resumeRewrite = rewriteResume(
             parsedResumeJson ?? {
                 full_name: null, current_title: null, years_experience: null,
@@ -204,7 +204,7 @@ export async function POST(request: NextRequest) {
         );
 
         // 12. Career Simulation
-        const { simulateGapResolution } = await import("@/lib/career-engine/career-simulator");
+        const { simulateGapResolution } = await import("@/lib/career-engine/strategy/career-simulator");
         const simulation = simulateGapResolution(profileInput, parsedJD, matchResult, gapReport);
         const { error: dbError } = await supabase
             .from("job_matches")
