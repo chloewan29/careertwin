@@ -19,8 +19,10 @@ export async function extractCapabilitiesWithLLM(
     if (!resumeBullets.length || !jdCapabilities.length) {
         return { matched_capabilities: [], missing_capabilities: [] };
     }
-
-    const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) {
+        return { matched_capabilities: [], missing_capabilities: [] };
+    }
 
     const prompt = `
 You are an expert executive recruiter. Your job is to strictly evaluate whether a candidate's resume provides concrete evidence for a set of target capabilities.
@@ -41,6 +43,7 @@ INSTRUCTIONS:
 `;
 
     try {
+        const ai = new GoogleGenAI({ apiKey });
         const response = await ai.models.generateContent({
             model: "gemini-2.5-flash",
             contents: prompt,

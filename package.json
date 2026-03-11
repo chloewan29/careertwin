@@ -6,7 +6,11 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test:career-foundation": "tsx scripts/test-career-foundation.ts",
+    "test:resume-copilot": "tsx tests/test-resume-copilot-modules.ts",
+    "test:api-resume-generate": "tsx tests/test-api-resume-generate.ts",
+    "rematerialize:evidence": "tsx scripts/rematerialize-evidence-pieces.ts"
   },
   "dependencies": {
     "@google/genai": "^1.44.0",
@@ -25,6 +29,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
     "tailwindcss": "^4",
+    "tsx": "^4.21.0",
     "typescript": "^5"
   }
 }

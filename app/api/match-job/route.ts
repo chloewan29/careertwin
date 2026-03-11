@@ -42,8 +42,11 @@ export async function POST(request: NextRequest) {
             .select("skills(name)")
             .eq("user_id", profile.user_id);
 
+        type UserSkillRow = { skills: { name: string | null } | null };
         const rawSkills: string[] = userSkills
-            ? userSkills.map((us: any) => us.skills?.name).filter(Boolean)
+            ? (userSkills as UserSkillRow[])
+                .map((us) => us.skills?.name)
+                .filter((name): name is string => Boolean(name))
             : [];
 
         // 2b. Fetch latest resume raw_text and parsed_json for evidence mapping
@@ -66,16 +69,17 @@ export async function POST(request: NextRequest) {
         }
 
         // 3. Parse job description
-        const { parseJobDescription } = await import("@/lib/career-engine/jd-parser");
+        const { parseJobDescription } = await import("@/lib/career-engine/parsing/jd-parser");
         const parsedJD = parseJobDescription(jobDescription);
 
         // 4. Normalize profile skills + title
         const { normalizeSkills } = await import("@/lib/career-engine/parsing/skill-normalizer");
-        const { normalizeTitle } = await import("@/lib/career-engine/parsing/title-normalizer");
 
         // Trace skills hierarchy
         const parsedSkills = parsedResumeJson?.skills || [];
         const profileDirectSkills = profile.skills || [];
+        const parsedCapabilities = Array.isArray(parsedResumeJson?.capabilities) ? parsedResumeJson.capabilities : [];
+        const profileCapabilities = Array.isArray(profile.capabilities) ? profile.capabilities : [];
 
         // 1. Profile skills if present
         // 2. Database user_skills if present
@@ -105,15 +109,15 @@ export async function POST(request: NextRequest) {
         console.log("Normalized Profile Skills:", normalizedSkills.map(s => s.normalized));
         console.log("=========================================");
 
-        const normalizedTitle = profile.current_title ? normalizeTitle(profile.current_title) : null;
-
         // 5. Build profile input
         const { matchRoles } = await import("@/lib/career-engine/matching/role-matcher");
         const profileInput = {
             current_title: profile.current_title ?? null,
             years_experience: profile.years_experience != null ? parseFloat(profile.years_experience) : null,
             skills: normalizedSkills.map(s => s.normalized),
-            parsed_skills: parsedSkills
+            capabilities: profileCapabilities.length > 0 ? profileCapabilities : parsedCapabilities,
+            parsed_skills: parsedSkills,
+            resume_text: rawResumeText,
         };
 
         const matchResult = matchRoles(profileInput, parsedJD);
@@ -127,37 +131,45 @@ export async function POST(request: NextRequest) {
         console.log("Missing Skills:", matchResult.missing_skills);
         console.log("===============================");
 
-        // --- 5b. LLM Evidence Mapping for Capabilities ---
-        const { extractCapabilitiesWithLLM } = await import("@/lib/career-engine/matching/llm-evidence-mapper");
+        // --- 5b. LLM Evidence Mapping for Capabilities (optional) ---
+        if (process.env.GEMINI_API_KEY) {
+            try {
+                const { extractCapabilitiesWithLLM } = await import("@/lib/career-engine/matching/llm-evidence-mapper");
 
-        // Extract recent bullets roughly using line breaks from raw text
-        // (A fully parsed bullet array is ideal, but raw text lines work as a proxy for the LLM)
-        const resumeLines = rawResumeText.split('\n').map(l => l.trim()).filter(l => l.length > 20);
+                // Extract recent bullets roughly using line breaks from raw text
+                // (A fully parsed bullet array is ideal, but raw text lines work as a proxy for the LLM)
+                const resumeLines = rawResumeText.split('\n').map(l => l.trim()).filter(l => l.length > 20);
 
-        // Target specifically the missing skills as capabilities to verify
-        const missingCapabilities = matchResult.missing_skills;
+                // Target specifically the missing skills as capabilities to verify
+                const missingCapabilities = matchResult.missing_skills;
 
-        const capabilityAssessment = await extractCapabilitiesWithLLM(resumeLines, missingCapabilities);
+                const capabilityAssessment = await extractCapabilitiesWithLLM(resumeLines, missingCapabilities);
 
-        console.log("=== LLM Capability Mapping Debug ===");
-        console.log("LLM Found Evidence For:", capabilityAssessment.matched_capabilities.map(c => c.capability));
+                console.log("=== LLM Capability Mapping Debug ===");
+                console.log("LLM Found Evidence For:", capabilityAssessment.matched_capabilities.map(c => c.capability));
 
-        // Remove skills from missing_skills if the LLM successfully mapped them to evidence
-        if (capabilityAssessment.matched_capabilities.length > 0) {
-            const mappedSkillNames = new Set(
-                capabilityAssessment.matched_capabilities.map(c => c.capability.toLowerCase())
-            );
+                // Remove skills from missing_skills if the LLM successfully mapped them to evidence
+                if (capabilityAssessment.matched_capabilities.length > 0) {
+                    const mappedSkillNames = new Set(
+                        capabilityAssessment.matched_capabilities.map(c => c.capability.toLowerCase())
+                    );
 
-            matchResult.missing_skills = matchResult.missing_skills.filter(
-                s => !mappedSkillNames.has(s.toLowerCase())
-            );
+                    matchResult.missing_skills = matchResult.missing_skills.filter(
+                        s => !mappedSkillNames.has(s.toLowerCase())
+                    );
 
-            // Add them to matched skills
-            matchResult.matched_skills.push(...capabilityAssessment.matched_capabilities.map(c => c.capability));
+                    // Add them to matched skills
+                    matchResult.matched_skills.push(...capabilityAssessment.matched_capabilities.map(c => c.capability));
+                }
+
+                console.log("Final Missing Skills after LLM fix:", matchResult.missing_skills);
+                console.log("====================================");
+            } catch (llmError) {
+                console.warn("LLM enrichment skipped due to mapper error:", llmError);
+            }
+        } else {
+            console.log("LLM enrichment skipped: GEMINI_API_KEY is missing.");
         }
-
-        console.log("Final Missing Skills after LLM fix:", matchResult.missing_skills);
-        console.log("====================================");
 
         // 6. Prioritize gaps
         const { prioritizeGaps } = await import("@/lib/career-engine/scoring/gap-prioritizer");
@@ -172,7 +184,7 @@ export async function POST(request: NextRequest) {
         const actionPlan = buildActionPlan(profileInput, parsedJD, matchResult, gapReport, strategy);
 
         // 8. Map evidence from resume text
-        const { mapEvidence } = await import("@/lib/career-engine/evidence-mapper");
+        const { mapEvidence } = await import("@/lib/career-engine/matching/evidence-mapper");
         const evidenceMap = mapEvidence(
             parsedResumeJson ?? {
                 full_name: null, current_title: null, years_experience: null,
@@ -186,21 +198,23 @@ export async function POST(request: NextRequest) {
         );
 
         // 10. Career Twin Score
-        const { calculateCareerTwinScore } = await import("@/lib/career-engine/career-twin-score");
+        const { calculateCareerTwinScore } = await import("@/lib/career-engine/scoring/career-twin-score");
         const twinScore = calculateCareerTwinScore(profileInput, matchResult, gapReport);
+        const { explainMatch } = await import("@/lib/career-engine/profile/explain-match");
+        const matchExplanation = explainMatch({ match: matchResult, gaps: gapReport, score: twinScore });
 
         // 11. Resume Rewrite
         const { rewriteResume } = await import("@/lib/career-engine/profile/resume-rewriter");
         const resumeRewrite = rewriteResume(
             parsedResumeJson ?? {
                 full_name: null, current_title: null, years_experience: null,
-                industry: null, skills: rawSkills, companies: [], education: [],
+                industry: null, skills: rawSkills, capabilities: [], companies: [], education: [],
                 summary: null, contact: { email: null, phone: null, linkedin: null, address: null },
+                experience_entries: [],
                 parse_quality: "low", missing_fields: [],
             },
             parsedJD,
-            gapReport,
-            rawResumeText
+            gapReport
         );
 
         // 12. Career Simulation
@@ -235,8 +249,6 @@ export async function POST(request: NextRequest) {
                     matched: evidenceMap.matched_evidence,
                     missing: evidenceMap.missing_evidence,
                 },
-                twin_score: twinScore.career_twin_score,
-                twin_score_breakdown: twinScore.breakdown,
                 simulation: {
                     baseline: simulation.baseline_score,
                     best_case: simulation.best_case_score,
@@ -282,9 +294,17 @@ export async function POST(request: NextRequest) {
                     label: twinScore.label,
                     breakdown: twinScore.breakdown,
                 },
+                recommendation: matchExplanation.recommendation,
+                whyThisRoleFitsYou: matchExplanation.why_this_role_fits_you,
+                criticalGaps: gapReport.critical_gaps.map(g => g.label),
+                evidenceGaps: gapReport.evidence_gaps
+                    .map(g => g.skill ?? g.label)
+                    .filter((v): v is string => Boolean(v)),
+                explanationSummary: matchExplanation.summary,
                 resumeRewrite: {
                     roles: resumeRewrite.roles,
                     summary_suggestion: resumeRewrite.summary_suggestion,
+                    resume_document: resumeRewrite.resume_document,
                 },
                 simulation: {
                     baseline_score: simulation.baseline_score,

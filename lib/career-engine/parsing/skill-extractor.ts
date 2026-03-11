@@ -4,15 +4,67 @@ const COMMON_SKILLS = [
     "PostgreSQL", "MySQL", "MongoDB", "Redis", "Elasticsearch", "SQL", "NoSQL",
     "AWS", "Azure", "GCP", "Google Cloud", "Docker", "Kubernetes", "Terraform", "CI/CD",
     "Machine Learning", "Data Science", "AI", "TensorFlow", "PyTorch", "Pandas",
+    "Alteryx", "Google BigQuery", "AI Governance",
     "Git", "GitHub", "GitLab", "Agile", "Scrum", "Jira", "Figma",
     "HTML", "CSS", "Sass", "Tailwind CSS", "GraphQL", "REST", "API Design",
     "Linux", "Unix", "Bash", "Shell Scripting"
 ];
 
+const LEADERSHIP_CAPABILITY_PATTERNS: Record<string, string[]> = {
+    Leadership: [
+        "leadership",
+        "led",
+        "leading",
+        "owned",
+        "ownership",
+    ],
+    "People Management": [
+        "people management",
+        "managed team",
+        "managing team",
+        "line managed",
+        "oversight of",
+    ],
+    "Team Leadership": [
+        "team leadership",
+        "led team",
+        "high-performing team",
+        "developed team",
+        "coached team",
+        "mentored team",
+    ],
+    "Capability Building": [
+        "capability building",
+        "build capability",
+        "built capability",
+        "capability framework",
+        "establish framework",
+        "established framework",
+        "framework and standards",
+        "build function",
+        "built function",
+    ],
+    "Stakeholder Influence": [
+        "stakeholder influence",
+        "stakeholder management",
+        "influenced stakeholders",
+        "executive stakeholders",
+        "senior stakeholders",
+    ],
+    "Strategic Partnership": [
+        "strategic partnership",
+        "strategic partner",
+        "business partnership",
+        "partnered with leadership",
+        "senior leaders",
+    ],
+};
+
 export function extractSkills(text: string): string[] {
     if (!text) return [];
 
     const extractedSkills = new Set<string>();
+    const lower = text.toLowerCase();
 
     // Use a simple word-boundary regex for each known skill
     for (const skill of COMMON_SKILLS) {
@@ -22,6 +74,13 @@ export function extractSkills(text: string): string[] {
 
         if (regex.test(text)) {
             extractedSkills.add(skill);
+        }
+    }
+
+    // Deterministic capability extraction from full resume text.
+    for (const [capability, patterns] of Object.entries(LEADERSHIP_CAPABILITY_PATTERNS)) {
+        if (patterns.some(pattern => lower.includes(pattern))) {
+            extractedSkills.add(capability);
         }
     }
 

@@ -1,6 +1,7 @@
 import type { ParsedResume } from "../parsing/resume-parser";
-import type { ParsedJobDescription } from "./jd-parser";
+import type { ParsedJobDescription } from "../parsing/jd-parser";
 import type { GapReport } from "../scoring/gap-prioritizer";
+import { buildEvidencePieces, type EvidencePiece } from "../evidence/evidence-pieces";
 
 export interface RewrittenRole {
     company: string;
@@ -9,201 +10,427 @@ export interface RewrittenRole {
     role_description: string;
 }
 
+export interface TailoredResumeDocument {
+    header: {
+        full_name: string | null;
+        current_title: string | null;
+        contact: {
+            email: string | null;
+            phone: string | null;
+            linkedin: string | null;
+            address: string | null;
+        };
+    };
+    summary: string | null;
+    experience: Array<{
+        company: string | null;
+        title: string | null;
+        date_range: string | null;
+        dates: string | null;
+        original_bullets: string[];
+        rewritten_bullets: string[];
+        bullets: string[];
+    }>;
+    education: string[];
+    skills: string[];
+}
+
 export interface ResumeRewriteResult {
     roles: RewrittenRole[];
     summary_suggestion: string;
+    resume_document: TailoredResumeDocument;
 }
 
-// Strong action verbs grouped by outcome type
-const IMPACT_VERBS = ["Drove", "Delivered", "Generated", "Grew", "Increased", "Reduced", "Accelerated", "Achieved"];
-const LEADERSHIP_VERBS = ["Led", "Managed", "Directed", "Oversaw", "Mentored", "Championed", "Spearheaded"];
-const COMMERCIAL_VERBS = ["Secured", "Negotiated", "Converted", "Expanded", "Optimised", "Scaled", "Built"];
-const ANALYTICAL_VERBS = ["Analysed", "Identified", "Diagnosed", "Synthesised", "Evaluated", "Quantified"];
-
-function pickVerb(bullet: string, index: number): string {
-    const lower = bullet.toLowerCase();
-    if (/manag|lead|team|report|mentor|direct/.test(lower)) return LEADERSHIP_VERBS[index % LEADERSHIP_VERBS.length];
-    if (/sale|revenue|budget|cost|contract|client/.test(lower)) return COMMERCIAL_VERBS[index % COMMERCIAL_VERBS.length];
-    if (/analys|data|report|insight|track|measure/.test(lower)) return ANALYTICAL_VERBS[index % ANALYTICAL_VERBS.length];
-    return IMPACT_VERBS[index % IMPACT_VERBS.length];
-}
-
-// Phrases that should be removed as too generic
-const WEAK_OPENERS = [
-    /^responsible for\s+/i,
-    /^worked on\s+/i,
-    /^helped\s+/i,
-    /^assisted\s+with\s+/i,
-    /^involved in\s+/i,
-    /^part of\s+/i,
-    /^duties included\s+/i,
-    /^tasks included\s+/i,
-    /^role included\s+/i,
+const TEMPLATE_LANGUAGE_RE = /\b(delivered measurable outcomes|key contributions? included|as part of the team)\b/i;
+const PLACEHOLDER_RE = /\[(?:quantify|example)\s*:[^\]]*\]|\[[a-z][a-z\s_-]{1,40}:[^\]]*\]/gi;
+const SECTION_LABEL_RE = /^(roles?\s+and\s+responsibilities|responsibilities|accomplishments?|key\s+achievements?|achievements?|duties|overview|summary)\s*:?\s*$/i;
+const SECTION_LABEL_PREFIX_RE = /^(roles?\s+and\s+responsibilities|responsibilities|accomplishments?|key\s+achievements?|achievements?|duties|overview|summary)\s*:\s*/i;
+const INSTRUCTIONAL_RE = /\b(quantify achievements?|add metric|add specific achievement|example|placeholder|insert metric|improve this bullet)\b/i;
+const STOPWORDS = new Set(["the", "and", "for", "with", "from", "into", "across", "that", "this", "your", "you", "our", "their", "was", "were", "are", "is", "of", "to", "in", "on", "by", "as", "at", "or", "an", "a"]);
+const DOMAIN_SIGNAL_PATTERNS: Array<{ label: string; pattern: RegExp }> = [
+    { label: "analytics", pattern: /\b(analytics|insight|bi|dashboard|reporting)\b/i },
+    { label: "data platform", pattern: /\b(data platform|data warehouse|bigquery|snowflake|etl|pipeline)\b/i },
+    { label: "transformation", pattern: /\b(transformation|change|operating model|modernization)\b/i },
+    { label: "strategy", pattern: /\b(strategy|strategic planning|roadmap|planning)\b/i },
+    { label: "program delivery", pattern: /\b(program|portfolio|delivery|governance)\b/i },
+    { label: "commercial", pattern: /\b(commercial|revenue|growth|margin|profit)\b/i },
 ];
 
-function stripWeakOpener(text: string): string {
-    for (const re of WEAK_OPENERS) {
-        text = text.replace(re, "");
-    }
-    return text.charAt(0).toUpperCase() + text.slice(1);
+type JdSignals = {
+    targetTitleTokens: Set<string>;
+    roleFamilyTokens: Set<string>;
+    requiredSkillTokens: Set<string>;
+    preferredSkillTokens: Set<string>;
+    responsibilityTokens: Set<string>;
+    domainTokens: Set<string>;
+    keywordTokens: Set<string>;
+};
+
+type ScoredEvidencePiece = {
+    piece: EvidencePiece;
+    idx: number;
+    score: number;
+    group: string;
+    sanitizedRawText: string;
+};
+
+function sanitizeLine(text: string): string {
+    return text
+        .replace(/^[-*]\s*/, "")
+        .replace(SECTION_LABEL_PREFIX_RE, "")
+        .replace(PLACEHOLDER_RE, "")
+        .replace(/\s{2,}/g, " ")
+        .replace(/\s+([,.;:!?])/g, "$1")
+        .trim();
 }
 
-function hasMetric(text: string): boolean {
-    return /\d+%|\d+x|\$[\d,]+|\d[\d,]+ /.test(text);
+function tokenize(text: string): string[] {
+    return sanitizeLine(text)
+        .toLowerCase()
+        .replace(/[^a-z0-9\s]/g, " ")
+        .split(/\s+/)
+        .filter((t) => t.length >= 3 && !STOPWORDS.has(t));
 }
 
-function injectMetricSuggestion(bullet: string): string {
-    if (hasMetric(bullet)) return bullet;
-    // Append a placeholder prompt to quantify — keeps it deterministic without hallucinating
-    if (/increase|grow|improv|boost|rais/.test(bullet.toLowerCase())) {
-        return `${bullet} [quantify: e.g. by X% over Y months]`;
-    }
-    if (/reduc|decreas|cut|lower|sav/.test(bullet.toLowerCase())) {
-        return `${bullet} [quantify: e.g. saving $X or reducing by X%]`;
-    }
-    if (/lead|manag|team/.test(bullet.toLowerCase())) {
-        return `${bullet} [quantify: e.g. team of N or across N markets]`;
-    }
-    return bullet;
-}
+function rewriteBulletConservatively(raw: string): string {
+    let line = sanitizeLine(raw);
+    if (line.length < 10) return "";
+    if (SECTION_LABEL_RE.test(line)) return "";
+    if (INSTRUCTIONAL_RE.test(line)) return "";
 
-// Inject required keywords from JD into a bullet where semantically plausible
-function injectKeyword(bullet: string, jdSkills: string[]): string {
-    const lower = bullet.toLowerCase();
-    for (const skill of jdSkills) {
-        if (lower.includes(skill.toLowerCase())) return bullet; // already present
-    }
-    // Only inject if bullet is about tooling/data/analysis — safe insertion contexts
-    if (/tool|platform|system|data|report|analyt|campaign/.test(lower) && jdSkills.length > 0) {
-        const kw = jdSkills[0];
-        return `${bullet} (utilising ${kw})`;
-    }
-    return bullet;
-}
-
-function rewriteBullet(
-    raw: string,
-    index: number,
-    jdRequiredSkills: string[]
-): string {
-    let line = raw.trim();
-    if (line.length < 10) return line;
-
-    // Strip bullet/dash prefixes
-    line = line.replace(/^[-•*]\s*/, "");
-
-    // Strip weak openers
-    line = stripWeakOpener(line);
-
-    // Replace opening verb if sentence doesn't start with a strong one
-    const startsStrongVerb = /^[A-Z][a-z]+ed\b|^[A-Z][a-z]+d\b/.test(line);
-    if (!startsStrongVerb) {
-        const verb = pickVerb(line, index);
-        // Lowercase the first word and prepend verb
-        line = `${verb} ${line.charAt(0).toLowerCase()}${line.slice(1)}`;
+    // Strict conservative rewrite: formatting and punctuation only.
+    line = line
+        .replace(/\s{2,}/g, " ")
+        .replace(/\s+([,.;:!?])/g, "$1")
+        .replace(/\bled and develop\b/gi, "led and developed")
+        .replace(/\bmanaged and develop\b/gi, "managed and developed")
+        .replace(/\bacumen-enabling\b/gi, "acumen, enabling")
+        .replace(/\s*—\s*/g, " — ")
+        .trim();
+    if (line.length > 0) {
+        line = line.charAt(0).toUpperCase() + line.slice(1);
     }
 
-    // Inject metric suggestion if no number present
-    line = injectMetricSuggestion(line);
-
-    // Inject JD keyword if opportunity exists and skill is missing
-    line = injectKeyword(line, jdRequiredSkills);
-
-    // Ensure ends with a period
+    if (!line) return "";
+    if (TEMPLATE_LANGUAGE_RE.test(line)) return "";
+    if (INSTRUCTIONAL_RE.test(line)) return "";
     if (!/[.!?]$/.test(line)) line += ".";
-
     return line;
 }
 
-function buildRoleDescription(
-    company: string,
-    rewrittenBullets: string[],
-    jdFunction: string | null
-): string {
-    const domainHint = jdFunction ? ` with a focus on ${jdFunction}` : "";
-    const outcomeHint = rewrittenBullets.length > 0
-        ? ` Key contributions included ${rewrittenBullets[0].replace(/\.$/, "").toLowerCase()}.`
-        : "";
-    return `Delivered measurable outcomes as part of the team at ${company}${domainHint}.${outcomeHint}`;
+function buildTokenSet(input: string[]): Set<string> {
+    const tokens = new Set<string>();
+    for (const text of input) {
+        for (const token of tokenize(text)) tokens.add(token);
+    }
+    return tokens;
 }
 
-function buildSummary(
+function inferDomainTokens(jd: ParsedJobDescription): Set<string> {
+    const domains = new Set<string>();
+    const corpus = [
+        jd.raw_text,
+        jd.target_title ?? "",
+        jd.normalized_title?.family ?? "",
+        jd.normalized_title?.function ?? "",
+    ].join(" ");
+
+    for (const domain of DOMAIN_SIGNAL_PATTERNS) {
+        if (domain.pattern.test(corpus)) {
+            for (const token of tokenize(domain.label)) domains.add(token);
+        }
+    }
+
+    return domains;
+}
+
+function extractJdSignals(jd: ParsedJobDescription): JdSignals {
+    const targetTitleTokens = buildTokenSet([jd.target_title ?? ""]);
+    const roleFamilyTokens = buildTokenSet([
+        jd.normalized_title?.family ?? "",
+        jd.normalized_title?.function ?? "",
+        jd.normalized_title?.seniority ?? "",
+    ]);
+    const requiredSkillTokens = buildTokenSet(jd.required_skills.map((s) => s.normalized));
+    const preferredSkillTokens = buildTokenSet(jd.preferred_skills.map((s) => s.normalized));
+    const responsibilityTokens = buildTokenSet(jd.responsibilities ?? []);
+    const domainTokens = inferDomainTokens(jd);
+    const keywordTokens = buildTokenSet([jd.raw_text]);
+
+    return {
+        targetTitleTokens,
+        roleFamilyTokens,
+        requiredSkillTokens,
+        preferredSkillTokens,
+        responsibilityTokens,
+        domainTokens,
+        keywordTokens,
+    };
+}
+
+function overlapCount(tokens: string[], signals: Set<string>): number {
+    let count = 0;
+    for (const token of tokens) {
+        if (signals.has(token)) count += 1;
+    }
+    return count;
+}
+
+function scoreBulletRelevance(bullet: string, signals: JdSignals): number {
+    const bulletTokens = tokenize(bullet);
+    const keywordOverlap = overlapCount(bulletTokens, signals.keywordTokens);
+    const requiredSkillOverlap = overlapCount(bulletTokens, signals.requiredSkillTokens);
+    const preferredSkillOverlap = overlapCount(bulletTokens, signals.preferredSkillTokens);
+    const responsibilityOverlap = overlapCount(bulletTokens, signals.responsibilityTokens);
+    const roleFamilyOverlap = overlapCount(bulletTokens, signals.roleFamilyTokens) + overlapCount(bulletTokens, signals.targetTitleTokens);
+    const domainOverlap = overlapCount(bulletTokens, signals.domainTokens);
+
+    return (
+        keywordOverlap * 1 +
+        requiredSkillOverlap * 4 +
+        preferredSkillOverlap * 2 +
+        responsibilityOverlap * 3 +
+        roleFamilyOverlap * 2 +
+        domainOverlap * 2
+    );
+}
+
+function scoreEvidencePiecesGlobally(evidencePieces: EvidencePiece[], signals: JdSignals): ScoredEvidencePiece[] {
+    return evidencePieces
+        .map((piece, idx) => {
+            const sanitizedRawText = sanitizeLine(piece.raw_text);
+            return {
+                piece,
+                idx,
+                score: scoreBulletRelevance(sanitizedRawText, signals),
+                group: groupKey(piece.company, piece.role, piece.date_range),
+                sanitizedRawText,
+            };
+        })
+        .filter((item) => item.sanitizedRawText.length > 0)
+        .sort((a, b) => (b.score - a.score) || (a.idx - b.idx));
+}
+
+function selectEvidencePiecesWithPerGroupCap(
+    scoredEvidencePieces: ScoredEvidencePiece[],
+    perGroupCap: number
+): ScoredEvidencePiece[] {
+    const selected: ScoredEvidencePiece[] = [];
+    const countsByGroup = new Map<string, number>();
+
+    for (const item of scoredEvidencePieces) {
+        if (item.score <= 0) continue;
+        const existingCount = countsByGroup.get(item.group) ?? 0;
+        if (existingCount >= perGroupCap) continue;
+        selected.push(item);
+        countsByGroup.set(item.group, existingCount + 1);
+    }
+
+    if (selected.length > 0) return selected;
+
+    // Fallback to avoid empty tailoring when JD signals are sparse.
+    for (const item of scoredEvidencePieces) {
+        const existingCount = countsByGroup.get(item.group) ?? 0;
+        if (existingCount >= perGroupCap) continue;
+        selected.push(item);
+        countsByGroup.set(item.group, existingCount + 1);
+    }
+
+    return selected;
+}
+
+function groupKey(company: string | null | undefined, role: string | null | undefined, dateRange: string | null | undefined): string {
+    return `${company ?? ""}||${role ?? ""}||${dateRange ?? ""}`;
+}
+
+function buildTailoredSummaryFromExperience(
     resume: ParsedResume,
-    jd: ParsedJobDescription,
-    gaps: GapReport
+    jd: ParsedJobDescription
 ): string {
-    const title = resume.current_title ?? jd.target_title ?? "professional";
-    const years = resume.years_experience != null ? `${resume.years_experience}+ year` : "Experienced";
-    const domain = jd.normalized_title?.function ?? null;
-    const topRequired = jd.required_skills.slice(0, 3).map(s => s.normalized);
-    const criticalGapSkills = gaps.priority_gaps
-        .filter(g => g.priority === "critical" && g.skill)
-        .map(g => g.skill as string)
-        .slice(0, 2);
+    const yearsText = resume.years_experience != null ? `${resume.years_experience}+ years` : "several years";
+    const targetTitle = sanitizeLine(jd.target_title ?? "") || sanitizeLine(jd.normalized_title?.family ?? "");
+    const profilePositioning = sanitizeLine(resume.current_title ?? "") || "Professional";
 
-    const skillPhrase = topRequired.length > 0
-        ? `specialising in ${topRequired.join(", ")}`
-        : "";
-    const domainPhrase = domain ? `within the ${domain} space` : "";
+    const jdCorpus = [
+        jd.raw_text ?? "",
+        jd.target_title ?? "",
+        jd.normalized_title?.family ?? "",
+        jd.normalized_title?.function ?? "",
+        ...(jd.responsibilities ?? []),
+    ].join(" ").toLowerCase();
 
-    // We only mention developing skills if there's actually a critical gap
-    const progressPhrase = criticalGapSkills.length > 0
-        ? ` Actively expanding expertise in ${criticalGapSkills.join(" and ")} to broaden competency.`
-        : "";
+    let coreCapability = "high-priority role outcomes";
+    if (/\b(program|transformation|roadmap|governance|delivery)\b/.test(jdCorpus)) {
+        coreCapability = "cross-functional program delivery";
+    } else if (/\b(stakeholder|strategy|strategic|planning)\b/.test(jdCorpus)) {
+        coreCapability = "stakeholder and strategy execution";
+    } else if (/\b(analytics|insight|bi|data)\b/.test(jdCorpus)) {
+        coreCapability = "analytics and insight delivery";
+    } else if ((jd.responsibilities ?? []).length > 0) {
+        coreCapability = sanitizeLine(jd.responsibilities[0]).toLowerCase();
+    }
 
-    return `${years} ${title} ${skillPhrase}${domainPhrase ? ` ${domainPhrase}` : ""}, with a track record of delivering commercial outcomes through data-driven decision making and cross-functional collaboration.${progressPhrase}`.trim();
+    const domainLabels = DOMAIN_SIGNAL_PATTERNS
+        .filter((domain) => domain.pattern.test(jdCorpus))
+        .map((domain) => domain.label);
+    const domainExpertise = domainLabels.length > 0
+        ? domainLabels.slice(0, 2).join(" and ")
+        : "the business domain";
+
+    const impactOrientation = "delivering measurable business impact.";
+    const targetDirection = targetTitle ? ` Targeting ${targetTitle} opportunities.` : "";
+    const summary = `${profilePositioning} with ${yearsText} experience driving ${coreCapability} across ${domainExpertise}, ${impactOrientation}${targetDirection}`;
+    return sanitizeLine(summary);
 }
 
-// Extract rough bullet lines from a block of text about a company
-function extractBulletsForCompany(company: string, rawText: string): string[] {
-    const lines = rawText.split("\n").map(l => l.trim()).filter(l => l.length > 15);
+function cleanEducationLine(line: string): string {
+    return line.replace(/\s{2,}/g, " ").trim();
+}
 
-    // Find region near company name
-    const idx = lines.findIndex(l => l.toLowerCase().includes(company.toLowerCase().split(",")[0].toLowerCase()));
-    if (idx === -1) return [];
+function normalizeForTrace(text: string): string {
+    return sanitizeLine(text)
+        .toLowerCase()
+        .replace(/[^a-z0-9\s]/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+}
 
-    const region = lines.slice(idx + 1, idx + 12);
-    // Return lines that look like bullet points or responsibility descriptions
-    return region
-        .filter(l => /^[-•*]|^[A-Z][a-z]/.test(l) && l.length > 20)
-        .slice(0, 5);
+function isTraceableToSource(finalBullet: string, sourceBullets: string[]): boolean {
+    const finalNorm = normalizeForTrace(finalBullet);
+    if (!finalNorm) return false;
+
+    return sourceBullets.some((source) => {
+        const sourceNorm = normalizeForTrace(source);
+        if (!sourceNorm) return false;
+        if (sourceNorm === finalNorm) return true;
+        if (sourceNorm.includes(finalNorm) || finalNorm.includes(sourceNorm)) return true;
+
+        const finalTokens = new Set(finalNorm.split(" ").filter(Boolean));
+        const sourceTokens = new Set(sourceNorm.split(" ").filter(Boolean));
+        if (finalTokens.size === 0 || sourceTokens.size === 0) return false;
+
+        let overlap = 0;
+        for (const token of finalTokens) {
+            if (sourceTokens.has(token)) overlap += 1;
+        }
+
+        return overlap / finalTokens.size >= 0.8;
+    });
+}
+
+function validateTailoredDocument(document: TailoredResumeDocument): TailoredResumeDocument {
+    const cleanedExperience = document.experience.map((entry) => {
+        const seen = new Set<string>();
+        const rewritten_bullets: string[] = [];
+        const original_bullets = entry.original_bullets
+            .map((line) => sanitizeLine(line))
+            .filter((line) => line.length > 0 && !SECTION_LABEL_RE.test(line) && !INSTRUCTIONAL_RE.test(line));
+
+        for (const rawBullet of entry.rewritten_bullets) {
+            const bullet = sanitizeLine(rawBullet);
+            if (!bullet) continue;
+            if (TEMPLATE_LANGUAGE_RE.test(bullet)) continue;
+            if (PLACEHOLDER_RE.test(bullet)) continue;
+            if (SECTION_LABEL_RE.test(bullet)) continue;
+            if (INSTRUCTIONAL_RE.test(bullet)) continue;
+            if (!isTraceableToSource(bullet, original_bullets)) continue;
+
+            const dedupeKey = bullet.toLowerCase().replace(/[^a-z0-9]/g, " ").replace(/\s+/g, " ").trim();
+            if (!dedupeKey || seen.has(dedupeKey)) continue;
+            seen.add(dedupeKey);
+            rewritten_bullets.push(/[.!?]$/.test(bullet) ? bullet : `${bullet}.`);
+        }
+
+        const bullets = (rewritten_bullets.length > 0 ? rewritten_bullets : original_bullets);
+        return {
+            ...entry,
+            original_bullets,
+            rewritten_bullets,
+            bullets,
+            dates: entry.date_range,
+        };
+    });
+
+    return {
+        ...document,
+        summary: sanitizeLine(document.summary ?? "") || null,
+        experience: cleanedExperience,
+        education: (document.education ?? []).map((line) => cleanEducationLine(line)).filter((line) => line.length > 0),
+        skills: Array.from(
+            new Set(
+                (document.skills ?? [])
+                    .map((skill) => sanitizeLine(skill))
+                    .filter((skill) => skill.length > 0)
+            )
+        ),
+    };
 }
 
 export function rewriteResume(
     resume: ParsedResume,
     jd: ParsedJobDescription,
-    gaps: GapReport,
-    rawResumeText: string
+    _gaps: GapReport
 ): ResumeRewriteResult {
-    // Only suggest injecting skills that are ACTUALLY missing based on the gap report
-    const missingSkillNames = gaps.priority_gaps
-        .filter(g => g.type === "skill" && g.skill)
-        .map(g => g.skill as string);
-    const quickWinNames = gaps.quick_wins
-        .filter(g => g.type === "skill" && g.skill)
-        .map(g => g.skill as string);
+    void _gaps;
 
-    const missingSkills = Array.from(new Set([...missingSkillNames, ...quickWinNames]));
+    const jdSignals = extractJdSignals(jd);
+    const experienceEntries = resume.experience_entries ?? [];
+    const evidencePieces = buildEvidencePieces(resume);
+    const scoredEvidencePieces = scoreEvidencePiecesGlobally(evidencePieces, jdSignals);
+    const selectedEvidencePieces = selectEvidencePiecesWithPerGroupCap(scoredEvidencePieces, 3);
+    const selectedBulletsByGroup = new Map<string, string[]>();
 
-    const jdFunction = jd.normalized_title?.function ?? null;
+    for (const selected of selectedEvidencePieces) {
+        const bullets = selectedBulletsByGroup.get(selected.group) ?? [];
+        bullets.push(selected.sanitizedRawText);
+        selectedBulletsByGroup.set(selected.group, bullets);
+    }
 
-    const roles: RewrittenRole[] = resume.companies.slice(0, 3).map(company => {
-        const original_bullets = extractBulletsForCompany(company, rawResumeText);
+    const tailoredExperience = experienceEntries.map((entry) => {
+        const key = groupKey(entry.company, entry.title, entry.date_range);
+        const selected_bullets = selectedBulletsByGroup.get(key) ?? [];
+        const rewritten_bullets = selected_bullets
+            .map((bullet) => rewriteBulletConservatively(bullet))
+            .filter((line) => line.length > 0);
 
-        const rewritten_bullets = original_bullets.length > 0
-            ? original_bullets.map((b, i) => rewriteBullet(b, i, missingSkills))
-            : [
-                `${IMPACT_VERBS[0]} key ${jdFunction ?? "marketing"} initiatives that contributed to measurable business outcomes. [add specific achievement]`,
-                `${LEADERSHIP_VERBS[1]} cross-functional stakeholders to deliver on ${missingSkills[0] ?? "campaign"} objectives. [quantify scope]`,
-                `${COMMERCIAL_VERBS[2]} opportunities to improve performance through data and insight. [add metric]`,
-            ];
-
-        const role_description = buildRoleDescription(company, rewritten_bullets, jdFunction);
-
-        return { company, original_bullets, rewritten_bullets, role_description };
+        return {
+            company: entry.company,
+            title: entry.title,
+            date_range: entry.date_range,
+            original_bullets: selected_bullets,
+            rewritten_bullets,
+            bullets: rewritten_bullets,
+            dates: entry.date_range,
+        };
     });
 
-    const summary_suggestion = buildSummary(resume, jd, gaps);
+    const validated = validateTailoredDocument({
+        header: {
+            full_name: resume.full_name,
+            current_title: resume.current_title,
+            contact: resume.contact,
+        },
+        summary: null,
+        experience: tailoredExperience,
+        education: resume.education ?? [],
+        skills: resume.skills ?? [],
+    });
 
-    return { roles, summary_suggestion };
+    const resumeDocument: TailoredResumeDocument = {
+        ...validated,
+        summary: buildTailoredSummaryFromExperience(resume, jd),
+    };
+
+    const roles: RewrittenRole[] = resumeDocument.experience.map((entry) => ({
+        company: entry.company ?? "Experience",
+        original_bullets: entry.original_bullets,
+        rewritten_bullets: entry.rewritten_bullets,
+        role_description: [entry.title, entry.date_range].filter(Boolean).join(" | "),
+    }));
+
+    return {
+        roles,
+        summary_suggestion: resumeDocument.summary ?? "",
+        resume_document: resumeDocument,
+    };
 }

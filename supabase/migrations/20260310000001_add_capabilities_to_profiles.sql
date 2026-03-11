@@ -1,0 +1,2 @@
+ALTER TABLE profiles
+ADD COLUMN IF NOT EXISTS capabilities JSONB NOT NULL DEFAULT '[]'::jsonb;

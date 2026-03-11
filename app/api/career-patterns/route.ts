@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient } from "@/lib/db/supabase/server";
-import { detectRecurringPatterns } from "@/lib/career-engine/recurring-gap-detector";
+import { detectRecurringPatterns } from "@/lib/career-engine/scoring/recurring-gap-detector";
 
 export async function GET(request: NextRequest) {
     try {

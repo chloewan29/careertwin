@@ -4,6 +4,7 @@ export interface ParsedResume {
     years_experience: number | null;
     industry: string | null;
     skills: string[];
+    capabilities: string[];
     companies: string[];
     education: string[];
     summary: string | null;
@@ -11,6 +12,8 @@ export interface ParsedResume {
         title: string | null;
         company: string | null;
         date_range: string | null;
+        description: string | null;
+        highlights: string[];
         confidence: {
             title: number;
             company: number;
@@ -53,7 +56,7 @@ const SECTION_HEADERS: Record<string, string> = {
 const EXPERIENCE_LABEL_RE = /^(roles?\s+and\s+responsibilities|accomplishments?|key\s+achievements?|responsibilities|achievements?|duties|overview|summary)\s*:?\s*$/i;
 
 // Broad subsection headings often found inside experience/skills blocks
-const SUBSECTION_HEADING_RE = /^(additional\s+achievements|technical\s+proficiencies|programming\s+&\s+data|roles?\s*&\s*responsibilities|key\s+projects?)\s*:?\s*$/i;
+const SUBSECTION_HEADING_RE = /^(additional\s+achievements|technical\s+proficiencies|programming\s+&\s+data|roles?\s*&\s*responsibilities|key\s+projects?|streaming\s*&\s*media\s+revenue\s+analytics|ai-powered\s+analytics\s+innovation|internal\s+consulting\s*&\s*strategic\s+advisory|team\s+leadership\s*&\s*capability\s+building|enterprise\s+data\s*&\s*analytics\s+transformation)\s*:?\s*$/i;
 
 // Month names that should never be treated as company names
 const MONTH_RE = /^(january|february|march|april|may|june|july|august|september|october|november|december)$/i;
@@ -80,11 +83,20 @@ function escapeRe(s: string): string {
 
 // Split merged PascalCase/camelCase skill strings
 function splitMergedSkills(raw: string): string[] {
-    const byDelim = raw.split(/[,|•·\\/\t]+/);
+    const normalizedKnownCompounds = raw
+        .replace(/\bGoogleBigQuery\b/gi, "Google BigQuery")
+        .replace(/\bAIGovernance\b/gi, "AI Governance");
+    const byDelim = normalizedKnownCompounds.split(/[,|•·\\/\t]+/);
     const results: string[] = [];
     for (const chunk of byDelim) {
         const trimmed = chunk.trim();
         if (!trimmed) continue;
+
+        // Keep known multi-word technical compounds intact.
+        if (/\b(bigquery|ai governance)\b/i.test(trimmed)) {
+            results.push(trimmed);
+            continue;
+        }
 
         // Split if we detect camelCase merging (lowercase/digit immediately followed by Uppercase)
         if (/[a-z0-9][A-Z]/.test(trimmed)) {
@@ -112,6 +124,37 @@ function firstSentences(text: string, n: number): string {
     return sentences.slice(0, n).join(" ").trim();
 }
 
+function cleanBulletPrefix(text: string): string {
+    return text
+        .replace(/^[-•·*]\s+/, "")
+        .replace(/^\d+[\).\s:-]+\s*/, "")
+        .trim();
+}
+
+function isSubsectionHeadingLine(line: string): boolean {
+    const normalized = line.trim();
+    if (!normalized) return false;
+    if (SUBSECTION_HEADING_RE.test(normalized)) return true;
+    if (!normalized.endsWith(":")) return false;
+    if (/\b(19|20)\d{2}\b/.test(normalized)) return false;
+    if (/^[-•·*]/.test(normalized)) return false;
+    const withoutColon = normalized.slice(0, -1).trim();
+    if (withoutColon.length < 3 || withoutColon.length > 90) return false;
+    if (/[.!?]/.test(withoutColon)) return false;
+    const wordCount = withoutColon.split(/\s+/).length;
+    return wordCount <= 12;
+}
+
+function looksLikeBulletParagraph(line: string, previousWasHeading: boolean): boolean {
+    if (!line) return false;
+    if (/^[-•·*]\s+|^\d+[\).\s]/.test(line)) return true;
+    if (previousWasHeading) return true;
+    if (/^(led|built|presented|conducted|generated|owned|established|drove|developed|implemented|created|delivered|launched|managed|architected|designed|pioneered|operated|secured|streamlined|upskilled)\b/i.test(line)) {
+        return true;
+    }
+    return line.split(/\s+/).length >= 10;
+}
+
 export function parseResumeText(rawText: string): ParsedResume {
     const result: ParsedResume = {
         full_name: null,
@@ -119,6 +162,7 @@ export function parseResumeText(rawText: string): ParsedResume {
         years_experience: null,
         industry: null,
         skills: [],
+        capabilities: [],
         companies: [],
         education: [],
         summary: null,
@@ -200,6 +244,7 @@ export function parseResumeText(rawText: string): ParsedResume {
     const experienceYears: number[] = [];
     let firstRoleTitle: string | null = null;
     let firstRoleDescText = "";
+    const BULLET_LINE_RE = /^[-•·*]\s+|^\d+[\).\s]+/;
 
     const TITLE_KEYWORD_RE = /\b(engineer|developer|manager|director|lead|analyst|designer|architect|scientist|consultant|officer|head of|\bvp\b|vice president|specialist|coordinator|executive|intern|strategist|planner|advisor|associate|producer|editor|writer|owner|product\s+owner)\b/i;
 
@@ -448,14 +493,14 @@ export function parseResumeText(rawText: string): ParsedResume {
         // 4 & 5. Set raw and normalized values from selected candidates
         if (bestTitleIdx !== -1 && !normalizedTitle) {
             rawTitleLine = preDateLines[bestTitleIdx].text;
-            let cleaned = rawTitleLine.replace(LOCATION_SUFFIX_RE, "");
+            const cleaned = rawTitleLine.replace(LOCATION_SUFFIX_RE, "");
             normalizedTitle = cleaned;
             titleConf = bestTitleScore > 5 ? 0.9 : 0.6;
         }
 
         if (bestCompanyIdx !== -1 && !normalizedCompany) {
             rawCompanyLine = preDateLines[bestCompanyIdx].text;
-            let cleaned = rawCompanyLine.replace(LOCATION_SUFFIX_RE, "");
+            const cleaned = rawCompanyLine.replace(LOCATION_SUFFIX_RE, "");
             normalizedCompany = cleaned;
             companyConf = bestCompanyScore > 5 ? 0.9 : 0.6;
         }
@@ -481,11 +526,33 @@ export function parseResumeText(rawText: string): ParsedResume {
 
         // Re-construct the description component
         const descStart = Math.max(bestTitleIdx, bestCompanyIdx, anchorLineIdx) + 1;
+        const highlights: string[] = [];
+        let previousWasHeading = false;
         for (let i = descStart; i < entry.length; i++) {
-            const l = entry[i];
-            if (!hasYear(l) && !SUBSECTION_HEADING_RE.test(l)) {
-                descriptionLines.push(l);
+            const l = entry[i].trim();
+            if (!l) {
+                previousWasHeading = false;
+                continue;
             }
+            if (isDateAnchorLine(l)) continue;
+
+            if (isSubsectionHeadingLine(l)) {
+                descriptionLines.push(l);
+                previousWasHeading = true;
+                continue;
+            }
+
+            descriptionLines.push(l);
+
+            if (BULLET_LINE_RE.test(l) || looksLikeBulletParagraph(l, previousWasHeading)) {
+                const bulletText = cleanBulletPrefix(l);
+                if (bulletText.length > 0) {
+                    // Keep bullet text atomic and traceable; subsection headings are preserved in description.
+                    // If heading metadata is needed later, wire it into schema instead of mutating raw bullet text.
+                    highlights.push(bulletText);
+                }
+            }
+            previousWasHeading = false;
         }
         const descText = descriptionLines.join(" ").trim();
 
@@ -499,6 +566,8 @@ export function parseResumeText(rawText: string): ParsedResume {
                     title: normalizedTitle,
                     company: normalizedCompany,
                     date_range: normalizedDateRange || rawDateLine,
+                    description: descText || null,
+                    highlights,
                     confidence: {
                         title: titleConf,
                         company: companyConf,
@@ -555,7 +624,7 @@ export function parseResumeText(rawText: string): ParsedResume {
     }
 
     // --- Education ---
-    let eduLines = sections.education;
+    const eduLines = sections.education;
     if (eduLines.length === 0) {
         const eduIndex = lines.findIndex(l => /education/i.test(l));
         if (eduIndex !== -1) {
@@ -650,3 +719,4 @@ export function parseResumeText(rawText: string): ParsedResume {
 
     return result;
 }
+

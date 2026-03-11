@@ -1,0 +1,12 @@
+-- CareerTwin Database Schema
+--
+-- CareerTwin is a Career Intelligence System.
+-- The database is designed around:
+-- 1. Career as root container
+-- 2. Experience as timeline layer
+-- 3. EvidencePiece as intelligence layer
+-- 4. Capability as inference layer
+-- 5. JobSignal as target-role layer
+--
+-- Resume output is not the core system record.
+-- EvidencePieces and Capabilities are the core memory model.

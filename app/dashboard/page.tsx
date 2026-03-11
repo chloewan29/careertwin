@@ -67,7 +67,20 @@ export default function DashboardPage() {
                             .eq("user_id", profileId);
 
                         const skillsList = userSkills
-                            ? userSkills.map((us: any) => us.skills?.name).filter(Boolean)
+                            ? userSkills
+                                .flatMap((us) => {
+                                    const skillsCell = (us as { skills?: unknown }).skills;
+                                    if (Array.isArray(skillsCell)) {
+                                        return skillsCell
+                                            .map((entry) => (entry && typeof entry === "object" ? (entry as { name?: unknown }).name : null))
+                                            .filter((name): name is string => typeof name === "string" && name.trim().length > 0);
+                                    }
+                                    if (skillsCell && typeof skillsCell === "object") {
+                                        const name = (skillsCell as { name?: unknown }).name;
+                                        return typeof name === "string" && name.trim().length > 0 ? [name] : [];
+                                    }
+                                    return [];
+                                })
                             : [];
 
                         setProfileData({
@@ -175,11 +188,9 @@ export default function DashboardPage() {
                         </h1>
                         <p className="text-muted">Your structured career profile at a glance.</p>
                     </div>
-                    <Link href="/match">
-                        <Button size="sm" variant="secondary">
-                            Match a Job →
-                        </Button>
-                    </Link>
+                    <Button size="sm" variant="secondary" disabled title="Use the Job Copilot browser extension">
+                        Job Copilot Extension
+                    </Button>
                 </div>
 
                 <div className="space-y-6">

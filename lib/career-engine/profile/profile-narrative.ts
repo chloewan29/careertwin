@@ -1,6 +1,6 @@
 import type { ProfileInput } from "../matching/role-matcher";
 import type { ParsedResume } from "../parsing/resume-parser";
-import type { EvidenceMap } from "./evidence-mapper";
+import type { EvidenceMap } from "../matching/evidence-mapper";
 
 export interface ProfileNarrative {
     headline: string;

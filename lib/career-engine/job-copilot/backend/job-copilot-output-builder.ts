@@ -1,0 +1,136 @@
+import type { ResumeCopilotDebugOutput, ResumeCopilotPublicOutput } from "@/lib/career-engine/copilot/resume-copilot/resume-copilot-types";
+import {
+    getVerdictFromScore,
+    JOB_COPILOT_RESUME_MIN_SCORE,
+    JOB_COPILOT_RESUME_READY_SCORE,
+    normalizeTopEvidenceLimit,
+} from "@/lib/career-engine/job-copilot/extension-contract";
+import type { JobCopilotAnalyzeOutput, JobCopilotTopEvidenceItem, JobCopilotResponse } from "./job-copilot-types";
+
+function dedupe(values: string[]): string[] {
+    return Array.from(
+        new Set(
+            values
+                .map((value) => value.trim())
+                .filter((value) => value.length > 0),
+        ),
+    );
+}
+
+export function buildWhyYouMatch(params: {
+    roleFitMatchedCapabilities: string[];
+    careerSignalTopCapabilities: string[];
+}): string[] {
+    return dedupe([
+        ...params.roleFitMatchedCapabilities,
+        ...params.careerSignalTopCapabilities,
+    ]).slice(0, 4);
+}
+
+export function buildKeyGaps(params: {
+    roleFitMissingCapabilities: string[];
+    careerSignalKeyGaps: string[];
+}): string[] {
+    return dedupe([
+        ...params.roleFitMissingCapabilities,
+        ...params.careerSignalKeyGaps,
+    ]).slice(0, 3);
+}
+
+export function extractTopEvidenceFromResumeDebug(
+    debugOutput: ResumeCopilotDebugOutput | undefined,
+    limitInput: number | undefined,
+): JobCopilotTopEvidenceItem[] {
+    if (!debugOutput) return [];
+    const limit = normalizeTopEvidenceLimit(limitInput);
+    const flattened: JobCopilotTopEvidenceItem[] = [];
+
+    for (const experience of debugOutput.experiences) {
+        for (const bullet of experience.bullets) {
+            flattened.push({
+                evidencePieceId: bullet.evidence_piece_id,
+                label: bullet.matched_signals[0] ?? bullet.original_bullet,
+                score: bullet.score,
+            });
+        }
+    }
+
+    return flattened
+        .sort((a, b) => (b.score ?? 0) - (a.score ?? 0))
+        .slice(0, limit);
+}
+
+export function toSafeFilename(value: string): string {
+    return value
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "")
+        .slice(0, 64);
+}
+
+export function buildResumeTextFile(params: {
+    roleTitle: string;
+    company: string;
+    resume: ResumeCopilotPublicOutput;
+}): string {
+    const lines: string[] = [];
+    lines.push(`Tailored Resume for ${params.roleTitle} @ ${params.company}`);
+    lines.push("");
+    if (params.resume.summary) {
+        lines.push("Summary");
+        lines.push(params.resume.summary);
+        lines.push("");
+    }
+    lines.push("Experience");
+    lines.push("");
+    for (const entry of params.resume.experience) {
+        lines.push(`${entry.role} | ${entry.company} | ${entry.date_range}`);
+        for (const bullet of entry.bullets) {
+            lines.push(`- ${bullet}`);
+        }
+        lines.push("");
+    }
+    return lines.join("\n").trim();
+}
+
+export function buildJobCopilotAnalyzeOutput(params: {
+    job: JobCopilotAnalyzeOutput["job"];
+    matchScore: number;
+    scoreExplainability: NonNullable<JobCopilotResponse["scoreExplainability"]>;
+    diagnostics: NonNullable<JobCopilotResponse["diagnostics"]>;
+    whyYouMatch: string[];
+    keyGaps: string[];
+    topEvidence: JobCopilotTopEvidenceItem[];
+    resumePreview: ResumeCopilotPublicOutput | null;
+}): JobCopilotAnalyzeOutput {
+    const verdict = getVerdictFromScore(params.matchScore);
+    const resumeReady = params.matchScore >= JOB_COPILOT_RESUME_READY_SCORE;
+    const verdictText = verdict === "strong_fit"
+        ? "You are a strong fit for this role"
+        : verdict === "possible_fit"
+            ? "You could be a fit for this role"
+            : verdict === "stretch"
+                ? "This role may be a stretch"
+                : "This role is likely not a strong fit";
+    const previewText = params.resumePreview?.summary ?? null;
+
+    return {
+        success: true,
+        job: params.job,
+        response: {
+            verdict,
+            matchScore: params.matchScore,
+            verdictText,
+            matchedCapabilities: params.whyYouMatch.slice(0, 4),
+            keyGaps: params.keyGaps.slice(0, 3),
+            topEvidence: params.topEvidence,
+            resume: {
+                ready: resumeReady && params.matchScore >= JOB_COPILOT_RESUME_MIN_SCORE,
+                preview: previewText,
+                downloadUrl: resumeReady ? "/api/job-copilot/extension/download-resume" : null,
+            },
+            scoreExplainability: params.scoreExplainability,
+            diagnostics: params.diagnostics,
+        },
+    };
+}

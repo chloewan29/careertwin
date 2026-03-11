@@ -1,0 +1,47 @@
+{
+  "manifest_version": 3,
+  "name": "CareerTwin Job Copilot",
+  "version": "0.1.0",
+  "description": "Auto-analyzes supported job detail pages and shows CareerTwin fit guidance.",
+  "permissions": [
+    "storage",
+    "downloads"
+  ],
+  "host_permissions": [
+    "https://www.linkedin.com/*",
+    "https://www.seek.com.au/*",
+    "http://localhost:3000/*",
+    "https://*.careertwin.com/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "CareerTwin Job Copilot"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://www.linkedin.com/*",
+        "https://www.seek.com.au/*"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "run_at": "document_idle"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "panel.css"
+      ],
+      "matches": [
+        "https://www.linkedin.com/*",
+        "https://www.seek.com.au/*"
+      ]
+    }
+  ]
+}
+

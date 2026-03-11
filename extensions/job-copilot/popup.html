@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CareerTwin Job Copilot</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 14px;
+      width: 300px;
+      font-family: Arial, sans-serif;
+      background: #f7f8fb;
+      color: #111827;
+    }
+    h1 {
+      margin: 0 0 10px;
+      font-size: 15px;
+    }
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    input {
+      width: 100%;
+      box-sizing: border-box;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      padding: 8px;
+      margin-bottom: 10px;
+      font-size: 12px;
+    }
+    button {
+      width: 100%;
+      border: none;
+      border-radius: 8px;
+      background: #1d4ed8;
+      color: #ffffff;
+      font-weight: 700;
+      padding: 9px 10px;
+      cursor: pointer;
+    }
+    #status {
+      margin-top: 10px;
+      font-size: 12px;
+      min-height: 14px;
+    }
+  </style>
+</head>
+<body>
+  <h1>CareerTwin Job Copilot</h1>
+  <label for="profileId">Profile ID</label>
+  <input id="profileId" placeholder="uuid..." />
+  <label for="apiBaseUrl">API Base URL</label>
+  <input id="apiBaseUrl" placeholder="http://localhost:3000" />
+  <button id="saveBtn">Save Settings</button>
+  <div id="status"></div>
+  <script src="popup.js"></script>
+</body>
+</html>
+

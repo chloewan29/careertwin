@@ -6,6 +6,7 @@ export interface ProfileInput {
     current_title: string | null;
     years_experience: number | null;
     skills: string[];
+    capabilities?: string[];
     parsed_skills?: string[];
     resume_text?: string;
 }
@@ -115,9 +116,55 @@ const ADJACENT_SKILLS: Record<string, string[]> = {
 };
 
 const LEADERSHIP_SIGNAL_GROUPS: Record<string, string[]> = {
-    people_management: ["managed a team", "managing a team", "team management", "people management", "line managed"],
+    people_management: [
+        "managed a team",
+        "managing a team",
+        "team management",
+        "people management",
+        "line managed",
+        "manage",
+        "managed",
+        "mentor",
+        "mentored",
+        "coach",
+        "coached",
+        "develop team",
+        "developed team",
+        "develop high-performing team",
+        "high-performing team",
+        "oversight of",
+        "led and develop",
+    ],
+    capability_building: [
+        "build capability",
+        "built capability",
+        "establish framework",
+        "established framework",
+        "build function",
+        "built function",
+        "capability framework",
+        "framework and standards",
+        "built analytics capability framework",
+    ],
+    strategic_leadership: [
+        "strategic partnership",
+        "senior leaders",
+        "commercial thinking",
+        "commercial acumen",
+        "business impact",
+        "measurable business impact",
+    ],
     ownership: ["ownership", "owned", "accountable for", "responsible for"],
-    delivery: ["leading delivery", "led delivery", "led initiative", "led project", "drove execution"],
+    delivery: [
+        "leading delivery",
+        "led delivery",
+        "led initiative",
+        "lead initiative",
+        "drive initiative",
+        "drove initiative",
+        "led project",
+        "drove execution",
+    ],
     mentoring: ["mentored", "coached", "developed team members"],
     cross_functional: ["cross-functional leadership", "cross-functional delivery", "cross-functional partnership"],
 };
@@ -205,6 +252,13 @@ function countSignalGroups(text: string, groups: Record<string, string[]>): numb
     ).length;
 }
 
+export function detectLeadershipSignalGroups(resumeText: string): string[] {
+    const text = resumeText.toLowerCase();
+    return Object.entries(LEADERSHIP_SIGNAL_GROUPS)
+        .filter(([, signals]) => signals.some(signal => text.includes(signal)))
+        .map(([group]) => group);
+}
+
 function hasWeakSignal(text: string, signals: string[]): boolean {
     return signals.some(signal => {
         if (signal.includes(" ")) return text.includes(signal);
@@ -240,7 +294,7 @@ function getEvidenceStrength(skill: string, profileSkillSet: Set<string>, resume
     }
 
     if (skillNorm === "leadership") {
-        const groups = countSignalGroups(resumeLower, LEADERSHIP_SIGNAL_GROUPS);
+        const groups = detectLeadershipSignalGroups(resumeText).length;
         if (groups >= 2) return { strong: true, moderate: false, weak: false, reason: "Strong leadership evidence found in resume text." };
         if (groups === 1) return { strong: false, moderate: false, weak: true, reason: "Some leadership evidence found, but it is limited." };
     }
@@ -311,9 +365,11 @@ export function matchRoles(
     profile: ProfileInput,
     jd: ParsedJobDescription
 ): RoleMatchResult {
-    const effectiveSkills = profile.skills.some(skill => skill.trim().length > 0)
+    const baseSkills = profile.skills.some(skill => skill.trim().length > 0)
         ? profile.skills
         : (profile.parsed_skills ?? []);
+    const capabilitySkills = profile.capabilities ?? [];
+    const effectiveSkills = [...baseSkills, ...capabilitySkills];
 
     const profileSkillsNorm = normalizeSkills(effectiveSkills);
     const profileSkillSet = skillSetNorm(profileSkillsNorm);
@@ -428,7 +484,7 @@ export function matchRoles(
     })();
 
     const resumeLower = rawResumeText.toLowerCase();
-    const leadershipGroups = countSignalGroups(resumeLower, LEADERSHIP_SIGNAL_GROUPS);
+    const leadershipGroups = detectLeadershipSignalGroups(rawResumeText).length;
     const communicationGroups = countSignalGroups(resumeLower, COMMUNICATION_SIGNAL_GROUPS);
     const leadershipWeakEvidence = leadershipGroups === 0 && hasWeakSignal(resumeLower, WEAK_LEADERSHIP_SIGNALS);
     const communicationWeakEvidence = communicationGroups === 0 && hasWeakSignal(resumeLower, WEAK_COMMUNICATION_SIGNALS);
