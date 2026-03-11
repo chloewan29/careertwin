@@ -271,9 +271,11 @@ function buildRecommendation(hardFilterResult, criticalGaps, evidenceGaps, overa
     return "Moderate fit overall. Improve the clearest weak dimensions and tighten role-specific evidence.";
 }
 function matchRoles(profile, jd) {
-    const effectiveSkills = profile.skills.some(skill => skill.trim().length > 0)
+    const baseSkills = profile.skills.some(skill => skill.trim().length > 0)
         ? profile.skills
         : (profile.parsed_skills ?? []);
+    const capabilitySkills = profile.capabilities ?? [];
+    const effectiveSkills = [...baseSkills, ...capabilitySkills];
     const profileSkillsNorm = (0, skill_normalizer_1.normalizeSkills)(effectiveSkills);
     const profileSkillSet = skillSetNorm(profileSkillsNorm);
     const rawResumeText = profile.resume_text ?? "";
