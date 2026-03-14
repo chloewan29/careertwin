@@ -1,3 +1,9 @@
+// legacy shared types.
+// compatibility-only exports for older paths.
+// canonical runtime contracts live in lib/career-engine/*.
+// do not use for new runtime paths.
+// see: docs/system_map.md, docs/schema_inventory.md, docs/canonical_schema.md
+
 export interface Profile {
     id: string;
     display_name: string | null;
@@ -59,5 +65,33 @@ export interface MatchResult {
     skill_matches: string[];
     skill_gaps: string[];
     recommendations: string[];
+    created_at: string;
+}
+
+export interface EvidenceSignal {
+    id: string;
+    career_id: string;
+    evidence_piece_id: string;
+    action: string | null;
+    domain: string | null;
+    initiative_type: string | null;
+    scope_level: "task" | "project" | "team" | "function" | "enterprise" | "market" | null;
+    ownership_level: "contributor" | "driver" | "owner" | "lead" | null;
+    stakeholder_scope: string[];
+    tool_signals: string[];
+    capability_hints: string[];
+    team_signal: string | null;
+    impact_signal: string | null;
+    confidence_score: number | null;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface CapabilitySignalLink {
+    id: string;
+    capability_id: string;
+    evidence_signal_id: string;
+    contribution_weight: number | null;
+    rationale: string | null;
     created_at: string;
 }

@@ -1,0 +1,202 @@
+[
+  {
+    "case_id": "job-01",
+    "title": "Analytics Manager",
+    "human_label": "high_fit",
+    "model_score": 71.59,
+    "model_bucket": "high_fit",
+    "agreement": "agree",
+    "short_disagreement_reason": "Aligned with human label.",
+    "extraction_quality": "usable"
+  },
+  {
+    "case_id": "job-02",
+    "title": "Commercial Insights Lead",
+    "human_label": "high_fit",
+    "model_score": 73.29,
+    "model_bucket": "high_fit",
+    "agreement": "agree",
+    "short_disagreement_reason": "Aligned with human label.",
+    "extraction_quality": "usable"
+  },
+  {
+    "case_id": "job-03",
+    "title": "Customer Insights & CX Strategy Manager",
+    "human_label": "high_fit",
+    "model_score": 73.34,
+    "model_bucket": "high_fit",
+    "agreement": "agree",
+    "short_disagreement_reason": "Aligned with human label.",
+    "extraction_quality": "sparse"
+  },
+  {
+    "case_id": "job-04",
+    "title": "Product Analytics Manager",
+    "human_label": "medium_fit",
+    "model_score": 70.68,
+    "model_bucket": "medium_fit",
+    "agreement": "agree",
+    "short_disagreement_reason": "Aligned with human label.",
+    "extraction_quality": "usable"
+  },
+  {
+    "case_id": "job-05",
+    "title": "BI Transformation Program Lead",
+    "human_label": "medium_fit",
+    "model_score": 54.74,
+    "model_bucket": "medium_fit",
+    "agreement": "agree",
+    "short_disagreement_reason": "Aligned with human label.",
+    "extraction_quality": "sparse"
+  },
+  {
+    "case_id": "job-06",
+    "title": "Marketing Science Lead",
+    "human_label": "high_fit",
+    "model_score": 72.18,
+    "model_bucket": "high_fit",
+    "agreement": "agree",
+    "short_disagreement_reason": "Aligned with human label.",
+    "extraction_quality": "usable"
+  },
+  {
+    "case_id": "job-07",
+    "title": "Transformation Enablement Manager",
+    "human_label": "medium_fit",
+    "model_score": 68.46,
+    "model_bucket": "medium_fit",
+    "agreement": "agree",
+    "short_disagreement_reason": "Aligned with human label.",
+    "extraction_quality": "usable"
+  },
+  {
+    "case_id": "job-08",
+    "title": "Revenue Strategy Manager",
+    "human_label": "high_fit",
+    "model_score": 72.02,
+    "model_bucket": "high_fit",
+    "agreement": "agree",
+    "short_disagreement_reason": "Aligned with human label.",
+    "extraction_quality": "usable"
+  },
+  {
+    "case_id": "job-09",
+    "title": "Data & Insights Manager",
+    "human_label": "high_fit",
+    "model_score": 72.98,
+    "model_bucket": "high_fit",
+    "agreement": "agree",
+    "short_disagreement_reason": "Aligned with human label.",
+    "extraction_quality": "sparse"
+  },
+  {
+    "case_id": "job-10",
+    "title": "Analytics Enablement Manager",
+    "human_label": "medium_fit",
+    "model_score": 66.6,
+    "model_bucket": "medium_fit",
+    "agreement": "agree",
+    "short_disagreement_reason": "Aligned with human label.",
+    "extraction_quality": "usable"
+  },
+  {
+    "case_id": "job-11",
+    "title": "Commercial Strategy Director",
+    "human_label": "medium_fit",
+    "model_score": 72.13,
+    "model_bucket": "high_fit",
+    "agreement": "disagree",
+    "short_disagreement_reason": "Partial-but-fragile requirements.",
+    "extraction_quality": "usable"
+  },
+  {
+    "case_id": "job-12",
+    "title": "Customer Analytics Consultant",
+    "human_label": "high_fit",
+    "model_score": 72.87,
+    "model_bucket": "high_fit",
+    "agreement": "agree",
+    "short_disagreement_reason": "Aligned with human label.",
+    "extraction_quality": "sparse"
+  },
+  {
+    "case_id": "job-13",
+    "title": "Enterprise Sales Director",
+    "human_label": "low_fit",
+    "model_score": 65.15,
+    "model_bucket": "medium_fit",
+    "agreement": "disagree",
+    "short_disagreement_reason": "Partial-but-fragile requirements.",
+    "extraction_quality": "sparse"
+  },
+  {
+    "case_id": "job-14",
+    "title": "Clinical Research Coordinator",
+    "human_label": "low_fit",
+    "model_score": 15.22,
+    "model_bucket": "low_fit",
+    "agreement": "agree",
+    "short_disagreement_reason": "Aligned with human label.",
+    "extraction_quality": "sparse"
+  },
+  {
+    "case_id": "job-15",
+    "title": "Software Engineering Manager",
+    "human_label": "low_fit",
+    "model_score": 35.51,
+    "model_bucket": "low_fit",
+    "agreement": "agree",
+    "short_disagreement_reason": "Aligned with human label.",
+    "extraction_quality": "empty"
+  },
+  {
+    "case_id": "job-16",
+    "title": "SEO Manager",
+    "human_label": "low_fit",
+    "model_score": 65.06,
+    "model_bucket": "medium_fit",
+    "agreement": "disagree",
+    "short_disagreement_reason": "Partial-but-fragile requirements.",
+    "extraction_quality": "sparse"
+  },
+  {
+    "case_id": "job-17",
+    "title": "Operations Excellence Manager",
+    "human_label": "medium_fit",
+    "model_score": 57.71,
+    "model_bucket": "medium_fit",
+    "agreement": "agree",
+    "short_disagreement_reason": "Aligned with human label.",
+    "extraction_quality": "usable"
+  },
+  {
+    "case_id": "job-18",
+    "title": "Media Insights Director",
+    "human_label": "medium_fit",
+    "model_score": 72.59,
+    "model_bucket": "high_fit",
+    "agreement": "disagree",
+    "short_disagreement_reason": "Partial-but-fragile requirements.",
+    "extraction_quality": "sparse"
+  },
+  {
+    "case_id": "job-19",
+    "title": "Change Manager",
+    "human_label": "medium_fit",
+    "model_score": 57.62,
+    "model_bucket": "medium_fit",
+    "agreement": "agree",
+    "short_disagreement_reason": "Aligned with human label.",
+    "extraction_quality": "usable"
+  },
+  {
+    "case_id": "job-20",
+    "title": "Research Operations Coordinator",
+    "human_label": "low_fit",
+    "model_score": 44.25,
+    "model_bucket": "low_fit",
+    "agreement": "agree",
+    "short_disagreement_reason": "Aligned with human label.",
+    "extraction_quality": "sparse"
+  }
+]

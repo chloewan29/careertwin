@@ -1,8 +1,7 @@
 import type { ResumeCopilotDebugOutput, ResumeCopilotPublicOutput } from "@/lib/career-engine/copilot/resume-copilot/resume-copilot-types";
+import type { JobCopilotAnalysis } from "@/lib/career-engine/job-copilot/job-analysis";
 import {
     getVerdictFromScore,
-    JOB_COPILOT_RESUME_MIN_SCORE,
-    JOB_COPILOT_RESUME_READY_SCORE,
     normalizeTopEvidenceLimit,
 } from "@/lib/career-engine/job-copilot/extension-contract";
 import type { JobCopilotAnalyzeOutput, JobCopilotTopEvidenceItem, JobCopilotResponse } from "./job-copilot-types";
@@ -18,22 +17,22 @@ function dedupe(values: string[]): string[] {
 }
 
 export function buildWhyYouMatch(params: {
-    roleFitMatchedCapabilities: string[];
-    careerSignalTopCapabilities: string[];
+    matchStrengthCapabilities: string[];
+    profileTopCapabilities: string[];
 }): string[] {
     return dedupe([
-        ...params.roleFitMatchedCapabilities,
-        ...params.careerSignalTopCapabilities,
+        ...params.matchStrengthCapabilities,
+        ...params.profileTopCapabilities,
     ]).slice(0, 4);
 }
 
 export function buildKeyGaps(params: {
-    roleFitMissingCapabilities: string[];
-    careerSignalKeyGaps: string[];
+    matchGapCapabilities: string[];
+    profileKeyGaps: string[];
 }): string[] {
     return dedupe([
-        ...params.roleFitMissingCapabilities,
-        ...params.careerSignalKeyGaps,
+        ...params.matchGapCapabilities,
+        ...params.profileKeyGaps,
     ]).slice(0, 3);
 }
 
@@ -101,10 +100,11 @@ export function buildJobCopilotAnalyzeOutput(params: {
     whyYouMatch: string[];
     keyGaps: string[];
     topEvidence: JobCopilotTopEvidenceItem[];
+    jobAnalysis: JobCopilotAnalysis;
     resumePreview: ResumeCopilotPublicOutput | null;
 }): JobCopilotAnalyzeOutput {
     const verdict = getVerdictFromScore(params.matchScore);
-    const resumeReady = params.matchScore >= JOB_COPILOT_RESUME_READY_SCORE;
+    const resumeReady = params.jobAnalysis.tailoring_decision.allowed;
     const verdictText = verdict === "strong_fit"
         ? "You are a strong fit for this role"
         : verdict === "possible_fit"
@@ -124,10 +124,13 @@ export function buildJobCopilotAnalyzeOutput(params: {
             matchedCapabilities: params.whyYouMatch.slice(0, 4),
             keyGaps: params.keyGaps.slice(0, 3),
             topEvidence: params.topEvidence,
+            job_analysis: params.jobAnalysis,
             resume: {
-                ready: resumeReady && params.matchScore >= JOB_COPILOT_RESUME_MIN_SCORE,
+                ready: resumeReady,
                 preview: previewText,
-                downloadUrl: resumeReady ? "/api/job-copilot/extension/download-resume" : null,
+                downloadUrl: resumeReady
+                    ? "/api/job-copilot/extension/download-resume"
+                    : null,
             },
             scoreExplainability: params.scoreExplainability,
             diagnostics: params.diagnostics,

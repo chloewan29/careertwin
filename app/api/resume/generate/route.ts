@@ -56,6 +56,8 @@ export function createResumeGeneratePostHandler(
             return NextResponse.json({
                 success: true,
                 resume: result.resume,
+                job_analysis: result.job_analysis ?? result.resume.job_analysis ?? null,
+                tailoring_result: result.tailoring_result ?? null,
                 ...(body.debug ? { debug: result.debug } : {}),
             });
         } catch (error) {

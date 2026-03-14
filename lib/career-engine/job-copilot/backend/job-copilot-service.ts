@@ -1,14 +1,11 @@
 import { createServerSupabaseClient } from "@/lib/db/supabase/server";
 import { generateResumeCopilot } from "@/lib/career-engine/copilot/resume-copilot/resume-copilot-service";
 import type { ResumeCopilotPublicOutput } from "@/lib/career-engine/copilot/resume-copilot/resume-copilot-types";
-import { getCapabilitySummary } from "@/lib/career-engine/capability/capability-graph";
-import { getRoleFit } from "@/lib/career-engine/matching/role-fit-service";
+import { getCapabilityMatchV2 } from "@/lib/career-engine/matching/capability-match-v2";
 import { loadCareerGraph } from "@/lib/career-engine/memory/career-graph-loader";
-import { getCareerSignals } from "@/lib/career-engine/strategy/career-signals-service";
 import {
     canonicalJobId,
     getVerdictFromScore,
-    JOB_COPILOT_RESUME_MIN_SCORE,
 } from "@/lib/career-engine/job-copilot/extension-contract";
 import type {
     JobCopilotAnalyzeInput,
@@ -25,6 +22,10 @@ import {
     extractTopEvidenceFromResumeDebug,
     toSafeFilename,
 } from "./job-copilot-output-builder";
+import {
+    buildJobCopilotAnalysis,
+    getTailoringDecisionFromMatchScore,
+} from "@/lib/career-engine/job-copilot/job-copilot-ui-adapter";
 import { writeAppliedPipelineAction } from "./pipeline-write-integration";
 import { markInteractionApplied, persistExtensionViewedJob } from "./extension-job-persistence";
 
@@ -162,25 +163,49 @@ export async function analyzeJobForCopilot(input: JobCopilotAnalyzeInput): Promi
         rawJd: input.jobDescription,
         fallbackTitle: cleanedTitle,
     });
-    const targetRole = parsedSignals.target_title ?? parsedSignals.role_family ?? cleanedTitle;
+    if (!careerGraph.career?.id) {
+        throw new Error("No career memory found");
+    }
 
-    const roleFit = getRoleFit(careerGraph, targetRole);
-    const careerSignals = getCareerSignals(careerGraph, [targetRole]);
-    const capabilitySummary = getCapabilitySummary(careerGraph);
+    const capabilityMatch = await getCapabilityMatchV2({
+        careerId: careerGraph.career.id,
+        profileId: input.profileId.trim(),
+        jobDescription: input.jobDescription,
+        jobTitleHint: cleanedTitle,
+        topSignalsLimit: 4,
+    });
+
+    const degradedExtraction = capabilityMatch.job_profile_quality === "sparse" || capabilityMatch.job_profile_quality === "empty";
+    const reliableStrengths = capabilityMatch.matched_strengths
+        .filter((item) => item.source_tier !== "title_prior")
+        .map((item) => item.display_name);
+    const reliableGaps = capabilityMatch.gaps
+        .filter((item) => item.source_tier !== "title_prior")
+        .filter((item) => item.importance === "critical" || item.importance === "important")
+        .map((item) => item.display_name);
 
     const whyYouMatch = buildWhyYouMatch({
-        roleFitMatchedCapabilities: roleFit.matchedCapabilities.map((capability) => capability.name),
-        careerSignalTopCapabilities: capabilitySummary.topCapabilities.map((entry) => entry.capability.name),
+        matchStrengthCapabilities: degradedExtraction
+            ? reliableStrengths.slice(0, 2)
+            : capabilityMatch.matched_strengths.map((item) => item.display_name),
+        profileTopCapabilities: capabilityMatch.candidate_capability_profile
+            .slice(0, 3)
+            .map((item) => item.display_name),
     });
     const keyGaps = buildKeyGaps({
-        roleFitMissingCapabilities: roleFit.missingCapabilities,
-        careerSignalKeyGaps: careerSignals.keyGaps,
+        matchGapCapabilities: degradedExtraction
+            ? reliableGaps.slice(0, 2)
+            : capabilityMatch.gaps
+                .filter((item) => item.importance === "critical" || item.importance === "important")
+                .map((item) => item.display_name),
+        profileKeyGaps: [],
     });
-    const matchScore = roleFit.fitScore;
+    const matchScore = Number((capabilityMatch.overall_match_score * 100).toFixed(2));
     const weakJdMode = !parsedSignals.target_title
         && !parsedSignals.role_family
         && parsedSignals.required_skills.length === 0
-        && parsedSignals.responsibilities.length === 0;
+        && parsedSignals.responsibilities.length === 0
+        && capabilityMatch.job_capability_profile.length === 0;
 
     const persisted = await ensureExtensionJob({
         profileId: input.profileId,
@@ -201,8 +226,12 @@ export async function analyzeJobForCopilot(input: JobCopilotAnalyzeInput): Promi
     let fallbackUsed = false;
     let totalEvidenceConsidered = 0;
     let selectedEvidenceIds: string[] = [];
+    const tailoringDecision = getTailoringDecisionFromMatchScore(
+        matchScore,
+        capabilityMatch.audit.tailor_recommendation_reasoning,
+    );
 
-    if (matchScore >= JOB_COPILOT_RESUME_MIN_SCORE) {
+    if (tailoringDecision.allowed) {
         const resumeResult = await generateResumeCopilot({
             profileId: input.profileId,
             jobId: persisted.jobId,
@@ -229,11 +258,7 @@ export async function analyzeJobForCopilot(input: JobCopilotAnalyzeInput): Promi
         }
     }
 
-    const scoreConfidence: "high" | "medium" | "low" = weakJdMode
-        ? "low"
-        : parsedSignals.required_skills.length >= 2 || parsedSignals.responsibilities.length >= 2
-            ? "high"
-            : "medium";
+    const scoreConfidence: "high" | "medium" | "low" = capabilityMatch.score_confidence;
     const verdict = getVerdictFromScore(matchScore);
     const persistedViewed = await persistExtensionViewedJob({
         supabase: createServerSupabaseClient(),
@@ -249,6 +274,27 @@ export async function analyzeJobForCopilot(input: JobCopilotAnalyzeInput): Promi
         verdict,
         selectedEvidenceIds,
         resumeGenerated: Boolean(resumePreview),
+    });
+    const weakJobSignals = weakJdMode || degradedExtraction || persistedViewed.extractionQuality === "weak";
+    const jobAnalysis = buildJobCopilotAnalysis({
+        matchScore,
+        scoreConfidence: scoreConfidence,
+        jobProfileQuality: capabilityMatch.job_profile_quality,
+        weakJobSignals,
+        matchedCapabilities: whyYouMatch,
+        keyGaps,
+        evidenceHighlights: topEvidence,
+        jdTitle: parsedSignals.target_title ?? cleanedTitle,
+        jdRoleFamily: parsedSignals.role_family,
+        candidateTitles: careerGraph.experiences.map((experience) => experience.title),
+        atsRiskReasoning: capabilityMatch.audit.ats_risk_reasoning,
+        bucketReasoning: capabilityMatch.audit.final_bucket_reasoning,
+        tailoringReasoning: capabilityMatch.audit.tailor_recommendation_reasoning,
+        evidenceAlignmentScore: capabilityMatch.score_breakdown.evidence_alignment_score,
+        titlePriorPenalty: capabilityMatch.score_breakdown.title_prior_penalty,
+        titlePriorReasoning: capabilityMatch.audit.title_prior_effect.reason,
+        requiredSkills: parsedSignals.required_skills,
+        responsibilities: parsedSignals.responsibilities,
     });
 
     return buildJobCopilotAnalyzeOutput({
@@ -267,21 +313,38 @@ export async function analyzeJobForCopilot(input: JobCopilotAnalyzeInput): Promi
         },
         matchScore,
         scoreExplainability: {
-            model: "role_fit_v1",
-            capabilityFitScore: roleFit.fitScore,
-            matchedCapabilityCount: roleFit.matchedCapabilities.length,
-            missingCapabilityCount: roleFit.missingCapabilities.length,
-            supportingEvidenceCount: roleFit.supportingEvidence.length,
-            roleFitSummary: roleFit.fitSummary,
+            model: capabilityMatch.model,
+            capabilityFitScore: Number((capabilityMatch.overall_match_score * 100).toFixed(2)),
+            matchedCapabilityCount: capabilityMatch.matched_strengths.length,
+            missingCapabilityCount: capabilityMatch.gaps.filter((item) => item.match_status === "missing").length,
+            supportingEvidenceCount: new Set(
+                capabilityMatch.matched_strengths
+                    .flatMap((item) => item.top_supporting_signals)
+                    .map((signal) => signal.evidence_piece_id),
+            ).size,
+            weightedCoverageScore: capabilityMatch.score_breakdown.weighted_requirement_score,
+            criticalGapPenalty: capabilityMatch.score_breakdown.blocking_gap_penalty,
+            matchedCriticalCount: capabilityMatch.score_breakdown.matched_critical_count,
+            missingCriticalCount: capabilityMatch.score_breakdown.missing_critical_count,
+            totalJobCapabilityCount: capabilityMatch.score_breakdown.total_job_capability_count,
             evidenceRelevanceScore: evidenceRelevanceScore,
             weakJdMode: weakJdMode,
             scoreConfidence: scoreConfidence,
+            jobProfileQuality: capabilityMatch.job_profile_quality,
+            jobProfileQualityReasons: capabilityMatch.job_profile_diagnostics.reasons,
+            titlePriorUsed: capabilityMatch.job_profile_diagnostics.used_title_prior,
+            transferMatchScore: capabilityMatch.score_breakdown.transfer_match_score,
+            evidenceAlignmentScore: capabilityMatch.score_breakdown.evidence_alignment_score,
+            titlePriorPenalty: capabilityMatch.score_breakdown.title_prior_penalty,
+            domainPriorPenalty: capabilityMatch.score_breakdown.domain_prior_penalty,
+            bucketReasoning: capabilityMatch.audit.final_bucket_reasoning,
         },
         diagnostics: {
-            weakJobSignals: weakJdMode || persistedViewed.extractionQuality === "weak",
+            weakJobSignals,
             fallbackUsed,
             totalEvidenceConsidered,
         },
+        jobAnalysis,
         whyYouMatch,
         keyGaps,
         topEvidence,
@@ -322,8 +385,9 @@ export async function downloadTailoredResumeAndMarkApplied(input: JobCopilotDown
     if (typeof matchScore !== "number") {
         throw new Error("Run analyze before downloading resume");
     }
-    if (matchScore < JOB_COPILOT_RESUME_MIN_SCORE) {
-        throw new Error(`Low fit role (${matchScore}). Resume generation is disabled below ${JOB_COPILOT_RESUME_MIN_SCORE}.`);
+    const tailoringDecision = getTailoringDecisionFromMatchScore(matchScore);
+    if (!tailoringDecision.allowed) {
+        throw new Error(`Low fit role (${matchScore}). ${tailoringDecision.message}`);
     }
 
     const { data: jobRows } = await supabase

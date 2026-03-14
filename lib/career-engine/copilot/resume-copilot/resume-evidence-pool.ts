@@ -21,20 +21,49 @@ function dedupePoolEntries(entries: ResumeEvidencePoolEntry[]): ResumeEvidencePo
 export function buildResumeEvidencePool(params: {
     intelligence: ResumeCopilotIntelligenceContext;
     topCapabilitiesLimit?: number;
+    includeLegacyFallback?: boolean;
 }): {
     entries: ResumeEvidencePoolEntry[];
     poolSourceCounts: Record<string, number>;
     fallbackUsed: boolean;
 } {
     const topCapabilitiesLimit = Math.max(1, params.topCapabilitiesLimit ?? 5);
+    const includeLegacyFallback = params.includeLegacyFallback ?? true;
     const entries: ResumeEvidencePoolEntry[] = [];
+    const evidenceById = new Map(
+        params.intelligence.careerGraph.evidencePieces.map((evidence) => [evidence.id, evidence]),
+    );
 
-    for (const evidence of params.intelligence.roleFit?.supportingEvidence ?? []) {
-        entries.push({ evidence, poolSources: ["role_fit.supportingEvidence"] });
+    const capabilityMatch = params.intelligence.capabilityMatch;
+    if (capabilityMatch) {
+        const prioritizedMatchItems = [
+            ...capabilityMatch.matched_strengths,
+            ...capabilityMatch.partial_matches,
+        ];
+        for (const item of prioritizedMatchItems) {
+            const sourcePrefix = item.match_status === "strong" ? "capability_match.strong" : "capability_match.partial";
+            for (const supportingSignal of item.top_supporting_signals) {
+                const evidence = evidenceById.get(supportingSignal.evidence_piece_id);
+                if (!evidence) continue;
+                entries.push({
+                    evidence,
+                    poolSources: [
+                        `${sourcePrefix}:${item.canonical_name}`,
+                        `capability_signal:${supportingSignal.evidence_signal_id}`,
+                    ],
+                });
+            }
+        }
     }
 
-    for (const evidence of params.intelligence.careerSignals.evidenceHighlights) {
-        entries.push({ evidence, poolSources: ["career_signals.evidenceHighlights"] });
+    if (includeLegacyFallback) {
+        for (const evidence of params.intelligence.roleFit?.supportingEvidence ?? []) {
+            entries.push({ evidence, poolSources: ["role_fit.supportingEvidence"] });
+        }
+
+        for (const evidence of params.intelligence.careerSignals?.evidenceHighlights ?? []) {
+            entries.push({ evidence, poolSources: ["career_signals.evidenceHighlights"] });
+        }
     }
 
     const topCapabilities = getTopCapabilitiesForCareer(

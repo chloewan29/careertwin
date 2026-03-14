@@ -67,6 +67,10 @@
   line-height: 1.45;
 }
 
+.ctjc-interpretation {
+  margin-top: 8px !important;
+}
+
 .ctjc-verdict-row {
   display: flex;
   justify-content: space-between;
@@ -123,6 +127,34 @@
   list-style: none;
   margin-left: -18px;
   color: #64748b;
+}
+
+.ctjc-section-notices {
+  background: #fff7ed;
+  border-color: #fdba74;
+}
+
+.ctjc-notice-list {
+  padding-left: 0;
+}
+
+.ctjc-notice {
+  list-style: none;
+  margin: 0 0 8px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.ctjc-notice-warning {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.ctjc-notice-critical {
+  background: #fee2e2;
+  color: #991b1b;
 }
 
 .ctjc-chip {

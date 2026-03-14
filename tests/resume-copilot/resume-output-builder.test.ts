@@ -93,6 +93,20 @@ const result = buildResumeCopilotOutput({
     totalEvidenceInPool: 5,
     totalEvidenceRanked: 4,
     poolSourceCounts: { "role_fit.supportingEvidence": 2 },
+    intelligenceContext: {
+        careerGraph: {
+            career: null,
+            experiences: [],
+            evidencePieces: [],
+            capabilities: [],
+            capabilityEvidenceLinks: [],
+            evidenceByExperience: {},
+            capabilitiesByEvidence: {},
+            evidenceByCapability: {},
+        },
+    },
+    canonicalOnlyMode: true,
+    legacyFallbackEnabled: false,
     includeDebug: true,
 });
 

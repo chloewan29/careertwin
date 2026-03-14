@@ -5,16 +5,24 @@
   "description": "Auto-analyzes supported job detail pages and shows CareerTwin fit guidance.",
   "permissions": [
     "storage",
-    "downloads"
+    "downloads",
+    "tabs",
+    "sidePanel"
   ],
   "host_permissions": [
     "https://www.linkedin.com/*",
     "https://www.seek.com.au/*",
+    "https://boards.greenhouse.io/*",
+    "https://*.greenhouse.io/*",
+    "https://jobs.lever.co/*",
     "http://localhost:3000/*",
     "https://*.careertwin.com/*"
   ],
   "background": {
-    "service_worker": "background.js"
+    "service_worker": "background/index.js"
+  },
+  "side_panel": {
+    "default_path": "sidepanel/sidepanel.html"
   },
   "action": {
     "default_popup": "popup.html",
@@ -24,10 +32,24 @@
     {
       "matches": [
         "https://www.linkedin.com/*",
-        "https://www.seek.com.au/*"
+        "https://www.seek.com.au/*",
+        "https://boards.greenhouse.io/*",
+        "https://*.greenhouse.io/*",
+        "https://jobs.lever.co/*"
       ],
       "js": [
-        "content.js"
+        "shared/messages.js",
+      "shared/constants.js",
+      "shared/job-payload.js",
+      "content/parser-registry.js",
+      "content/platform-parsers/linkedin.js",
+      "content/platform-parsers/seek.js",
+      "content/platform-parsers/greenhouse.js",
+      "content/platform-parsers/lever.js",
+      "content/platform-parsers/generic.js",
+      "content/detect-job-page.js",
+      "content/extract-job-page.js",
+      "content/index.js"
       ],
       "run_at": "document_idle"
     }
@@ -35,13 +57,16 @@
   "web_accessible_resources": [
     {
       "resources": [
-        "panel.css"
+        "panel.css",
+        "sidepanel/sidepanel.css"
       ],
       "matches": [
         "https://www.linkedin.com/*",
-        "https://www.seek.com.au/*"
+        "https://www.seek.com.au/*",
+        "https://boards.greenhouse.io/*",
+        "https://*.greenhouse.io/*",
+        "https://jobs.lever.co/*"
       ]
     }
   ]
 }
-

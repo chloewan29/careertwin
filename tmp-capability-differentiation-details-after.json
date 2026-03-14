@@ -1,0 +1,1713 @@
+{
+  "fixture_version": "human_alignment_benchmark_v1_seed",
+  "profile_id": "8ec2c318-dbd0-42e2-acc7-10a103284b53",
+  "career_id": "4a22f035-c501-40b2-9589-03ee6e8a3cfa",
+  "cases": [
+    {
+      "case_id": "job-01",
+      "title": "Analytics Manager",
+      "model_bucket": "high_fit",
+      "extraction_quality": "usable",
+      "top_5_matched_capabilities": [
+        "Analytics Translation & Insight Storytelling",
+        "Commercial Analytics",
+        "Cross-Functional Embedding & Stakeholder Leadership",
+        "Commercial Planning / Revenue Strategy",
+        "Insight Generation / Reporting Leadership"
+      ],
+      "top_5_capability_scores": [
+        90.94,
+        84.4,
+        71.3,
+        59.2,
+        58.94
+      ]
+    },
+    {
+      "case_id": "job-02",
+      "title": "Commercial Insights Lead",
+      "model_bucket": "high_fit",
+      "extraction_quality": "usable",
+      "top_5_matched_capabilities": [
+        "Commercial Analytics",
+        "Analytics Translation & Insight Storytelling",
+        "Cross-Functional Embedding & Stakeholder Leadership",
+        "Customer / CX Insight Generation",
+        "Insight Generation / Reporting Leadership"
+      ],
+      "top_5_capability_scores": [
+        96.67,
+        89.67,
+        79.2,
+        76.72,
+        73.62
+      ]
+    },
+    {
+      "case_id": "job-03",
+      "title": "Customer Insights & CX Strategy Manager",
+      "model_bucket": "high_fit",
+      "extraction_quality": "sparse",
+      "top_5_matched_capabilities": [
+        "Analytics Translation & Insight Storytelling",
+        "Insight Generation / Reporting Leadership",
+        "Cross-Functional Embedding & Stakeholder Leadership",
+        "Commercial Analytics",
+        "Customer / CX Insight Generation"
+      ],
+      "top_5_capability_scores": [
+        90.29,
+        74.83,
+        70.38,
+        66.04,
+        61.02
+      ]
+    },
+    {
+      "case_id": "job-04",
+      "title": "Product Analytics Manager",
+      "model_bucket": "medium_fit",
+      "extraction_quality": "usable",
+      "top_5_matched_capabilities": [
+        "Analytics Translation & Insight Storytelling",
+        "Commercial Analytics",
+        "Cross-Functional Embedding & Stakeholder Leadership",
+        "Product Analytics / Experimentation Insight",
+        "Commercial Planning / Revenue Strategy"
+      ],
+      "top_5_capability_scores": [
+        86.91,
+        83.25,
+        67.92,
+        64.94,
+        61.22
+      ]
+    },
+    {
+      "case_id": "job-05",
+      "title": "BI Transformation Program Lead",
+      "model_bucket": "medium_fit",
+      "extraction_quality": "sparse",
+      "top_5_matched_capabilities": [
+        "Transformation / Enablement Through Analytics",
+        "Cross-Functional Embedding & Stakeholder Leadership",
+        "Data Tooling & Analytical Methods",
+        "Insight Generation / Reporting Leadership",
+        "Domain Context: Agency / Marketing / Client Delivery"
+      ],
+      "top_5_capability_scores": [
+        78.23,
+        70.2,
+        48.23,
+        47.96,
+        24.2
+      ]
+    },
+    {
+      "case_id": "job-06",
+      "title": "Marketing Science Lead",
+      "model_bucket": "high_fit",
+      "extraction_quality": "usable",
+      "top_5_matched_capabilities": [
+        "Cross-Functional Embedding & Stakeholder Leadership",
+        "Insight Generation / Reporting Leadership",
+        "Analytics Translation & Insight Storytelling",
+        "Commercial Analytics",
+        "Domain Context: Agency / Marketing / Client Delivery"
+      ],
+      "top_5_capability_scores": [
+        80.35,
+        73.35,
+        71.07,
+        65.44,
+        62.15
+      ]
+    },
+    {
+      "case_id": "job-07",
+      "title": "Transformation Enablement Manager",
+      "model_bucket": "medium_fit",
+      "extraction_quality": "usable",
+      "top_5_matched_capabilities": [
+        "Transformation / Enablement Through Analytics",
+        "Cross-Functional Embedding & Stakeholder Leadership",
+        "Insight Generation / Reporting Leadership",
+        "Customer / CX Insight Generation",
+        "Analytics Translation & Insight Storytelling"
+      ],
+      "top_5_capability_scores": [
+        78.15,
+        71.49,
+        50.42,
+        47.16,
+        42.76
+      ]
+    },
+    {
+      "case_id": "job-08",
+      "title": "Revenue Strategy Manager",
+      "model_bucket": "high_fit",
+      "extraction_quality": "usable",
+      "top_5_matched_capabilities": [
+        "Commercial Analytics",
+        "Commercial Planning / Revenue Strategy",
+        "Analytics Translation & Insight Storytelling",
+        "Customer / CX Insight Generation",
+        "Cross-Functional Embedding & Stakeholder Leadership"
+      ],
+      "top_5_capability_scores": [
+        90.98,
+        84.52,
+        78.96,
+        71.9,
+        71.32
+      ]
+    },
+    {
+      "case_id": "job-09",
+      "title": "Data & Insights Manager",
+      "model_bucket": "high_fit",
+      "extraction_quality": "sparse",
+      "top_5_matched_capabilities": [
+        "Analytics Translation & Insight Storytelling",
+        "Cross-Functional Embedding & Stakeholder Leadership",
+        "Insight Generation / Reporting Leadership",
+        "Commercial Analytics",
+        "Customer / CX Insight Generation"
+      ],
+      "top_5_capability_scores": [
+        84.23,
+        76.12,
+        69.9,
+        64.43,
+        58.27
+      ]
+    },
+    {
+      "case_id": "job-10",
+      "title": "Analytics Enablement Manager",
+      "model_bucket": "medium_fit",
+      "extraction_quality": "usable",
+      "top_5_matched_capabilities": [
+        "Transformation / Enablement Through Analytics",
+        "Cross-Functional Embedding & Stakeholder Leadership",
+        "People Leadership",
+        "Insight Generation / Reporting Leadership",
+        "Customer / CX Insight Generation"
+      ],
+      "top_5_capability_scores": [
+        76.55,
+        64.34,
+        63.42,
+        53.78,
+        49.84
+      ]
+    },
+    {
+      "case_id": "job-11",
+      "title": "Commercial Strategy Director",
+      "model_bucket": "high_fit",
+      "extraction_quality": "usable",
+      "top_5_matched_capabilities": [
+        "Commercial Analytics",
+        "Analytics Translation & Insight Storytelling",
+        "Commercial Planning / Revenue Strategy",
+        "Customer / CX Insight Generation",
+        "Cross-Functional Embedding & Stakeholder Leadership"
+      ],
+      "top_5_capability_scores": [
+        90.53,
+        84.61,
+        83.88,
+        75.05,
+        65.67
+      ]
+    },
+    {
+      "case_id": "job-12",
+      "title": "Customer Analytics Consultant",
+      "model_bucket": "high_fit",
+      "extraction_quality": "sparse",
+      "top_5_matched_capabilities": [
+        "Commercial Analytics",
+        "Analytics Translation & Insight Storytelling",
+        "Customer / CX Insight Generation",
+        "Commercial Planning / Revenue Strategy",
+        "Insight Generation / Reporting Leadership"
+      ],
+      "top_5_capability_scores": [
+        70.47,
+        68.94,
+        62.01,
+        58.67,
+        57.47
+      ]
+    },
+    {
+      "case_id": "job-13",
+      "title": "Enterprise Sales Director",
+      "model_bucket": "medium_fit",
+      "extraction_quality": "sparse",
+      "top_5_matched_capabilities": [
+        "Sales Execution & Quota Ownership",
+        "Cross-Functional Embedding & Stakeholder Leadership",
+        "Commercial Analytics",
+        "Commercial Planning / Revenue Strategy",
+        "Analytics Translation & Insight Storytelling"
+      ],
+      "top_5_capability_scores": [
+        78.77,
+        66.31,
+        64.34,
+        60,
+        56.82
+      ]
+    },
+    {
+      "case_id": "job-14",
+      "title": "Clinical Research Coordinator",
+      "model_bucket": "low_fit",
+      "extraction_quality": "sparse",
+      "top_5_matched_capabilities": [
+        "Transformation / Enablement Through Analytics"
+      ],
+      "top_5_capability_scores": [
+        41.48
+      ]
+    },
+    {
+      "case_id": "job-15",
+      "title": "Software Engineering Manager",
+      "model_bucket": "low_fit",
+      "extraction_quality": "empty",
+      "top_5_matched_capabilities": [
+        "Transformation / Enablement Through Analytics",
+        "Cross-Functional Embedding & Stakeholder Leadership"
+      ],
+      "top_5_capability_scores": [
+        38.18,
+        32.17
+      ]
+    },
+    {
+      "case_id": "job-16",
+      "title": "SEO Manager",
+      "model_bucket": "medium_fit",
+      "extraction_quality": "sparse",
+      "top_5_matched_capabilities": [
+        "Channel / SEO / Performance Execution",
+        "Analytics Translation & Insight Storytelling",
+        "Commercial Analytics",
+        "Commercial Planning / Revenue Strategy",
+        "Transformation / Enablement Through Analytics"
+      ],
+      "top_5_capability_scores": [
+        68.98,
+        67.02,
+        62.69,
+        56.97,
+        44.57
+      ]
+    },
+    {
+      "case_id": "job-17",
+      "title": "Operations Excellence Manager",
+      "model_bucket": "medium_fit",
+      "extraction_quality": "usable",
+      "top_5_matched_capabilities": [
+        "Transformation / Enablement Through Analytics",
+        "Cross-Functional Embedding & Stakeholder Leadership"
+      ],
+      "top_5_capability_scores": [
+        75.35,
+        57.31
+      ]
+    },
+    {
+      "case_id": "job-18",
+      "title": "Media Insights Director",
+      "model_bucket": "high_fit",
+      "extraction_quality": "sparse",
+      "top_5_matched_capabilities": [
+        "Cross-Functional Embedding & Stakeholder Leadership",
+        "Analytics Translation & Insight Storytelling",
+        "Commercial Analytics",
+        "Commercial Planning / Revenue Strategy",
+        "Insight Generation / Reporting Leadership"
+      ],
+      "top_5_capability_scores": [
+        67.83,
+        66.37,
+        65.04,
+        61.34,
+        60.14
+      ]
+    },
+    {
+      "case_id": "job-19",
+      "title": "Change Manager",
+      "model_bucket": "medium_fit",
+      "extraction_quality": "usable",
+      "top_5_matched_capabilities": [
+        "Transformation / Enablement Through Analytics",
+        "Cross-Functional Embedding & Stakeholder Leadership"
+      ],
+      "top_5_capability_scores": [
+        73.09,
+        60.95
+      ]
+    },
+    {
+      "case_id": "job-20",
+      "title": "Research Operations Coordinator",
+      "model_bucket": "low_fit",
+      "extraction_quality": "sparse",
+      "top_5_matched_capabilities": [
+        "Transformation / Enablement Through Analytics",
+        "Insight Generation / Reporting Leadership",
+        "Customer / CX Insight Generation",
+        "Cross-Functional Embedding & Stakeholder Leadership",
+        "Domain Context: Agency / Marketing / Client Delivery"
+      ],
+      "top_5_capability_scores": [
+        47.81,
+        44.23,
+        42.96,
+        34.68,
+        19.96
+      ]
+    }
+  ],
+  "pairwise_overlap": [
+    {
+      "case_id_a": "job-01",
+      "title_a": "Analytics Manager",
+      "case_id_b": "job-18",
+      "title_b": "Media Insights Director",
+      "overlap_rate": 1
+    },
+    {
+      "case_id_a": "job-02",
+      "title_a": "Commercial Insights Lead",
+      "case_id_b": "job-03",
+      "title_b": "Customer Insights & CX Strategy Manager",
+      "overlap_rate": 1
+    },
+    {
+      "case_id_a": "job-02",
+      "title_a": "Commercial Insights Lead",
+      "case_id_b": "job-09",
+      "title_b": "Data & Insights Manager",
+      "overlap_rate": 1
+    },
+    {
+      "case_id_a": "job-03",
+      "title_a": "Customer Insights & CX Strategy Manager",
+      "case_id_b": "job-09",
+      "title_b": "Data & Insights Manager",
+      "overlap_rate": 1
+    },
+    {
+      "case_id_a": "job-08",
+      "title_a": "Revenue Strategy Manager",
+      "case_id_b": "job-11",
+      "title_b": "Commercial Strategy Director",
+      "overlap_rate": 1
+    },
+    {
+      "case_id_a": "job-01",
+      "title_a": "Analytics Manager",
+      "case_id_b": "job-02",
+      "title_b": "Commercial Insights Lead",
+      "overlap_rate": 0.8
+    },
+    {
+      "case_id_a": "job-01",
+      "title_a": "Analytics Manager",
+      "case_id_b": "job-03",
+      "title_b": "Customer Insights & CX Strategy Manager",
+      "overlap_rate": 0.8
+    },
+    {
+      "case_id_a": "job-01",
+      "title_a": "Analytics Manager",
+      "case_id_b": "job-04",
+      "title_b": "Product Analytics Manager",
+      "overlap_rate": 0.8
+    },
+    {
+      "case_id_a": "job-01",
+      "title_a": "Analytics Manager",
+      "case_id_b": "job-06",
+      "title_b": "Marketing Science Lead",
+      "overlap_rate": 0.8
+    },
+    {
+      "case_id_a": "job-01",
+      "title_a": "Analytics Manager",
+      "case_id_b": "job-08",
+      "title_b": "Revenue Strategy Manager",
+      "overlap_rate": 0.8
+    },
+    {
+      "case_id_a": "job-01",
+      "title_a": "Analytics Manager",
+      "case_id_b": "job-09",
+      "title_b": "Data & Insights Manager",
+      "overlap_rate": 0.8
+    },
+    {
+      "case_id_a": "job-01",
+      "title_a": "Analytics Manager",
+      "case_id_b": "job-11",
+      "title_b": "Commercial Strategy Director",
+      "overlap_rate": 0.8
+    },
+    {
+      "case_id_a": "job-01",
+      "title_a": "Analytics Manager",
+      "case_id_b": "job-12",
+      "title_b": "Customer Analytics Consultant",
+      "overlap_rate": 0.8
+    },
+    {
+      "case_id_a": "job-01",
+      "title_a": "Analytics Manager",
+      "case_id_b": "job-13",
+      "title_b": "Enterprise Sales Director",
+      "overlap_rate": 0.8
+    },
+    {
+      "case_id_a": "job-02",
+      "title_a": "Commercial Insights Lead",
+      "case_id_b": "job-06",
+      "title_b": "Marketing Science Lead",
+      "overlap_rate": 0.8
+    },
+    {
+      "case_id_a": "job-02",
+      "title_a": "Commercial Insights Lead",
+      "case_id_b": "job-07",
+      "title_b": "Transformation Enablement Manager",
+      "overlap_rate": 0.8
+    },
+    {
+      "case_id_a": "job-02",
+      "title_a": "Commercial Insights Lead",
+      "case_id_b": "job-08",
+      "title_b": "Revenue Strategy Manager",
+      "overlap_rate": 0.8
+    },
+    {
+      "case_id_a": "job-02",
+      "title_a": "Commercial Insights Lead",
+      "case_id_b": "job-11",
+      "title_b": "Commercial Strategy Director",
+      "overlap_rate": 0.8
+    },
+    {
+      "case_id_a": "job-02",
+      "title_a": "Commercial Insights Lead",
+      "case_id_b": "job-12",
+      "title_b": "Customer Analytics Consultant",
+      "overlap_rate": 0.8
+    },
+    {
+      "case_id_a": "job-02",
+      "title_a": "Commercial Insights Lead",
+      "case_id_b": "job-18",
+      "title_b": "Media Insights Director",
+      "overlap_rate": 0.8
+    },
+    {
+      "case_id_a": "job-03",
+      "title_a": "Customer Insights & CX Strategy Manager",
+      "case_id_b": "job-06",
+      "title_b": "Marketing Science Lead",
+      "overlap_rate": 0.8
+    },
+    {
+      "case_id_a": "job-03",
+      "title_a": "Customer Insights & CX Strategy Manager",
+      "case_id_b": "job-07",
+      "title_b": "Transformation Enablement Manager",
+      "overlap_rate": 0.8
+    },
+    {
+      "case_id_a": "job-03",
+      "title_a": "Customer Insights & CX Strategy Manager",
+      "case_id_b": "job-08",
+      "title_b": "Revenue Strategy Manager",
+      "overlap_rate": 0.8
+    },
+    {
+      "case_id_a": "job-03",
+      "title_a": "Customer Insights & CX Strategy Manager",
+      "case_id_b": "job-11",
+      "title_b": "Commercial Strategy Director",
+      "overlap_rate": 0.8
+    },
+    {
+      "case_id_a": "job-03",
+      "title_a": "Customer Insights & CX Strategy Manager",
+      "case_id_b": "job-12",
+      "title_b": "Customer Analytics Consultant",
+      "overlap_rate": 0.8
+    },
+    {
+      "case_id_a": "job-03",
+      "title_a": "Customer Insights & CX Strategy Manager",
+      "case_id_b": "job-18",
+      "title_b": "Media Insights Director",
+      "overlap_rate": 0.8
+    },
+    {
+      "case_id_a": "job-04",
+      "title_a": "Product Analytics Manager",
+      "case_id_b": "job-08",
+      "title_b": "Revenue Strategy Manager",
+      "overlap_rate": 0.8
+    },
+    {
+      "case_id_a": "job-04",
+      "title_a": "Product Analytics Manager",
+      "case_id_b": "job-11",
+      "title_b": "Commercial Strategy Director",
+      "overlap_rate": 0.8
+    },
+    {
+      "case_id_a": "job-04",
+      "title_a": "Product Analytics Manager",
+      "case_id_b": "job-13",
+      "title_b": "Enterprise Sales Director",
+      "overlap_rate": 0.8
+    },
+    {
+      "case_id_a": "job-04",
+      "title_a": "Product Analytics Manager",
+      "case_id_b": "job-18",
+      "title_b": "Media Insights Director",
+      "overlap_rate": 0.8
+    },
+    {
+      "case_id_a": "job-05",
+      "title_a": "BI Transformation Program Lead",
+      "case_id_b": "job-20",
+      "title_b": "Research Operations Coordinator",
+      "overlap_rate": 0.8
+    },
+    {
+      "case_id_a": "job-06",
+      "title_a": "Marketing Science Lead",
+      "case_id_b": "job-09",
+      "title_b": "Data & Insights Manager",
+      "overlap_rate": 0.8
+    },
+    {
+      "case_id_a": "job-06",
+      "title_a": "Marketing Science Lead",
+      "case_id_b": "job-18",
+      "title_b": "Media Insights Director",
+      "overlap_rate": 0.8
+    },
+    {
+      "case_id_a": "job-07",
+      "title_a": "Transformation Enablement Manager",
+      "case_id_b": "job-09",
+      "title_b": "Data & Insights Manager",
+      "overlap_rate": 0.8
+    },
+    {
+      "case_id_a": "job-07",
+      "title_a": "Transformation Enablement Manager",
+      "case_id_b": "job-10",
+      "title_b": "Analytics Enablement Manager",
+      "overlap_rate": 0.8
+    },
+    {
+      "case_id_a": "job-07",
+      "title_a": "Transformation Enablement Manager",
+      "case_id_b": "job-20",
+      "title_b": "Research Operations Coordinator",
+      "overlap_rate": 0.8
+    },
+    {
+      "case_id_a": "job-08",
+      "title_a": "Revenue Strategy Manager",
+      "case_id_b": "job-09",
+      "title_b": "Data & Insights Manager",
+      "overlap_rate": 0.8
+    },
+    {
+      "case_id_a": "job-08",
+      "title_a": "Revenue Strategy Manager",
+      "case_id_b": "job-12",
+      "title_b": "Customer Analytics Consultant",
+      "overlap_rate": 0.8
+    },
+    {
+      "case_id_a": "job-08",
+      "title_a": "Revenue Strategy Manager",
+      "case_id_b": "job-13",
+      "title_b": "Enterprise Sales Director",
+      "overlap_rate": 0.8
+    },
+    {
+      "case_id_a": "job-08",
+      "title_a": "Revenue Strategy Manager",
+      "case_id_b": "job-18",
+      "title_b": "Media Insights Director",
+      "overlap_rate": 0.8
+    },
+    {
+      "case_id_a": "job-09",
+      "title_a": "Data & Insights Manager",
+      "case_id_b": "job-11",
+      "title_b": "Commercial Strategy Director",
+      "overlap_rate": 0.8
+    },
+    {
+      "case_id_a": "job-09",
+      "title_a": "Data & Insights Manager",
+      "case_id_b": "job-12",
+      "title_b": "Customer Analytics Consultant",
+      "overlap_rate": 0.8
+    },
+    {
+      "case_id_a": "job-09",
+      "title_a": "Data & Insights Manager",
+      "case_id_b": "job-18",
+      "title_b": "Media Insights Director",
+      "overlap_rate": 0.8
+    },
+    {
+      "case_id_a": "job-10",
+      "title_a": "Analytics Enablement Manager",
+      "case_id_b": "job-20",
+      "title_b": "Research Operations Coordinator",
+      "overlap_rate": 0.8
+    },
+    {
+      "case_id_a": "job-11",
+      "title_a": "Commercial Strategy Director",
+      "case_id_b": "job-12",
+      "title_b": "Customer Analytics Consultant",
+      "overlap_rate": 0.8
+    },
+    {
+      "case_id_a": "job-11",
+      "title_a": "Commercial Strategy Director",
+      "case_id_b": "job-13",
+      "title_b": "Enterprise Sales Director",
+      "overlap_rate": 0.8
+    },
+    {
+      "case_id_a": "job-11",
+      "title_a": "Commercial Strategy Director",
+      "case_id_b": "job-18",
+      "title_b": "Media Insights Director",
+      "overlap_rate": 0.8
+    },
+    {
+      "case_id_a": "job-12",
+      "title_a": "Customer Analytics Consultant",
+      "case_id_b": "job-18",
+      "title_b": "Media Insights Director",
+      "overlap_rate": 0.8
+    },
+    {
+      "case_id_a": "job-13",
+      "title_a": "Enterprise Sales Director",
+      "case_id_b": "job-18",
+      "title_b": "Media Insights Director",
+      "overlap_rate": 0.8
+    },
+    {
+      "case_id_a": "job-01",
+      "title_a": "Analytics Manager",
+      "case_id_b": "job-07",
+      "title_b": "Transformation Enablement Manager",
+      "overlap_rate": 0.6
+    },
+    {
+      "case_id_a": "job-01",
+      "title_a": "Analytics Manager",
+      "case_id_b": "job-16",
+      "title_b": "SEO Manager",
+      "overlap_rate": 0.6
+    },
+    {
+      "case_id_a": "job-02",
+      "title_a": "Commercial Insights Lead",
+      "case_id_b": "job-04",
+      "title_b": "Product Analytics Manager",
+      "overlap_rate": 0.6
+    },
+    {
+      "case_id_a": "job-02",
+      "title_a": "Commercial Insights Lead",
+      "case_id_b": "job-10",
+      "title_b": "Analytics Enablement Manager",
+      "overlap_rate": 0.6
+    },
+    {
+      "case_id_a": "job-02",
+      "title_a": "Commercial Insights Lead",
+      "case_id_b": "job-13",
+      "title_b": "Enterprise Sales Director",
+      "overlap_rate": 0.6
+    },
+    {
+      "case_id_a": "job-02",
+      "title_a": "Commercial Insights Lead",
+      "case_id_b": "job-20",
+      "title_b": "Research Operations Coordinator",
+      "overlap_rate": 0.6
+    },
+    {
+      "case_id_a": "job-03",
+      "title_a": "Customer Insights & CX Strategy Manager",
+      "case_id_b": "job-04",
+      "title_b": "Product Analytics Manager",
+      "overlap_rate": 0.6
+    },
+    {
+      "case_id_a": "job-03",
+      "title_a": "Customer Insights & CX Strategy Manager",
+      "case_id_b": "job-10",
+      "title_b": "Analytics Enablement Manager",
+      "overlap_rate": 0.6
+    },
+    {
+      "case_id_a": "job-03",
+      "title_a": "Customer Insights & CX Strategy Manager",
+      "case_id_b": "job-13",
+      "title_b": "Enterprise Sales Director",
+      "overlap_rate": 0.6
+    },
+    {
+      "case_id_a": "job-03",
+      "title_a": "Customer Insights & CX Strategy Manager",
+      "case_id_b": "job-20",
+      "title_b": "Research Operations Coordinator",
+      "overlap_rate": 0.6
+    },
+    {
+      "case_id_a": "job-04",
+      "title_a": "Product Analytics Manager",
+      "case_id_b": "job-06",
+      "title_b": "Marketing Science Lead",
+      "overlap_rate": 0.6
+    },
+    {
+      "case_id_a": "job-04",
+      "title_a": "Product Analytics Manager",
+      "case_id_b": "job-09",
+      "title_b": "Data & Insights Manager",
+      "overlap_rate": 0.6
+    },
+    {
+      "case_id_a": "job-04",
+      "title_a": "Product Analytics Manager",
+      "case_id_b": "job-12",
+      "title_b": "Customer Analytics Consultant",
+      "overlap_rate": 0.6
+    },
+    {
+      "case_id_a": "job-04",
+      "title_a": "Product Analytics Manager",
+      "case_id_b": "job-16",
+      "title_b": "SEO Manager",
+      "overlap_rate": 0.6
+    },
+    {
+      "case_id_a": "job-05",
+      "title_a": "BI Transformation Program Lead",
+      "case_id_b": "job-06",
+      "title_b": "Marketing Science Lead",
+      "overlap_rate": 0.6
+    },
+    {
+      "case_id_a": "job-05",
+      "title_a": "BI Transformation Program Lead",
+      "case_id_b": "job-07",
+      "title_b": "Transformation Enablement Manager",
+      "overlap_rate": 0.6
+    },
+    {
+      "case_id_a": "job-05",
+      "title_a": "BI Transformation Program Lead",
+      "case_id_b": "job-10",
+      "title_b": "Analytics Enablement Manager",
+      "overlap_rate": 0.6
+    },
+    {
+      "case_id_a": "job-06",
+      "title_a": "Marketing Science Lead",
+      "case_id_b": "job-07",
+      "title_b": "Transformation Enablement Manager",
+      "overlap_rate": 0.6
+    },
+    {
+      "case_id_a": "job-06",
+      "title_a": "Marketing Science Lead",
+      "case_id_b": "job-08",
+      "title_b": "Revenue Strategy Manager",
+      "overlap_rate": 0.6
+    },
+    {
+      "case_id_a": "job-06",
+      "title_a": "Marketing Science Lead",
+      "case_id_b": "job-11",
+      "title_b": "Commercial Strategy Director",
+      "overlap_rate": 0.6
+    },
+    {
+      "case_id_a": "job-06",
+      "title_a": "Marketing Science Lead",
+      "case_id_b": "job-12",
+      "title_b": "Customer Analytics Consultant",
+      "overlap_rate": 0.6
+    },
+    {
+      "case_id_a": "job-06",
+      "title_a": "Marketing Science Lead",
+      "case_id_b": "job-13",
+      "title_b": "Enterprise Sales Director",
+      "overlap_rate": 0.6
+    },
+    {
+      "case_id_a": "job-06",
+      "title_a": "Marketing Science Lead",
+      "case_id_b": "job-20",
+      "title_b": "Research Operations Coordinator",
+      "overlap_rate": 0.6
+    },
+    {
+      "case_id_a": "job-07",
+      "title_a": "Transformation Enablement Manager",
+      "case_id_b": "job-08",
+      "title_b": "Revenue Strategy Manager",
+      "overlap_rate": 0.6
+    },
+    {
+      "case_id_a": "job-07",
+      "title_a": "Transformation Enablement Manager",
+      "case_id_b": "job-11",
+      "title_b": "Commercial Strategy Director",
+      "overlap_rate": 0.6
+    },
+    {
+      "case_id_a": "job-07",
+      "title_a": "Transformation Enablement Manager",
+      "case_id_b": "job-12",
+      "title_b": "Customer Analytics Consultant",
+      "overlap_rate": 0.6
+    },
+    {
+      "case_id_a": "job-07",
+      "title_a": "Transformation Enablement Manager",
+      "case_id_b": "job-18",
+      "title_b": "Media Insights Director",
+      "overlap_rate": 0.6
+    },
+    {
+      "case_id_a": "job-08",
+      "title_a": "Revenue Strategy Manager",
+      "case_id_b": "job-16",
+      "title_b": "SEO Manager",
+      "overlap_rate": 0.6
+    },
+    {
+      "case_id_a": "job-09",
+      "title_a": "Data & Insights Manager",
+      "case_id_b": "job-10",
+      "title_b": "Analytics Enablement Manager",
+      "overlap_rate": 0.6
+    },
+    {
+      "case_id_a": "job-09",
+      "title_a": "Data & Insights Manager",
+      "case_id_b": "job-13",
+      "title_b": "Enterprise Sales Director",
+      "overlap_rate": 0.6
+    },
+    {
+      "case_id_a": "job-09",
+      "title_a": "Data & Insights Manager",
+      "case_id_b": "job-20",
+      "title_b": "Research Operations Coordinator",
+      "overlap_rate": 0.6
+    },
+    {
+      "case_id_a": "job-11",
+      "title_a": "Commercial Strategy Director",
+      "case_id_b": "job-16",
+      "title_b": "SEO Manager",
+      "overlap_rate": 0.6
+    },
+    {
+      "case_id_a": "job-12",
+      "title_a": "Customer Analytics Consultant",
+      "case_id_b": "job-13",
+      "title_b": "Enterprise Sales Director",
+      "overlap_rate": 0.6
+    },
+    {
+      "case_id_a": "job-12",
+      "title_a": "Customer Analytics Consultant",
+      "case_id_b": "job-16",
+      "title_b": "SEO Manager",
+      "overlap_rate": 0.6
+    },
+    {
+      "case_id_a": "job-13",
+      "title_a": "Enterprise Sales Director",
+      "case_id_b": "job-16",
+      "title_b": "SEO Manager",
+      "overlap_rate": 0.6
+    },
+    {
+      "case_id_a": "job-16",
+      "title_a": "SEO Manager",
+      "case_id_b": "job-18",
+      "title_b": "Media Insights Director",
+      "overlap_rate": 0.6
+    },
+    {
+      "case_id_a": "job-01",
+      "title_a": "Analytics Manager",
+      "case_id_b": "job-05",
+      "title_b": "BI Transformation Program Lead",
+      "overlap_rate": 0.4
+    },
+    {
+      "case_id_a": "job-01",
+      "title_a": "Analytics Manager",
+      "case_id_b": "job-10",
+      "title_b": "Analytics Enablement Manager",
+      "overlap_rate": 0.4
+    },
+    {
+      "case_id_a": "job-01",
+      "title_a": "Analytics Manager",
+      "case_id_b": "job-20",
+      "title_b": "Research Operations Coordinator",
+      "overlap_rate": 0.4
+    },
+    {
+      "case_id_a": "job-02",
+      "title_a": "Commercial Insights Lead",
+      "case_id_b": "job-05",
+      "title_b": "BI Transformation Program Lead",
+      "overlap_rate": 0.4
+    },
+    {
+      "case_id_a": "job-02",
+      "title_a": "Commercial Insights Lead",
+      "case_id_b": "job-16",
+      "title_b": "SEO Manager",
+      "overlap_rate": 0.4
+    },
+    {
+      "case_id_a": "job-03",
+      "title_a": "Customer Insights & CX Strategy Manager",
+      "case_id_b": "job-05",
+      "title_b": "BI Transformation Program Lead",
+      "overlap_rate": 0.4
+    },
+    {
+      "case_id_a": "job-03",
+      "title_a": "Customer Insights & CX Strategy Manager",
+      "case_id_b": "job-16",
+      "title_b": "SEO Manager",
+      "overlap_rate": 0.4
+    },
+    {
+      "case_id_a": "job-04",
+      "title_a": "Product Analytics Manager",
+      "case_id_b": "job-07",
+      "title_b": "Transformation Enablement Manager",
+      "overlap_rate": 0.4
+    },
+    {
+      "case_id_a": "job-05",
+      "title_a": "BI Transformation Program Lead",
+      "case_id_b": "job-09",
+      "title_b": "Data & Insights Manager",
+      "overlap_rate": 0.4
+    },
+    {
+      "case_id_a": "job-05",
+      "title_a": "BI Transformation Program Lead",
+      "case_id_b": "job-15",
+      "title_b": "Software Engineering Manager",
+      "overlap_rate": 0.4
+    },
+    {
+      "case_id_a": "job-05",
+      "title_a": "BI Transformation Program Lead",
+      "case_id_b": "job-17",
+      "title_b": "Operations Excellence Manager",
+      "overlap_rate": 0.4
+    },
+    {
+      "case_id_a": "job-05",
+      "title_a": "BI Transformation Program Lead",
+      "case_id_b": "job-18",
+      "title_b": "Media Insights Director",
+      "overlap_rate": 0.4
+    },
+    {
+      "case_id_a": "job-05",
+      "title_a": "BI Transformation Program Lead",
+      "case_id_b": "job-19",
+      "title_b": "Change Manager",
+      "overlap_rate": 0.4
+    },
+    {
+      "case_id_a": "job-06",
+      "title_a": "Marketing Science Lead",
+      "case_id_b": "job-10",
+      "title_b": "Analytics Enablement Manager",
+      "overlap_rate": 0.4
+    },
+    {
+      "case_id_a": "job-06",
+      "title_a": "Marketing Science Lead",
+      "case_id_b": "job-16",
+      "title_b": "SEO Manager",
+      "overlap_rate": 0.4
+    },
+    {
+      "case_id_a": "job-07",
+      "title_a": "Transformation Enablement Manager",
+      "case_id_b": "job-13",
+      "title_b": "Enterprise Sales Director",
+      "overlap_rate": 0.4
+    },
+    {
+      "case_id_a": "job-07",
+      "title_a": "Transformation Enablement Manager",
+      "case_id_b": "job-15",
+      "title_b": "Software Engineering Manager",
+      "overlap_rate": 0.4
+    },
+    {
+      "case_id_a": "job-07",
+      "title_a": "Transformation Enablement Manager",
+      "case_id_b": "job-16",
+      "title_b": "SEO Manager",
+      "overlap_rate": 0.4
+    },
+    {
+      "case_id_a": "job-07",
+      "title_a": "Transformation Enablement Manager",
+      "case_id_b": "job-17",
+      "title_b": "Operations Excellence Manager",
+      "overlap_rate": 0.4
+    },
+    {
+      "case_id_a": "job-07",
+      "title_a": "Transformation Enablement Manager",
+      "case_id_b": "job-19",
+      "title_b": "Change Manager",
+      "overlap_rate": 0.4
+    },
+    {
+      "case_id_a": "job-08",
+      "title_a": "Revenue Strategy Manager",
+      "case_id_b": "job-10",
+      "title_b": "Analytics Enablement Manager",
+      "overlap_rate": 0.4
+    },
+    {
+      "case_id_a": "job-08",
+      "title_a": "Revenue Strategy Manager",
+      "case_id_b": "job-20",
+      "title_b": "Research Operations Coordinator",
+      "overlap_rate": 0.4
+    },
+    {
+      "case_id_a": "job-09",
+      "title_a": "Data & Insights Manager",
+      "case_id_b": "job-16",
+      "title_b": "SEO Manager",
+      "overlap_rate": 0.4
+    },
+    {
+      "case_id_a": "job-10",
+      "title_a": "Analytics Enablement Manager",
+      "case_id_b": "job-11",
+      "title_b": "Commercial Strategy Director",
+      "overlap_rate": 0.4
+    },
+    {
+      "case_id_a": "job-10",
+      "title_a": "Analytics Enablement Manager",
+      "case_id_b": "job-12",
+      "title_b": "Customer Analytics Consultant",
+      "overlap_rate": 0.4
+    },
+    {
+      "case_id_a": "job-10",
+      "title_a": "Analytics Enablement Manager",
+      "case_id_b": "job-15",
+      "title_b": "Software Engineering Manager",
+      "overlap_rate": 0.4
+    },
+    {
+      "case_id_a": "job-10",
+      "title_a": "Analytics Enablement Manager",
+      "case_id_b": "job-17",
+      "title_b": "Operations Excellence Manager",
+      "overlap_rate": 0.4
+    },
+    {
+      "case_id_a": "job-10",
+      "title_a": "Analytics Enablement Manager",
+      "case_id_b": "job-18",
+      "title_b": "Media Insights Director",
+      "overlap_rate": 0.4
+    },
+    {
+      "case_id_a": "job-10",
+      "title_a": "Analytics Enablement Manager",
+      "case_id_b": "job-19",
+      "title_b": "Change Manager",
+      "overlap_rate": 0.4
+    },
+    {
+      "case_id_a": "job-11",
+      "title_a": "Commercial Strategy Director",
+      "case_id_b": "job-20",
+      "title_b": "Research Operations Coordinator",
+      "overlap_rate": 0.4
+    },
+    {
+      "case_id_a": "job-12",
+      "title_a": "Customer Analytics Consultant",
+      "case_id_b": "job-20",
+      "title_b": "Research Operations Coordinator",
+      "overlap_rate": 0.4
+    },
+    {
+      "case_id_a": "job-15",
+      "title_a": "Software Engineering Manager",
+      "case_id_b": "job-17",
+      "title_b": "Operations Excellence Manager",
+      "overlap_rate": 0.4
+    },
+    {
+      "case_id_a": "job-15",
+      "title_a": "Software Engineering Manager",
+      "case_id_b": "job-19",
+      "title_b": "Change Manager",
+      "overlap_rate": 0.4
+    },
+    {
+      "case_id_a": "job-15",
+      "title_a": "Software Engineering Manager",
+      "case_id_b": "job-20",
+      "title_b": "Research Operations Coordinator",
+      "overlap_rate": 0.4
+    },
+    {
+      "case_id_a": "job-17",
+      "title_a": "Operations Excellence Manager",
+      "case_id_b": "job-19",
+      "title_b": "Change Manager",
+      "overlap_rate": 0.4
+    },
+    {
+      "case_id_a": "job-17",
+      "title_a": "Operations Excellence Manager",
+      "case_id_b": "job-20",
+      "title_b": "Research Operations Coordinator",
+      "overlap_rate": 0.4
+    },
+    {
+      "case_id_a": "job-18",
+      "title_a": "Media Insights Director",
+      "case_id_b": "job-20",
+      "title_b": "Research Operations Coordinator",
+      "overlap_rate": 0.4
+    },
+    {
+      "case_id_a": "job-19",
+      "title_a": "Change Manager",
+      "case_id_b": "job-20",
+      "title_b": "Research Operations Coordinator",
+      "overlap_rate": 0.4
+    },
+    {
+      "case_id_a": "job-01",
+      "title_a": "Analytics Manager",
+      "case_id_b": "job-15",
+      "title_b": "Software Engineering Manager",
+      "overlap_rate": 0.2
+    },
+    {
+      "case_id_a": "job-01",
+      "title_a": "Analytics Manager",
+      "case_id_b": "job-17",
+      "title_b": "Operations Excellence Manager",
+      "overlap_rate": 0.2
+    },
+    {
+      "case_id_a": "job-01",
+      "title_a": "Analytics Manager",
+      "case_id_b": "job-19",
+      "title_b": "Change Manager",
+      "overlap_rate": 0.2
+    },
+    {
+      "case_id_a": "job-02",
+      "title_a": "Commercial Insights Lead",
+      "case_id_b": "job-15",
+      "title_b": "Software Engineering Manager",
+      "overlap_rate": 0.2
+    },
+    {
+      "case_id_a": "job-02",
+      "title_a": "Commercial Insights Lead",
+      "case_id_b": "job-17",
+      "title_b": "Operations Excellence Manager",
+      "overlap_rate": 0.2
+    },
+    {
+      "case_id_a": "job-02",
+      "title_a": "Commercial Insights Lead",
+      "case_id_b": "job-19",
+      "title_b": "Change Manager",
+      "overlap_rate": 0.2
+    },
+    {
+      "case_id_a": "job-03",
+      "title_a": "Customer Insights & CX Strategy Manager",
+      "case_id_b": "job-15",
+      "title_b": "Software Engineering Manager",
+      "overlap_rate": 0.2
+    },
+    {
+      "case_id_a": "job-03",
+      "title_a": "Customer Insights & CX Strategy Manager",
+      "case_id_b": "job-17",
+      "title_b": "Operations Excellence Manager",
+      "overlap_rate": 0.2
+    },
+    {
+      "case_id_a": "job-03",
+      "title_a": "Customer Insights & CX Strategy Manager",
+      "case_id_b": "job-19",
+      "title_b": "Change Manager",
+      "overlap_rate": 0.2
+    },
+    {
+      "case_id_a": "job-04",
+      "title_a": "Product Analytics Manager",
+      "case_id_b": "job-05",
+      "title_b": "BI Transformation Program Lead",
+      "overlap_rate": 0.2
+    },
+    {
+      "case_id_a": "job-04",
+      "title_a": "Product Analytics Manager",
+      "case_id_b": "job-10",
+      "title_b": "Analytics Enablement Manager",
+      "overlap_rate": 0.2
+    },
+    {
+      "case_id_a": "job-04",
+      "title_a": "Product Analytics Manager",
+      "case_id_b": "job-15",
+      "title_b": "Software Engineering Manager",
+      "overlap_rate": 0.2
+    },
+    {
+      "case_id_a": "job-04",
+      "title_a": "Product Analytics Manager",
+      "case_id_b": "job-17",
+      "title_b": "Operations Excellence Manager",
+      "overlap_rate": 0.2
+    },
+    {
+      "case_id_a": "job-04",
+      "title_a": "Product Analytics Manager",
+      "case_id_b": "job-19",
+      "title_b": "Change Manager",
+      "overlap_rate": 0.2
+    },
+    {
+      "case_id_a": "job-04",
+      "title_a": "Product Analytics Manager",
+      "case_id_b": "job-20",
+      "title_b": "Research Operations Coordinator",
+      "overlap_rate": 0.2
+    },
+    {
+      "case_id_a": "job-05",
+      "title_a": "BI Transformation Program Lead",
+      "case_id_b": "job-08",
+      "title_b": "Revenue Strategy Manager",
+      "overlap_rate": 0.2
+    },
+    {
+      "case_id_a": "job-05",
+      "title_a": "BI Transformation Program Lead",
+      "case_id_b": "job-11",
+      "title_b": "Commercial Strategy Director",
+      "overlap_rate": 0.2
+    },
+    {
+      "case_id_a": "job-05",
+      "title_a": "BI Transformation Program Lead",
+      "case_id_b": "job-12",
+      "title_b": "Customer Analytics Consultant",
+      "overlap_rate": 0.2
+    },
+    {
+      "case_id_a": "job-05",
+      "title_a": "BI Transformation Program Lead",
+      "case_id_b": "job-13",
+      "title_b": "Enterprise Sales Director",
+      "overlap_rate": 0.2
+    },
+    {
+      "case_id_a": "job-05",
+      "title_a": "BI Transformation Program Lead",
+      "case_id_b": "job-14",
+      "title_b": "Clinical Research Coordinator",
+      "overlap_rate": 0.2
+    },
+    {
+      "case_id_a": "job-05",
+      "title_a": "BI Transformation Program Lead",
+      "case_id_b": "job-16",
+      "title_b": "SEO Manager",
+      "overlap_rate": 0.2
+    },
+    {
+      "case_id_a": "job-06",
+      "title_a": "Marketing Science Lead",
+      "case_id_b": "job-15",
+      "title_b": "Software Engineering Manager",
+      "overlap_rate": 0.2
+    },
+    {
+      "case_id_a": "job-06",
+      "title_a": "Marketing Science Lead",
+      "case_id_b": "job-17",
+      "title_b": "Operations Excellence Manager",
+      "overlap_rate": 0.2
+    },
+    {
+      "case_id_a": "job-06",
+      "title_a": "Marketing Science Lead",
+      "case_id_b": "job-19",
+      "title_b": "Change Manager",
+      "overlap_rate": 0.2
+    },
+    {
+      "case_id_a": "job-07",
+      "title_a": "Transformation Enablement Manager",
+      "case_id_b": "job-14",
+      "title_b": "Clinical Research Coordinator",
+      "overlap_rate": 0.2
+    },
+    {
+      "case_id_a": "job-08",
+      "title_a": "Revenue Strategy Manager",
+      "case_id_b": "job-15",
+      "title_b": "Software Engineering Manager",
+      "overlap_rate": 0.2
+    },
+    {
+      "case_id_a": "job-08",
+      "title_a": "Revenue Strategy Manager",
+      "case_id_b": "job-17",
+      "title_b": "Operations Excellence Manager",
+      "overlap_rate": 0.2
+    },
+    {
+      "case_id_a": "job-08",
+      "title_a": "Revenue Strategy Manager",
+      "case_id_b": "job-19",
+      "title_b": "Change Manager",
+      "overlap_rate": 0.2
+    },
+    {
+      "case_id_a": "job-09",
+      "title_a": "Data & Insights Manager",
+      "case_id_b": "job-15",
+      "title_b": "Software Engineering Manager",
+      "overlap_rate": 0.2
+    },
+    {
+      "case_id_a": "job-09",
+      "title_a": "Data & Insights Manager",
+      "case_id_b": "job-17",
+      "title_b": "Operations Excellence Manager",
+      "overlap_rate": 0.2
+    },
+    {
+      "case_id_a": "job-09",
+      "title_a": "Data & Insights Manager",
+      "case_id_b": "job-19",
+      "title_b": "Change Manager",
+      "overlap_rate": 0.2
+    },
+    {
+      "case_id_a": "job-10",
+      "title_a": "Analytics Enablement Manager",
+      "case_id_b": "job-13",
+      "title_b": "Enterprise Sales Director",
+      "overlap_rate": 0.2
+    },
+    {
+      "case_id_a": "job-10",
+      "title_a": "Analytics Enablement Manager",
+      "case_id_b": "job-14",
+      "title_b": "Clinical Research Coordinator",
+      "overlap_rate": 0.2
+    },
+    {
+      "case_id_a": "job-10",
+      "title_a": "Analytics Enablement Manager",
+      "case_id_b": "job-16",
+      "title_b": "SEO Manager",
+      "overlap_rate": 0.2
+    },
+    {
+      "case_id_a": "job-11",
+      "title_a": "Commercial Strategy Director",
+      "case_id_b": "job-15",
+      "title_b": "Software Engineering Manager",
+      "overlap_rate": 0.2
+    },
+    {
+      "case_id_a": "job-11",
+      "title_a": "Commercial Strategy Director",
+      "case_id_b": "job-17",
+      "title_b": "Operations Excellence Manager",
+      "overlap_rate": 0.2
+    },
+    {
+      "case_id_a": "job-11",
+      "title_a": "Commercial Strategy Director",
+      "case_id_b": "job-19",
+      "title_b": "Change Manager",
+      "overlap_rate": 0.2
+    },
+    {
+      "case_id_a": "job-13",
+      "title_a": "Enterprise Sales Director",
+      "case_id_b": "job-15",
+      "title_b": "Software Engineering Manager",
+      "overlap_rate": 0.2
+    },
+    {
+      "case_id_a": "job-13",
+      "title_a": "Enterprise Sales Director",
+      "case_id_b": "job-17",
+      "title_b": "Operations Excellence Manager",
+      "overlap_rate": 0.2
+    },
+    {
+      "case_id_a": "job-13",
+      "title_a": "Enterprise Sales Director",
+      "case_id_b": "job-19",
+      "title_b": "Change Manager",
+      "overlap_rate": 0.2
+    },
+    {
+      "case_id_a": "job-13",
+      "title_a": "Enterprise Sales Director",
+      "case_id_b": "job-20",
+      "title_b": "Research Operations Coordinator",
+      "overlap_rate": 0.2
+    },
+    {
+      "case_id_a": "job-14",
+      "title_a": "Clinical Research Coordinator",
+      "case_id_b": "job-15",
+      "title_b": "Software Engineering Manager",
+      "overlap_rate": 0.2
+    },
+    {
+      "case_id_a": "job-14",
+      "title_a": "Clinical Research Coordinator",
+      "case_id_b": "job-16",
+      "title_b": "SEO Manager",
+      "overlap_rate": 0.2
+    },
+    {
+      "case_id_a": "job-14",
+      "title_a": "Clinical Research Coordinator",
+      "case_id_b": "job-17",
+      "title_b": "Operations Excellence Manager",
+      "overlap_rate": 0.2
+    },
+    {
+      "case_id_a": "job-14",
+      "title_a": "Clinical Research Coordinator",
+      "case_id_b": "job-19",
+      "title_b": "Change Manager",
+      "overlap_rate": 0.2
+    },
+    {
+      "case_id_a": "job-14",
+      "title_a": "Clinical Research Coordinator",
+      "case_id_b": "job-20",
+      "title_b": "Research Operations Coordinator",
+      "overlap_rate": 0.2
+    },
+    {
+      "case_id_a": "job-15",
+      "title_a": "Software Engineering Manager",
+      "case_id_b": "job-16",
+      "title_b": "SEO Manager",
+      "overlap_rate": 0.2
+    },
+    {
+      "case_id_a": "job-15",
+      "title_a": "Software Engineering Manager",
+      "case_id_b": "job-18",
+      "title_b": "Media Insights Director",
+      "overlap_rate": 0.2
+    },
+    {
+      "case_id_a": "job-16",
+      "title_a": "SEO Manager",
+      "case_id_b": "job-17",
+      "title_b": "Operations Excellence Manager",
+      "overlap_rate": 0.2
+    },
+    {
+      "case_id_a": "job-16",
+      "title_a": "SEO Manager",
+      "case_id_b": "job-19",
+      "title_b": "Change Manager",
+      "overlap_rate": 0.2
+    },
+    {
+      "case_id_a": "job-16",
+      "title_a": "SEO Manager",
+      "case_id_b": "job-20",
+      "title_b": "Research Operations Coordinator",
+      "overlap_rate": 0.2
+    },
+    {
+      "case_id_a": "job-17",
+      "title_a": "Operations Excellence Manager",
+      "case_id_b": "job-18",
+      "title_b": "Media Insights Director",
+      "overlap_rate": 0.2
+    },
+    {
+      "case_id_a": "job-18",
+      "title_a": "Media Insights Director",
+      "case_id_b": "job-19",
+      "title_b": "Change Manager",
+      "overlap_rate": 0.2
+    },
+    {
+      "case_id_a": "job-01",
+      "title_a": "Analytics Manager",
+      "case_id_b": "job-14",
+      "title_b": "Clinical Research Coordinator",
+      "overlap_rate": 0
+    },
+    {
+      "case_id_a": "job-02",
+      "title_a": "Commercial Insights Lead",
+      "case_id_b": "job-14",
+      "title_b": "Clinical Research Coordinator",
+      "overlap_rate": 0
+    },
+    {
+      "case_id_a": "job-03",
+      "title_a": "Customer Insights & CX Strategy Manager",
+      "case_id_b": "job-14",
+      "title_b": "Clinical Research Coordinator",
+      "overlap_rate": 0
+    },
+    {
+      "case_id_a": "job-04",
+      "title_a": "Product Analytics Manager",
+      "case_id_b": "job-14",
+      "title_b": "Clinical Research Coordinator",
+      "overlap_rate": 0
+    },
+    {
+      "case_id_a": "job-06",
+      "title_a": "Marketing Science Lead",
+      "case_id_b": "job-14",
+      "title_b": "Clinical Research Coordinator",
+      "overlap_rate": 0
+    },
+    {
+      "case_id_a": "job-08",
+      "title_a": "Revenue Strategy Manager",
+      "case_id_b": "job-14",
+      "title_b": "Clinical Research Coordinator",
+      "overlap_rate": 0
+    },
+    {
+      "case_id_a": "job-09",
+      "title_a": "Data & Insights Manager",
+      "case_id_b": "job-14",
+      "title_b": "Clinical Research Coordinator",
+      "overlap_rate": 0
+    },
+    {
+      "case_id_a": "job-11",
+      "title_a": "Commercial Strategy Director",
+      "case_id_b": "job-14",
+      "title_b": "Clinical Research Coordinator",
+      "overlap_rate": 0
+    },
+    {
+      "case_id_a": "job-12",
+      "title_a": "Customer Analytics Consultant",
+      "case_id_b": "job-14",
+      "title_b": "Clinical Research Coordinator",
+      "overlap_rate": 0
+    },
+    {
+      "case_id_a": "job-12",
+      "title_a": "Customer Analytics Consultant",
+      "case_id_b": "job-15",
+      "title_b": "Software Engineering Manager",
+      "overlap_rate": 0
+    },
+    {
+      "case_id_a": "job-12",
+      "title_a": "Customer Analytics Consultant",
+      "case_id_b": "job-17",
+      "title_b": "Operations Excellence Manager",
+      "overlap_rate": 0
+    },
+    {
+      "case_id_a": "job-12",
+      "title_a": "Customer Analytics Consultant",
+      "case_id_b": "job-19",
+      "title_b": "Change Manager",
+      "overlap_rate": 0
+    },
+    {
+      "case_id_a": "job-13",
+      "title_a": "Enterprise Sales Director",
+      "case_id_b": "job-14",
+      "title_b": "Clinical Research Coordinator",
+      "overlap_rate": 0
+    },
+    {
+      "case_id_a": "job-14",
+      "title_a": "Clinical Research Coordinator",
+      "case_id_b": "job-18",
+      "title_b": "Media Insights Director",
+      "overlap_rate": 0
+    }
+  ]
+}

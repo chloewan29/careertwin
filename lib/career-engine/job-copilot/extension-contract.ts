@@ -4,8 +4,8 @@ export type JobCopilotVerdict = "strong_fit" | "possible_fit" | "stretch" | "low
 
 export type JobCopilotVerdictLabel = "strong fit" | "possible fit" | "stretch" | "low fit";
 
-export const JOB_COPILOT_RESUME_READY_SCORE = 65;
-export const JOB_COPILOT_RESUME_MIN_SCORE = 50;
+export const JOB_COPILOT_RESUME_READY_SCORE = 50;
+export const JOB_COPILOT_RESUME_MIN_SCORE = 42;
 export const JOB_COPILOT_TOP_EVIDENCE_DEFAULT = 4;
 export const JOB_COPILOT_TOP_EVIDENCE_MAX = 6;
 
@@ -60,9 +60,9 @@ export function canonicalJobId(jobUrl: string | null, title: string, company: st
 }
 
 export function getVerdictFromScore(score: number): JobCopilotVerdict {
-    if (score >= 80) return "strong_fit";
-    if (score >= 65) return "possible_fit";
-    if (score >= 50) return "stretch";
+    if (score >= 75) return "strong_fit";
+    if (score >= 50) return "possible_fit";
+    if (score >= 42) return "stretch";
     return "low_fit";
 }
 
@@ -125,4 +125,3 @@ export function deriveJobSignalFields(params: {
         keywords,
     };
 }
-

@@ -1,5 +1,6 @@
 import type { ResumeCopilotPublicOutput } from "@/lib/career-engine/copilot/resume-copilot/resume-copilot-types";
 import type { JobCopilotSource, JobCopilotVerdict } from "@/lib/career-engine/job-copilot/extension-contract";
+import type { JobCopilotAnalysis } from "@/lib/career-engine/job-copilot/job-analysis";
 
 export type JobCopilotAnalyzeInput = {
     profileId: string;
@@ -23,21 +24,34 @@ export type JobCopilotResponse = {
     matchedCapabilities: string[];
     keyGaps: string[];
     topEvidence: JobCopilotTopEvidenceItem[];
+    job_analysis: JobCopilotAnalysis;
     resume: {
         ready: boolean;
         preview: string | null;
         downloadUrl: string | null;
     };
     scoreExplainability?: {
-        model: "role_fit_v1";
+        model: "job_capability_match_v1" | "job_capability_match_v2";
         capabilityFitScore: number;
         matchedCapabilityCount: number;
         missingCapabilityCount: number;
         supportingEvidenceCount: number;
-        roleFitSummary?: string | null;
+        weightedCoverageScore: number;
+        criticalGapPenalty: number;
+        matchedCriticalCount: number;
+        missingCriticalCount: number;
+        totalJobCapabilityCount: number;
         evidenceRelevanceScore?: number | null;
         weakJdMode: boolean;
         scoreConfidence: "high" | "medium" | "low";
+        jobProfileQuality?: "strong" | "usable" | "sparse" | "empty";
+        jobProfileQualityReasons?: string[];
+        titlePriorUsed?: boolean;
+        transferMatchScore?: number;
+        evidenceAlignmentScore?: number;
+        titlePriorPenalty?: number;
+        domainPriorPenalty?: number;
+        bucketReasoning?: string;
     };
     diagnostics?: {
         weakJobSignals: boolean;

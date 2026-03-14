@@ -1,6 +1,13 @@
 export const MAX_BULLET_CHAR_LENGTH = 240;
 export const MAX_BULLET_WORD_COUNT = 40;
 
+type BulletRewriteContext = {
+    targetJobCapabilities?: string[];
+    matchedCandidateCapabilities?: string[];
+    supportingSignalActions?: string[];
+    highlightPriorities?: string[];
+};
+
 function normalizeWhitespace(value: string): string {
     return value
         .replace(/\s+/g, " ")
@@ -41,6 +48,33 @@ function splitCandidateSegments(value: string): string[] {
         .filter(Boolean);
 
     return sentenceSegments.length > 0 ? sentenceSegments : byLine;
+}
+
+function selectBestSegment(segments: string[], context?: BulletRewriteContext): string {
+    if (segments.length === 0) return "";
+    if (!context) return segments[0];
+    const priorityTokens = [
+        ...(context.targetJobCapabilities ?? []),
+        ...(context.matchedCandidateCapabilities ?? []),
+        ...(context.supportingSignalActions ?? []),
+        ...(context.highlightPriorities ?? []),
+    ]
+        .flatMap((value) => value.toLowerCase().split(/\s+/))
+        .map((value) => value.trim())
+        .filter((value) => value.length >= 3);
+
+    if (priorityTokens.length === 0) return segments[0];
+    let best = segments[0];
+    let bestScore = -1;
+    for (const segment of segments) {
+        const lowered = segment.toLowerCase();
+        const score = priorityTokens.reduce((sum, token) => sum + Number(lowered.includes(token)), 0);
+        if (score > bestScore) {
+            best = segment;
+            bestScore = score;
+        }
+    }
+    return best;
 }
 
 function trimToLimits(value: string): string {
@@ -121,7 +155,7 @@ export function conservativeRewriteBullet(rawBullet: string): string {
     return rewriteBulletWithCompaction(rawBullet).rewrittenBullet;
 }
 
-export function rewriteBulletWithCompaction(rawBullet: string): BulletRewriteResult {
+export function rewriteBulletWithCompaction(rawBullet: string, context?: BulletRewriteContext): BulletRewriteResult {
     const originalNormalized = normalizeWhitespace(rawBullet);
     const sourceWasParagraphLike = isParagraphLikeEvidence(originalNormalized);
     const originalLength = originalNormalized.length;
@@ -138,7 +172,7 @@ export function rewriteBulletWithCompaction(rawBullet: string): BulletRewriteRes
 
     const labelStripped = stripLeadingLabel(originalNormalized);
     const segments = splitCandidateSegments(labelStripped);
-    const primary = normalizeWhitespace(segments[0] ?? labelStripped);
+    const primary = normalizeWhitespace(selectBestSegment(segments, context) || labelStripped);
     const secondary = normalizeWhitespace(segments[1] ?? "");
 
     let candidate = primary;

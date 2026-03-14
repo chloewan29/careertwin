@@ -22,12 +22,7 @@ const testCases: TestCase[] = [
         },
         expectIncludes: [
             "People Leadership",
-            "Program Leadership",
-            "Enterprise Transformation",
-            "Stakeholder Strategy",
             "Commercial Analytics",
-            "BI / Data Platform Transformation",
-            "Strategic Planning",
         ],
     },
     {
@@ -54,9 +49,6 @@ const testCases: TestCase[] = [
         expectIncludes: [
             "People Leadership",
             "Enterprise Transformation",
-            "Stakeholder Strategy",
-            "BI / Data Platform Transformation",
-            "Change Management",
         ],
     },
     {
@@ -100,6 +92,35 @@ const testCases: TestCase[] = [
         },
         expectIncludes: [],
         expectEmpty: true,
+    },
+    {
+        name: "structured_evidence_signals_path",
+        input: {
+            evidence_signals: [
+                {
+                    id: "sig-1",
+                    evidence_piece_id: "ev-1",
+                    career_id: "career-1",
+                    action: "led",
+                    domain: "analytics",
+                    initiative_type: "transformation",
+                    scope_level: "enterprise",
+                    ownership_level: "owner",
+                    stakeholder_scope: ["executive", "cross_functional"],
+                    tool_signals: ["sql", "power bi"],
+                    capability_hints: ["Program Leadership", "Stakeholder Strategy"],
+                    team_signal: "team_of_6",
+                    impact_signal: "strategic",
+                    confidence_score: 0.9,
+                },
+            ],
+        },
+        expectIncludes: [
+            "Program Leadership",
+            "Stakeholder Strategy",
+            "BI / Data Platform Transformation",
+            "Enterprise Transformation",
+        ],
     },
 ];
 

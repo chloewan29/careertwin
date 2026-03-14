@@ -1,0 +1,179 @@
+{
+  "fixture_version": "human_alignment_benchmark_v1_seed",
+  "profile_id": "8ec2c318-dbd0-42e2-acc7-10a103284b53",
+  "career_id": "4a22f035-c501-40b2-9589-03ee6e8a3cfa",
+  "cases": [
+    {
+      "case_id": "job-04",
+      "title": "Product Analytics Manager",
+      "model_bucket": "medium_fit",
+      "extraction_quality": "usable",
+      "top_5_matched_capabilities": [
+        "Analytics Translation & Insight Storytelling",
+        "Commercial Analytics",
+        "Cross-Functional Embedding & Stakeholder Leadership",
+        "Product Analytics / Experimentation Insight",
+        "Commercial Planning / Revenue Strategy"
+      ],
+      "top_5_capability_scores": [
+        96.01,
+        83,
+        81.69,
+        59.56,
+        57.92
+      ]
+    },
+    {
+      "case_id": "job-06",
+      "title": "Marketing Science Lead",
+      "model_bucket": "high_fit",
+      "extraction_quality": "usable",
+      "top_5_matched_capabilities": [
+        "Cross-Functional Embedding & Stakeholder Leadership",
+        "Analytics Translation & Insight Storytelling",
+        "Insight Generation / Reporting Leadership",
+        "Commercial Analytics",
+        "Domain Context: Agency / Marketing / Client Delivery"
+      ],
+      "top_5_capability_scores": [
+        85.75,
+        77.37,
+        70.05,
+        65.44,
+        61.05
+      ]
+    },
+    {
+      "case_id": "job-09",
+      "title": "Data & Insights Manager",
+      "model_bucket": "high_fit",
+      "extraction_quality": "sparse",
+      "top_5_matched_capabilities": [
+        "Analytics Translation & Insight Storytelling",
+        "Cross-Functional Embedding & Stakeholder Leadership",
+        "Insight Generation / Reporting Leadership",
+        "Commercial Analytics",
+        "Customer / CX Insight Generation"
+      ],
+      "top_5_capability_scores": [
+        94.88,
+        84.18,
+        64.8,
+        64.43,
+        57.02
+      ]
+    },
+    {
+      "case_id": "job-11",
+      "title": "Commercial Strategy Director",
+      "model_bucket": "high_fit",
+      "extraction_quality": "usable",
+      "top_5_matched_capabilities": [
+        "Analytics Translation & Insight Storytelling",
+        "Commercial Analytics",
+        "Commercial Planning / Revenue Strategy",
+        "Cross-Functional Embedding & Stakeholder Leadership",
+        "Customer / CX Insight Generation"
+      ],
+      "top_5_capability_scores": [
+        90.86,
+        89.53,
+        78.78,
+        77.65,
+        70.95
+      ]
+    },
+    {
+      "case_id": "job-18",
+      "title": "Media Insights Director",
+      "model_bucket": "high_fit",
+      "extraction_quality": "sparse",
+      "top_5_matched_capabilities": [
+        "Cross-Functional Embedding & Stakeholder Leadership",
+        "Analytics Translation & Insight Storytelling",
+        "Commercial Analytics",
+        "Commercial Planning / Revenue Strategy",
+        "Insight Generation / Reporting Leadership"
+      ],
+      "top_5_capability_scores": [
+        80.21,
+        75.85,
+        65.04,
+        58.04,
+        57.23
+      ]
+    }
+  ],
+  "pairwise_overlap": [
+    {
+      "case_id_a": "job-04",
+      "title_a": "Product Analytics Manager",
+      "case_id_b": "job-11",
+      "title_b": "Commercial Strategy Director",
+      "overlap_rate": 0.8
+    },
+    {
+      "case_id_a": "job-04",
+      "title_a": "Product Analytics Manager",
+      "case_id_b": "job-18",
+      "title_b": "Media Insights Director",
+      "overlap_rate": 0.8
+    },
+    {
+      "case_id_a": "job-06",
+      "title_a": "Marketing Science Lead",
+      "case_id_b": "job-09",
+      "title_b": "Data & Insights Manager",
+      "overlap_rate": 0.8
+    },
+    {
+      "case_id_a": "job-06",
+      "title_a": "Marketing Science Lead",
+      "case_id_b": "job-18",
+      "title_b": "Media Insights Director",
+      "overlap_rate": 0.8
+    },
+    {
+      "case_id_a": "job-09",
+      "title_a": "Data & Insights Manager",
+      "case_id_b": "job-11",
+      "title_b": "Commercial Strategy Director",
+      "overlap_rate": 0.8
+    },
+    {
+      "case_id_a": "job-09",
+      "title_a": "Data & Insights Manager",
+      "case_id_b": "job-18",
+      "title_b": "Media Insights Director",
+      "overlap_rate": 0.8
+    },
+    {
+      "case_id_a": "job-11",
+      "title_a": "Commercial Strategy Director",
+      "case_id_b": "job-18",
+      "title_b": "Media Insights Director",
+      "overlap_rate": 0.8
+    },
+    {
+      "case_id_a": "job-04",
+      "title_a": "Product Analytics Manager",
+      "case_id_b": "job-06",
+      "title_b": "Marketing Science Lead",
+      "overlap_rate": 0.6
+    },
+    {
+      "case_id_a": "job-04",
+      "title_a": "Product Analytics Manager",
+      "case_id_b": "job-09",
+      "title_b": "Data & Insights Manager",
+      "overlap_rate": 0.6
+    },
+    {
+      "case_id_a": "job-06",
+      "title_a": "Marketing Science Lead",
+      "case_id_b": "job-11",
+      "title_b": "Commercial Strategy Director",
+      "overlap_rate": 0.6
+    }
+  ]
+}

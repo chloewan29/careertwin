@@ -1,6 +1,8 @@
 import type { CareerGraph, EvidencePiece } from "@/lib/career-engine/memory/career-graph-loader";
 import type { CareerSignals } from "@/lib/career-engine/strategy/career-signals-service";
 import type { RoleFitResult } from "@/lib/career-engine/matching/role-fit-service";
+import type { CapabilityMatchResult } from "@/lib/career-engine/matching/capability-match-v1";
+import type { JobCopilotAnalysis } from "@/lib/career-engine/job-copilot/job-analysis";
 
 export type ResumeCopilotJobSignals = {
     job_id: string;
@@ -14,6 +16,11 @@ export type ResumeCopilotJobSignals = {
 };
 
 export type ResumeScoreBreakdown = {
+    canonical_capability_score?: number;
+    lexical_tiebreaker_score?: number;
+    capability_importance_score?: number;
+    capability_strength_score?: number;
+    signal_quality_score?: number;
     keyword_overlap: number;
     required_skill_overlap: number;
     preferred_skill_overlap: number;
@@ -23,6 +30,7 @@ export type ResumeScoreBreakdown = {
     capability_alignment_bonus: number;
     role_fit_evidence_bonus: number;
     career_signal_highlight_bonus: number;
+    capability_match_bonus?: number;
     weak_jd_recency_boost?: number;
     weak_jd_seniority_boost?: number;
     weak_jd_impact_boost?: number;
@@ -44,6 +52,21 @@ export type RankedResumeEvidence = {
     poolSources: string[];
     score: ResumeScoreBreakdown;
     matchedSignals: string[];
+    matchedCapabilitiesDetailed?: Array<{
+        canonical_name: string;
+        display_name: string;
+        importance: "critical" | "important" | "supporting";
+        candidate_strength_score: number;
+        match_status: "strong" | "partial" | "weak" | "missing";
+    }>;
+    supportingSignalDetails?: Array<{
+        evidence_signal_id: string;
+        action: string | null;
+        ownership_level: string | null;
+        scope_level: string | null;
+        impact_signal: string | null;
+        linked_capabilities: string[];
+    }>;
     experienceOrder: number;
 };
 
@@ -62,7 +85,22 @@ export type ResumeDebugBullet = {
     source_was_paragraph_like: boolean;
     score: number;
     matched_signals: string[];
+    matched_capabilities?: string[];
+    matched_capabilities_detailed?: RankedResumeEvidence["matchedCapabilitiesDetailed"];
+    supporting_signal_details?: RankedResumeEvidence["supportingSignalDetails"];
     pool_sources: string[];
+    selection_reason?: {
+        canonical_capability_score?: number;
+        lexical_tiebreaker_score?: number;
+        matched_capability_count: number;
+        supporting_signal_count: number;
+    };
+    rewrite_input?: {
+        target_job_capabilities: string[];
+        matched_candidate_capabilities: string[];
+        supporting_signal_actions: string[];
+        highlight_priorities: string[];
+    };
     score_breakdown: ResumeScoreBreakdown;
 };
 
@@ -104,6 +142,9 @@ export type ResumeCopilotDebugOutput = {
         evidence_pool_fallback_used?: boolean;
         pool_source_counts: Record<string, number>;
         matched_capabilities_in_summary: string[];
+        canonical_only_mode?: boolean;
+        legacy_fallback_enabled?: boolean;
+        legacy_fallback_contributed?: boolean;
         summary_debug?: ResumeSummaryDebug;
         dropped_for_length: number;
         dropped_for_validation: number;
@@ -123,6 +164,7 @@ export type ResumeCopilotPublicExperience = {
 export type ResumeCopilotPublicOutput = {
     summary: string | null;
     experience: ResumeCopilotPublicExperience[];
+    job_analysis?: JobCopilotAnalysis;
 };
 
 export type ResumeCopilotServiceOptions = {
@@ -137,13 +179,26 @@ export type ResumeCopilotServiceInput = {
     options?: ResumeCopilotServiceOptions;
 };
 
+export type ResumeTailoredResumeArtifact = {
+    format: "text/plain";
+    download_url: string;
+};
+
+export type ResumeTailoringResult = {
+    job_analysis: JobCopilotAnalysis;
+    tailored_resume_artifact?: ResumeTailoredResumeArtifact;
+};
+
 export type ResumeCopilotServiceResult = {
     resume: ResumeCopilotPublicOutput;
+    job_analysis?: JobCopilotAnalysis;
+    tailoring_result?: ResumeTailoringResult;
     debug?: ResumeCopilotDebugOutput;
 };
 
 export type ResumeCopilotIntelligenceContext = {
     careerGraph: CareerGraph;
-    careerSignals: CareerSignals;
-    roleFit: RoleFitResult | null;
+    capabilityMatch?: CapabilityMatchResult | null;
+    careerSignals?: CareerSignals | null;
+    roleFit?: RoleFitResult | null;
 };

@@ -1,0 +1,28 @@
+{
+  "fixture_version": "human_alignment_benchmark_v1_seed",
+  "profile_id": "8ec2c318-dbd0-42e2-acc7-10a103284b53",
+  "career_id": "4a22f035-c501-40b2-9589-03ee6e8a3cfa",
+  "total_cases": 20,
+  "rich_count": 0,
+  "medium_count": 0,
+  "sparse_count": 20,
+  "sparse_rate": 1,
+  "average_description_length": 257.5,
+  "average_requirement_cluster_count": 5.7,
+  "average_capability_cluster_count": 2.45,
+  "extraction_quality_breakdown": {
+    "full": 10,
+    "sparse": 10,
+    "unknown": 0
+  },
+  "matcher_job_profile_quality_breakdown": {
+    "usable": 10,
+    "sparse": 9,
+    "empty": 1
+  },
+  "thresholds": {
+    "rich": "description_length >= 1200 AND requirement_clusters >= 5 AND core_capability_clusters >= 3",
+    "medium": "all cases that are not rich or sparse",
+    "sparse": "description_length < 500 OR requirement_clusters < 3 OR core_capability_clusters < 2"
+  }
+}

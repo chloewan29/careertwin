@@ -1,4 +1,3 @@
-import { getCapabilitiesForExperience } from "@/lib/career-engine/capability/capability-graph";
 import type {
     RankedResumeEvidence,
     ResumeEvidencePoolEntry,
@@ -43,6 +42,10 @@ function normalizeText(input: string): string {
         .replace(/[^a-z0-9\s/+&-]/g, " ")
         .replace(/\s+/g, " ")
         .trim();
+}
+
+function normalizeCapability(value: string): string {
+    return value.trim().toLowerCase().replace(/\s+/g, " ");
 }
 
 function tokenize(input: string): string[] {
@@ -116,8 +119,8 @@ function weakJdMode(params: {
     const noRoleFamily = !(params.jobSignals.role_family ?? "").trim();
     const noRequiredSkills = params.jobSignals.required_skills.length === 0;
     const noResponsibilities = params.jobSignals.responsibilities.length === 0;
-    const noMatchedCapabilities = (params.intelligence.roleFit?.matchedCapabilities.length ?? 0) === 0;
-    return noTitle && noRoleFamily && noRequiredSkills && noResponsibilities && noMatchedCapabilities;
+    const noJobCapabilityProfile = (params.intelligence.capabilityMatch?.job_capability_profile.length ?? 0) === 0;
+    return noTitle && noRoleFamily && noRequiredSkills && noResponsibilities && noJobCapabilityProfile;
 }
 
 function hasAny(text: string, phrases: string[]): boolean {
@@ -173,8 +176,10 @@ export function rankResumeEvidence(params: {
     intelligence: ResumeCopilotIntelligenceContext;
     evidencePool: ResumeEvidencePoolEntry[];
     jobSignals: ResumeCopilotJobSignals;
+    useLegacyScoring?: boolean;
 }): RankedResumeEvidence[] {
     const { intelligence, jobSignals } = params;
+    const useLegacyScoring = params.useLegacyScoring ?? false;
     const isWeakJd = weakJdMode({ intelligence, jobSignals });
     const experienceOrder = new Map<string, number>();
     intelligence.careerGraph.experiences.forEach((experience, index) => {
@@ -182,7 +187,18 @@ export function rankResumeEvidence(params: {
     });
 
     const roleFitEvidenceIds = new Set(intelligence.roleFit?.supportingEvidence.map((evidence) => evidence.id) ?? []);
-    const signalHighlightIds = new Set(intelligence.careerSignals.evidenceHighlights.map((evidence) => evidence.id));
+    const signalHighlightIds = new Set(intelligence.careerSignals?.evidenceHighlights.map((evidence) => evidence.id) ?? []);
+
+    const capabilityMatch = intelligence.capabilityMatch;
+    const jobCapabilitySet = new Set(
+        capabilityMatch?.job_capability_profile.map((capability) => normalizeCapability(capability.canonical_name)) ?? [],
+    );
+    const strongCapabilitySet = new Set(
+        capabilityMatch?.matched_strengths.map((capability) => normalizeCapability(capability.canonical_name)) ?? [],
+    );
+    const partialCapabilitySet = new Set(
+        capabilityMatch?.partial_matches.map((capability) => normalizeCapability(capability.canonical_name)) ?? [],
+    );
 
     return params.evidencePool
         .map((poolEntry) => {
@@ -200,22 +216,90 @@ export function rankResumeEvidence(params: {
             const domainMatches = overlapTerms(rawTokens, jobSignals.domains.flatMap((domain) => tokenize(domain)));
             const roleFamilyMatches = matchRoleFamily(jobSignals.role_family, rawText, roleText);
 
-            const capabilitiesForExperience = getCapabilitiesForExperience(
-                intelligence.careerGraph,
-                evidence.experience_id,
-            );
-            const matchedCapabilities = capabilitiesForExperience
-                .filter((capability) => {
-                    const capabilityTokens = tokenize(capability.name);
-                    const requiredSkillTokens = new Set(jobSignals.required_skills.flatMap((skill) => tokenize(skill)));
-                    const roleFamilyTokens = new Set(tokenize(jobSignals.role_family ?? ""));
-                    return capabilityTokens.some((token) => requiredSkillTokens.has(token) || roleFamilyTokens.has(token));
-                })
-                .map((capability) => capability.name);
+            const signalsForEvidence = intelligence.careerGraph.signalsByEvidencePiece?.[evidence.id] ?? [];
+            const matchedCapabilities = Array.from(new Set(
+                signalsForEvidence.flatMap((signal) => {
+                    const capabilities = intelligence.careerGraph.capabilitiesBySignal?.[signal.id] ?? [];
+                    return capabilities.map((capability) => normalizeCapability(capability.canonical_name ?? capability.name));
+                }),
+            )).filter((name) => jobCapabilitySet.has(name));
 
-            const capabilityAlignmentBonus = matchedCapabilities.length > 0 ? 2 : 0;
-            const roleFitEvidenceBonus = roleFitEvidenceIds.has(evidence.id) ? 2 : 0;
-            const careerSignalHighlightBonus = signalHighlightIds.has(evidence.id) ? 1 : 0;
+            const hasSubstantiveMatch = (
+                requiredSkillMatches.length > 0
+                || preferredSkillMatches.length > 0
+                || responsibilityMatches.length > 0
+                || domainMatches.length > 0
+                || matchedCapabilities.length > 0
+                || keywordMatches.length >= 2
+            );
+            if (!hasSubstantiveMatch && !isWeakJd) return null;
+
+            const strongMatchedCapabilities = matchedCapabilities.filter((name) => strongCapabilitySet.has(name));
+            const partialMatchedCapabilities = matchedCapabilities.filter((name) => partialCapabilitySet.has(name));
+            const matchedCapabilityDetails = matchedCapabilities
+                .map((name) => {
+                    const fromStrong = capabilityMatch?.matched_strengths.find((entry) => normalizeCapability(entry.canonical_name) === name);
+                    const fromPartial = capabilityMatch?.partial_matches.find((entry) => normalizeCapability(entry.canonical_name) === name);
+                    const source = fromStrong ?? fromPartial ?? null;
+                    if (!source) return null;
+                    return {
+                        canonical_name: source.canonical_name,
+                        display_name: source.display_name,
+                        importance: source.importance,
+                        candidate_strength_score: source.candidate_strength_score,
+                        match_status: source.match_status,
+                    };
+                })
+                .filter((item): item is NonNullable<typeof item> => item !== null);
+
+            const importanceWeight = (value: "critical" | "important" | "supporting"): number => {
+                if (value === "critical") return 1;
+                if (value === "important") return 0.7;
+                return 0.4;
+            };
+            const matchWeight = (value: "strong" | "partial" | "weak" | "missing"): number => {
+                if (value === "strong") return 1;
+                if (value === "partial") return 0.7;
+                if (value === "weak") return 0.35;
+                return 0;
+            };
+            const capabilityImportanceScore = matchedCapabilityDetails.reduce((sum, item) => sum + importanceWeight(item.importance), 0);
+            const capabilityStrengthScore = matchedCapabilityDetails.reduce((sum, item) => {
+                return sum + (item.candidate_strength_score * matchWeight(item.match_status));
+            }, 0);
+            const signalQualityScore = signalsForEvidence.reduce((sum, signal) => {
+                const ownershipWeight = signal.ownership_level === "lead" || signal.ownership_level === "owner"
+                    ? 1
+                    : signal.ownership_level === "driver"
+                        ? 0.8
+                        : 0.5;
+                const scopeWeight = signal.scope_level === "enterprise" || signal.scope_level === "market"
+                    ? 1
+                    : signal.scope_level === "function" || signal.scope_level === "team"
+                        ? 0.8
+                        : 0.55;
+                const impactWeight = signal.impact_signal === "strategic" || signal.impact_signal === "revenue"
+                    ? 1
+                    : signal.impact_signal === "cost" || signal.impact_signal === "operational"
+                        ? 0.75
+                        : 0.5;
+                return sum + (ownershipWeight * scopeWeight * impactWeight);
+            }, 0);
+            const canonicalCapabilityScore = (capabilityImportanceScore * 4.5) + (capabilityStrengthScore * 6.5) + (signalQualityScore * 2.5);
+
+            const lexicalTiebreakerScore =
+                (requiredSkillMatches.length * 1.6) +
+                (preferredSkillMatches.length * 0.9) +
+                (responsibilityMatches.length * 1.2) +
+                (domainMatches.length * 0.8) +
+                (roleFamilyMatches.length * 0.6) +
+                (keywordMatches.length * (isWeakJd ? 0.1 : 0.3));
+
+            const capabilityMatchBonus = matchedCapabilities.length > 0 ? canonicalCapabilityScore : 0;
+            const capabilityAlignmentBonus = capabilityMatchBonus;
+            const roleFitEvidenceBonus = useLegacyScoring && roleFitEvidenceIds.has(evidence.id) ? 0.5 : 0;
+            const careerSignalHighlightBonus = useLegacyScoring && signalHighlightIds.has(evidence.id) ? 0.5 : 0;
+
             const weakBoosts = isWeakJd
                 ? weakJdBoosts({
                     evidenceText: rawText,
@@ -240,6 +324,12 @@ export function rankResumeEvidence(params: {
                 capability_alignment_bonus: capabilityAlignmentBonus,
                 role_fit_evidence_bonus: roleFitEvidenceBonus,
                 career_signal_highlight_bonus: careerSignalHighlightBonus,
+                capability_match_bonus: capabilityMatchBonus,
+                canonical_capability_score: canonicalCapabilityScore,
+                lexical_tiebreaker_score: lexicalTiebreakerScore,
+                capability_importance_score: capabilityImportanceScore,
+                capability_strength_score: capabilityStrengthScore,
+                signal_quality_score: signalQualityScore,
                 weak_jd_recency_boost: weakBoosts.weak_jd_recency_boost,
                 weak_jd_seniority_boost: weakBoosts.weak_jd_seniority_boost,
                 weak_jd_impact_boost: weakBoosts.weak_jd_impact_boost,
@@ -257,20 +347,15 @@ export function rankResumeEvidence(params: {
             };
 
             breakdown.total_score =
-                breakdown.keyword_overlap +
-                breakdown.required_skill_overlap +
-                breakdown.preferred_skill_overlap +
-                breakdown.responsibility_overlap +
-                breakdown.role_family_overlap +
-                breakdown.domain_overlap +
-                breakdown.capability_alignment_bonus +
-                breakdown.role_fit_evidence_bonus +
-                breakdown.career_signal_highlight_bonus +
+                (canonicalCapabilityScore * 2.2) +
+                lexicalTiebreakerScore +
                 (breakdown.weak_jd_recency_boost ?? 0) +
                 (breakdown.weak_jd_seniority_boost ?? 0) +
                 (breakdown.weak_jd_impact_boost ?? 0) +
                 (breakdown.weak_jd_ownership_boost ?? 0) +
-                (breakdown.weak_jd_specificity_boost ?? 0);
+                (breakdown.weak_jd_specificity_boost ?? 0) +
+                breakdown.role_fit_evidence_bonus +
+                breakdown.career_signal_highlight_bonus;
 
             const matchedSignals = Array.from(
                 new Set([
@@ -280,6 +365,7 @@ export function rankResumeEvidence(params: {
                     ...roleFamilyMatches,
                     ...domainMatches,
                     ...matchedCapabilities,
+                    ...signalsForEvidence.map((signal) => signal.action ?? "").filter(Boolean),
                 ]),
             );
 
@@ -288,9 +374,20 @@ export function rankResumeEvidence(params: {
                 poolSources: poolEntry.poolSources,
                 score: breakdown,
                 matchedSignals,
+                matchedCapabilitiesDetailed: matchedCapabilityDetails,
+                supportingSignalDetails: signalsForEvidence.map((signal) => ({
+                    evidence_signal_id: signal.id,
+                    action: signal.action,
+                    ownership_level: signal.ownership_level,
+                    scope_level: signal.scope_level,
+                    impact_signal: signal.impact_signal,
+                    linked_capabilities: (intelligence.careerGraph.capabilitiesBySignal?.[signal.id] ?? [])
+                        .map((capability) => capability.canonical_name ?? capability.name),
+                })),
                 experienceOrder: experienceOrder.get(evidence.experience_id) ?? Number.MAX_SAFE_INTEGER,
             };
         })
+        .filter((ranked): ranked is RankedResumeEvidence => ranked !== null)
         .filter((ranked) => ranked.score.total_score > 0)
         .sort(compareRankedEvidence);
 }

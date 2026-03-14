@@ -4,11 +4,13 @@ import {
     rewriteBulletWithCompaction,
 } from "./resume-rewriter";
 import type {
+    ResumeCopilotIntelligenceContext,
     RankedResumeEvidence,
     ResumeCopilotDebugOutput,
     ResumeCopilotJobSignals,
     ResumeCopilotPublicOutput,
     ResumeSummaryDebug,
+    ResumeCopilotServiceResult,
 } from "./resume-copilot-types";
 
 export function buildResumeCopilotOutput(params: {
@@ -25,8 +27,12 @@ export function buildResumeCopilotOutput(params: {
     emptyReason?: string | null;
     evidencePoolFallbackUsed?: boolean;
     poolSourceCounts: Record<string, number>;
+    intelligenceContext: ResumeCopilotIntelligenceContext;
+    canonicalOnlyMode: boolean;
+    legacyFallbackEnabled: boolean;
     includeDebug: boolean;
-}): { resume: ResumeCopilotPublicOutput; debug?: ResumeCopilotDebugOutput } {
+    jobAnalysis?: ResumeCopilotServiceResult["job_analysis"];
+}): { resume: ResumeCopilotPublicOutput; job_analysis?: ResumeCopilotServiceResult["job_analysis"]; debug?: ResumeCopilotDebugOutput } {
     const grouped = new Map<string, RankedResumeEvidence[]>();
     const dropMetrics = {
         dropped_for_length: 0,
@@ -46,7 +52,24 @@ export function buildResumeCopilotOutput(params: {
         const first = entries[0];
         const debugBullets = entries
             .map((entry) => {
-                const rewritten = rewriteBulletWithCompaction(entry.evidence.raw_text);
+                const targetJobCapabilities = params.intelligenceContext.capabilityMatch?.job_capability_profile.map((item) => item.display_name) ?? [];
+                const matchedCandidateCapabilities = entry.matchedCapabilitiesDetailed?.map((item) => item.display_name)
+                    ?? entry.score.matched_capabilities;
+                const supportingSignalActions = (entry.supportingSignalDetails ?? [])
+                    .map((signal) => signal.action ?? "")
+                    .filter(Boolean);
+                const highlightPriorities = [
+                    ...matchedCandidateCapabilities,
+                    ...(entry.matchedCapabilitiesDetailed ?? [])
+                        .filter((item) => item.importance === "critical" || item.importance === "important")
+                        .map((item) => item.display_name),
+                ];
+                const rewritten = rewriteBulletWithCompaction(entry.evidence.raw_text, {
+                    targetJobCapabilities,
+                    matchedCandidateCapabilities,
+                    supportingSignalActions,
+                    highlightPriorities,
+                });
                 return {
                     evidence_piece_id: entry.evidence.id,
                     original_bullet: entry.evidence.raw_text,
@@ -57,7 +80,22 @@ export function buildResumeCopilotOutput(params: {
                     source_was_paragraph_like: rewritten.sourceWasParagraphLike,
                     score: entry.score.total_score,
                     matched_signals: entry.matchedSignals,
+                    matched_capabilities: entry.score.matched_capabilities,
+                    matched_capabilities_detailed: entry.matchedCapabilitiesDetailed ?? [],
+                    supporting_signal_details: entry.supportingSignalDetails ?? [],
                     pool_sources: entry.poolSources,
+                    selection_reason: {
+                        canonical_capability_score: entry.score.canonical_capability_score,
+                        lexical_tiebreaker_score: entry.score.lexical_tiebreaker_score,
+                        matched_capability_count: entry.score.matched_capabilities.length,
+                        supporting_signal_count: entry.supportingSignalDetails?.length ?? 0,
+                    },
+                    rewrite_input: {
+                        target_job_capabilities: targetJobCapabilities,
+                        matched_candidate_capabilities: matchedCandidateCapabilities,
+                        supporting_signal_actions: supportingSignalActions,
+                        highlight_priorities: highlightPriorities,
+                    },
                     score_breakdown: entry.score,
                 };
             })
@@ -106,14 +144,20 @@ export function buildResumeCopilotOutput(params: {
     const resume: ResumeCopilotPublicOutput = {
         summary: params.summary,
         experience,
+        job_analysis: params.jobAnalysis,
     };
 
     if (!params.includeDebug) {
-        return { resume };
+        return { resume, job_analysis: params.jobAnalysis };
     }
+
+    const legacyFallbackContributed = Object.keys(params.poolSourceCounts).some((source) =>
+        source.startsWith("role_fit.") || source.startsWith("career_signals."),
+    );
 
     return {
         resume,
+        job_analysis: params.jobAnalysis,
         debug: {
             metadata: {
                 profile_id: params.profileId,
@@ -128,6 +172,9 @@ export function buildResumeCopilotOutput(params: {
                 evidence_pool_fallback_used: Boolean(params.evidencePoolFallbackUsed),
                 pool_source_counts: params.poolSourceCounts,
                 matched_capabilities_in_summary: params.matchedCapabilitiesInSummary,
+                canonical_only_mode: params.canonicalOnlyMode,
+                legacy_fallback_enabled: params.legacyFallbackEnabled,
+                legacy_fallback_contributed: legacyFallbackContributed,
                 summary_debug: params.summaryDebug,
                 dropped_for_length: dropMetrics.dropped_for_length,
                 dropped_for_validation: dropMetrics.dropped_for_validation,

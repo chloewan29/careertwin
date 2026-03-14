@@ -1,0 +1,122 @@
+{
+  "version": "capability_match_eval_v1",
+  "taxonomy_mode": "v1",
+  "jobs": [
+    {
+      "id": "job-01-analytics-strategy-manager",
+      "title": "Senior Manager, Analytics Strategy and Automation",
+      "benchmark_label": "strong_fit",
+      "expected_capabilities": [
+        "strategic planning",
+        "commercial analytics",
+        "market & opportunity assessment",
+        "analytics automation",
+        "people leadership"
+      ],
+      "job_description": "Senior Manager, Analytics Strategy and Automation. Lead a cross-functional analytics team to drive strategic planning, commercial growth analytics, and market opportunity assessment. Required: proven delivery of analytics automation using SQL/Python and BI tools (Power BI/Tableau). Present business cases to executive stakeholders and own measurable revenue outcomes."
+    },
+    {
+      "id": "job-02-commercial-insights-lead",
+      "title": "Commercial Insights Lead",
+      "benchmark_label": "strong_fit",
+      "expected_capabilities": [
+        "commercial analytics",
+        "market & opportunity assessment",
+        "strategic planning",
+        "executive influence & business cases"
+      ],
+      "job_description": "Commercial Insights Lead. Required: commercial analytics, pricing/revenue analysis, and opportunity sizing across customer segments. Build strategic plans and influence senior leadership with evidence-backed business cases. Partner with go-to-market and finance teams to prioritize growth opportunities."
+    },
+    {
+      "id": "job-03-bi-transformation-program-lead",
+      "title": "BI Transformation Program Lead",
+      "benchmark_label": "medium_fit",
+      "expected_capabilities": [
+        "bi / data platform transformation",
+        "transformation delivery leadership",
+        "capability uplift & enablement",
+        "change management & adoption"
+      ],
+      "job_description": "BI Transformation Program Lead. Required: lead enterprise BI modernization program, migrate reporting platforms, and manage transformation delivery across product/engineering/operations. Required: design adoption plans, capability uplift programs, training enablement, and governance standards."
+    },
+    {
+      "id": "job-04-ops-automation-manager",
+      "title": "Operational Automation Manager",
+      "benchmark_label": "medium_fit",
+      "expected_capabilities": [
+        "operational performance optimization",
+        "analytics automation",
+        "transformation delivery leadership"
+      ],
+      "job_description": "Operational Automation Manager. Required: identify operational bottlenecks, optimize process performance, and deploy automation workflows using SQL/Python/BI tooling. Own delivery of initiatives improving efficiency, cycle time, and operating cost. Work with cross-functional stakeholders."
+    },
+    {
+      "id": "job-05-enterprise-sales-director",
+      "title": "Enterprise Sales Director",
+      "benchmark_label": "weak_fit",
+      "expected_capabilities": [
+        "executive influence & business cases",
+        "cross-functional stakeholder leadership",
+        "people leadership"
+      ],
+      "job_description": "Enterprise Sales Director. Required: quota ownership, enterprise deal negotiation, account planning, and pipeline conversion. Lead regional sales teams and partner with marketing for demand generation. Nice to have exposure to analytics, but role is primarily sales execution and client acquisition."
+    },
+    {
+      "id": "job-06-product-analytics-manager",
+      "title": "Product Analytics Manager",
+      "benchmark_label": "medium_fit",
+      "expected_capabilities": [
+        "commercial analytics",
+        "people leadership",
+        "cross-functional stakeholder leadership",
+        "strategic planning"
+      ],
+      "job_description": "Product Analytics Manager. Lead analysts supporting product growth decisions, partner with product and engineering teams, and provide strategic recommendations to leadership. Required: commercial analytics, experimentation insights, stakeholder leadership, and roadmap prioritization."
+    },
+    {
+      "id": "job-07-commercial-growth-director",
+      "title": "Commercial Growth Director",
+      "benchmark_label": "medium_fit",
+      "expected_capabilities": [
+        "strategic planning",
+        "market & opportunity assessment",
+        "executive influence & business cases",
+        "cross-functional stakeholder leadership"
+      ],
+      "job_description": "Commercial Growth Director. Own commercial strategy, category growth plans, and market expansion initiatives. Partner with finance, product, and sales leaders to prioritize opportunities, define operating cadence, and track commercial performance. Lead executive forums and steer strategic business opportunity decisions."
+    },
+    {
+      "id": "job-08-enterprise-account-sales-lead",
+      "title": "Enterprise Account Sales Lead",
+      "benchmark_label": "weak_fit",
+      "expected_capabilities": [
+        "people leadership",
+        "cross-functional stakeholder leadership",
+        "executive influence & business cases",
+        "commercial analytics"
+      ],
+      "job_description": "Enterprise Account Sales Lead. Own enterprise pipeline, quota attainment, and account growth across strategic customers. Lead account managers, coach deal strategy, and coordinate pre-sales and post-sales motions with product marketing and customer success. Report performance to senior stakeholders and drive target achievement."
+    },
+    {
+      "id": "job-09-transformation-operating-model-lead",
+      "title": "Transformation Operating Model Lead",
+      "benchmark_label": "medium_fit",
+      "expected_capabilities": [
+        "transformation delivery leadership",
+        "change management & adoption",
+        "capability uplift & enablement",
+        "operational performance optimization"
+      ],
+      "job_description": "Transformation Operating Model Lead. Drive enterprise business transformation, process redesign, and implementation governance across operations. Establish steering committee cadence, mobilisation plans, and change adoption playbooks. Partner with line leaders to embed continuous improvement and capability uplift across teams."
+    },
+    {
+      "id": "job-10-clinical-research-coordinator",
+      "title": "Clinical Research Coordinator",
+      "benchmark_label": "weak_fit",
+      "expected_capabilities": [
+        "cross-functional stakeholder leadership"
+      ],
+      "job_description": "Clinical Research Coordinator. Coordinate participant recruitment and site scheduling for clinical studies. Maintain protocol compliance documentation, ethics submissions, and investigator communications. Support trial logistics, data entry quality checks, and audit readiness in line with healthcare regulations."
+    }
+  ]
+}

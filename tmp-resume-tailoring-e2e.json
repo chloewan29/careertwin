@@ -1,0 +1,2664 @@
+{
+  "model": "resume_tailoring_validation_v1",
+  "fixture_version": "capability_match_eval_v1",
+  "career_id": "4a22f035-c501-40b2-9589-03ee6e8a3cfa",
+  "profile_id": "8ec2c318-dbd0-42e2-acc7-10a103284b53",
+  "job_count": 5,
+  "outputs": [
+    {
+      "job_id": "job-01-analytics-strategy-manager",
+      "job_title": "Senior Manager, Analytics Strategy and Automation",
+      "benchmark_label": "strong_fit",
+      "match_score": 32.83,
+      "top_strengths": [],
+      "top_gaps": [
+        "Analytics Automation",
+        "BI / Data Platform Transformation",
+        "People Leadership"
+      ],
+      "extracted_job_capability_profile": [
+        {
+          "canonical_name": "analytics automation",
+          "display_name": "Analytics Automation",
+          "importance": "critical",
+          "evidence": [
+            "Senior Manager, Analytics Strategy and Automation.",
+            "Required: proven delivery of analytics automation using SQL/Python and BI tools (Power BI/Tableau)."
+          ],
+          "confidence": 0.72
+        },
+        {
+          "canonical_name": "bi / data platform transformation",
+          "display_name": "BI / Data Platform Transformation",
+          "importance": "critical",
+          "evidence": [
+            "Required: proven delivery of analytics automation using SQL/Python and BI tools (Power BI/Tableau)."
+          ],
+          "confidence": 0.32
+        },
+        {
+          "canonical_name": "strategic planning",
+          "display_name": "Strategic Planning",
+          "importance": "important",
+          "evidence": [
+            "Senior Manager, Analytics Strategy and Automation.",
+            "Lead a cross-functional analytics team to drive strategic planning, commercial growth analytics, and market opportunity assessment."
+          ],
+          "confidence": 0.4
+        },
+        {
+          "canonical_name": "people leadership",
+          "display_name": "People Leadership",
+          "importance": "important",
+          "evidence": [
+            "Lead a cross-functional analytics team to drive strategic planning, commercial growth analytics, and market opportunity assessment."
+          ],
+          "confidence": 0.2
+        },
+        {
+          "canonical_name": "cross-functional stakeholder leadership",
+          "display_name": "Cross-Functional Stakeholder Leadership",
+          "importance": "important",
+          "evidence": [
+            "Lead a cross-functional analytics team to drive strategic planning, commercial growth analytics, and market opportunity assessment."
+          ],
+          "confidence": 0.2
+        },
+        {
+          "canonical_name": "market & opportunity assessment",
+          "display_name": "Market & Opportunity Assessment",
+          "importance": "important",
+          "evidence": [
+            "Lead a cross-functional analytics team to drive strategic planning, commercial growth analytics, and market opportunity assessment."
+          ],
+          "confidence": 0.2
+        }
+      ],
+      "candidate_match_summary": {
+        "weighted_coverage_score": 0.3283,
+        "critical_gap_penalty": 0,
+        "matched_critical_count": 0,
+        "missing_critical_count": 0
+      },
+      "selected_evidence_pieces": [
+        {
+          "evidence_piece_id": "236a4923-ccb1-40af-a5a8-92206ad86414",
+          "original_bullet": "Led analytics team supporting SubHub (streaming subscription hub) and TV & C, delivering insights to retail executives for weekly trade meetings and strategic decision-making",
+          "rewritten_bullet": "Led analytics team supporting SubHub (streaming subscription hub) and TV & C, delivering insights to retail executives for weekly trade meetings and strategic decision-making.",
+          "selection_reason": {
+            "canonical_capability_score": 12.3782475,
+            "lexical_tiebreaker_score": 2.3,
+            "matched_capability_count": 2,
+            "supporting_signal_count": 3
+          },
+          "matched_capabilities": [
+            "people leadership",
+            "strategic planning"
+          ],
+          "supporting_signal_details": [
+            {
+              "evidence_signal_id": "3d64c772-d19d-48f5-8ecf-ec23cd5e1d63",
+              "action": "led",
+              "ownership_level": "lead",
+              "scope_level": "team",
+              "impact_signal": null,
+              "linked_capabilities": [
+                "People Leadership"
+              ]
+            },
+            {
+              "evidence_signal_id": "4365aa97-a590-40df-b33e-80150c8e9fdd",
+              "action": null,
+              "ownership_level": null,
+              "scope_level": null,
+              "impact_signal": null,
+              "linked_capabilities": []
+            },
+            {
+              "evidence_signal_id": "b51175bb-afbb-42cb-ae07-dbff22c18c7b",
+              "action": null,
+              "ownership_level": null,
+              "scope_level": null,
+              "impact_signal": "strategic",
+              "linked_capabilities": [
+                "Strategic Planning"
+              ]
+            }
+          ],
+          "pool_sources": [
+            "capability_match.partial:people leadership",
+            "capability_signal:3d64c772-d19d-48f5-8ecf-ec23cd5e1d63",
+            "top_capability:strategic planning",
+            "top_capability:people leadership"
+          ],
+          "rewrite_input": {
+            "target_job_capabilities": [
+              "Analytics Automation",
+              "BI / Data Platform Transformation",
+              "Strategic Planning",
+              "People Leadership",
+              "Cross-Functional Stakeholder Leadership",
+              "Market & Opportunity Assessment"
+            ],
+            "matched_candidate_capabilities": [
+              "People Leadership",
+              "Strategic Planning"
+            ],
+            "supporting_signal_actions": [
+              "led"
+            ],
+            "highlight_priorities": [
+              "People Leadership",
+              "Strategic Planning",
+              "People Leadership",
+              "Strategic Planning"
+            ]
+          }
+        },
+        {
+          "evidence_piece_id": "a9e61a8e-f44b-4b31-8697-9131b5c27ed8",
+          "original_bullet": "Led enterprise-wide Power BI transformation: Conducted 20+ stakeholder interviews, launched centralized training portal, partnered with Microsoft to identify capability gaps, streamlined onboarding from 6 months to 1 month",
+          "rewritten_bullet": "Led enterprise-wide Power BI transformation: Conducted 20+ stakeholder interviews, launched centralized training portal, partnered with Microsoft to identify capability gaps, streamlined onboarding from 6 months to 1 month.",
+          "selection_reason": {
+            "canonical_capability_score": 14.5844275,
+            "lexical_tiebreaker_score": 2.5,
+            "matched_capability_count": 2,
+            "supporting_signal_count": 2
+          },
+          "matched_capabilities": [
+            "strategic planning",
+            "bi / data platform transformation"
+          ],
+          "supporting_signal_details": [
+            {
+              "evidence_signal_id": "8b3ca56d-cf58-4a44-82fe-8ca86aeabd92",
+              "action": "led",
+              "ownership_level": "lead",
+              "scope_level": "enterprise",
+              "impact_signal": "strategic",
+              "linked_capabilities": [
+                "Strategic Planning",
+                "BI / Data Platform Transformation",
+                "Transformation Delivery Leadership"
+              ]
+            },
+            {
+              "evidence_signal_id": "2f7488a5-9f11-43fa-b06c-469320f8ed89",
+              "action": "identified",
+              "ownership_level": "contributor",
+              "scope_level": "task",
+              "impact_signal": null,
+              "linked_capabilities": []
+            }
+          ],
+          "pool_sources": [
+            "capability_match.partial:bi / data platform transformation",
+            "capability_signal:8b3ca56d-cf58-4a44-82fe-8ca86aeabd92",
+            "capability_match.partial:strategic planning",
+            "top_capability:strategic planning"
+          ],
+          "rewrite_input": {
+            "target_job_capabilities": [
+              "Analytics Automation",
+              "BI / Data Platform Transformation",
+              "Strategic Planning",
+              "People Leadership",
+              "Cross-Functional Stakeholder Leadership",
+              "Market & Opportunity Assessment"
+            ],
+            "matched_candidate_capabilities": [
+              "Strategic Planning",
+              "BI / Data Platform Transformation"
+            ],
+            "supporting_signal_actions": [
+              "led",
+              "identified"
+            ],
+            "highlight_priorities": [
+              "Strategic Planning",
+              "BI / Data Platform Transformation",
+              "Strategic Planning",
+              "BI / Data Platform Transformation"
+            ]
+          }
+        },
+        {
+          "evidence_piece_id": "e7d0cb04-07d5-4499-99db-813947c832a5",
+          "original_bullet": "Created cross-platform BI evaluation framework assessing visualization tools (Power BI, Tableau, others) across feature capability, cost efficiency, ease of use, and enterprise fit",
+          "rewritten_bullet": "Created cross-platform BI evaluation framework assessing visualization tools (Power BI, Tableau, others) across feature capability, cost efficiency, ease of use, and enterprise fit.",
+          "selection_reason": {
+            "canonical_capability_score": 0.859375,
+            "lexical_tiebreaker_score": 4.1,
+            "matched_capability_count": 0,
+            "supporting_signal_count": 2
+          },
+          "matched_capabilities": [],
+          "supporting_signal_details": [
+            {
+              "evidence_signal_id": "fcd5e694-483a-47f6-b787-dbb1f00ac92b",
+              "action": "created",
+              "ownership_level": "contributor",
+              "scope_level": "task",
+              "impact_signal": "cost",
+              "linked_capabilities": [
+                "Commercial Analytics"
+              ]
+            },
+            {
+              "evidence_signal_id": "16a8983a-d18f-4cda-8f31-9b7dc4e688dc",
+              "action": null,
+              "ownership_level": null,
+              "scope_level": null,
+              "impact_signal": null,
+              "linked_capabilities": []
+            }
+          ],
+          "pool_sources": [
+            "top_capability:commercial analytics"
+          ],
+          "rewrite_input": {
+            "target_job_capabilities": [
+              "Analytics Automation",
+              "BI / Data Platform Transformation",
+              "Strategic Planning",
+              "People Leadership",
+              "Cross-Functional Stakeholder Leadership",
+              "Market & Opportunity Assessment"
+            ],
+            "matched_candidate_capabilities": [],
+            "supporting_signal_actions": [
+              "created"
+            ],
+            "highlight_priorities": []
+          }
+        },
+        {
+          "evidence_piece_id": "d38f4d63-6730-4521-95f8-cea932b9bb3c",
+          "original_bullet": "Drove data monetization strategy for media advertising analytics, creating scalable product roadmap aligned to client needs and platform capabilities",
+          "rewritten_bullet": "Drove data monetization strategy for media advertising analytics, creating scalable product roadmap aligned to client needs and platform capabilities.",
+          "selection_reason": {
+            "canonical_capability_score": 7.9739450000000005,
+            "lexical_tiebreaker_score": 2.8000000000000003,
+            "matched_capability_count": 1,
+            "supporting_signal_count": 2
+          },
+          "matched_capabilities": [
+            "strategic planning"
+          ],
+          "supporting_signal_details": [
+            {
+              "evidence_signal_id": "aeccfa40-febe-46d2-a4a0-7881b868c296",
+              "action": "drove",
+              "ownership_level": "driver",
+              "scope_level": "project",
+              "impact_signal": "strategic",
+              "linked_capabilities": [
+                "Strategic Planning"
+              ]
+            },
+            {
+              "evidence_signal_id": "a78110c4-a529-4d3a-9b26-59b91bd69f7b",
+              "action": null,
+              "ownership_level": null,
+              "scope_level": null,
+              "impact_signal": null,
+              "linked_capabilities": []
+            }
+          ],
+          "pool_sources": [
+            "top_capability:strategic planning"
+          ],
+          "rewrite_input": {
+            "target_job_capabilities": [
+              "Analytics Automation",
+              "BI / Data Platform Transformation",
+              "Strategic Planning",
+              "People Leadership",
+              "Cross-Functional Stakeholder Leadership",
+              "Market & Opportunity Assessment"
+            ],
+            "matched_candidate_capabilities": [
+              "Strategic Planning"
+            ],
+            "supporting_signal_actions": [
+              "drove"
+            ],
+            "highlight_priorities": [
+              "Strategic Planning",
+              "Strategic Planning"
+            ]
+          }
+        },
+        {
+          "evidence_piece_id": "8d564979-afab-4bed-b25d-6494b5f0ce0a",
+          "original_bullet": "Drove scaled insights project coverage for main seasonal and sub-vertical opportunities across Microsoft Advertising AU market",
+          "rewritten_bullet": "Drove scaled insights project coverage for main seasonal and sub-vertical opportunities across Microsoft Advertising AU market.",
+          "selection_reason": {
+            "canonical_capability_score": 4.9672325,
+            "lexical_tiebreaker_score": 0.3,
+            "matched_capability_count": 1,
+            "supporting_signal_count": 2
+          },
+          "matched_capabilities": [
+            "market & opportunity assessment"
+          ],
+          "supporting_signal_details": [
+            {
+              "evidence_signal_id": "7710293a-0d8c-4d02-946c-2c5f80abf7ac",
+              "action": "drove",
+              "ownership_level": "driver",
+              "scope_level": "project",
+              "impact_signal": null,
+              "linked_capabilities": []
+            },
+            {
+              "evidence_signal_id": "aea2dd45-73ac-4e28-925c-f3060ed58962",
+              "action": null,
+              "ownership_level": null,
+              "scope_level": "market",
+              "impact_signal": null,
+              "linked_capabilities": [
+                "Market & Opportunity Assessment"
+              ]
+            }
+          ],
+          "pool_sources": [
+            "capability_match.partial:market & opportunity assessment",
+            "capability_signal:aea2dd45-73ac-4e28-925c-f3060ed58962",
+            "top_capability:market & opportunity assessment"
+          ],
+          "rewrite_input": {
+            "target_job_capabilities": [
+              "Analytics Automation",
+              "BI / Data Platform Transformation",
+              "Strategic Planning",
+              "People Leadership",
+              "Cross-Functional Stakeholder Leadership",
+              "Market & Opportunity Assessment"
+            ],
+            "matched_candidate_capabilities": [
+              "Market & Opportunity Assessment"
+            ],
+            "supporting_signal_actions": [
+              "drove"
+            ],
+            "highlight_priorities": [
+              "Market & Opportunity Assessment",
+              "Market & Opportunity Assessment"
+            ]
+          }
+        },
+        {
+          "evidence_piece_id": "d382344b-4695-48b6-91c0-35d5f4696937",
+          "original_bullet": "Drove marketing automation strategy across all major accounts using AdWords API, Google Analytics API, JavaScript, R, and Python",
+          "rewritten_bullet": "Drove marketing automation strategy across all major accounts using AdWords API, Google Analytics API, JavaScript, R, and Python.",
+          "selection_reason": {
+            "canonical_capability_score": 7.355195,
+            "lexical_tiebreaker_score": 5.300000000000001,
+            "matched_capability_count": 1,
+            "supporting_signal_count": 1
+          },
+          "matched_capabilities": [
+            "strategic planning"
+          ],
+          "supporting_signal_details": [
+            {
+              "evidence_signal_id": "dbf35149-0fda-4a8e-bbf0-721c0741198a",
+              "action": "drove",
+              "ownership_level": "driver",
+              "scope_level": "task",
+              "impact_signal": "operational",
+              "linked_capabilities": [
+                "Strategic Planning",
+                "Operational Performance Optimization"
+              ]
+            }
+          ],
+          "pool_sources": [
+            "top_capability:strategic planning",
+            "top_capability:operational performance optimization"
+          ],
+          "rewrite_input": {
+            "target_job_capabilities": [
+              "Analytics Automation",
+              "BI / Data Platform Transformation",
+              "Strategic Planning",
+              "People Leadership",
+              "Cross-Functional Stakeholder Leadership",
+              "Market & Opportunity Assessment"
+            ],
+            "matched_candidate_capabilities": [
+              "Strategic Planning"
+            ],
+            "supporting_signal_actions": [
+              "drove"
+            ],
+            "highlight_priorities": [
+              "Strategic Planning",
+              "Strategic Planning"
+            ]
+          }
+        },
+        {
+          "evidence_piece_id": "421777e0-0145-45b4-ae86-870fa6067fea",
+          "original_bullet": "Conducted pipeline analysis, insights analysis, and campaign cost analysis using Google Analytics, Google AdWords, and Power BI",
+          "rewritten_bullet": "Conducted pipeline analysis, insights analysis, and campaign cost analysis using Google Analytics, Google AdWords, and Power BI.",
+          "selection_reason": {
+            "canonical_capability_score": 0.859375,
+            "lexical_tiebreaker_score": 3.3000000000000003,
+            "matched_capability_count": 0,
+            "supporting_signal_count": 2
+          },
+          "matched_capabilities": [],
+          "supporting_signal_details": [
+            {
+              "evidence_signal_id": "5263458f-9e1a-49b4-b8a3-f95b3a67265f",
+              "action": null,
+              "ownership_level": null,
+              "scope_level": null,
+              "impact_signal": null,
+              "linked_capabilities": []
+            },
+            {
+              "evidence_signal_id": "a9ede6fc-5d98-4ce7-978b-0284aadbbfe4",
+              "action": null,
+              "ownership_level": null,
+              "scope_level": null,
+              "impact_signal": "cost",
+              "linked_capabilities": [
+                "Commercial Analytics"
+              ]
+            }
+          ],
+          "pool_sources": [
+            "capability_match.partial:analytics automation",
+            "capability_signal:5263458f-9e1a-49b4-b8a3-f95b3a67265f",
+            "top_capability:commercial analytics"
+          ],
+          "rewrite_input": {
+            "target_job_capabilities": [
+              "Analytics Automation",
+              "BI / Data Platform Transformation",
+              "Strategic Planning",
+              "People Leadership",
+              "Cross-Functional Stakeholder Leadership",
+              "Market & Opportunity Assessment"
+            ],
+            "matched_candidate_capabilities": [],
+            "supporting_signal_actions": [],
+            "highlight_priorities": []
+          }
+        },
+        {
+          "evidence_piece_id": "7d1b5db7-d30f-4c3c-8971-e650ab75b78f",
+          "original_bullet": "Combined Google Analytics with cost data to identify inefficient promotion channels, reducing promotion cost by $8,000",
+          "rewritten_bullet": "Combined Google Analytics with cost data to identify inefficient promotion channels, reducing promotion cost by $8,000.",
+          "selection_reason": {
+            "canonical_capability_score": 0.515625,
+            "lexical_tiebreaker_score": 1.1,
+            "matched_capability_count": 0,
+            "supporting_signal_count": 1
+          },
+          "matched_capabilities": [],
+          "supporting_signal_details": [
+            {
+              "evidence_signal_id": "467ed9ff-8bbc-4512-8b85-1f02023422bc",
+              "action": "identified",
+              "ownership_level": "contributor",
+              "scope_level": "task",
+              "impact_signal": "cost",
+              "linked_capabilities": [
+                "Commercial Analytics"
+              ]
+            }
+          ],
+          "pool_sources": [
+            "top_capability:commercial analytics"
+          ],
+          "rewrite_input": {
+            "target_job_capabilities": [
+              "Analytics Automation",
+              "BI / Data Platform Transformation",
+              "Strategic Planning",
+              "People Leadership",
+              "Cross-Functional Stakeholder Leadership",
+              "Market & Opportunity Assessment"
+            ],
+            "matched_candidate_capabilities": [],
+            "supporting_signal_actions": [
+              "identified"
+            ],
+            "highlight_priorities": []
+          }
+        }
+      ],
+      "tailored_summary": "Senior leader with strengths in people leadership and strategic planning. Recent work across Optus (Telecommunications & Streaming Media) and Sparro (Digital Advertising Agency) includes executive decision support, analytics automation, and stakeholder leadership.",
+      "tailored_bullets_5_to_8": [
+        "Led analytics team supporting SubHub (streaming subscription hub) and TV & C, delivering insights to retail executives for weekly trade meetings and strategic decision-making.",
+        "Led enterprise-wide Power BI transformation: Conducted 20+ stakeholder interviews, launched centralized training portal, partnered with Microsoft to identify capability gaps, streamlined onboarding from 6 months to 1 month.",
+        "Created cross-platform BI evaluation framework assessing visualization tools (Power BI, Tableau, others) across feature capability, cost efficiency, ease of use, and enterprise fit.",
+        "Drove data monetization strategy for media advertising analytics, creating scalable product roadmap aligned to client needs and platform capabilities.",
+        "Drove scaled insights project coverage for main seasonal and sub-vertical opportunities across Microsoft Advertising AU market.",
+        "Drove marketing automation strategy across all major accounts using AdWords API, Google Analytics API, JavaScript, R, and Python.",
+        "Conducted pipeline analysis, insights analysis, and campaign cost analysis using Google Analytics, Google AdWords, and Power BI.",
+        "Combined Google Analytics with cost data to identify inefficient promotion channels, reducing promotion cost by $8,000."
+      ],
+      "final_structured_resume_output": {
+        "summary": "Senior leader with strengths in people leadership and strategic planning. Recent work across Optus (Telecommunications & Streaming Media) and Sparro (Digital Advertising Agency) includes executive decision support, analytics automation, and stakeholder leadership.",
+        "experience": [
+          {
+            "company": "Optus (Telecommunications & Streaming Media), Sydney |",
+            "role": "Analytics Lead/Manager, Data & Analytics",
+            "date_range": "May 2022 - February 2026",
+            "bullets": [
+              "Led analytics team supporting SubHub (streaming subscription hub) and TV & C, delivering insights to retail executives for weekly trade meetings and strategic decision-making.",
+              "Led enterprise-wide Power BI transformation: Conducted 20+ stakeholder interviews, launched centralized training portal, partnered with Microsoft to identify capability gaps, streamlined onboarding from 6 months to 1 month.",
+              "Created cross-platform BI evaluation framework assessing visualization tools (Power BI, Tableau, others) across feature capability, cost efficiency, ease of use, and enterprise fit."
+            ]
+          },
+          {
+            "company": "Amobee (DSP), Sydney |",
+            "role": "Analytics Lead | Product Owner - Programmatic Analytics",
+            "date_range": "November 2020 - May 2022",
+            "bullets": [
+              "Drove data monetization strategy for media advertising analytics, creating scalable product roadmap aligned to client needs and platform capabilities."
+            ]
+          },
+          {
+            "company": "Microsoft Advertising, Sydney |",
+            "role": "Scaled Insights Specialist | Advertising Platform Analytics",
+            "date_range": "November 2018 - November 2020",
+            "bullets": [
+              "Drove scaled insights project coverage for main seasonal and sub-vertical opportunities across Microsoft Advertising AU market."
+            ]
+          },
+          {
+            "company": "Sparro (Digital Advertising Agency), Sydney |",
+            "role": "Digital Data Specialist | SEM Analytics & Optimization",
+            "date_range": "August 2017 - November 2018",
+            "bullets": [
+              "Drove marketing automation strategy across all major accounts using AdWords API, Google Analytics API, JavaScript, R, and Python."
+            ]
+          },
+          {
+            "company": "DNC Consulting Group, Sydney |",
+            "role": "Office Manager / Junior Data Analyst",
+            "date_range": "September 2016 - July 2017",
+            "bullets": [
+              "Conducted pipeline analysis, insights analysis, and campaign cost analysis using Google Analytics, Google AdWords, and Power BI.",
+              "Combined Google Analytics with cost data to identify inefficient promotion channels, reducing promotion cost by $8,000."
+            ]
+          }
+        ]
+      },
+      "quality_checks": {
+        "total_selected_evidence_count": 8,
+        "per_experience_bullet_count": [
+          {
+            "company": "Optus (Telecommunications & Streaming Media), Sydney |",
+            "role": "Analytics Lead/Manager, Data & Analytics",
+            "bullet_count": 3
+          },
+          {
+            "company": "Amobee (DSP), Sydney |",
+            "role": "Analytics Lead | Product Owner - Programmatic Analytics",
+            "bullet_count": 1
+          },
+          {
+            "company": "Microsoft Advertising, Sydney |",
+            "role": "Scaled Insights Specialist | Advertising Platform Analytics",
+            "bullet_count": 1
+          },
+          {
+            "company": "Sparro (Digital Advertising Agency), Sydney |",
+            "role": "Digital Data Specialist | SEM Analytics & Optimization",
+            "bullet_count": 1
+          },
+          {
+            "company": "DNC Consulting Group, Sydney |",
+            "role": "Office Manager / Junior Data Analyst",
+            "bullet_count": 2
+          }
+        ],
+        "top_matched_capabilities_represented": [
+          "people leadership",
+          "strategic planning",
+          "bi / data platform transformation",
+          "market & opportunity assessment"
+        ],
+        "critical_capabilities_reflected": [
+          {
+            "capability": "Analytics Automation",
+            "reflected": true
+          },
+          {
+            "capability": "BI / Data Platform Transformation",
+            "reflected": true
+          }
+        ],
+        "unsupported_claims_introduced": false
+      },
+      "diagnostics": {
+        "legacy_mode_contributed": false,
+        "canonical_only_mode": true,
+        "notes": [
+          "Critical capabilities are reflected in output.",
+          "Selected evidence count is healthy."
+        ]
+      }
+    },
+    {
+      "job_id": "job-02-commercial-insights-lead",
+      "job_title": "Commercial Insights Lead",
+      "benchmark_label": "strong_fit",
+      "match_score": 55,
+      "top_strengths": [],
+      "top_gaps": [
+        "Market & Opportunity Assessment"
+      ],
+      "extracted_job_capability_profile": [
+        {
+          "canonical_name": "market & opportunity assessment",
+          "display_name": "Market & Opportunity Assessment",
+          "importance": "critical",
+          "evidence": [
+            "Required: commercial analytics, pricing/revenue analysis, and opportunity sizing across customer segments.",
+            "Partner with go-to-market and finance teams to prioritize growth opportunities."
+          ],
+          "confidence": 0.52
+        },
+        {
+          "canonical_name": "commercial analytics",
+          "display_name": "Commercial Analytics",
+          "importance": "critical",
+          "evidence": [
+            "Required: commercial analytics, pricing/revenue analysis, and opportunity sizing across customer segments."
+          ],
+          "confidence": 0.32
+        }
+      ],
+      "candidate_match_summary": {
+        "weighted_coverage_score": 0.55,
+        "critical_gap_penalty": 0,
+        "matched_critical_count": 1,
+        "missing_critical_count": 0
+      },
+      "selected_evidence_pieces": [
+        {
+          "evidence_piece_id": "3acf0174-1bcb-4ac5-a78c-67af28791bae",
+          "original_bullet": "Lead team of 6 analytics professionals with oversight of 22 across business units, fostering commercial thinking and accountability for impact—delivered FY24 outcomes: 381 working days optimized, 1.9M customers supported, $30M+ revenue opportunities identified",
+          "rewritten_bullet": "Lead team of 6 analytics professionals with oversight of 22 across business units, fostering commercial thinking and accountability for impact—delivered FY24 outcomes: 381 working days optimized, 1.9M customers supported, $30M+ revenue.",
+          "selection_reason": {
+            "canonical_capability_score": 14.8253875,
+            "lexical_tiebreaker_score": 3.4,
+            "matched_capability_count": 2,
+            "supporting_signal_count": 3
+          },
+          "matched_capabilities": [
+            "commercial analytics",
+            "market & opportunity assessment"
+          ],
+          "supporting_signal_details": [
+            {
+              "evidence_signal_id": "4fcf5ac8-56e9-42cc-9580-9ed985bfba18",
+              "action": "led",
+              "ownership_level": "lead",
+              "scope_level": "team",
+              "impact_signal": null,
+              "linked_capabilities": [
+                "People Leadership"
+              ]
+            },
+            {
+              "evidence_signal_id": "b3693684-7173-4a3f-bbbc-14d73befe479",
+              "action": "delivered",
+              "ownership_level": "contributor",
+              "scope_level": "task",
+              "impact_signal": null,
+              "linked_capabilities": [
+                "Operational Performance Optimization"
+              ]
+            },
+            {
+              "evidence_signal_id": "bdba73ba-3f49-4d3e-a0ad-f0b600610e74",
+              "action": "identified",
+              "ownership_level": "contributor",
+              "scope_level": "market",
+              "impact_signal": "revenue",
+              "linked_capabilities": [
+                "Commercial Analytics",
+                "Market & Opportunity Assessment"
+              ]
+            }
+          ],
+          "pool_sources": [
+            "capability_match.partial:market & opportunity assessment",
+            "capability_signal:bdba73ba-3f49-4d3e-a0ad-f0b600610e74",
+            "capability_match.partial:commercial analytics",
+            "top_capability:commercial analytics",
+            "top_capability:operational performance optimization",
+            "top_capability:market & opportunity assessment",
+            "top_capability:people leadership"
+          ],
+          "rewrite_input": {
+            "target_job_capabilities": [
+              "Market & Opportunity Assessment",
+              "Commercial Analytics"
+            ],
+            "matched_candidate_capabilities": [
+              "Commercial Analytics",
+              "Market & Opportunity Assessment"
+            ],
+            "supporting_signal_actions": [
+              "led",
+              "delivered",
+              "identified"
+            ],
+            "highlight_priorities": [
+              "Commercial Analytics",
+              "Market & Opportunity Assessment",
+              "Commercial Analytics",
+              "Market & Opportunity Assessment"
+            ]
+          }
+        },
+        {
+          "evidence_piece_id": "4f8d05cd-418d-4737-8499-7044b7319f6f",
+          "original_bullet": "Drove localized growth strategy through granular market opportunity assessment including national and SA3-level competitive landscape analysis across product groups and customer cohorts, collaborating with Go-to-Market teams to define localization strategy, scope initiatives, and monitor performance—identified $5M revenue gap closure opportunity",
+          "rewritten_bullet": "Drove localized growth strategy through granular market opportunity assessment including national and SA3-level competitive landscape analysis across product groups and customer cohorts, collaborating with Go-to-Market teams to define.",
+          "selection_reason": {
+            "canonical_capability_score": 11.370655,
+            "lexical_tiebreaker_score": 3.7,
+            "matched_capability_count": 1,
+            "supporting_signal_count": 4
+          },
+          "matched_capabilities": [
+            "commercial analytics"
+          ],
+          "supporting_signal_details": [
+            {
+              "evidence_signal_id": "3e2c3c06-0c03-415f-8f83-5f0ef763396b",
+              "action": "drove",
+              "ownership_level": "driver",
+              "scope_level": "market",
+              "impact_signal": "strategic",
+              "linked_capabilities": [
+                "Strategic Planning"
+              ]
+            },
+            {
+              "evidence_signal_id": "02908e16-2c78-4390-a48a-de89be0f8f01",
+              "action": null,
+              "ownership_level": null,
+              "scope_level": null,
+              "impact_signal": null,
+              "linked_capabilities": []
+            },
+            {
+              "evidence_signal_id": "0971383a-7f08-42e4-ac9a-e695387b10dd",
+              "action": null,
+              "ownership_level": null,
+              "scope_level": "market",
+              "impact_signal": "strategic",
+              "linked_capabilities": [
+                "Strategic Planning"
+              ]
+            },
+            {
+              "evidence_signal_id": "7ef18fe5-4c49-4010-8494-794a88be8687",
+              "action": "identified",
+              "ownership_level": "contributor",
+              "scope_level": "task",
+              "impact_signal": "revenue",
+              "linked_capabilities": [
+                "Commercial Analytics"
+              ]
+            }
+          ],
+          "pool_sources": [
+            "capability_match.partial:commercial analytics",
+            "capability_signal:7ef18fe5-4c49-4010-8494-794a88be8687",
+            "top_capability:strategic planning",
+            "top_capability:commercial analytics"
+          ],
+          "rewrite_input": {
+            "target_job_capabilities": [
+              "Market & Opportunity Assessment",
+              "Commercial Analytics"
+            ],
+            "matched_candidate_capabilities": [
+              "Commercial Analytics"
+            ],
+            "supporting_signal_actions": [
+              "drove",
+              "identified"
+            ],
+            "highlight_priorities": [
+              "Commercial Analytics",
+              "Commercial Analytics"
+            ]
+          }
+        },
+        {
+          "evidence_piece_id": "58636254-7f9e-40af-aa1c-dee1ddb30bb1",
+          "original_bullet": "Presented business cases to senior leadership for localization analytics strategy, securing budget and executive approval to build dedicated core team",
+          "rewritten_bullet": "Presented business cases to senior leadership for localization analytics strategy, securing budget and executive approval to build dedicated core team.",
+          "selection_reason": {
+            "canonical_capability_score": 1.875,
+            "lexical_tiebreaker_score": 4.2,
+            "matched_capability_count": 0,
+            "supporting_signal_count": 2
+          },
+          "matched_capabilities": [],
+          "supporting_signal_details": [
+            {
+              "evidence_signal_id": "f33aa888-931a-40af-8792-249b12356dec",
+              "action": "presented",
+              "ownership_level": "lead",
+              "scope_level": "task",
+              "impact_signal": "strategic",
+              "linked_capabilities": [
+                "Strategic Planning",
+                "Executive Influence & Business Cases"
+              ]
+            },
+            {
+              "evidence_signal_id": "4bc6ab3e-bcbc-469a-9c1b-20f502148627",
+              "action": "built",
+              "ownership_level": "contributor",
+              "scope_level": "team",
+              "impact_signal": null,
+              "linked_capabilities": []
+            }
+          ],
+          "pool_sources": [
+            "top_capability:strategic planning"
+          ],
+          "rewrite_input": {
+            "target_job_capabilities": [
+              "Market & Opportunity Assessment",
+              "Commercial Analytics"
+            ],
+            "matched_candidate_capabilities": [],
+            "supporting_signal_actions": [
+              "presented",
+              "built"
+            ],
+            "highlight_priorities": []
+          }
+        },
+        {
+          "evidence_piece_id": "d38f4d63-6730-4521-95f8-cea932b9bb3c",
+          "original_bullet": "Drove data monetization strategy for media advertising analytics, creating scalable product roadmap aligned to client needs and platform capabilities",
+          "rewritten_bullet": "Drove data monetization strategy for media advertising analytics, creating scalable product roadmap aligned to client needs and platform capabilities.",
+          "selection_reason": {
+            "canonical_capability_score": 1.4437500000000003,
+            "lexical_tiebreaker_score": 1.1,
+            "matched_capability_count": 0,
+            "supporting_signal_count": 2
+          },
+          "matched_capabilities": [],
+          "supporting_signal_details": [
+            {
+              "evidence_signal_id": "aeccfa40-febe-46d2-a4a0-7881b868c296",
+              "action": "drove",
+              "ownership_level": "driver",
+              "scope_level": "project",
+              "impact_signal": "strategic",
+              "linked_capabilities": [
+                "Strategic Planning"
+              ]
+            },
+            {
+              "evidence_signal_id": "a78110c4-a529-4d3a-9b26-59b91bd69f7b",
+              "action": null,
+              "ownership_level": null,
+              "scope_level": null,
+              "impact_signal": null,
+              "linked_capabilities": []
+            }
+          ],
+          "pool_sources": [
+            "top_capability:strategic planning"
+          ],
+          "rewrite_input": {
+            "target_job_capabilities": [
+              "Market & Opportunity Assessment",
+              "Commercial Analytics"
+            ],
+            "matched_candidate_capabilities": [],
+            "supporting_signal_actions": [
+              "drove"
+            ],
+            "highlight_priorities": []
+          }
+        },
+        {
+          "evidence_piece_id": "8d564979-afab-4bed-b25d-6494b5f0ce0a",
+          "original_bullet": "Drove scaled insights project coverage for main seasonal and sub-vertical opportunities across Microsoft Advertising AU market",
+          "rewritten_bullet": "Drove scaled insights project coverage for main seasonal and sub-vertical opportunities across Microsoft Advertising AU market.",
+          "selection_reason": {
+            "canonical_capability_score": 6.3172325,
+            "lexical_tiebreaker_score": 0.8999999999999999,
+            "matched_capability_count": 1,
+            "supporting_signal_count": 2
+          },
+          "matched_capabilities": [
+            "market & opportunity assessment"
+          ],
+          "supporting_signal_details": [
+            {
+              "evidence_signal_id": "7710293a-0d8c-4d02-946c-2c5f80abf7ac",
+              "action": "drove",
+              "ownership_level": "driver",
+              "scope_level": "project",
+              "impact_signal": null,
+              "linked_capabilities": []
+            },
+            {
+              "evidence_signal_id": "aea2dd45-73ac-4e28-925c-f3060ed58962",
+              "action": null,
+              "ownership_level": null,
+              "scope_level": "market",
+              "impact_signal": null,
+              "linked_capabilities": [
+                "Market & Opportunity Assessment"
+              ]
+            }
+          ],
+          "pool_sources": [
+            "capability_match.partial:market & opportunity assessment",
+            "capability_signal:aea2dd45-73ac-4e28-925c-f3060ed58962",
+            "top_capability:market & opportunity assessment"
+          ],
+          "rewrite_input": {
+            "target_job_capabilities": [
+              "Market & Opportunity Assessment",
+              "Commercial Analytics"
+            ],
+            "matched_candidate_capabilities": [
+              "Market & Opportunity Assessment"
+            ],
+            "supporting_signal_actions": [
+              "drove"
+            ],
+            "highlight_priorities": [
+              "Market & Opportunity Assessment",
+              "Market & Opportunity Assessment"
+            ]
+          }
+        },
+        {
+          "evidence_piece_id": "d382344b-4695-48b6-91c0-35d5f4696937",
+          "original_bullet": "Drove marketing automation strategy across all major accounts using AdWords API, Google Analytics API, JavaScript, R, and Python",
+          "rewritten_bullet": "Drove marketing automation strategy across all major accounts using AdWords API, Google Analytics API, JavaScript, R, and Python.",
+          "selection_reason": {
+            "canonical_capability_score": 0.8250000000000002,
+            "lexical_tiebreaker_score": 2.7,
+            "matched_capability_count": 0,
+            "supporting_signal_count": 1
+          },
+          "matched_capabilities": [],
+          "supporting_signal_details": [
+            {
+              "evidence_signal_id": "dbf35149-0fda-4a8e-bbf0-721c0741198a",
+              "action": "drove",
+              "ownership_level": "driver",
+              "scope_level": "task",
+              "impact_signal": "operational",
+              "linked_capabilities": [
+                "Strategic Planning",
+                "Operational Performance Optimization"
+              ]
+            }
+          ],
+          "pool_sources": [
+            "top_capability:strategic planning",
+            "top_capability:operational performance optimization"
+          ],
+          "rewrite_input": {
+            "target_job_capabilities": [
+              "Market & Opportunity Assessment",
+              "Commercial Analytics"
+            ],
+            "matched_candidate_capabilities": [],
+            "supporting_signal_actions": [
+              "drove"
+            ],
+            "highlight_priorities": []
+          }
+        },
+        {
+          "evidence_piece_id": "421777e0-0145-45b4-ae86-870fa6067fea",
+          "original_bullet": "Conducted pipeline analysis, insights analysis, and campaign cost analysis using Google Analytics, Google AdWords, and Power BI",
+          "rewritten_bullet": "Conducted pipeline analysis, insights analysis, and campaign cost analysis using Google Analytics, Google AdWords, and Power BI.",
+          "selection_reason": {
+            "canonical_capability_score": 7.94878,
+            "lexical_tiebreaker_score": 3.3000000000000003,
+            "matched_capability_count": 1,
+            "supporting_signal_count": 2
+          },
+          "matched_capabilities": [
+            "commercial analytics"
+          ],
+          "supporting_signal_details": [
+            {
+              "evidence_signal_id": "5263458f-9e1a-49b4-b8a3-f95b3a67265f",
+              "action": null,
+              "ownership_level": null,
+              "scope_level": null,
+              "impact_signal": null,
+              "linked_capabilities": []
+            },
+            {
+              "evidence_signal_id": "a9ede6fc-5d98-4ce7-978b-0284aadbbfe4",
+              "action": null,
+              "ownership_level": null,
+              "scope_level": null,
+              "impact_signal": "cost",
+              "linked_capabilities": [
+                "Commercial Analytics"
+              ]
+            }
+          ],
+          "pool_sources": [
+            "top_capability:commercial analytics"
+          ],
+          "rewrite_input": {
+            "target_job_capabilities": [
+              "Market & Opportunity Assessment",
+              "Commercial Analytics"
+            ],
+            "matched_candidate_capabilities": [
+              "Commercial Analytics"
+            ],
+            "supporting_signal_actions": [],
+            "highlight_priorities": [
+              "Commercial Analytics",
+              "Commercial Analytics"
+            ]
+          }
+        },
+        {
+          "evidence_piece_id": "7d1b5db7-d30f-4c3c-8971-e650ab75b78f",
+          "original_bullet": "Combined Google Analytics with cost data to identify inefficient promotion channels, reducing promotion cost by $8,000",
+          "rewritten_bullet": "Combined Google Analytics with cost data to identify inefficient promotion channels, reducing promotion cost by $8,000.",
+          "selection_reason": {
+            "canonical_capability_score": 7.60503,
+            "lexical_tiebreaker_score": 2.7,
+            "matched_capability_count": 1,
+            "supporting_signal_count": 1
+          },
+          "matched_capabilities": [
+            "commercial analytics"
+          ],
+          "supporting_signal_details": [
+            {
+              "evidence_signal_id": "467ed9ff-8bbc-4512-8b85-1f02023422bc",
+              "action": "identified",
+              "ownership_level": "contributor",
+              "scope_level": "task",
+              "impact_signal": "cost",
+              "linked_capabilities": [
+                "Commercial Analytics"
+              ]
+            }
+          ],
+          "pool_sources": [
+            "top_capability:commercial analytics"
+          ],
+          "rewrite_input": {
+            "target_job_capabilities": [
+              "Market & Opportunity Assessment",
+              "Commercial Analytics"
+            ],
+            "matched_candidate_capabilities": [
+              "Commercial Analytics"
+            ],
+            "supporting_signal_actions": [
+              "identified"
+            ],
+            "highlight_priorities": [
+              "Commercial Analytics",
+              "Commercial Analytics"
+            ]
+          }
+        }
+      ],
+      "tailored_summary": "Commercial Insights leader with strengths in commercial analytics and market & opportunity assessment. Recent work across Optus (Telecommunications & Streaming Media) and DNC Consulting Group includes revenue opportunity identification, executive decision support, and analytics automation.",
+      "tailored_bullets_5_to_8": [
+        "Lead team of 6 analytics professionals with oversight of 22 across business units, fostering commercial thinking and accountability for impact—delivered FY24 outcomes: 381 working days optimized, 1.9M customers supported, $30M+ revenue.",
+        "Drove localized growth strategy through granular market opportunity assessment including national and SA3-level competitive landscape analysis across product groups and customer cohorts, collaborating with Go-to-Market teams to define.",
+        "Presented business cases to senior leadership for localization analytics strategy, securing budget and executive approval to build dedicated core team.",
+        "Drove data monetization strategy for media advertising analytics, creating scalable product roadmap aligned to client needs and platform capabilities.",
+        "Drove scaled insights project coverage for main seasonal and sub-vertical opportunities across Microsoft Advertising AU market.",
+        "Drove marketing automation strategy across all major accounts using AdWords API, Google Analytics API, JavaScript, R, and Python.",
+        "Conducted pipeline analysis, insights analysis, and campaign cost analysis using Google Analytics, Google AdWords, and Power BI.",
+        "Combined Google Analytics with cost data to identify inefficient promotion channels, reducing promotion cost by $8,000."
+      ],
+      "final_structured_resume_output": {
+        "summary": "Commercial Insights leader with strengths in commercial analytics and market & opportunity assessment. Recent work across Optus (Telecommunications & Streaming Media) and DNC Consulting Group includes revenue opportunity identification, executive decision support, and analytics automation.",
+        "experience": [
+          {
+            "company": "Optus (Telecommunications & Streaming Media), Sydney |",
+            "role": "Analytics Lead/Manager, Data & Analytics",
+            "date_range": "May 2022 - February 2026",
+            "bullets": [
+              "Lead team of 6 analytics professionals with oversight of 22 across business units, fostering commercial thinking and accountability for impact—delivered FY24 outcomes: 381 working days optimized, 1.9M customers supported, $30M+ revenue.",
+              "Drove localized growth strategy through granular market opportunity assessment including national and SA3-level competitive landscape analysis across product groups and customer cohorts, collaborating with Go-to-Market teams to define.",
+              "Presented business cases to senior leadership for localization analytics strategy, securing budget and executive approval to build dedicated core team."
+            ]
+          },
+          {
+            "company": "Amobee (DSP), Sydney |",
+            "role": "Analytics Lead | Product Owner - Programmatic Analytics",
+            "date_range": "November 2020 - May 2022",
+            "bullets": [
+              "Drove data monetization strategy for media advertising analytics, creating scalable product roadmap aligned to client needs and platform capabilities."
+            ]
+          },
+          {
+            "company": "Microsoft Advertising, Sydney |",
+            "role": "Scaled Insights Specialist | Advertising Platform Analytics",
+            "date_range": "November 2018 - November 2020",
+            "bullets": [
+              "Drove scaled insights project coverage for main seasonal and sub-vertical opportunities across Microsoft Advertising AU market."
+            ]
+          },
+          {
+            "company": "Sparro (Digital Advertising Agency), Sydney |",
+            "role": "Digital Data Specialist | SEM Analytics & Optimization",
+            "date_range": "August 2017 - November 2018",
+            "bullets": [
+              "Drove marketing automation strategy across all major accounts using AdWords API, Google Analytics API, JavaScript, R, and Python."
+            ]
+          },
+          {
+            "company": "DNC Consulting Group, Sydney |",
+            "role": "Office Manager / Junior Data Analyst",
+            "date_range": "September 2016 - July 2017",
+            "bullets": [
+              "Conducted pipeline analysis, insights analysis, and campaign cost analysis using Google Analytics, Google AdWords, and Power BI.",
+              "Combined Google Analytics with cost data to identify inefficient promotion channels, reducing promotion cost by $8,000."
+            ]
+          }
+        ]
+      },
+      "quality_checks": {
+        "total_selected_evidence_count": 8,
+        "per_experience_bullet_count": [
+          {
+            "company": "Optus (Telecommunications & Streaming Media), Sydney |",
+            "role": "Analytics Lead/Manager, Data & Analytics",
+            "bullet_count": 3
+          },
+          {
+            "company": "Amobee (DSP), Sydney |",
+            "role": "Analytics Lead | Product Owner - Programmatic Analytics",
+            "bullet_count": 1
+          },
+          {
+            "company": "Microsoft Advertising, Sydney |",
+            "role": "Scaled Insights Specialist | Advertising Platform Analytics",
+            "bullet_count": 1
+          },
+          {
+            "company": "Sparro (Digital Advertising Agency), Sydney |",
+            "role": "Digital Data Specialist | SEM Analytics & Optimization",
+            "bullet_count": 1
+          },
+          {
+            "company": "DNC Consulting Group, Sydney |",
+            "role": "Office Manager / Junior Data Analyst",
+            "bullet_count": 2
+          }
+        ],
+        "top_matched_capabilities_represented": [
+          "commercial analytics",
+          "market & opportunity assessment"
+        ],
+        "critical_capabilities_reflected": [
+          {
+            "capability": "Market & Opportunity Assessment",
+            "reflected": true
+          },
+          {
+            "capability": "Commercial Analytics",
+            "reflected": true
+          }
+        ],
+        "unsupported_claims_introduced": false
+      },
+      "diagnostics": {
+        "legacy_mode_contributed": false,
+        "canonical_only_mode": true,
+        "notes": [
+          "Critical capabilities are reflected in output.",
+          "Selected evidence count is healthy."
+        ]
+      }
+    },
+    {
+      "job_id": "job-03-bi-transformation-program-lead",
+      "job_title": "BI Transformation Program Lead",
+      "benchmark_label": "medium_fit",
+      "match_score": 13.35,
+      "top_strengths": [],
+      "top_gaps": [
+        "BI / Data Platform Transformation",
+        "Capability Uplift & Enablement"
+      ],
+      "extracted_job_capability_profile": [
+        {
+          "canonical_name": "bi / data platform transformation",
+          "display_name": "BI / Data Platform Transformation",
+          "importance": "critical",
+          "evidence": [
+            "Required: lead enterprise BI modernization program, migrate reporting platforms, and manage transformation delivery across product/engineering/operations."
+          ],
+          "confidence": 0.32
+        },
+        {
+          "canonical_name": "capability uplift & enablement",
+          "display_name": "Capability Uplift & Enablement",
+          "importance": "critical",
+          "evidence": [
+            "Required: design adoption plans, capability uplift programs, training enablement, and governance standards."
+          ],
+          "confidence": 0.32
+        }
+      ],
+      "candidate_match_summary": {
+        "weighted_coverage_score": 0.15,
+        "critical_gap_penalty": 0.11,
+        "matched_critical_count": 0,
+        "missing_critical_count": 1
+      },
+      "selected_evidence_pieces": [
+        {
+          "evidence_piece_id": "35913a91-e2c2-4a5b-8e1f-3de65172b1c2",
+          "original_bullet": "Pioneered AI-powered analytics automation using Google BigQuery, Power BI, and LLMs to generate automated executive-level insights for NPS redesign program—reduced analysis time from 3-4 days to 4 hours and completed 7 major analyses",
+          "rewritten_bullet": "Pioneered AI-powered analytics automation using Google BigQuery, Power BI, and LLMs to generate automated executive-level insights for NPS redesign program—reduced analysis time from 3-4 days to 4 hours and completed 7 major analyses.",
+          "selection_reason": {
+            "canonical_capability_score": 1.8906250000000002,
+            "lexical_tiebreaker_score": 1.9000000000000001,
+            "matched_capability_count": 0,
+            "supporting_signal_count": 3
+          },
+          "matched_capabilities": [],
+          "supporting_signal_details": [
+            {
+              "evidence_signal_id": "10505411-ff4c-4ce9-96bc-c7617e13b6ce",
+              "action": "pioneered",
+              "ownership_level": "lead",
+              "scope_level": "task",
+              "impact_signal": "operational",
+              "linked_capabilities": [
+                "Operational Performance Optimization"
+              ]
+            },
+            {
+              "evidence_signal_id": "782c0481-23f4-4ab2-9fc5-bb15c061c162",
+              "action": "reduced",
+              "ownership_level": "contributor",
+              "scope_level": "project",
+              "impact_signal": "cost",
+              "linked_capabilities": [
+                "Commercial Analytics",
+                "Operational Performance Optimization"
+              ]
+            },
+            {
+              "evidence_signal_id": "43b2386e-4103-463d-ad84-a4bad31f0b14",
+              "action": null,
+              "ownership_level": null,
+              "scope_level": null,
+              "impact_signal": null,
+              "linked_capabilities": []
+            }
+          ],
+          "pool_sources": [
+            "top_capability:commercial analytics",
+            "top_capability:operational performance optimization"
+          ],
+          "rewrite_input": {
+            "target_job_capabilities": [
+              "BI / Data Platform Transformation",
+              "Capability Uplift & Enablement"
+            ],
+            "matched_candidate_capabilities": [],
+            "supporting_signal_actions": [
+              "pioneered",
+              "reduced"
+            ],
+            "highlight_priorities": []
+          }
+        },
+        {
+          "evidence_piece_id": "58636254-7f9e-40af-aa1c-dee1ddb30bb1",
+          "original_bullet": "Presented business cases to senior leadership for localization analytics strategy, securing budget and executive approval to build dedicated core team",
+          "rewritten_bullet": "Presented business cases to senior leadership for localization analytics strategy, securing budget and executive approval to build dedicated core team.",
+          "selection_reason": {
+            "canonical_capability_score": 1.875,
+            "lexical_tiebreaker_score": 0.8,
+            "matched_capability_count": 0,
+            "supporting_signal_count": 2
+          },
+          "matched_capabilities": [],
+          "supporting_signal_details": [
+            {
+              "evidence_signal_id": "f33aa888-931a-40af-8792-249b12356dec",
+              "action": "presented",
+              "ownership_level": "lead",
+              "scope_level": "task",
+              "impact_signal": "strategic",
+              "linked_capabilities": [
+                "Strategic Planning",
+                "Executive Influence & Business Cases"
+              ]
+            },
+            {
+              "evidence_signal_id": "4bc6ab3e-bcbc-469a-9c1b-20f502148627",
+              "action": "built",
+              "ownership_level": "contributor",
+              "scope_level": "team",
+              "impact_signal": null,
+              "linked_capabilities": []
+            }
+          ],
+          "pool_sources": [
+            "top_capability:strategic planning"
+          ],
+          "rewrite_input": {
+            "target_job_capabilities": [
+              "BI / Data Platform Transformation",
+              "Capability Uplift & Enablement"
+            ],
+            "matched_candidate_capabilities": [],
+            "supporting_signal_actions": [
+              "presented",
+              "built"
+            ],
+            "highlight_priorities": []
+          }
+        },
+        {
+          "evidence_piece_id": "a9e61a8e-f44b-4b31-8697-9131b5c27ed8",
+          "original_bullet": "Led enterprise-wide Power BI transformation: Conducted 20+ stakeholder interviews, launched centralized training portal, partnered with Microsoft to identify capability gaps, streamlined onboarding from 6 months to 1 month",
+          "rewritten_bullet": "Led enterprise-wide Power BI transformation: Conducted 20+ stakeholder interviews, launched centralized training portal, partnered with Microsoft to identify capability gaps, streamlined onboarding from 6 months to 1 month.",
+          "selection_reason": {
+            "canonical_capability_score": 8.054232500000001,
+            "lexical_tiebreaker_score": 1.7,
+            "matched_capability_count": 1,
+            "supporting_signal_count": 2
+          },
+          "matched_capabilities": [
+            "bi / data platform transformation"
+          ],
+          "supporting_signal_details": [
+            {
+              "evidence_signal_id": "8b3ca56d-cf58-4a44-82fe-8ca86aeabd92",
+              "action": "led",
+              "ownership_level": "lead",
+              "scope_level": "enterprise",
+              "impact_signal": "strategic",
+              "linked_capabilities": [
+                "Strategic Planning",
+                "BI / Data Platform Transformation",
+                "Transformation Delivery Leadership"
+              ]
+            },
+            {
+              "evidence_signal_id": "2f7488a5-9f11-43fa-b06c-469320f8ed89",
+              "action": "identified",
+              "ownership_level": "contributor",
+              "scope_level": "task",
+              "impact_signal": null,
+              "linked_capabilities": []
+            }
+          ],
+          "pool_sources": [
+            "capability_match.partial:bi / data platform transformation",
+            "capability_signal:8b3ca56d-cf58-4a44-82fe-8ca86aeabd92",
+            "top_capability:strategic planning"
+          ],
+          "rewrite_input": {
+            "target_job_capabilities": [
+              "BI / Data Platform Transformation",
+              "Capability Uplift & Enablement"
+            ],
+            "matched_candidate_capabilities": [
+              "BI / Data Platform Transformation"
+            ],
+            "supporting_signal_actions": [
+              "led",
+              "identified"
+            ],
+            "highlight_priorities": [
+              "BI / Data Platform Transformation",
+              "BI / Data Platform Transformation"
+            ]
+          }
+        },
+        {
+          "evidence_piece_id": "d38f4d63-6730-4521-95f8-cea932b9bb3c",
+          "original_bullet": "Drove data monetization strategy for media advertising analytics, creating scalable product roadmap aligned to client needs and platform capabilities",
+          "rewritten_bullet": "Drove data monetization strategy for media advertising analytics, creating scalable product roadmap aligned to client needs and platform capabilities.",
+          "selection_reason": {
+            "canonical_capability_score": 1.4437500000000003,
+            "lexical_tiebreaker_score": 1.1,
+            "matched_capability_count": 0,
+            "supporting_signal_count": 2
+          },
+          "matched_capabilities": [],
+          "supporting_signal_details": [
+            {
+              "evidence_signal_id": "aeccfa40-febe-46d2-a4a0-7881b868c296",
+              "action": "drove",
+              "ownership_level": "driver",
+              "scope_level": "project",
+              "impact_signal": "strategic",
+              "linked_capabilities": [
+                "Strategic Planning"
+              ]
+            },
+            {
+              "evidence_signal_id": "a78110c4-a529-4d3a-9b26-59b91bd69f7b",
+              "action": null,
+              "ownership_level": null,
+              "scope_level": null,
+              "impact_signal": null,
+              "linked_capabilities": []
+            }
+          ],
+          "pool_sources": [
+            "top_capability:strategic planning"
+          ],
+          "rewrite_input": {
+            "target_job_capabilities": [
+              "BI / Data Platform Transformation",
+              "Capability Uplift & Enablement"
+            ],
+            "matched_candidate_capabilities": [],
+            "supporting_signal_actions": [
+              "drove"
+            ],
+            "highlight_priorities": []
+          }
+        },
+        {
+          "evidence_piece_id": "d382344b-4695-48b6-91c0-35d5f4696937",
+          "original_bullet": "Drove marketing automation strategy across all major accounts using AdWords API, Google Analytics API, JavaScript, R, and Python",
+          "rewritten_bullet": "Drove marketing automation strategy across all major accounts using AdWords API, Google Analytics API, JavaScript, R, and Python.",
+          "selection_reason": {
+            "canonical_capability_score": 0.8250000000000002,
+            "lexical_tiebreaker_score": 0.8,
+            "matched_capability_count": 0,
+            "supporting_signal_count": 1
+          },
+          "matched_capabilities": [],
+          "supporting_signal_details": [
+            {
+              "evidence_signal_id": "dbf35149-0fda-4a8e-bbf0-721c0741198a",
+              "action": "drove",
+              "ownership_level": "driver",
+              "scope_level": "task",
+              "impact_signal": "operational",
+              "linked_capabilities": [
+                "Strategic Planning",
+                "Operational Performance Optimization"
+              ]
+            }
+          ],
+          "pool_sources": [
+            "top_capability:strategic planning",
+            "top_capability:operational performance optimization"
+          ],
+          "rewrite_input": {
+            "target_job_capabilities": [
+              "BI / Data Platform Transformation",
+              "Capability Uplift & Enablement"
+            ],
+            "matched_candidate_capabilities": [],
+            "supporting_signal_actions": [
+              "drove"
+            ],
+            "highlight_priorities": []
+          }
+        },
+        {
+          "evidence_piece_id": "421777e0-0145-45b4-ae86-870fa6067fea",
+          "original_bullet": "Conducted pipeline analysis, insights analysis, and campaign cost analysis using Google Analytics, Google AdWords, and Power BI",
+          "rewritten_bullet": "Conducted pipeline analysis, insights analysis, and campaign cost analysis using Google Analytics, Google AdWords, and Power BI.",
+          "selection_reason": {
+            "canonical_capability_score": 0.859375,
+            "lexical_tiebreaker_score": 0.8,
+            "matched_capability_count": 0,
+            "supporting_signal_count": 2
+          },
+          "matched_capabilities": [],
+          "supporting_signal_details": [
+            {
+              "evidence_signal_id": "5263458f-9e1a-49b4-b8a3-f95b3a67265f",
+              "action": null,
+              "ownership_level": null,
+              "scope_level": null,
+              "impact_signal": null,
+              "linked_capabilities": []
+            },
+            {
+              "evidence_signal_id": "a9ede6fc-5d98-4ce7-978b-0284aadbbfe4",
+              "action": null,
+              "ownership_level": null,
+              "scope_level": null,
+              "impact_signal": "cost",
+              "linked_capabilities": [
+                "Commercial Analytics"
+              ]
+            }
+          ],
+          "pool_sources": [
+            "top_capability:commercial analytics"
+          ],
+          "rewrite_input": {
+            "target_job_capabilities": [
+              "BI / Data Platform Transformation",
+              "Capability Uplift & Enablement"
+            ],
+            "matched_candidate_capabilities": [],
+            "supporting_signal_actions": [],
+            "highlight_priorities": []
+          }
+        },
+        {
+          "evidence_piece_id": "7d1b5db7-d30f-4c3c-8971-e650ab75b78f",
+          "original_bullet": "Combined Google Analytics with cost data to identify inefficient promotion channels, reducing promotion cost by $8,000",
+          "rewritten_bullet": "Combined Google Analytics with cost data to identify inefficient promotion channels, reducing promotion cost by $8,000.",
+          "selection_reason": {
+            "canonical_capability_score": 0.515625,
+            "lexical_tiebreaker_score": 0.8,
+            "matched_capability_count": 0,
+            "supporting_signal_count": 1
+          },
+          "matched_capabilities": [],
+          "supporting_signal_details": [
+            {
+              "evidence_signal_id": "467ed9ff-8bbc-4512-8b85-1f02023422bc",
+              "action": "identified",
+              "ownership_level": "contributor",
+              "scope_level": "task",
+              "impact_signal": "cost",
+              "linked_capabilities": [
+                "Commercial Analytics"
+              ]
+            }
+          ],
+          "pool_sources": [
+            "top_capability:commercial analytics"
+          ],
+          "rewrite_input": {
+            "target_job_capabilities": [
+              "BI / Data Platform Transformation",
+              "Capability Uplift & Enablement"
+            ],
+            "matched_candidate_capabilities": [],
+            "supporting_signal_actions": [
+              "identified"
+            ],
+            "highlight_priorities": []
+          }
+        }
+      ],
+      "tailored_summary": "BI Transformation Program leader with strengths in bi / data platform transformation and strategic planning. Recent work across Optus (Telecommunications & Streaming Media) and Amobee (DSP) includes revenue opportunity identification, executive decision support, and analytics automation.",
+      "tailored_bullets_5_to_8": [
+        "Pioneered AI-powered analytics automation using Google BigQuery, Power BI, and LLMs to generate automated executive-level insights for NPS redesign program—reduced analysis time from 3-4 days to 4 hours and completed 7 major analyses.",
+        "Presented business cases to senior leadership for localization analytics strategy, securing budget and executive approval to build dedicated core team.",
+        "Led enterprise-wide Power BI transformation: Conducted 20+ stakeholder interviews, launched centralized training portal, partnered with Microsoft to identify capability gaps, streamlined onboarding from 6 months to 1 month.",
+        "Drove data monetization strategy for media advertising analytics, creating scalable product roadmap aligned to client needs and platform capabilities.",
+        "Drove marketing automation strategy across all major accounts using AdWords API, Google Analytics API, JavaScript, R, and Python.",
+        "Conducted pipeline analysis, insights analysis, and campaign cost analysis using Google Analytics, Google AdWords, and Power BI.",
+        "Combined Google Analytics with cost data to identify inefficient promotion channels, reducing promotion cost by $8,000."
+      ],
+      "final_structured_resume_output": {
+        "summary": "BI Transformation Program leader with strengths in bi / data platform transformation and strategic planning. Recent work across Optus (Telecommunications & Streaming Media) and Amobee (DSP) includes revenue opportunity identification, executive decision support, and analytics automation.",
+        "experience": [
+          {
+            "company": "Optus (Telecommunications & Streaming Media), Sydney |",
+            "role": "Analytics Lead/Manager, Data & Analytics",
+            "date_range": "May 2022 - February 2026",
+            "bullets": [
+              "Pioneered AI-powered analytics automation using Google BigQuery, Power BI, and LLMs to generate automated executive-level insights for NPS redesign program—reduced analysis time from 3-4 days to 4 hours and completed 7 major analyses.",
+              "Presented business cases to senior leadership for localization analytics strategy, securing budget and executive approval to build dedicated core team.",
+              "Led enterprise-wide Power BI transformation: Conducted 20+ stakeholder interviews, launched centralized training portal, partnered with Microsoft to identify capability gaps, streamlined onboarding from 6 months to 1 month."
+            ]
+          },
+          {
+            "company": "Amobee (DSP), Sydney |",
+            "role": "Analytics Lead | Product Owner - Programmatic Analytics",
+            "date_range": "November 2020 - May 2022",
+            "bullets": [
+              "Drove data monetization strategy for media advertising analytics, creating scalable product roadmap aligned to client needs and platform capabilities."
+            ]
+          },
+          {
+            "company": "Sparro (Digital Advertising Agency), Sydney |",
+            "role": "Digital Data Specialist | SEM Analytics & Optimization",
+            "date_range": "August 2017 - November 2018",
+            "bullets": [
+              "Drove marketing automation strategy across all major accounts using AdWords API, Google Analytics API, JavaScript, R, and Python."
+            ]
+          },
+          {
+            "company": "DNC Consulting Group, Sydney |",
+            "role": "Office Manager / Junior Data Analyst",
+            "date_range": "September 2016 - July 2017",
+            "bullets": [
+              "Conducted pipeline analysis, insights analysis, and campaign cost analysis using Google Analytics, Google AdWords, and Power BI.",
+              "Combined Google Analytics with cost data to identify inefficient promotion channels, reducing promotion cost by $8,000."
+            ]
+          }
+        ]
+      },
+      "quality_checks": {
+        "total_selected_evidence_count": 7,
+        "per_experience_bullet_count": [
+          {
+            "company": "Optus (Telecommunications & Streaming Media), Sydney |",
+            "role": "Analytics Lead/Manager, Data & Analytics",
+            "bullet_count": 3
+          },
+          {
+            "company": "Amobee (DSP), Sydney |",
+            "role": "Analytics Lead | Product Owner - Programmatic Analytics",
+            "bullet_count": 1
+          },
+          {
+            "company": "Sparro (Digital Advertising Agency), Sydney |",
+            "role": "Digital Data Specialist | SEM Analytics & Optimization",
+            "bullet_count": 1
+          },
+          {
+            "company": "DNC Consulting Group, Sydney |",
+            "role": "Office Manager / Junior Data Analyst",
+            "bullet_count": 2
+          }
+        ],
+        "top_matched_capabilities_represented": [
+          "bi / data platform transformation"
+        ],
+        "critical_capabilities_reflected": [
+          {
+            "capability": "BI / Data Platform Transformation",
+            "reflected": true
+          },
+          {
+            "capability": "Capability Uplift & Enablement",
+            "reflected": true
+          }
+        ],
+        "unsupported_claims_introduced": false
+      },
+      "diagnostics": {
+        "legacy_mode_contributed": false,
+        "canonical_only_mode": true,
+        "notes": [
+          "Critical capabilities are reflected in output.",
+          "Selected evidence count is healthy."
+        ]
+      }
+    },
+    {
+      "job_id": "job-04-ops-automation-manager",
+      "job_title": "Operational Automation Manager",
+      "benchmark_label": "medium_fit",
+      "match_score": 39.85,
+      "top_strengths": [],
+      "top_gaps": [
+        "Analytics Automation"
+      ],
+      "extracted_job_capability_profile": [
+        {
+          "canonical_name": "analytics automation",
+          "display_name": "Analytics Automation",
+          "importance": "critical",
+          "evidence": [
+            "Operational Automation Manager.",
+            "Required: identify operational bottlenecks, optimize process performance, and deploy automation workflows using SQL/Python/BI tooling."
+          ],
+          "confidence": 0.72
+        },
+        {
+          "canonical_name": "operational performance optimization",
+          "display_name": "Operational Performance Optimization",
+          "importance": "important",
+          "evidence": [
+            "Own delivery of initiatives improving efficiency, cycle time, and operating cost."
+          ],
+          "confidence": 0.2
+        }
+      ],
+      "candidate_match_summary": {
+        "weighted_coverage_score": 0.3985,
+        "critical_gap_penalty": 0,
+        "matched_critical_count": 0,
+        "missing_critical_count": 0
+      },
+      "selected_evidence_pieces": [
+        {
+          "evidence_piece_id": "35913a91-e2c2-4a5b-8e1f-3de65172b1c2",
+          "original_bullet": "Pioneered AI-powered analytics automation using Google BigQuery, Power BI, and LLMs to generate automated executive-level insights for NPS redesign program—reduced analysis time from 3-4 days to 4 hours and completed 7 major analyses",
+          "rewritten_bullet": "Pioneered AI-powered analytics automation using Google BigQuery, Power BI, and LLMs to generate automated executive-level insights for NPS redesign program—reduced analysis time from 3-4 days to 4 hours and completed 7 major analyses.",
+          "selection_reason": {
+            "canonical_capability_score": 6.818309999999999,
+            "lexical_tiebreaker_score": 2.5,
+            "matched_capability_count": 1,
+            "supporting_signal_count": 3
+          },
+          "matched_capabilities": [
+            "operational performance optimization"
+          ],
+          "supporting_signal_details": [
+            {
+              "evidence_signal_id": "10505411-ff4c-4ce9-96bc-c7617e13b6ce",
+              "action": "pioneered",
+              "ownership_level": "lead",
+              "scope_level": "task",
+              "impact_signal": "operational",
+              "linked_capabilities": [
+                "Operational Performance Optimization"
+              ]
+            },
+            {
+              "evidence_signal_id": "782c0481-23f4-4ab2-9fc5-bb15c061c162",
+              "action": "reduced",
+              "ownership_level": "contributor",
+              "scope_level": "project",
+              "impact_signal": "cost",
+              "linked_capabilities": [
+                "Commercial Analytics",
+                "Operational Performance Optimization"
+              ]
+            },
+            {
+              "evidence_signal_id": "43b2386e-4103-463d-ad84-a4bad31f0b14",
+              "action": null,
+              "ownership_level": null,
+              "scope_level": null,
+              "impact_signal": null,
+              "linked_capabilities": []
+            }
+          ],
+          "pool_sources": [
+            "capability_match.partial:analytics automation",
+            "capability_signal:782c0481-23f4-4ab2-9fc5-bb15c061c162",
+            "capability_match.partial:operational performance optimization",
+            "capability_signal:10505411-ff4c-4ce9-96bc-c7617e13b6ce",
+            "top_capability:commercial analytics",
+            "top_capability:operational performance optimization"
+          ],
+          "rewrite_input": {
+            "target_job_capabilities": [
+              "Analytics Automation",
+              "Operational Performance Optimization"
+            ],
+            "matched_candidate_capabilities": [
+              "Operational Performance Optimization"
+            ],
+            "supporting_signal_actions": [
+              "pioneered",
+              "reduced"
+            ],
+            "highlight_priorities": [
+              "Operational Performance Optimization",
+              "Operational Performance Optimization"
+            ]
+          }
+        },
+        {
+          "evidence_piece_id": "3acf0174-1bcb-4ac5-a78c-67af28791bae",
+          "original_bullet": "Lead team of 6 analytics professionals with oversight of 22 across business units, fostering commercial thinking and accountability for impact—delivered FY24 outcomes: 381 working days optimized, 1.9M customers supported, $30M+ revenue opportunities identified",
+          "rewritten_bullet": "Lead team of 6 analytics professionals with oversight of 22 across business units, fostering commercial thinking and accountability for impact—delivered FY24 outcomes: 381 working days optimized, 1.9M customers supported, $30M+ revenue.",
+          "selection_reason": {
+            "canonical_capability_score": 7.521434999999999,
+            "lexical_tiebreaker_score": 0.8,
+            "matched_capability_count": 1,
+            "supporting_signal_count": 3
+          },
+          "matched_capabilities": [
+            "operational performance optimization"
+          ],
+          "supporting_signal_details": [
+            {
+              "evidence_signal_id": "4fcf5ac8-56e9-42cc-9580-9ed985bfba18",
+              "action": "led",
+              "ownership_level": "lead",
+              "scope_level": "team",
+              "impact_signal": null,
+              "linked_capabilities": [
+                "People Leadership"
+              ]
+            },
+            {
+              "evidence_signal_id": "b3693684-7173-4a3f-bbbc-14d73befe479",
+              "action": "delivered",
+              "ownership_level": "contributor",
+              "scope_level": "task",
+              "impact_signal": null,
+              "linked_capabilities": [
+                "Operational Performance Optimization"
+              ]
+            },
+            {
+              "evidence_signal_id": "bdba73ba-3f49-4d3e-a0ad-f0b600610e74",
+              "action": "identified",
+              "ownership_level": "contributor",
+              "scope_level": "market",
+              "impact_signal": "revenue",
+              "linked_capabilities": [
+                "Commercial Analytics",
+                "Market & Opportunity Assessment"
+              ]
+            }
+          ],
+          "pool_sources": [
+            "capability_match.partial:operational performance optimization",
+            "capability_signal:b3693684-7173-4a3f-bbbc-14d73befe479",
+            "top_capability:commercial analytics",
+            "top_capability:operational performance optimization",
+            "top_capability:market & opportunity assessment",
+            "top_capability:people leadership"
+          ],
+          "rewrite_input": {
+            "target_job_capabilities": [
+              "Analytics Automation",
+              "Operational Performance Optimization"
+            ],
+            "matched_candidate_capabilities": [
+              "Operational Performance Optimization"
+            ],
+            "supporting_signal_actions": [
+              "led",
+              "delivered",
+              "identified"
+            ],
+            "highlight_priorities": [
+              "Operational Performance Optimization",
+              "Operational Performance Optimization"
+            ]
+          }
+        },
+        {
+          "evidence_piece_id": "4f8d05cd-418d-4737-8499-7044b7319f6f",
+          "original_bullet": "Drove localized growth strategy through granular market opportunity assessment including national and SA3-level competitive landscape analysis across product groups and customer cohorts, collaborating with Go-to-Market teams to define localization strategy, scope initiatives, and monitor performance—identified $5M revenue gap closure opportunity",
+          "rewritten_bullet": "Drove localized growth strategy through granular market opportunity assessment including national and SA3-level competitive landscape analysis across product groups and customer cohorts, collaborating with Go-to-Market teams to define.",
+          "selection_reason": {
+            "canonical_capability_score": 4.28125,
+            "lexical_tiebreaker_score": 0.6,
+            "matched_capability_count": 0,
+            "supporting_signal_count": 4
+          },
+          "matched_capabilities": [],
+          "supporting_signal_details": [
+            {
+              "evidence_signal_id": "3e2c3c06-0c03-415f-8f83-5f0ef763396b",
+              "action": "drove",
+              "ownership_level": "driver",
+              "scope_level": "market",
+              "impact_signal": "strategic",
+              "linked_capabilities": [
+                "Strategic Planning"
+              ]
+            },
+            {
+              "evidence_signal_id": "02908e16-2c78-4390-a48a-de89be0f8f01",
+              "action": null,
+              "ownership_level": null,
+              "scope_level": null,
+              "impact_signal": null,
+              "linked_capabilities": []
+            },
+            {
+              "evidence_signal_id": "0971383a-7f08-42e4-ac9a-e695387b10dd",
+              "action": null,
+              "ownership_level": null,
+              "scope_level": "market",
+              "impact_signal": "strategic",
+              "linked_capabilities": [
+                "Strategic Planning"
+              ]
+            },
+            {
+              "evidence_signal_id": "7ef18fe5-4c49-4010-8494-794a88be8687",
+              "action": "identified",
+              "ownership_level": "contributor",
+              "scope_level": "task",
+              "impact_signal": "revenue",
+              "linked_capabilities": [
+                "Commercial Analytics"
+              ]
+            }
+          ],
+          "pool_sources": [
+            "top_capability:strategic planning",
+            "top_capability:commercial analytics"
+          ],
+          "rewrite_input": {
+            "target_job_capabilities": [
+              "Analytics Automation",
+              "Operational Performance Optimization"
+            ],
+            "matched_candidate_capabilities": [],
+            "supporting_signal_actions": [
+              "drove",
+              "identified"
+            ],
+            "highlight_priorities": []
+          }
+        },
+        {
+          "evidence_piece_id": "d38f4d63-6730-4521-95f8-cea932b9bb3c",
+          "original_bullet": "Drove data monetization strategy for media advertising analytics, creating scalable product roadmap aligned to client needs and platform capabilities",
+          "rewritten_bullet": "Drove data monetization strategy for media advertising analytics, creating scalable product roadmap aligned to client needs and platform capabilities.",
+          "selection_reason": {
+            "canonical_capability_score": 1.4437500000000003,
+            "lexical_tiebreaker_score": 0.8,
+            "matched_capability_count": 0,
+            "supporting_signal_count": 2
+          },
+          "matched_capabilities": [],
+          "supporting_signal_details": [
+            {
+              "evidence_signal_id": "aeccfa40-febe-46d2-a4a0-7881b868c296",
+              "action": "drove",
+              "ownership_level": "driver",
+              "scope_level": "project",
+              "impact_signal": "strategic",
+              "linked_capabilities": [
+                "Strategic Planning"
+              ]
+            },
+            {
+              "evidence_signal_id": "a78110c4-a529-4d3a-9b26-59b91bd69f7b",
+              "action": null,
+              "ownership_level": null,
+              "scope_level": null,
+              "impact_signal": null,
+              "linked_capabilities": []
+            }
+          ],
+          "pool_sources": [
+            "top_capability:strategic planning"
+          ],
+          "rewrite_input": {
+            "target_job_capabilities": [
+              "Analytics Automation",
+              "Operational Performance Optimization"
+            ],
+            "matched_candidate_capabilities": [],
+            "supporting_signal_actions": [
+              "drove"
+            ],
+            "highlight_priorities": []
+          }
+        },
+        {
+          "evidence_piece_id": "d382344b-4695-48b6-91c0-35d5f4696937",
+          "original_bullet": "Drove marketing automation strategy across all major accounts using AdWords API, Google Analytics API, JavaScript, R, and Python",
+          "rewritten_bullet": "Drove marketing automation strategy across all major accounts using AdWords API, Google Analytics API, JavaScript, R, and Python.",
+          "selection_reason": {
+            "canonical_capability_score": 5.752685,
+            "lexical_tiebreaker_score": 3.3000000000000003,
+            "matched_capability_count": 1,
+            "supporting_signal_count": 1
+          },
+          "matched_capabilities": [
+            "operational performance optimization"
+          ],
+          "supporting_signal_details": [
+            {
+              "evidence_signal_id": "dbf35149-0fda-4a8e-bbf0-721c0741198a",
+              "action": "drove",
+              "ownership_level": "driver",
+              "scope_level": "task",
+              "impact_signal": "operational",
+              "linked_capabilities": [
+                "Strategic Planning",
+                "Operational Performance Optimization"
+              ]
+            }
+          ],
+          "pool_sources": [
+            "capability_match.partial:operational performance optimization",
+            "capability_signal:dbf35149-0fda-4a8e-bbf0-721c0741198a",
+            "top_capability:strategic planning",
+            "top_capability:operational performance optimization"
+          ],
+          "rewrite_input": {
+            "target_job_capabilities": [
+              "Analytics Automation",
+              "Operational Performance Optimization"
+            ],
+            "matched_candidate_capabilities": [
+              "Operational Performance Optimization"
+            ],
+            "supporting_signal_actions": [
+              "drove"
+            ],
+            "highlight_priorities": [
+              "Operational Performance Optimization",
+              "Operational Performance Optimization"
+            ]
+          }
+        },
+        {
+          "evidence_piece_id": "421777e0-0145-45b4-ae86-870fa6067fea",
+          "original_bullet": "Conducted pipeline analysis, insights analysis, and campaign cost analysis using Google Analytics, Google AdWords, and Power BI",
+          "rewritten_bullet": "Conducted pipeline analysis, insights analysis, and campaign cost analysis using Google Analytics, Google AdWords, and Power BI.",
+          "selection_reason": {
+            "canonical_capability_score": 0.859375,
+            "lexical_tiebreaker_score": 1.4,
+            "matched_capability_count": 0,
+            "supporting_signal_count": 2
+          },
+          "matched_capabilities": [],
+          "supporting_signal_details": [
+            {
+              "evidence_signal_id": "5263458f-9e1a-49b4-b8a3-f95b3a67265f",
+              "action": null,
+              "ownership_level": null,
+              "scope_level": null,
+              "impact_signal": null,
+              "linked_capabilities": []
+            },
+            {
+              "evidence_signal_id": "a9ede6fc-5d98-4ce7-978b-0284aadbbfe4",
+              "action": null,
+              "ownership_level": null,
+              "scope_level": null,
+              "impact_signal": "cost",
+              "linked_capabilities": [
+                "Commercial Analytics"
+              ]
+            }
+          ],
+          "pool_sources": [
+            "capability_match.partial:analytics automation",
+            "capability_signal:5263458f-9e1a-49b4-b8a3-f95b3a67265f",
+            "top_capability:commercial analytics"
+          ],
+          "rewrite_input": {
+            "target_job_capabilities": [
+              "Analytics Automation",
+              "Operational Performance Optimization"
+            ],
+            "matched_candidate_capabilities": [],
+            "supporting_signal_actions": [],
+            "highlight_priorities": []
+          }
+        },
+        {
+          "evidence_piece_id": "7d1b5db7-d30f-4c3c-8971-e650ab75b78f",
+          "original_bullet": "Combined Google Analytics with cost data to identify inefficient promotion channels, reducing promotion cost by $8,000",
+          "rewritten_bullet": "Combined Google Analytics with cost data to identify inefficient promotion channels, reducing promotion cost by $8,000.",
+          "selection_reason": {
+            "canonical_capability_score": 0.515625,
+            "lexical_tiebreaker_score": 1.4,
+            "matched_capability_count": 0,
+            "supporting_signal_count": 1
+          },
+          "matched_capabilities": [],
+          "supporting_signal_details": [
+            {
+              "evidence_signal_id": "467ed9ff-8bbc-4512-8b85-1f02023422bc",
+              "action": "identified",
+              "ownership_level": "contributor",
+              "scope_level": "task",
+              "impact_signal": "cost",
+              "linked_capabilities": [
+                "Commercial Analytics"
+              ]
+            }
+          ],
+          "pool_sources": [
+            "top_capability:commercial analytics"
+          ],
+          "rewrite_input": {
+            "target_job_capabilities": [
+              "Analytics Automation",
+              "Operational Performance Optimization"
+            ],
+            "matched_candidate_capabilities": [],
+            "supporting_signal_actions": [
+              "identified"
+            ],
+            "highlight_priorities": []
+          }
+        }
+      ],
+      "tailored_summary": "Operational Automation leader with strengths in operational performance optimization and strategic planning. Recent work across Optus (Telecommunications & Streaming Media) and Sparro (Digital Advertising Agency) includes revenue opportunity identification, executive decision support, and analytics automation.",
+      "tailored_bullets_5_to_8": [
+        "Pioneered AI-powered analytics automation using Google BigQuery, Power BI, and LLMs to generate automated executive-level insights for NPS redesign program—reduced analysis time from 3-4 days to 4 hours and completed 7 major analyses.",
+        "Lead team of 6 analytics professionals with oversight of 22 across business units, fostering commercial thinking and accountability for impact—delivered FY24 outcomes: 381 working days optimized, 1.9M customers supported, $30M+ revenue.",
+        "Drove localized growth strategy through granular market opportunity assessment including national and SA3-level competitive landscape analysis across product groups and customer cohorts, collaborating with Go-to-Market teams to define.",
+        "Drove data monetization strategy for media advertising analytics, creating scalable product roadmap aligned to client needs and platform capabilities.",
+        "Drove marketing automation strategy across all major accounts using AdWords API, Google Analytics API, JavaScript, R, and Python.",
+        "Conducted pipeline analysis, insights analysis, and campaign cost analysis using Google Analytics, Google AdWords, and Power BI.",
+        "Combined Google Analytics with cost data to identify inefficient promotion channels, reducing promotion cost by $8,000."
+      ],
+      "final_structured_resume_output": {
+        "summary": "Operational Automation leader with strengths in operational performance optimization and strategic planning. Recent work across Optus (Telecommunications & Streaming Media) and Sparro (Digital Advertising Agency) includes revenue opportunity identification, executive decision support, and analytics automation.",
+        "experience": [
+          {
+            "company": "Optus (Telecommunications & Streaming Media), Sydney |",
+            "role": "Analytics Lead/Manager, Data & Analytics",
+            "date_range": "May 2022 - February 2026",
+            "bullets": [
+              "Pioneered AI-powered analytics automation using Google BigQuery, Power BI, and LLMs to generate automated executive-level insights for NPS redesign program—reduced analysis time from 3-4 days to 4 hours and completed 7 major analyses.",
+              "Lead team of 6 analytics professionals with oversight of 22 across business units, fostering commercial thinking and accountability for impact—delivered FY24 outcomes: 381 working days optimized, 1.9M customers supported, $30M+ revenue.",
+              "Drove localized growth strategy through granular market opportunity assessment including national and SA3-level competitive landscape analysis across product groups and customer cohorts, collaborating with Go-to-Market teams to define."
+            ]
+          },
+          {
+            "company": "Amobee (DSP), Sydney |",
+            "role": "Analytics Lead | Product Owner - Programmatic Analytics",
+            "date_range": "November 2020 - May 2022",
+            "bullets": [
+              "Drove data monetization strategy for media advertising analytics, creating scalable product roadmap aligned to client needs and platform capabilities."
+            ]
+          },
+          {
+            "company": "Sparro (Digital Advertising Agency), Sydney |",
+            "role": "Digital Data Specialist | SEM Analytics & Optimization",
+            "date_range": "August 2017 - November 2018",
+            "bullets": [
+              "Drove marketing automation strategy across all major accounts using AdWords API, Google Analytics API, JavaScript, R, and Python."
+            ]
+          },
+          {
+            "company": "DNC Consulting Group, Sydney |",
+            "role": "Office Manager / Junior Data Analyst",
+            "date_range": "September 2016 - July 2017",
+            "bullets": [
+              "Conducted pipeline analysis, insights analysis, and campaign cost analysis using Google Analytics, Google AdWords, and Power BI.",
+              "Combined Google Analytics with cost data to identify inefficient promotion channels, reducing promotion cost by $8,000."
+            ]
+          }
+        ]
+      },
+      "quality_checks": {
+        "total_selected_evidence_count": 7,
+        "per_experience_bullet_count": [
+          {
+            "company": "Optus (Telecommunications & Streaming Media), Sydney |",
+            "role": "Analytics Lead/Manager, Data & Analytics",
+            "bullet_count": 3
+          },
+          {
+            "company": "Amobee (DSP), Sydney |",
+            "role": "Analytics Lead | Product Owner - Programmatic Analytics",
+            "bullet_count": 1
+          },
+          {
+            "company": "Sparro (Digital Advertising Agency), Sydney |",
+            "role": "Digital Data Specialist | SEM Analytics & Optimization",
+            "bullet_count": 1
+          },
+          {
+            "company": "DNC Consulting Group, Sydney |",
+            "role": "Office Manager / Junior Data Analyst",
+            "bullet_count": 2
+          }
+        ],
+        "top_matched_capabilities_represented": [
+          "operational performance optimization"
+        ],
+        "critical_capabilities_reflected": [
+          {
+            "capability": "Analytics Automation",
+            "reflected": true
+          }
+        ],
+        "unsupported_claims_introduced": false
+      },
+      "diagnostics": {
+        "legacy_mode_contributed": false,
+        "canonical_only_mode": true,
+        "notes": [
+          "Critical capabilities are reflected in output.",
+          "Selected evidence count is healthy."
+        ]
+      }
+    },
+    {
+      "job_id": "job-05-enterprise-sales-director",
+      "job_title": "Enterprise Sales Director",
+      "benchmark_label": "weak_fit",
+      "match_score": 0,
+      "top_strengths": [],
+      "top_gaps": [],
+      "extracted_job_capability_profile": [],
+      "candidate_match_summary": {
+        "weighted_coverage_score": 0,
+        "critical_gap_penalty": 0,
+        "matched_critical_count": 0,
+        "missing_critical_count": 0
+      },
+      "selected_evidence_pieces": [
+        {
+          "evidence_piece_id": "3acf0174-1bcb-4ac5-a78c-67af28791bae",
+          "original_bullet": "Lead team of 6 analytics professionals with oversight of 22 across business units, fostering commercial thinking and accountability for impact—delivered FY24 outcomes: 381 working days optimized, 1.9M customers supported, $30M+ revenue opportunities identified",
+          "rewritten_bullet": "Lead team of 6 analytics professionals with oversight of 22 across business units, fostering commercial thinking and accountability for impact—delivered FY24 outcomes: 381 working days optimized, 1.9M customers supported, $30M+ revenue.",
+          "selection_reason": {
+            "canonical_capability_score": 2.59375,
+            "lexical_tiebreaker_score": 1.4,
+            "matched_capability_count": 0,
+            "supporting_signal_count": 3
+          },
+          "matched_capabilities": [],
+          "supporting_signal_details": [
+            {
+              "evidence_signal_id": "4fcf5ac8-56e9-42cc-9580-9ed985bfba18",
+              "action": "led",
+              "ownership_level": "lead",
+              "scope_level": "team",
+              "impact_signal": null,
+              "linked_capabilities": [
+                "People Leadership"
+              ]
+            },
+            {
+              "evidence_signal_id": "b3693684-7173-4a3f-bbbc-14d73befe479",
+              "action": "delivered",
+              "ownership_level": "contributor",
+              "scope_level": "task",
+              "impact_signal": null,
+              "linked_capabilities": [
+                "Operational Performance Optimization"
+              ]
+            },
+            {
+              "evidence_signal_id": "bdba73ba-3f49-4d3e-a0ad-f0b600610e74",
+              "action": "identified",
+              "ownership_level": "contributor",
+              "scope_level": "market",
+              "impact_signal": "revenue",
+              "linked_capabilities": [
+                "Commercial Analytics",
+                "Market & Opportunity Assessment"
+              ]
+            }
+          ],
+          "pool_sources": [
+            "top_capability:commercial analytics",
+            "top_capability:operational performance optimization",
+            "top_capability:market & opportunity assessment",
+            "top_capability:people leadership"
+          ],
+          "rewrite_input": {
+            "target_job_capabilities": [],
+            "matched_candidate_capabilities": [],
+            "supporting_signal_actions": [
+              "led",
+              "delivered",
+              "identified"
+            ],
+            "highlight_priorities": []
+          }
+        },
+        {
+          "evidence_piece_id": "4f8d05cd-418d-4737-8499-7044b7319f6f",
+          "original_bullet": "Drove localized growth strategy through granular market opportunity assessment including national and SA3-level competitive landscape analysis across product groups and customer cohorts, collaborating with Go-to-Market teams to define localization strategy, scope initiatives, and monitor performance—identified $5M revenue gap closure opportunity",
+          "rewritten_bullet": "Drove localized growth strategy through granular market opportunity assessment including national and SA3-level competitive landscape analysis across product groups and customer cohorts, collaborating with Go-to-Market teams to define.",
+          "selection_reason": {
+            "canonical_capability_score": 4.28125,
+            "lexical_tiebreaker_score": 1.1,
+            "matched_capability_count": 0,
+            "supporting_signal_count": 4
+          },
+          "matched_capabilities": [],
+          "supporting_signal_details": [
+            {
+              "evidence_signal_id": "3e2c3c06-0c03-415f-8f83-5f0ef763396b",
+              "action": "drove",
+              "ownership_level": "driver",
+              "scope_level": "market",
+              "impact_signal": "strategic",
+              "linked_capabilities": [
+                "Strategic Planning"
+              ]
+            },
+            {
+              "evidence_signal_id": "02908e16-2c78-4390-a48a-de89be0f8f01",
+              "action": null,
+              "ownership_level": null,
+              "scope_level": null,
+              "impact_signal": null,
+              "linked_capabilities": []
+            },
+            {
+              "evidence_signal_id": "0971383a-7f08-42e4-ac9a-e695387b10dd",
+              "action": null,
+              "ownership_level": null,
+              "scope_level": "market",
+              "impact_signal": "strategic",
+              "linked_capabilities": [
+                "Strategic Planning"
+              ]
+            },
+            {
+              "evidence_signal_id": "7ef18fe5-4c49-4010-8494-794a88be8687",
+              "action": "identified",
+              "ownership_level": "contributor",
+              "scope_level": "task",
+              "impact_signal": "revenue",
+              "linked_capabilities": [
+                "Commercial Analytics"
+              ]
+            }
+          ],
+          "pool_sources": [
+            "top_capability:strategic planning",
+            "top_capability:commercial analytics"
+          ],
+          "rewrite_input": {
+            "target_job_capabilities": [],
+            "matched_candidate_capabilities": [],
+            "supporting_signal_actions": [
+              "drove",
+              "identified"
+            ],
+            "highlight_priorities": []
+          }
+        },
+        {
+          "evidence_piece_id": "58636254-7f9e-40af-aa1c-dee1ddb30bb1",
+          "original_bullet": "Presented business cases to senior leadership for localization analytics strategy, securing budget and executive approval to build dedicated core team",
+          "rewritten_bullet": "Presented business cases to senior leadership for localization analytics strategy, securing budget and executive approval to build dedicated core team.",
+          "selection_reason": {
+            "canonical_capability_score": 1.875,
+            "lexical_tiebreaker_score": 1.9000000000000001,
+            "matched_capability_count": 0,
+            "supporting_signal_count": 2
+          },
+          "matched_capabilities": [],
+          "supporting_signal_details": [
+            {
+              "evidence_signal_id": "f33aa888-931a-40af-8792-249b12356dec",
+              "action": "presented",
+              "ownership_level": "lead",
+              "scope_level": "task",
+              "impact_signal": "strategic",
+              "linked_capabilities": [
+                "Strategic Planning",
+                "Executive Influence & Business Cases"
+              ]
+            },
+            {
+              "evidence_signal_id": "4bc6ab3e-bcbc-469a-9c1b-20f502148627",
+              "action": "built",
+              "ownership_level": "contributor",
+              "scope_level": "team",
+              "impact_signal": null,
+              "linked_capabilities": []
+            }
+          ],
+          "pool_sources": [
+            "top_capability:strategic planning"
+          ],
+          "rewrite_input": {
+            "target_job_capabilities": [],
+            "matched_candidate_capabilities": [],
+            "supporting_signal_actions": [
+              "presented",
+              "built"
+            ],
+            "highlight_priorities": []
+          }
+        },
+        {
+          "evidence_piece_id": "d38f4d63-6730-4521-95f8-cea932b9bb3c",
+          "original_bullet": "Drove data monetization strategy for media advertising analytics, creating scalable product roadmap aligned to client needs and platform capabilities",
+          "rewritten_bullet": "Drove data monetization strategy for media advertising analytics, creating scalable product roadmap aligned to client needs and platform capabilities.",
+          "selection_reason": {
+            "canonical_capability_score": 1.4437500000000003,
+            "lexical_tiebreaker_score": 3.8000000000000003,
+            "matched_capability_count": 0,
+            "supporting_signal_count": 2
+          },
+          "matched_capabilities": [],
+          "supporting_signal_details": [
+            {
+              "evidence_signal_id": "aeccfa40-febe-46d2-a4a0-7881b868c296",
+              "action": "drove",
+              "ownership_level": "driver",
+              "scope_level": "project",
+              "impact_signal": "strategic",
+              "linked_capabilities": [
+                "Strategic Planning"
+              ]
+            },
+            {
+              "evidence_signal_id": "a78110c4-a529-4d3a-9b26-59b91bd69f7b",
+              "action": null,
+              "ownership_level": null,
+              "scope_level": null,
+              "impact_signal": null,
+              "linked_capabilities": []
+            }
+          ],
+          "pool_sources": [
+            "top_capability:strategic planning"
+          ],
+          "rewrite_input": {
+            "target_job_capabilities": [],
+            "matched_candidate_capabilities": [],
+            "supporting_signal_actions": [
+              "drove"
+            ],
+            "highlight_priorities": []
+          }
+        },
+        {
+          "evidence_piece_id": "d382344b-4695-48b6-91c0-35d5f4696937",
+          "original_bullet": "Drove marketing automation strategy across all major accounts using AdWords API, Google Analytics API, JavaScript, R, and Python",
+          "rewritten_bullet": "Drove marketing automation strategy across all major accounts using AdWords API, Google Analytics API, JavaScript, R, and Python.",
+          "selection_reason": {
+            "canonical_capability_score": 0.8250000000000002,
+            "lexical_tiebreaker_score": 2.2,
+            "matched_capability_count": 0,
+            "supporting_signal_count": 1
+          },
+          "matched_capabilities": [],
+          "supporting_signal_details": [
+            {
+              "evidence_signal_id": "dbf35149-0fda-4a8e-bbf0-721c0741198a",
+              "action": "drove",
+              "ownership_level": "driver",
+              "scope_level": "task",
+              "impact_signal": "operational",
+              "linked_capabilities": [
+                "Strategic Planning",
+                "Operational Performance Optimization"
+              ]
+            }
+          ],
+          "pool_sources": [
+            "top_capability:strategic planning",
+            "top_capability:operational performance optimization"
+          ],
+          "rewrite_input": {
+            "target_job_capabilities": [],
+            "matched_candidate_capabilities": [],
+            "supporting_signal_actions": [
+              "drove"
+            ],
+            "highlight_priorities": []
+          }
+        },
+        {
+          "evidence_piece_id": "421777e0-0145-45b4-ae86-870fa6067fea",
+          "original_bullet": "Conducted pipeline analysis, insights analysis, and campaign cost analysis using Google Analytics, Google AdWords, and Power BI",
+          "rewritten_bullet": "Conducted pipeline analysis, insights analysis, and campaign cost analysis using Google Analytics, Google AdWords, and Power BI.",
+          "selection_reason": {
+            "canonical_capability_score": 0.859375,
+            "lexical_tiebreaker_score": 1.4,
+            "matched_capability_count": 0,
+            "supporting_signal_count": 2
+          },
+          "matched_capabilities": [],
+          "supporting_signal_details": [
+            {
+              "evidence_signal_id": "5263458f-9e1a-49b4-b8a3-f95b3a67265f",
+              "action": null,
+              "ownership_level": null,
+              "scope_level": null,
+              "impact_signal": null,
+              "linked_capabilities": []
+            },
+            {
+              "evidence_signal_id": "a9ede6fc-5d98-4ce7-978b-0284aadbbfe4",
+              "action": null,
+              "ownership_level": null,
+              "scope_level": null,
+              "impact_signal": "cost",
+              "linked_capabilities": [
+                "Commercial Analytics"
+              ]
+            }
+          ],
+          "pool_sources": [
+            "top_capability:commercial analytics"
+          ],
+          "rewrite_input": {
+            "target_job_capabilities": [],
+            "matched_candidate_capabilities": [],
+            "supporting_signal_actions": [],
+            "highlight_priorities": []
+          }
+        },
+        {
+          "evidence_piece_id": "7d1b5db7-d30f-4c3c-8971-e650ab75b78f",
+          "original_bullet": "Combined Google Analytics with cost data to identify inefficient promotion channels, reducing promotion cost by $8,000",
+          "rewritten_bullet": "Combined Google Analytics with cost data to identify inefficient promotion channels, reducing promotion cost by $8,000.",
+          "selection_reason": {
+            "canonical_capability_score": 0.515625,
+            "lexical_tiebreaker_score": 1.9000000000000001,
+            "matched_capability_count": 0,
+            "supporting_signal_count": 1
+          },
+          "matched_capabilities": [],
+          "supporting_signal_details": [
+            {
+              "evidence_signal_id": "467ed9ff-8bbc-4512-8b85-1f02023422bc",
+              "action": "identified",
+              "ownership_level": "contributor",
+              "scope_level": "task",
+              "impact_signal": "cost",
+              "linked_capabilities": [
+                "Commercial Analytics"
+              ]
+            }
+          ],
+          "pool_sources": [
+            "top_capability:commercial analytics"
+          ],
+          "rewrite_input": {
+            "target_job_capabilities": [],
+            "matched_candidate_capabilities": [],
+            "supporting_signal_actions": [
+              "identified"
+            ],
+            "highlight_priorities": []
+          }
+        }
+      ],
+      "tailored_summary": "Enterprise Sales leader with strengths in strategic planning and commercial analytics. Recent work across Optus (Telecommunications & Streaming Media) and Amobee (DSP) includes revenue opportunity identification, executive decision support, and product roadmap leadership.",
+      "tailored_bullets_5_to_8": [
+        "Lead team of 6 analytics professionals with oversight of 22 across business units, fostering commercial thinking and accountability for impact—delivered FY24 outcomes: 381 working days optimized, 1.9M customers supported, $30M+ revenue.",
+        "Drove localized growth strategy through granular market opportunity assessment including national and SA3-level competitive landscape analysis across product groups and customer cohorts, collaborating with Go-to-Market teams to define.",
+        "Presented business cases to senior leadership for localization analytics strategy, securing budget and executive approval to build dedicated core team.",
+        "Drove data monetization strategy for media advertising analytics, creating scalable product roadmap aligned to client needs and platform capabilities.",
+        "Drove marketing automation strategy across all major accounts using AdWords API, Google Analytics API, JavaScript, R, and Python.",
+        "Conducted pipeline analysis, insights analysis, and campaign cost analysis using Google Analytics, Google AdWords, and Power BI.",
+        "Combined Google Analytics with cost data to identify inefficient promotion channels, reducing promotion cost by $8,000."
+      ],
+      "final_structured_resume_output": {
+        "summary": "Enterprise Sales leader with strengths in strategic planning and commercial analytics. Recent work across Optus (Telecommunications & Streaming Media) and Amobee (DSP) includes revenue opportunity identification, executive decision support, and product roadmap leadership.",
+        "experience": [
+          {
+            "company": "Optus (Telecommunications & Streaming Media), Sydney |",
+            "role": "Analytics Lead/Manager, Data & Analytics",
+            "date_range": "May 2022 - February 2026",
+            "bullets": [
+              "Lead team of 6 analytics professionals with oversight of 22 across business units, fostering commercial thinking and accountability for impact—delivered FY24 outcomes: 381 working days optimized, 1.9M customers supported, $30M+ revenue.",
+              "Drove localized growth strategy through granular market opportunity assessment including national and SA3-level competitive landscape analysis across product groups and customer cohorts, collaborating with Go-to-Market teams to define.",
+              "Presented business cases to senior leadership for localization analytics strategy, securing budget and executive approval to build dedicated core team."
+            ]
+          },
+          {
+            "company": "Amobee (DSP), Sydney |",
+            "role": "Analytics Lead | Product Owner - Programmatic Analytics",
+            "date_range": "November 2020 - May 2022",
+            "bullets": [
+              "Drove data monetization strategy for media advertising analytics, creating scalable product roadmap aligned to client needs and platform capabilities."
+            ]
+          },
+          {
+            "company": "Sparro (Digital Advertising Agency), Sydney |",
+            "role": "Digital Data Specialist | SEM Analytics & Optimization",
+            "date_range": "August 2017 - November 2018",
+            "bullets": [
+              "Drove marketing automation strategy across all major accounts using AdWords API, Google Analytics API, JavaScript, R, and Python."
+            ]
+          },
+          {
+            "company": "DNC Consulting Group, Sydney |",
+            "role": "Office Manager / Junior Data Analyst",
+            "date_range": "September 2016 - July 2017",
+            "bullets": [
+              "Conducted pipeline analysis, insights analysis, and campaign cost analysis using Google Analytics, Google AdWords, and Power BI.",
+              "Combined Google Analytics with cost data to identify inefficient promotion channels, reducing promotion cost by $8,000."
+            ]
+          }
+        ]
+      },
+      "quality_checks": {
+        "total_selected_evidence_count": 7,
+        "per_experience_bullet_count": [
+          {
+            "company": "Optus (Telecommunications & Streaming Media), Sydney |",
+            "role": "Analytics Lead/Manager, Data & Analytics",
+            "bullet_count": 3
+          },
+          {
+            "company": "Amobee (DSP), Sydney |",
+            "role": "Analytics Lead | Product Owner - Programmatic Analytics",
+            "bullet_count": 1
+          },
+          {
+            "company": "Sparro (Digital Advertising Agency), Sydney |",
+            "role": "Digital Data Specialist | SEM Analytics & Optimization",
+            "bullet_count": 1
+          },
+          {
+            "company": "DNC Consulting Group, Sydney |",
+            "role": "Office Manager / Junior Data Analyst",
+            "bullet_count": 2
+          }
+        ],
+        "top_matched_capabilities_represented": [],
+        "critical_capabilities_reflected": [],
+        "unsupported_claims_introduced": false
+      },
+      "diagnostics": {
+        "legacy_mode_contributed": false,
+        "canonical_only_mode": true,
+        "notes": [
+          "Critical capabilities are reflected in output.",
+          "Selected evidence count is healthy."
+        ]
+      }
+    }
+  ]
+}
+

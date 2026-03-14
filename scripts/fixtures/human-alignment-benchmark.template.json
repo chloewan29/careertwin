@@ -1,0 +1,50 @@
+{
+  "version": "human_alignment_benchmark_v2_real",
+  "jobs": [
+    {
+      "id": "real-001",
+      "title": "Analytics Manager",
+      "company": "Example Co",
+      "human_label": "high_fit",
+      "human_reasoning_short": "Strong mission and adjacent capability alignment with only stretch gaps.",
+      "source": {
+        "type": "snapshot",
+        "job_snapshot_id": 12345
+      }
+    },
+    {
+      "id": "real-002",
+      "title": "Commercial Insights Lead",
+      "company": "Example Co",
+      "human_label": "high_fit",
+      "human_reasoning_short": "Commercial analytics and stakeholder translation are materially relevant.",
+      "source": {
+        "type": "lookup",
+        "job_title": "Commercial Insights Lead",
+        "company": "Example Co"
+      }
+    },
+    {
+      "id": "real-003",
+      "title": "Transformation Enablement Manager",
+      "company": "Example Co",
+      "human_label": "medium_fit",
+      "human_reasoning_short": "Credible transferable fit, but transformation operating-model depth is partial.",
+      "source": {
+        "type": "file",
+        "job_description_file": "scripts/fixtures/example-jd.txt"
+      }
+    },
+    {
+      "id": "real-004",
+      "title": "Customer Insights Strategist",
+      "company": "Example Co",
+      "human_label": "high_fit",
+      "human_reasoning_short": "High overlap on insights, storytelling, and business translation.",
+      "source": {
+        "type": "inline",
+        "job_description": "Paste the full job description here."
+      }
+    }
+  ]
+}

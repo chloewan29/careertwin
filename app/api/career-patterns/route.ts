@@ -2,6 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient } from "@/lib/db/supabase/server";
 import { detectRecurringPatterns } from "@/lib/career-engine/scoring/recurring-gap-detector";
 
+// legacy route.
+// compatibility-only reader for legacy job_matches columns.
+// canonical matching runtime is capability/job requirement based.
+// do not use for new runtime paths.
+// see: docs/system_map.md, docs/schema_inventory.md, docs/canonical_schema.md
+
 export async function GET(request: NextRequest) {
     try {
         const { searchParams } = new URL(request.url);
@@ -13,6 +19,7 @@ export async function GET(request: NextRequest) {
 
         const supabase = createServerSupabaseClient();
 
+        // legacy job_matches columns: matched_skills, missing_skills, gap_analysis, user_id.
         const { data, error } = await supabase
             .from("job_matches")
             .select("matched_skills, missing_skills, gap_analysis")

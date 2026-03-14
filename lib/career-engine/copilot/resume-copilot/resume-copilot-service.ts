@@ -1,5 +1,6 @@
 import { createServerSupabaseClient } from "@/lib/db/supabase/server";
 import { getRoleFit } from "@/lib/career-engine/matching/role-fit-service";
+import { getCapabilityMatchV1 } from "@/lib/career-engine/matching/capability-match-v1";
 import { loadCareerGraph } from "@/lib/career-engine/memory/career-graph-loader";
 import { getCareerSignals } from "@/lib/career-engine/strategy/career-signals-service";
 import { selectCoverageAwareBullets } from "./resume-bullet-selector";
@@ -7,6 +8,7 @@ import { buildResumeEvidencePool } from "./resume-evidence-pool";
 import { rankResumeEvidence } from "./resume-evidence-ranker";
 import { buildResumeCopilotOutput } from "./resume-output-builder";
 import { buildGroundedResumeSummary } from "./resume-summary-builder";
+import { buildJobCopilotAnalysis } from "@/lib/career-engine/job-copilot/job-copilot-ui-adapter";
 import type {
     ResumeCopilotJobSignals,
     ResumeCopilotServiceInput,
@@ -66,6 +68,27 @@ async function loadJobSignals(jobId: string): Promise<ResumeCopilotJobSignals> {
     return mapJobSignals(data as JobSignalsRow);
 }
 
+function envEnabled(value: string | undefined, defaultValue: boolean): boolean {
+    if (value === undefined) return defaultValue;
+    const normalized = value.trim().toLowerCase();
+    return normalized === "1" || normalized === "true" || normalized === "yes";
+}
+
+function buildFallbackJobDescription(jobSignals: ResumeCopilotJobSignals): string {
+    const lines = [
+        jobSignals.target_title ?? "",
+        jobSignals.role_family ?? "",
+        ...jobSignals.required_skills.map((value) => `Required: ${value}`),
+        ...jobSignals.preferred_skills.map((value) => `Preferred: ${value}`),
+        ...jobSignals.responsibilities.map((value) => `Responsibility: ${value}`),
+        ...jobSignals.domains.map((value) => `Domain: ${value}`),
+        ...jobSignals.keywords.map((value) => `Keyword: ${value}`),
+    ]
+        .map((value) => value.trim())
+        .filter((value) => value.length > 0);
+    return lines.join(". ");
+}
+
 export async function generateResumeCopilot(params: ResumeCopilotServiceInput): Promise<ResumeCopilotServiceResult> {
     const profileId = params.profileId?.trim();
     const jobId = params.jobId?.trim();
@@ -78,17 +101,45 @@ export async function generateResumeCopilot(params: ResumeCopilotServiceInput): 
         Math.max(1, params.options?.minBulletsPerExperience ?? 2),
     );
     const includeDebug = Boolean(params.options?.includeDebug);
+    const canonicalOnlyMode = envEnabled(process.env.ENABLE_RESUME_TAILORING_CANONICAL_ONLY, true);
+    const legacyFallbackEnabled = !canonicalOnlyMode;
 
-    const [careerGraph, jobSignals] = await Promise.all([
+    const [careerGraph, jobSignals, jobRow] = await Promise.all([
         loadCareerGraph(profileId),
         loadJobSignals(jobId),
+        createServerSupabaseClient()
+            .from("jobs")
+            .select("description")
+            .eq("id", jobId)
+            .single(),
     ]);
 
+    if (jobRow.error && jobRow.error.code !== "PGRST116") {
+        throw new Error(`Failed to load job description for jobId=${jobId}: ${jobRow.error.message}`);
+    }
+
     if (!careerGraph.career) {
+        const jobAnalysis = buildJobCopilotAnalysis({
+            matchScore: 0,
+            scoreConfidence: "low",
+            jobProfileQuality: "empty",
+            weakJobSignals: true,
+            matchedCapabilities: [],
+            keyGaps: [],
+            evidenceHighlights: [],
+            jdTitle: jobSignals.target_title,
+            jdRoleFamily: jobSignals.role_family,
+            candidateTitles: [],
+        });
         return {
             resume: {
                 summary: null,
                 experience: [],
+                job_analysis: jobAnalysis,
+            },
+            job_analysis: jobAnalysis,
+            tailoring_result: {
+                job_analysis: jobAnalysis,
             },
             ...(includeDebug ? {
                 debug: {
@@ -117,25 +168,43 @@ export async function generateResumeCopilot(params: ResumeCopilotServiceInput): 
     }
 
     const targetRole = jobSignals.target_title?.trim() || jobSignals.role_family?.trim() || null;
-    const roleFit = targetRole ? getRoleFit(careerGraph, targetRole) : null;
-    const careerSignals = getCareerSignals(careerGraph, targetRole ? [targetRole] : undefined);
+    const jobDescription = typeof jobRow.data?.description === "string" && jobRow.data.description.trim().length >= 40
+        ? jobRow.data.description.trim()
+        : buildFallbackJobDescription(jobSignals);
+    const capabilityMatch = jobDescription.length >= 40
+        ? await getCapabilityMatchV1({
+            careerId: careerGraph.career.id,
+            jobDescription,
+            topSignalsLimit: 4,
+        })
+        : null;
+
+    // Legacy compatibility path is explicit and disabled in canonical-only mode.
+    const roleFit = legacyFallbackEnabled && targetRole ? getRoleFit(careerGraph, targetRole) : null;
+    const careerSignals = legacyFallbackEnabled
+        ? getCareerSignals(careerGraph, targetRole ? [targetRole] : undefined)
+        : null;
     const evidencePool = buildResumeEvidencePool({
         intelligence: {
             careerGraph,
+            capabilityMatch,
             careerSignals,
             roleFit,
         },
         topCapabilitiesLimit: 5,
+        includeLegacyFallback: legacyFallbackEnabled,
     });
 
     const rankedEvidence = rankResumeEvidence({
         intelligence: {
             careerGraph,
+            capabilityMatch,
             careerSignals,
             roleFit,
         },
         evidencePool: evidencePool.entries,
         jobSignals,
+        useLegacyScoring: legacyFallbackEnabled,
     });
 
     const selectedEvidence = selectCoverageAwareBullets({
@@ -148,6 +217,7 @@ export async function generateResumeCopilot(params: ResumeCopilotServiceInput): 
     const summary = buildGroundedResumeSummary({
         selectedEvidence,
         jobSignals,
+        capabilityMatch,
     });
 
     const emptyReason = (() => {
@@ -157,6 +227,31 @@ export async function generateResumeCopilot(params: ResumeCopilotServiceInput): 
         if (selectedEvidence.length === 0) return "selector_filtered_all";
         return null;
     })();
+
+    const jobAnalysis = buildJobCopilotAnalysis({
+        matchScore: capabilityMatch ? Number((capabilityMatch.overall_match_score * 100).toFixed(2)) : 0,
+        scoreConfidence: capabilityMatch?.score_confidence ?? "low",
+        jobProfileQuality: capabilityMatch?.job_profile_quality ?? "empty",
+        weakJobSignals: (capabilityMatch?.job_profile_quality === "sparse")
+            || (capabilityMatch?.job_profile_quality === "empty")
+            || Boolean(emptyReason),
+        matchedCapabilities: capabilityMatch
+            ? capabilityMatch.matched_strengths.map((item) => item.display_name)
+            : summary.matchedCapabilities,
+        keyGaps: capabilityMatch
+            ? capabilityMatch.gaps
+                .filter((item) => item.importance === "critical" || item.importance === "important")
+                .map((item) => item.display_name)
+            : [],
+        evidenceHighlights: selectedEvidence.slice(0, 4).map((entry) => ({
+            evidencePieceId: entry.evidence.id,
+            label: entry.matchedSignals[0] ?? entry.evidence.raw_text,
+            score: entry.score.total_score,
+        })),
+        jdTitle: jobSignals.target_title,
+        jdRoleFamily: jobSignals.role_family,
+        candidateTitles: careerGraph.experiences.map((experience) => experience.title),
+    });
 
     const output = buildResumeCopilotOutput({
         profileId,
@@ -172,7 +267,16 @@ export async function generateResumeCopilot(params: ResumeCopilotServiceInput): 
         emptyReason,
         evidencePoolFallbackUsed: evidencePool.fallbackUsed,
         poolSourceCounts: evidencePool.poolSourceCounts,
+        intelligenceContext: {
+            careerGraph,
+            capabilityMatch,
+            careerSignals,
+            roleFit,
+        },
+        canonicalOnlyMode,
+        legacyFallbackEnabled,
         includeDebug,
+        jobAnalysis,
     });
 
     console.log("resume-copilot service completed", {
@@ -180,7 +284,10 @@ export async function generateResumeCopilot(params: ResumeCopilotServiceInput): 
         careerId: careerGraph.career.id,
         jobId,
         targetRole,
+        capabilityMatchScore: capabilityMatch ? Number((capabilityMatch.overall_match_score * 100).toFixed(2)) : null,
         roleFitScore: roleFit?.fitScore ?? null,
+        canonicalOnlyMode,
+        legacyFallbackEnabled,
         evidenceLoaded: careerGraph.evidencePieces.length,
         evidenceInPool: evidencePool.entries.length,
         evidenceRanked: rankedEvidence.length,
@@ -199,5 +306,17 @@ export async function generateResumeCopilot(params: ResumeCopilotServiceInput): 
         },
     });
 
-    return output;
+    return {
+        ...output,
+        job_analysis: jobAnalysis,
+        tailoring_result: {
+            job_analysis: jobAnalysis,
+            ...(jobAnalysis.tailoring_decision.allowed ? {
+                tailored_resume_artifact: {
+                    format: "text/plain",
+                    download_url: "/api/job-copilot/extension/download-resume",
+                },
+            } : {}),
+        },
+    };
 }

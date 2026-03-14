@@ -1,0 +1,165 @@
+{
+  "version": "human_alignment_benchmark_v1_seed",
+  "jobs": [
+    {
+      "id": "job-01",
+      "title": "Analytics Manager",
+      "company": "Publicis Groupe ANZ",
+      "human_label": "high_fit",
+      "human_reasoning_short": "Materially relevant analytics leadership role with business translation, stakeholder partnership, and commercial insight requirements.",
+      "job_description": "Analytics Manager at Publicis Groupe ANZ. Lead analytics work that turns campaign, customer, and commercial data into business recommendations. Partner with strategy, media, client, and commercial stakeholders. Required: analytics leadership, insight storytelling, stakeholder influence, and translating analysis into outcomes. Preferred: SQL, Power BI, Tableau, and agency/client experience."
+    },
+    {
+      "id": "job-02",
+      "title": "Commercial Insights Lead",
+      "company": "Growth Co",
+      "human_label": "high_fit",
+      "human_reasoning_short": "Strong match on commercial analytics, stakeholder influence, and strategy translation.",
+      "job_description": "Commercial Insights Lead. Own commercial analytics, pricing and profitability insight generation, opportunity sizing, and strategic recommendations for growth. Partner with finance, sales, and leadership. Required: commercial analytics, market assessment, stakeholder leadership, and business case communication."
+    },
+    {
+      "id": "job-03",
+      "title": "Customer Insights & CX Strategy Manager",
+      "company": "Retail Group",
+      "human_label": "high_fit",
+      "human_reasoning_short": "High overlap on customer insights, strategy, and translating analytics into action.",
+      "job_description": "Customer Insights & CX Strategy Manager. Lead customer and CX analytics, connect data to strategic recommendations, and embed insight into roadmap decisions. Required: customer insight generation, stakeholder storytelling, strategic planning, and cross-functional partnership."
+    },
+    {
+      "id": "job-04",
+      "title": "Product Analytics Manager",
+      "company": "Digital Product Co",
+      "human_label": "medium_fit",
+      "human_reasoning_short": "Strong analytics and stakeholder overlap, but product experimentation depth may be a stretch.",
+      "job_description": "Product Analytics Manager. Lead analysts supporting product growth decisions, partner with product and engineering, and deliver strategic recommendations to leadership. Required: experimentation insights, stakeholder leadership, roadmap prioritization, and analytics storytelling."
+    },
+    {
+      "id": "job-05",
+      "title": "BI Transformation Program Lead",
+      "company": "Enterprise Co",
+      "human_label": "medium_fit",
+      "human_reasoning_short": "Transferable analytics and enablement signals, but heavier platform transformation leadership than core profile.",
+      "job_description": "BI Transformation Program Lead. Lead enterprise BI modernization, platform migration, governance, and adoption programs across operations and product. Required: transformation delivery, BI platform change, capability uplift, training enablement, and cross-functional leadership."
+    },
+    {
+      "id": "job-06",
+      "title": "Marketing Science Lead",
+      "company": "Agency Network",
+      "human_label": "high_fit",
+      "human_reasoning_short": "Very close to analytics-in-agency translation and stakeholder advisory work.",
+      "job_description": "Marketing Science Lead. Turn campaign and audience analytics into commercial and client recommendations. Partner with strategy and media teams, support client storytelling, and influence planning decisions. Required: analytics translation, cross-functional stakeholder leadership, and client-facing insight communication."
+    },
+    {
+      "id": "job-07",
+      "title": "Transformation Enablement Manager",
+      "company": "Ops Co",
+      "human_label": "medium_fit",
+      "human_reasoning_short": "Relevant on enablement and analytics-led change, but broader transformation delivery leadership is only partial.",
+      "job_description": "Transformation Enablement Manager. Drive change adoption, uplift capability, and embed data-enabled ways of working across operations teams. Required: enablement, stakeholder leadership, change management, and analytics-supported transformation."
+    },
+    {
+      "id": "job-08",
+      "title": "Revenue Strategy Manager",
+      "company": "SaaS Co",
+      "human_label": "high_fit",
+      "human_reasoning_short": "High overlap with strategic planning, commercial analytics, and executive narrative work.",
+      "job_description": "Revenue Strategy Manager. Translate commercial and customer performance data into strategy, prioritization, and executive recommendations. Partner with sales, finance, and product leaders. Required: commercial analytics, strategic planning, business cases, and stakeholder alignment."
+    },
+    {
+      "id": "job-09",
+      "title": "Data & Insights Manager",
+      "company": "Media Group",
+      "human_label": "high_fit",
+      "human_reasoning_short": "Close analytics manager variant with insight storytelling and stakeholder advisory focus.",
+      "job_description": "Data & Insights Manager. Lead insight generation across campaign and customer data, turn findings into commercial actions, and partner with cross-functional stakeholders. Required: analytics leadership, stakeholder communication, and strategic recommendations."
+    },
+    {
+      "id": "job-10",
+      "title": "Analytics Enablement Manager",
+      "company": "Enterprise Services",
+      "human_label": "medium_fit",
+      "human_reasoning_short": "Credible due to analytics capability uplift and stakeholder work, but more enablement-operating-model heavy.",
+      "job_description": "Analytics Enablement Manager. Build analyst capability, standards, and insight quality frameworks. Partner with leaders to improve adoption of analytics tools and better business decision making. Required: enablement, team leadership, analytics translation, and change adoption."
+    },
+    {
+      "id": "job-11",
+      "title": "Commercial Strategy Director",
+      "company": "Consumer Goods Co",
+      "human_label": "medium_fit",
+      "human_reasoning_short": "Relevant strategy and commercial evidence, but director-level scope may overstate fit.",
+      "job_description": "Commercial Strategy Director. Own growth strategy, market expansion, commercial performance reviews, and executive prioritization across business units. Required: strategic planning, opportunity assessment, executive influence, and commercial performance analytics."
+    },
+    {
+      "id": "job-12",
+      "title": "Customer Analytics Consultant",
+      "company": "Consulting Firm",
+      "human_label": "high_fit",
+      "human_reasoning_short": "Strong overlap on customer analytics, storytelling, and cross-functional advisory work.",
+      "job_description": "Customer Analytics Consultant. Deliver customer and commercial analytics, synthesize findings into recommendations, and influence stakeholder decisions. Required: insights, storytelling, client communication, and strategic problem solving."
+    },
+    {
+      "id": "job-13",
+      "title": "Enterprise Sales Director",
+      "company": "B2B Co",
+      "human_label": "low_fit",
+      "human_reasoning_short": "Primarily quota-carrying sales execution, not analytics translation.",
+      "job_description": "Enterprise Sales Director. Own quota, pipeline conversion, enterprise account growth, and deal negotiation. Lead account teams and report to leadership. Nice to have analytics exposure, but role is primarily sales execution."
+    },
+    {
+      "id": "job-14",
+      "title": "Clinical Research Coordinator",
+      "company": "Health Org",
+      "human_label": "low_fit",
+      "human_reasoning_short": "Domain and capability mismatch; only generic coordination overlap.",
+      "job_description": "Clinical Research Coordinator. Coordinate participant recruitment, ethics submissions, protocol compliance, site scheduling, and audit readiness. Support clinical trial logistics and documentation."
+    },
+    {
+      "id": "job-15",
+      "title": "Software Engineering Manager",
+      "company": "Tech Co",
+      "human_label": "low_fit",
+      "human_reasoning_short": "People leadership overlaps, but core capability cluster is engineering delivery.",
+      "job_description": "Software Engineering Manager. Lead engineering squads, architecture delivery, reliability, and software development lifecycle improvements. Required: technical leadership, software delivery management, and engineering execution."
+    },
+    {
+      "id": "job-16",
+      "title": "SEO Manager",
+      "company": "Performance Agency",
+      "human_label": "low_fit",
+      "human_reasoning_short": "Marketing domain is adjacent, but the role is channel-specialist rather than analytics translation leadership.",
+      "job_description": "SEO Manager. Own organic search strategy, technical SEO roadmap, content optimization, and search performance growth. Required: SEO tooling, keyword strategy, and performance channel management."
+    },
+    {
+      "id": "job-17",
+      "title": "Operations Excellence Manager",
+      "company": "Manufacturing Co",
+      "human_label": "medium_fit",
+      "human_reasoning_short": "Some transformation and performance improvement transfer, but less direct analytics-storytelling emphasis.",
+      "job_description": "Operations Excellence Manager. Improve operational performance, optimize workflows, and deliver efficiency programs across operations. Required: stakeholder leadership, process optimization, and change enablement."
+    },
+    {
+      "id": "job-18",
+      "title": "Media Insights Director",
+      "company": "Agency Network",
+      "human_label": "medium_fit",
+      "human_reasoning_short": "Agency and insights context fits, but director scope may stretch title seniority.",
+      "job_description": "Media Insights Director. Lead media and audience analytics, turn insight into client recommendations, and influence planning decisions with strategy and commercial teams. Required: insights leadership, stakeholder communication, and agency/client advisory capability."
+    },
+    {
+      "id": "job-19",
+      "title": "Change Manager",
+      "company": "Transformation Office",
+      "human_label": "medium_fit",
+      "human_reasoning_short": "Relevant enablement and stakeholder work, but not as directly anchored in analytics capability translation.",
+      "job_description": "Change Manager. Design adoption plans, communications, and capability uplift for transformation programs. Required: change management, stakeholder leadership, training, and embedding new ways of working."
+    },
+    {
+      "id": "job-20",
+      "title": "Research Operations Coordinator",
+      "company": "University Lab",
+      "human_label": "low_fit",
+      "human_reasoning_short": "Too administrative and operational; lacks analytics strategy and business translation center of gravity.",
+      "job_description": "Research Operations Coordinator. Support scheduling, procurement, documentation, data entry, and process compliance for research operations. Coordinate logistics and maintain operational records."
+    }
+  ]
+}

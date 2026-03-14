@@ -24,6 +24,7 @@ export function JobCopilotPanel(props: Props) {
     }
 
     const copilot = props.state.data.response;
+    const analysis = copilot.job_analysis;
     const verdictSentence = copilot.verdictText || (copilot.verdict === "strong_fit"
         ? "You are a strong fit for this role"
         : copilot.verdict === "possible_fit"
@@ -41,19 +42,31 @@ export function JobCopilotPanel(props: Props) {
             </section>
             {!isLowFit && (
                 <section>
-                    <h3>Why you match</h3>
-                    <ul>{copilot.matchedCapabilities.slice(0, 4).map((item) => <li key={item}>{item}</li>)}</ul>
+                    <h3>Matched capabilities</h3>
+                    <ul>{analysis.matched_capabilities.slice(0, 4).map((item) => <li key={item}>{item}</li>)}</ul>
                 </section>
             )}
             <section>
                 <h3>Key gaps</h3>
-                <ul>{copilot.keyGaps.map((item) => <li key={item}>{item}</li>)}</ul>
+                <ul>{analysis.key_gaps.map((item) => <li key={item}>{item}</li>)}</ul>
             </section>
+            <section>
+                <h3>Diagnostics</h3>
+                <p>Confidence: {analysis.confidence}</p>
+                <p>Job profile quality: {analysis.job_profile_quality}</p>
+                <p>{analysis.interpretation_note}</p>
+            </section>
+            {analysis.extraction_notices.length > 0 && (
+                <section>
+                    <h3>Extraction notices</h3>
+                    <ul>{analysis.extraction_notices.map((notice) => <li key={notice.code}>{notice.message}</li>)}</ul>
+                </section>
+            )}
             {!isLowFit && (
                 <>
                     <section>
-                        <h3>Top evidence used</h3>
-                        <ul>{copilot.topEvidence.slice(0, 4).map((item) => <li key={item.evidencePieceId}>{item.label}</li>)}</ul>
+                        <h3>Evidence highlights</h3>
+                        <ul>{analysis.evidence_highlights.slice(0, 4).map((item) => <li key={item.evidencePieceId}>{item.label}</li>)}</ul>
                     </section>
                     <section>
                         <h3>Tailored resume ready</h3>

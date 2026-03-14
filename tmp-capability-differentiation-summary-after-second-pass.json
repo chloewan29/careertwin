@@ -1,0 +1,325 @@
+{
+  "fixture_version": "human_alignment_benchmark_v1_seed",
+  "profile_id": "8ec2c318-dbd0-42e2-acc7-10a103284b53",
+  "career_id": "4a22f035-c501-40b2-9589-03ee6e8a3cfa",
+  "total_cases": 20,
+  "average_top5_overlap": 0.4495,
+  "max_top5_overlap": 1,
+  "min_top5_overlap": 0,
+  "number_of_pairs_above_0_8_overlap": 45,
+  "number_of_pairs_below_0_4_overlap": 70,
+  "suspicious_similarity": [
+    {
+      "case_id_a": "job-02",
+      "title_a": "Commercial Insights Lead",
+      "case_id_b": "job-03",
+      "title_b": "Customer Insights & CX Strategy Manager",
+      "overlap_rate": 1,
+      "reason": "Top-5 capability overlap is very high despite materially different title wording."
+    },
+    {
+      "case_id_a": "job-03",
+      "title_a": "Customer Insights & CX Strategy Manager",
+      "case_id_b": "job-09",
+      "title_b": "Data & Insights Manager",
+      "overlap_rate": 1,
+      "reason": "Top-5 capability overlap is very high despite materially different title wording."
+    },
+    {
+      "case_id_a": "job-01",
+      "title_a": "Analytics Manager",
+      "case_id_b": "job-02",
+      "title_b": "Commercial Insights Lead",
+      "overlap_rate": 0.8,
+      "reason": "Top-5 capability overlap is very high despite materially different title wording."
+    },
+    {
+      "case_id_a": "job-01",
+      "title_a": "Analytics Manager",
+      "case_id_b": "job-03",
+      "title_b": "Customer Insights & CX Strategy Manager",
+      "overlap_rate": 0.8,
+      "reason": "Top-5 capability overlap is very high despite materially different title wording."
+    },
+    {
+      "case_id_a": "job-01",
+      "title_a": "Analytics Manager",
+      "case_id_b": "job-06",
+      "title_b": "Marketing Science Lead",
+      "overlap_rate": 0.8,
+      "reason": "Top-5 capability overlap is very high despite materially different title wording."
+    },
+    {
+      "case_id_a": "job-01",
+      "title_a": "Analytics Manager",
+      "case_id_b": "job-08",
+      "title_b": "Revenue Strategy Manager",
+      "overlap_rate": 0.8,
+      "reason": "Top-5 capability overlap is very high despite materially different title wording."
+    },
+    {
+      "case_id_a": "job-01",
+      "title_a": "Analytics Manager",
+      "case_id_b": "job-09",
+      "title_b": "Data & Insights Manager",
+      "overlap_rate": 0.8,
+      "reason": "Top-5 capability overlap is very high despite materially different title wording."
+    },
+    {
+      "case_id_a": "job-01",
+      "title_a": "Analytics Manager",
+      "case_id_b": "job-11",
+      "title_b": "Commercial Strategy Director",
+      "overlap_rate": 0.8,
+      "reason": "Top-5 capability overlap is very high despite materially different title wording."
+    },
+    {
+      "case_id_a": "job-01",
+      "title_a": "Analytics Manager",
+      "case_id_b": "job-13",
+      "title_b": "Enterprise Sales Director",
+      "overlap_rate": 0.8,
+      "reason": "Top-5 capability overlap is very high despite materially different title wording."
+    },
+    {
+      "case_id_a": "job-01",
+      "title_a": "Analytics Manager",
+      "case_id_b": "job-18",
+      "title_b": "Media Insights Director",
+      "overlap_rate": 0.8,
+      "reason": "Top-5 capability overlap is very high despite materially different title wording."
+    },
+    {
+      "case_id_a": "job-02",
+      "title_a": "Commercial Insights Lead",
+      "case_id_b": "job-06",
+      "title_b": "Marketing Science Lead",
+      "overlap_rate": 0.8,
+      "reason": "Top-5 capability overlap is very high despite materially different title wording."
+    },
+    {
+      "case_id_a": "job-02",
+      "title_a": "Commercial Insights Lead",
+      "case_id_b": "job-07",
+      "title_b": "Transformation Enablement Manager",
+      "overlap_rate": 0.8,
+      "reason": "Top-5 capability overlap is very high despite materially different title wording."
+    },
+    {
+      "case_id_a": "job-02",
+      "title_a": "Commercial Insights Lead",
+      "case_id_b": "job-08",
+      "title_b": "Revenue Strategy Manager",
+      "overlap_rate": 0.8,
+      "reason": "Top-5 capability overlap is very high despite materially different title wording."
+    },
+    {
+      "case_id_a": "job-02",
+      "title_a": "Commercial Insights Lead",
+      "case_id_b": "job-12",
+      "title_b": "Customer Analytics Consultant",
+      "overlap_rate": 0.8,
+      "reason": "Top-5 capability overlap is very high despite materially different title wording."
+    },
+    {
+      "case_id_a": "job-03",
+      "title_a": "Customer Insights & CX Strategy Manager",
+      "case_id_b": "job-06",
+      "title_b": "Marketing Science Lead",
+      "overlap_rate": 0.8,
+      "reason": "Top-5 capability overlap is very high despite materially different title wording."
+    },
+    {
+      "case_id_a": "job-03",
+      "title_a": "Customer Insights & CX Strategy Manager",
+      "case_id_b": "job-07",
+      "title_b": "Transformation Enablement Manager",
+      "overlap_rate": 0.8,
+      "reason": "Top-5 capability overlap is very high despite materially different title wording."
+    },
+    {
+      "case_id_a": "job-03",
+      "title_a": "Customer Insights & CX Strategy Manager",
+      "case_id_b": "job-08",
+      "title_b": "Revenue Strategy Manager",
+      "overlap_rate": 0.8,
+      "reason": "Top-5 capability overlap is very high despite materially different title wording."
+    },
+    {
+      "case_id_a": "job-03",
+      "title_a": "Customer Insights & CX Strategy Manager",
+      "case_id_b": "job-11",
+      "title_b": "Commercial Strategy Director",
+      "overlap_rate": 0.8,
+      "reason": "Top-5 capability overlap is very high despite materially different title wording."
+    },
+    {
+      "case_id_a": "job-03",
+      "title_a": "Customer Insights & CX Strategy Manager",
+      "case_id_b": "job-12",
+      "title_b": "Customer Analytics Consultant",
+      "overlap_rate": 0.8,
+      "reason": "Top-5 capability overlap is very high despite materially different title wording."
+    },
+    {
+      "case_id_a": "job-04",
+      "title_a": "Product Analytics Manager",
+      "case_id_b": "job-08",
+      "title_b": "Revenue Strategy Manager",
+      "overlap_rate": 0.8,
+      "reason": "Top-5 capability overlap is very high despite materially different title wording."
+    },
+    {
+      "case_id_a": "job-04",
+      "title_a": "Product Analytics Manager",
+      "case_id_b": "job-11",
+      "title_b": "Commercial Strategy Director",
+      "overlap_rate": 0.8,
+      "reason": "Top-5 capability overlap is very high despite materially different title wording."
+    },
+    {
+      "case_id_a": "job-04",
+      "title_a": "Product Analytics Manager",
+      "case_id_b": "job-13",
+      "title_b": "Enterprise Sales Director",
+      "overlap_rate": 0.8,
+      "reason": "Top-5 capability overlap is very high despite materially different title wording."
+    },
+    {
+      "case_id_a": "job-04",
+      "title_a": "Product Analytics Manager",
+      "case_id_b": "job-18",
+      "title_b": "Media Insights Director",
+      "overlap_rate": 0.8,
+      "reason": "Top-5 capability overlap is very high despite materially different title wording."
+    },
+    {
+      "case_id_a": "job-05",
+      "title_a": "BI Transformation Program Lead",
+      "case_id_b": "job-20",
+      "title_b": "Research Operations Coordinator",
+      "overlap_rate": 0.8,
+      "reason": "Top-5 capability overlap is very high despite materially different title wording."
+    },
+    {
+      "case_id_a": "job-06",
+      "title_a": "Marketing Science Lead",
+      "case_id_b": "job-09",
+      "title_b": "Data & Insights Manager",
+      "overlap_rate": 0.8,
+      "reason": "Top-5 capability overlap is very high despite materially different title wording."
+    },
+    {
+      "case_id_a": "job-06",
+      "title_a": "Marketing Science Lead",
+      "case_id_b": "job-18",
+      "title_b": "Media Insights Director",
+      "overlap_rate": 0.8,
+      "reason": "Top-5 capability overlap is very high despite materially different title wording."
+    },
+    {
+      "case_id_a": "job-07",
+      "title_a": "Transformation Enablement Manager",
+      "case_id_b": "job-09",
+      "title_b": "Data & Insights Manager",
+      "overlap_rate": 0.8,
+      "reason": "Top-5 capability overlap is very high despite materially different title wording."
+    },
+    {
+      "case_id_a": "job-07",
+      "title_a": "Transformation Enablement Manager",
+      "case_id_b": "job-20",
+      "title_b": "Research Operations Coordinator",
+      "overlap_rate": 0.8,
+      "reason": "Top-5 capability overlap is very high despite materially different title wording."
+    },
+    {
+      "case_id_a": "job-08",
+      "title_a": "Revenue Strategy Manager",
+      "case_id_b": "job-09",
+      "title_b": "Data & Insights Manager",
+      "overlap_rate": 0.8,
+      "reason": "Top-5 capability overlap is very high despite materially different title wording."
+    },
+    {
+      "case_id_a": "job-08",
+      "title_a": "Revenue Strategy Manager",
+      "case_id_b": "job-12",
+      "title_b": "Customer Analytics Consultant",
+      "overlap_rate": 0.8,
+      "reason": "Top-5 capability overlap is very high despite materially different title wording."
+    },
+    {
+      "case_id_a": "job-08",
+      "title_a": "Revenue Strategy Manager",
+      "case_id_b": "job-13",
+      "title_b": "Enterprise Sales Director",
+      "overlap_rate": 0.8,
+      "reason": "Top-5 capability overlap is very high despite materially different title wording."
+    },
+    {
+      "case_id_a": "job-08",
+      "title_a": "Revenue Strategy Manager",
+      "case_id_b": "job-18",
+      "title_b": "Media Insights Director",
+      "overlap_rate": 0.8,
+      "reason": "Top-5 capability overlap is very high despite materially different title wording."
+    },
+    {
+      "case_id_a": "job-09",
+      "title_a": "Data & Insights Manager",
+      "case_id_b": "job-11",
+      "title_b": "Commercial Strategy Director",
+      "overlap_rate": 0.8,
+      "reason": "Top-5 capability overlap is very high despite materially different title wording."
+    },
+    {
+      "case_id_a": "job-09",
+      "title_a": "Data & Insights Manager",
+      "case_id_b": "job-12",
+      "title_b": "Customer Analytics Consultant",
+      "overlap_rate": 0.8,
+      "reason": "Top-5 capability overlap is very high despite materially different title wording."
+    },
+    {
+      "case_id_a": "job-10",
+      "title_a": "Analytics Enablement Manager",
+      "case_id_b": "job-20",
+      "title_b": "Research Operations Coordinator",
+      "overlap_rate": 0.8,
+      "reason": "Top-5 capability overlap is very high despite materially different title wording."
+    },
+    {
+      "case_id_a": "job-11",
+      "title_a": "Commercial Strategy Director",
+      "case_id_b": "job-12",
+      "title_b": "Customer Analytics Consultant",
+      "overlap_rate": 0.8,
+      "reason": "Top-5 capability overlap is very high despite materially different title wording."
+    },
+    {
+      "case_id_a": "job-11",
+      "title_a": "Commercial Strategy Director",
+      "case_id_b": "job-13",
+      "title_b": "Enterprise Sales Director",
+      "overlap_rate": 0.8,
+      "reason": "Top-5 capability overlap is very high despite materially different title wording."
+    },
+    {
+      "case_id_a": "job-11",
+      "title_a": "Commercial Strategy Director",
+      "case_id_b": "job-18",
+      "title_b": "Media Insights Director",
+      "overlap_rate": 0.8,
+      "reason": "Top-5 capability overlap is very high despite materially different title wording."
+    },
+    {
+      "case_id_a": "job-13",
+      "title_a": "Enterprise Sales Director",
+      "case_id_b": "job-18",
+      "title_b": "Media Insights Director",
+      "overlap_rate": 0.8,
+      "reason": "Top-5 capability overlap is very high despite materially different title wording."
+    }
+  ]
+}

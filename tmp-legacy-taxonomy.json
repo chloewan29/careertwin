@@ -1,0 +1,66 @@
+{
+  "careerId": "4a22f035-c501-40b2-9589-03ee6e8a3cfa",
+  "capabilities": [
+    "BI / Data Platform Transformation",
+    "Commercial Analytics",
+    "People Leadership",
+    "Stakeholder Strategy",
+    "Strategic Planning"
+  ],
+  "byPiece": {
+    "e0a3422e-f08d-4c72-8e72-a35f09171f70": [
+      "Commercial Analytics"
+    ],
+    "4f8d05cd-418d-4737-8499-7044b7319f6f": [
+      "Commercial Analytics",
+      "Strategic Planning"
+    ],
+    "35913a91-e2c2-4a5b-8e1f-3de65172b1c2": [
+      "Commercial Analytics",
+      "BI / Data Platform Transformation"
+    ],
+    "3acf0174-1bcb-4ac5-a78c-67af28791bae": [
+      "Commercial Analytics",
+      "People Leadership"
+    ],
+    "e7d0cb04-07d5-4499-99db-813947c832a5": [
+      "Commercial Analytics"
+    ],
+    "421777e0-0145-45b4-ae86-870fa6067fea": [
+      "Commercial Analytics"
+    ],
+    "7d1b5db7-d30f-4c3c-8971-e650ab75b78f": [
+      "Commercial Analytics"
+    ],
+    "236a4923-ccb1-40af-a5a8-92206ad86414": [
+      "People Leadership",
+      "Strategic Planning"
+    ],
+    "82cc8545-828d-4c0b-a270-9d062dfc3929": [
+      "Strategic Planning"
+    ],
+    "9ab52478-2172-44ed-98c3-f22b7dd2bb93": [
+      "Strategic Planning"
+    ],
+    "58636254-7f9e-40af-aa1c-dee1ddb30bb1": [
+      "Strategic Planning",
+      "Stakeholder Strategy"
+    ],
+    "575e64d1-1d23-40c8-a281-62b924c23073": [
+      "Strategic Planning"
+    ],
+    "a9e61a8e-f44b-4b31-8697-9131b5c27ed8": [
+      "Strategic Planning",
+      "BI / Data Platform Transformation"
+    ],
+    "d38f4d63-6730-4521-95f8-cea932b9bb3c": [
+      "Strategic Planning"
+    ],
+    "d382344b-4695-48b6-91c0-35d5f4696937": [
+      "Strategic Planning"
+    ],
+    "703f2598-2a22-465c-aa30-cd2e5066f714": [
+      "BI / Data Platform Transformation"
+    ]
+  }
+}

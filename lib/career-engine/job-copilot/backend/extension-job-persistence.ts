@@ -31,6 +31,11 @@ function deriveExtractionQuality(params: {
     return descriptionWeak || titleAndCompanyMissing ? "weak" : "strong";
 }
 
+function normalizeInteractionMatchScore(matchScore: number): number {
+    // user_job_interactions.match_score is INTEGER, so normalize right before persistence.
+    return Math.round(matchScore);
+}
+
 async function getExistingInteraction(
     supabase: SupabaseClient,
     profileId: string,
@@ -60,6 +65,7 @@ export async function persistExtensionViewedJob(params: {
     selectedEvidenceIds: string[];
     resumeGenerated: boolean;
 }) {
+    const normalizedMatchScore = normalizeInteractionMatchScore(params.matchScore);
     const normalizedDescription = normalizeDescription(params.jobDescriptionRaw);
     const contentHash = computeContentHash({
         sourcePlatform: params.sourcePlatform,
@@ -110,7 +116,7 @@ export async function persistExtensionViewedJob(params: {
             .update({
                 last_seen_at: new Date().toISOString(),
                 source: "extension",
-                match_score: params.matchScore,
+                match_score: normalizedMatchScore,
                 verdict: params.verdict,
                 selected_evidence_ids: params.selectedEvidenceIds,
                 resume_generated: params.resumeGenerated,
@@ -131,7 +137,7 @@ export async function persistExtensionViewedJob(params: {
             first_seen_at: new Date().toISOString(),
             last_seen_at: new Date().toISOString(),
             source: "extension",
-            match_score: params.matchScore,
+            match_score: normalizedMatchScore,
             verdict: params.verdict,
             selected_evidence_ids: params.selectedEvidenceIds,
             resume_generated: params.resumeGenerated,
@@ -160,6 +166,7 @@ export async function markInteractionApplied(params: {
     resumeGenerated: boolean;
 }) {
     if (!params.jobSnapshotId) return;
+    const normalizedMatchScore = normalizeInteractionMatchScore(params.matchScore);
 
     const existing = await getExistingInteraction(params.supabase, params.profileId, params.jobSnapshotId);
     if (!existing) {
@@ -171,7 +178,7 @@ export async function markInteractionApplied(params: {
                 first_seen_at: new Date().toISOString(),
                 last_seen_at: new Date().toISOString(),
                 source: "extension",
-                match_score: params.matchScore,
+                match_score: normalizedMatchScore,
                 verdict: params.verdict,
                 selected_evidence_ids: params.selectedEvidenceIds,
                 resume_generated: params.resumeGenerated,
@@ -186,7 +193,7 @@ export async function markInteractionApplied(params: {
         .from("user_job_interactions")
         .update({
             last_seen_at: new Date().toISOString(),
-            match_score: params.matchScore,
+            match_score: normalizedMatchScore,
             verdict: params.verdict,
             selected_evidence_ids: params.selectedEvidenceIds,
             resume_generated: params.resumeGenerated,
@@ -197,4 +204,3 @@ export async function markInteractionApplied(params: {
         })
         .eq("interaction_id", existing.interaction_id);
 }
-

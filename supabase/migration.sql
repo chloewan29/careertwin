@@ -1,3 +1,9 @@
+-- LEGACY schema artifact.
+-- compatibility-only reference.
+-- canonical schema source of truth: supabase/migrations/*
+-- do not use for new runtime paths.
+-- see: supabase/SCHEMA_SOURCE_OF_TRUTH.md
+
 -- CareerTwin Database Schema
 -- Run this in your Supabase SQL Editor (https://supabase.com/dashboard)
 

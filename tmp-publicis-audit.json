@@ -1,0 +1,2850 @@
+{
+  "replay_case": {
+    "profile_id": "8ec2c318-dbd0-42e2-acc7-10a103284b53",
+    "career_id": "4a22f035-c501-40b2-9589-03ee6e8a3cfa",
+    "job_snapshot_id": 4,
+    "interaction_id": null,
+    "job_title": "Analytics Manager",
+    "company": "Publicis Groupe ANZ"
+  },
+  "before_after": {
+    "baseline_v1": {
+      "model": "job_capability_match_v1",
+      "final_score": 50.94,
+      "fit_bucket": "medium_fit",
+      "top_strengths": [],
+      "top_gaps": [
+        "Capability Uplift & Enablement"
+      ]
+    },
+    "improved_v2": {
+      "model": "job_capability_match_v2",
+      "final_score": 69.68,
+      "fit_bucket": "medium_fit",
+      "top_positive_factors": [
+        "Analytics Translation & Insight Storytelling",
+        "Commercial Analytics",
+        "Customer / CX Insight Generation",
+        "Transformation / Enablement Through Analytics"
+      ],
+      "top_negative_factors": [
+        "Cross-Functional Embedding & Stakeholder Leadership",
+        "Data Tooling & Analytical Methods",
+        "Domain Context: Agency / Marketing / Client Delivery"
+      ]
+    }
+  },
+  "comparison_table": [
+    {
+      "variant_name": "default",
+      "final_score": 69.68,
+      "fit_bucket": "medium_fit",
+      "top_positive_factors": [
+        "Analytics Translation & Insight Storytelling",
+        "Commercial Analytics",
+        "Customer / CX Insight Generation"
+      ],
+      "top_negative_factors": [
+        "Cross-Functional Embedding & Stakeholder Leadership",
+        "Data Tooling & Analytical Methods",
+        "Domain Context: Agency / Marketing / Client Delivery"
+      ],
+      "summary_diagnosis": "Medium-fit classification reflects credible evidence alignment with 0 blocking gap(s); priors are adjacent/direct."
+    },
+    {
+      "variant_name": "without_title_mismatch_penalty",
+      "final_score": 70.08,
+      "fit_bucket": "high_fit",
+      "top_positive_factors": [
+        "Analytics Translation & Insight Storytelling",
+        "Commercial Analytics",
+        "Customer / CX Insight Generation"
+      ],
+      "top_negative_factors": [
+        "Cross-Functional Embedding & Stakeholder Leadership",
+        "Data Tooling & Analytical Methods",
+        "Domain Context: Agency / Marketing / Client Delivery"
+      ],
+      "summary_diagnosis": "High-fit classification is driven by Analytics Translation & Insight Storytelling, Commercial Analytics, Cross-Functional Embedding & Stakeholder Leadership with priors remaining weak."
+    },
+    {
+      "variant_name": "reduced_title_prior_weight",
+      "final_score": 69.94,
+      "fit_bucket": "medium_fit",
+      "top_positive_factors": [
+        "Analytics Translation & Insight Storytelling",
+        "Commercial Analytics",
+        "Customer / CX Insight Generation"
+      ],
+      "top_negative_factors": [
+        "Cross-Functional Embedding & Stakeholder Leadership",
+        "Data Tooling & Analytical Methods",
+        "Domain Context: Agency / Marketing / Client Delivery"
+      ],
+      "summary_diagnosis": "Medium-fit classification reflects credible evidence alignment with 0 blocking gap(s); priors are adjacent/direct."
+    },
+    {
+      "variant_name": "without_ats_penalty_injection",
+      "final_score": 69.68,
+      "fit_bucket": "medium_fit",
+      "top_positive_factors": [
+        "Analytics Translation & Insight Storytelling",
+        "Commercial Analytics",
+        "Customer / CX Insight Generation"
+      ],
+      "top_negative_factors": [
+        "Cross-Functional Embedding & Stakeholder Leadership",
+        "Data Tooling & Analytical Methods",
+        "Domain Context: Agency / Marketing / Client Delivery"
+      ],
+      "summary_diagnosis": "Medium-fit classification reflects credible evidence alignment with 0 blocking gap(s); priors are adjacent/direct."
+    },
+    {
+      "variant_name": "richer_requirement_clustering",
+      "final_score": 69.68,
+      "fit_bucket": "medium_fit",
+      "top_positive_factors": [
+        "Analytics Translation & Insight Storytelling",
+        "Commercial Analytics",
+        "Customer / CX Insight Generation"
+      ],
+      "top_negative_factors": [
+        "Cross-Functional Embedding & Stakeholder Leadership",
+        "Data Tooling & Analytical Methods",
+        "Domain Context: Agency / Marketing / Client Delivery"
+      ],
+      "summary_diagnosis": "Medium-fit classification reflects credible evidence alignment with 0 blocking gap(s); priors are adjacent/direct."
+    },
+    {
+      "variant_name": "capability_transfer_matching_enabled",
+      "final_score": 69.68,
+      "fit_bucket": "medium_fit",
+      "top_positive_factors": [
+        "Analytics Translation & Insight Storytelling",
+        "Commercial Analytics",
+        "Customer / CX Insight Generation"
+      ],
+      "top_negative_factors": [
+        "Cross-Functional Embedding & Stakeholder Leadership",
+        "Data Tooling & Analytical Methods",
+        "Domain Context: Agency / Marketing / Client Delivery"
+      ],
+      "summary_diagnosis": "Medium-fit classification reflects credible evidence alignment with 0 blocking gap(s); priors are adjacent/direct."
+    },
+    {
+      "variant_name": "literal_keyword_overlap_reduced",
+      "final_score": 71.43,
+      "fit_bucket": "high_fit",
+      "top_positive_factors": [
+        "Analytics Translation & Insight Storytelling",
+        "Commercial Analytics",
+        "Cross-Functional Embedding & Stakeholder Leadership"
+      ],
+      "top_negative_factors": [
+        "Cross-Functional Embedding & Stakeholder Leadership",
+        "Data Tooling & Analytical Methods"
+      ],
+      "summary_diagnosis": "High-fit classification is driven by Analytics Translation & Insight Storytelling, Commercial Analytics, Cross-Functional Embedding & Stakeholder Leadership with priors remaining weak."
+    },
+    {
+      "variant_name": "evidence_scope_ownership_weight_increased",
+      "final_score": 71.06,
+      "fit_bucket": "high_fit",
+      "top_positive_factors": [
+        "Analytics Translation & Insight Storytelling",
+        "Commercial Analytics",
+        "Cross-Functional Embedding & Stakeholder Leadership"
+      ],
+      "top_negative_factors": [
+        "Cross-Functional Embedding & Stakeholder Leadership",
+        "Data Tooling & Analytical Methods"
+      ],
+      "summary_diagnosis": "High-fit classification is driven by Analytics Translation & Insight Storytelling, Commercial Analytics, Cross-Functional Embedding & Stakeholder Leadership with priors remaining weak."
+    }
+  ],
+  "audit": {
+    "raw_job_text": "Publicis Groupe ANZAnalytics ManagerSydney, New South Wales, Australia · 22 hours ago · 7 people clicked applyPromoted by hirer · Responses managed off LinkedInHybridFull-timeApplySaveUse AI to assess how you fitShow match detailsTailor my resumeCreate cover letterHelp me stand outPeople you can reach out toSchool alumni from University of SydneyShow allMeet the hiring teamDexter Salamat • 2ndExperienced Talent Lead @Publicis Groupe ANZ | Ex Havas | Ex GroupM | Adnews contributor | Carers Collective Ambassador | Scaling High‑Performing Teams Across Media, Marketing & Tech | Executive & Specialist HiringJob posterMessageAbout the jobAbout Publicis EDGE | Data, AI & Intelligence Hub\nPublicis EDGE sits at the centre of how data, AI, creativity and experience come together to solve modern brand problems. We build and operate proprietary data solutions, methodologies and platforms that enable agencies and clients to move faster, think smarter, and create more meaningful customer experiences\n\nWhy Join Us:\n· At EDGE, analytics is not a support function — it is a creative and commercial accelerator. You’ll work on real brand problems, with real data, alongside some of the strongest creative and CX teams in the market, while helping build the future-ready data and AI capability of Publicis Groupe.· Collaborative and inclusive work environment with a focus on professional development.\n\nThe transformation you will experience:\n\nThe Analytics Manager is accountable for discovering, assessing and presenting insights using Publicis proprietary data solutions and methodologies to help creative, CX and commerce teams decode brand and customer problems.This role goes beyond reporting or isolated modelling. You will translate convoluted data into human-centered insights that inform creative ideas, experience design, and commercial outcomes — including for large-scale ecommerce organisation with convoluted customer journeys and data ecosystems.You will work as part of EDGE’s central Analytics and AI capability, embedding into agency teams while contributing to shared, reusable solutions that scale across all Publicis clients.\n\nYour scope will include:\n\n· Discover and interrogate insights using EDGE’s proprietary data solutions, connected identity assets, and advanced analytics methodologies.· Assess intricate, multi-source data to uncover behavioural, cultural, and commercial insights that inform brand, creative, CX, and commerce strategies.· Present insights clearly and compellingly to creative, strategy, and client teams — translating data into narratives that inspire action and ideas.· Help agencies and clients realise tangible value from data through better solution-making, creative effectiveness, and customer experience outcomes.· Work in close partnership with creative, strategy, media, and CX teams to embed insights directly into creative development and experience design.· Assist the development of creative and customer experience solutions for brand problems, including ecommerce optimisation, customer lifecycle growth, and connected journeys.· Act as a bridge between data and creativity, ensuring insights are actionable, relevant, and grounded in real customer behaviour.· Build and apply advanced analytics techniques to find a solution to real business and brand obstacles.· Contribute to analytics and AI solutions that move from discovery through to production, reuse, and ongoing optimisation.· Apply modern techniques such as predictive modelling, NLP, and retrieval-based analytics where appropriate, always aligned to governance and use-case value.· Collaborate closely with Data Engineers, Data Solutions Architects, and AI Product Managers to ensure analytics are scalable, production-ready, and efficient.· Leverage and evolve EDGE’s proprietary data products, methodologies, and frameworks to deliver differentiated insights for clients.· Contribute to shared analytics components and patterns that can be reused across agencies, clients, and engagements.· Help strengthen EDGE’s intellectual property by documenting approaches, insights frameworks, and learnings.· Stay current with emerging analytics, data, and AI techniques, with a focus on what can be applied safely and at scale.· Contribute to raising data and analytics fluency across agency teams through hands-on collaboration rather than standalone training.\n\nWhat type of person will be successful in this role:\n\n· Advertising agency experience preferred· Proven experience in analytics, data science, or applied insights roles.· Strong foundations in statistics, analytics, and data modelling.· Hands-on experience with Python, SQL, and modern analytics environments.· Proven aptitude to translate convoluted data into clear, compelling insights for non-technical audiences.· Experience working with creative, CX, media, or strategy teams in an agency, consulting, or brand environment.· Experience and exposure to some advanced techniques such as GBM, NLP, and NoSQL databases.· Experience working with proprietary or first-party data assets, identity-based data, or convoluted customer datasets.· Exposure to ecommerce analytics, customer lifecycle assessment, or digital experience optimisation.· Familiarity with cloud platforms (e.g. AWS, Azure, Snowflake), modern data stacks, and production analytics workflows.· Experience contributing to reusable methodologies, frameworks, or analytics products.· Comfort working in fast-moving, multi-disciplinary teams where creativity and data intersect\n\n #LI-DS1Additional InformationPublicis Groupe benefits: Be a part of the Publicis Groupe family, recent winner of the Employer of Choice Awards and one of the world's most progressive and dynamic modern communications businesses. You can learn more about us at www.publicisgroupeanz.com.\nEnjoy all the perks that come with our network offering:A comprehensive Wholeself program supporting physical, mindful, and financial wellbeing.A creative, lively, and rewarding office environment where people love working with each other, supported by our Publicis Liberté flexibility approach — \"working your way with us.\"Access to our Global AI Platform Marcel, connecting Publicis Groupe employees with opportunities for career mobility and collaboration across our global network.Extensive Learning & Development opportunities including more than 15,000 learning programs via our online learning platform, Marcel Classes.A culture of open feedback and support to reach your goals through our Career Conversations program.A committed Diversity, Equality, and Inclusion strategy driven through our Viva Women, Égalité, enABLE, EmbRACE, and Écologique committees.Leave benefits including Birthday Leave, Flexible Public Holidays, and an additional 5 days of leave after 2 years of service.Work Your World program enabling employees the flexibility to work from anywhere in the world for up to 6 weeks per year.Parental leave policy with up to 18 weeks based on tenure, paid primary carer leave, secondary carer swap, and Cub Care leave.Access to counsellors, psychologists, and professionals through Sonder, an all-in-one digital wellbeing technology platform designed to support psychological, medical & safety needs.A workplace that stands together to provide a more open, supportive, and recovery-forward culture for all employees with life-threatening illnesses. Read more about our Working With Cancer Pledge: https://workingwithcancerpledge.com/Proud partners of Diversity Council Australia, Pride in Diversity, Family Friendly Workplaces, Supply Nation, and the Australian Disability Network.If you don't tick every box in this ad, please don't rule yourself out. Research suggests that women and other people in underrepresented groups tend to only apply if they meet every requirement. We focus on hiring people who share our values of inclusion, collaboration, adaptability, fearlessness, and integrity rather than ticking boxes — so if this role resonates with you, please apply.\nDiversity. Inclusion. Equity. More than just words; these are part of our DNA. At Publicis Groupe, we are committed to the inclusion and recognition of all people regardless of race, age, culture, ability, ethnicity, gender identity or expression, sexual orientation, marital status, and religious affiliation. We believe that to deliver the best solutions to our clients, our people need to reflect the diverse communities in which our clients operate. We value diversity and the skills, knowledge, and experience that difference brings to our culture and solutions.\nUniqueness is powerful; without it, we wouldn't be where we are today. So be you — we like it that way.\nWe are committed to providing reasonable adjustments for people with disability or those that require additional support throughout the application process. If you need any assistance or adjustments, please contact us via recruitment@publicisgroupe.com; your personal information will be kept confidential.… moreSet alert for similar jobsAnalytics Manager, Sydney, New South Wales, AustraliaOffSee how you compare to others who clicked applyBased on LinkedIn data. Excludes subsidiaries.Candidates who clicked apply7total7in the past dayCandidate seniority level71% Senior level candidates14% Entry level candidatesCandidate education level86%have a Master's Degree (Similar to you)14%have a Bachelor's DegreeExclusive Job Seeker Insights about Publicis Groupe ANZPowered by BingThe latest hiring trend20,063Total employees26%Company-wide2 year growth32%Marketing2 year growthChartChart with 25 data points.The chart has 1 X axis displaying Time. Data ranges from 2024-03-01 00:00:00 to 2026-03-01 00:00:00.The chart has 1 Y axis displaying values. Data ranges from 15974 to 20063.Created with Highcharts 12.0.2May 1Sep 1Jan 1May 1Sep 1Jan 1010K20K30KEnd of interactive chart.Median employee tenure: 1.9 yearsPublicis Groupe ANZ hires candidates from some of these companies and schoolsPublicis Groupe ANZ hired 5 people from University of Sydney. See allShow Premium InsightsAbout the companyPublicis Groupe ANZ25,382 followersFollowAdvertising Services • 501-1000 employees • 72 on LinkedIn🏆 Australian Business Awards - Employer of Choice 2024, 2023, 2022 & 2021\n🏆 HR Awards Excellence Awardee - Employer of Choice 2022\n🏆 AFR BOSS Best Places to Work 2023, 2022\n🏆 HRD Employer of Choice 2021\n\nWelcome to Publicis Groupe ANZ. Here you will get an inside look at life within our network - including the brilliant people working across our agency brands.\n\nPublicis Groupe is a world leader in marketing, communication and digital business transformation, driven through the alchemy of data, creativity, media and technology. Our connected platform of companies and capabilities is more than an operational framework. It’s a cultural model we've built to unite our people in a collaborative way of thinking and working. Publicis Groupe offers its clients seamless access to the expertise of its 100,000+ talents across 100+ countries globally.\n\nIn Australia, our powerhouse of marketing capabilities stretches across creative agencies (Saatchi & Saatchi, Leo Burnett, Publicis Worldwide), media agencies (Starcom, Zenith, Spark Foundry), Razorfish, Digitas, Epsilon, Arc, Prodigious, PMX, PR (Herd MSL). We also have Publicis Sapient driving digital business transformation for our clients.\n\nIn New Zealand, our expertise continues across both creative (Saatchi & Saatchi), media (Spark Foundry), Digitas, Breakout Room, KiwiPlates, MBM and PMX.\n\nVisit our website to learn about our latest career opportunities, events, work, and news. Explore open roles here: https://careers.publicisgroupe.com/publicisgroupeanz/jobs… moreInterested in working with us in the future?Privately share your profile with our recruiters – you’ll be noted as expressing interest for up to a year and be notified about jobs and updates. Learn moreI’m interestedMore jobsSenior Manager, Marketing Insights & Analytics (Verified job)Senior Manager, Marketing Insights & Analytics carsalesMelbourne, VIC (Hybrid)5 company alumni work herePosted on March 11, 2026, 4:58 PM1 day ago · Easy ApplySenior Performance Media ManagerEnigmaSurry Hills, NSW (On-site)Actively reviewing applicantsPosted on January 8, 2026, 11:43 AM2 months ago · Easy ApplySenior Manager, Analytics Engineering (Remote ANZ) (Verified job)Senior Manager, Analytics Engineering (Remote ANZ) CanvaSydney, NSW (Hybrid)1 connection works herePosted on February 20, 2026, 8:06 PM2 weeks agoManager, Data, Insights & AI (Verified job)Manager, Data, Insights & AI Jetstar AirwaysCollingwood, VIC (Hybrid)13 company alumni work herePosted on March 4, 2026, 9:53 AM1 week agoSenior Manager, Data Analytics (Verified job)Senior Manager, Data Analytics Tyro PaymentsSydney, NSW (Hybrid)9 company alumni work herePosted on February 23, 2026, 1:27 PM2 weeks agoSenior Manager, Analytics Engineering (Remote ANZ) (Verified job)Senior Manager, Analytics Engineering (Remote ANZ) CanvaMelbourne, VIC (Hybrid)1 connection works herePosted on February 20, 2026, 8:06 PM2 weeks agoManager | Data Analytics (Verified job)Manager | Data Analytics Deloitte AustraliaSydney, NSW (On-site)86 company alumni work herePosted on February 28, 2026, 4:18 AM1 week agoPaid Performance ManagerRacketMelbourne, VIC (Hybrid)Actively reviewing applicantsPosted on February 27, 2026, 5:37 PM1 week ago · Easy ApplyPerformance Insights and Reporting ManagerBupa AustraliaMelbourne, VIC (Hybrid)12 company alumni work herePosted on February 12, 2026, 11:36 AM1 month agoBusiness Intelligence Manager - Technology Finance (Verified job)Business Intelligence Manager - Technology Finance Commonwealth BankSydney, NSW (Hybrid)8 connections work herePosted on March 9, 2026, 9:27 PM3 days agoSenior Performance Manager (Verified job)Senior Performance Manager Six Degrees ExecutiveMelbourne, VIC (On-site)1 school alumni works herePosted on March 12, 2026, 3:58 PM21 hours ago · Easy ApplyExecutive Manager - Strategy and Performance (Verified job)Executive Manager - Strategy and Performance WestpacNew South Wales, Australia (On-site)1 connection works herePosted on March 6, 2026, 2:59 PM6 days agoSee more jobs like thisLooking for talent?Try Hiring ProAboutAccessibilityTalent SolutionsCommunity GuidelinesCareersMarketing Solutions Privacy & TermsAd ChoicesAdvertisingSales SolutionsMobileSmall BusinessSafety CenterLinkedIn Corporation © 2026Questions?Visit our Help Center.Manage your account and privacyGo to your Settings.Recommendation transparencyLearn more about Recommended Content.Select languageالعربية (Arabic)বাংলা (Bangla)Čeština (Czech)Dansk (Danish)Deutsch (German)Ελληνικά (Greek)English (English)Español (Spanish)فارسی (Persian)Suomi (Finnish)Français (French)हिंदी (Hindi)Magyar (Hungarian)Bahasa Indonesia (Indonesian)Italiano (Italian)עברית (Hebrew)日本語 (Japanese)한국어 (Korean)मराठी (Marathi)Bahasa Malaysia (Malay)Nederlands (Dutch)Norsk (Norwegian)ਪੰਜਾਬੀ (Punjabi)Polski (Polish)Português (Portuguese)Română (Romanian)Русский (Russian)Svenska (Swedish)తెలుగు (Telugu)ภาษาไทย (Thai)Tagalog (Tagalog)Türkçe (Turkish)Українська (Ukrainian)Tiếng Việt (Vietnamese)简体中文 (Chinese (Simplified))正體中文 (Chinese (Traditional))",
+    "job_understanding": {
+      "core_mission": {
+        "summary": "Analytics Manager focuses on analytics translation & insight storytelling and commercial / customer insight generation to translate analytics into business decisions and drive commercial outcomes.",
+        "evidence": [
+          "· Discover and interrogate insights using EDGE’s proprietary data solutions, connected identity assets, and advanced analytics methodologies.· Assess intricate, multi-source data to uncover behavioural, cultural, and ...",
+          "· Advertising agency experience preferred· Proven experience in analytics, data science, or applied insights roles.· Strong foundations in statistics, analytics, and data modelling.· Hands-on experience with Python, S...",
+          "Enjoy all the perks that come with our network offering:A comprehensive Wholeself program supporting physical, mindful, and financial wellbeing.A creative, lively, and rewarding office environment where people love wo..."
+        ],
+        "confidence": 0.96,
+        "source": "deterministic"
+      },
+      "core_capability_clusters": [
+        {
+          "label": "Analytics Translation & Insight Storytelling",
+          "capabilities": [
+            "Strategic Planning"
+          ],
+          "importance": "critical",
+          "evidence": [
+            "· Discover and interrogate insights using EDGE’s proprietary data solutions, connected identity assets, and advanced analytics methodologies.· Assess intricate, multi-source data to uncover behavioural, cultural, and ...",
+            "· Advertising agency experience preferred· Proven experience in analytics, data science, or applied insights roles.· Strong foundations in statistics, analytics, and data modelling.· Hands-on experience with Python, S...",
+            "Enjoy all the perks that come with our network offering:A comprehensive Wholeself program supporting physical, mindful, and financial wellbeing.A creative, lively, and rewarding office environment where people love wo..."
+          ],
+          "confidence": 0.87,
+          "source": "deterministic"
+        },
+        {
+          "label": "Commercial / Customer Insight Generation",
+          "capabilities": [
+            "Strategic Planning"
+          ],
+          "importance": "critical",
+          "evidence": [
+            "· Discover and interrogate insights using EDGE’s proprietary data solutions, connected identity assets, and advanced analytics methodologies.· Assess intricate, multi-source data to uncover behavioural, cultural, and ...",
+            "· Advertising agency experience preferred· Proven experience in analytics, data science, or applied insights roles.· Strong foundations in statistics, analytics, and data modelling.· Hands-on experience with Python, S...",
+            "Enjoy all the perks that come with our network offering:A comprehensive Wholeself program supporting physical, mindful, and financial wellbeing.A creative, lively, and rewarding office environment where people love wo..."
+          ],
+          "confidence": 0.87,
+          "source": "deterministic"
+        },
+        {
+          "label": "Transformation / Enablement Through Data",
+          "capabilities": [
+            "Capability Uplift & Enablement"
+          ],
+          "importance": "important",
+          "evidence": [
+            "· Discover and interrogate insights using EDGE’s proprietary data solutions, connected identity assets, and advanced analytics methodologies.· Assess intricate, multi-source data to uncover behavioural, cultural, and ..."
+          ],
+          "confidence": 0.2,
+          "source": "deterministic"
+        },
+        {
+          "label": "Operational Performance Optimization",
+          "capabilities": [
+            "Operational Performance Optimization"
+          ],
+          "importance": "critical",
+          "evidence": [
+            "· Discover and interrogate insights using EDGE’s proprietary data solutions, connected identity assets, and advanced analytics methodologies.· Assess intricate, multi-source data to uncover behavioural, cultural, and ...",
+            "· Advertising agency experience preferred· Proven experience in analytics, data science, or applied insights roles.· Strong foundations in statistics, analytics, and data modelling.· Hands-on experience with Python, S..."
+          ],
+          "confidence": 0.47,
+          "source": "deterministic"
+        }
+      ],
+      "business_outcomes": [
+        {
+          "label": "Translate analytics into business decisions",
+          "evidence": [
+            "· Discover and interrogate insights using EDGE’s proprietary data solutions, connected identity assets, and advanced analytics methodologies.· Assess intricate, multi-source dat...",
+            "Learn moreI’m interestedMore jobsSenior Manager, Marketing Insights & Analytics (Verified job)Senior Manager, Marketing Insights & Analytics carsalesMelbourne, VIC (Hybrid)5 com..."
+          ],
+          "confidence": 0.72,
+          "source": "deterministic"
+        },
+        {
+          "label": "Drive commercial outcomes",
+          "evidence": [
+            "You will translate convoluted data into human-centered insights that inform creative ideas, experience design, and commercial outcomes — including for large-scale ecommerce orga...",
+            "· Discover and interrogate insights using EDGE’s proprietary data solutions, connected identity assets, and advanced analytics methodologies.· Assess intricate, multi-source dat..."
+          ],
+          "confidence": 0.72,
+          "source": "deterministic"
+        },
+        {
+          "label": "Improve customer experience outcomes",
+          "evidence": [
+            "You’ll work on real brand problems, with real data, alongside some of the strongest creative and CX teams in the market, while helping build the future-ready data and AI capabil...",
+            "The Analytics Manager is accountable for discovering, assessing and presenting insights using Publicis proprietary data solutions and methodologies to help creative, CX and comm...",
+            "· Discover and interrogate insights using EDGE’s proprietary data solutions, connected identity assets, and advanced analytics methodologies.· Assess intricate, multi-source dat..."
+          ],
+          "confidence": 0.82,
+          "source": "deterministic"
+        },
+        {
+          "label": "Improve creative or campaign effectiveness",
+          "evidence": [
+            "Publicis EDGE sits at the centre of how data, AI, creativity and experience come together to solve modern brand problems.",
+            "You’ll work on real brand problems, with real data, alongside some of the strongest creative and CX teams in the market, while helping build the future-ready data and AI capabil...",
+            "You will translate convoluted data into human-centered insights that inform creative ideas, experience design, and commercial outcomes — including for large-scale ecommerce orga..."
+          ],
+          "confidence": 0.82,
+          "source": "deterministic"
+        },
+        {
+          "label": "Scale reusable analytics solutions",
+          "evidence": [
+            "You will translate convoluted data into human-centered insights that inform creative ideas, experience design, and commercial outcomes — including for large-scale ecommerce orga...",
+            "· Discover and interrogate insights using EDGE’s proprietary data solutions, connected identity assets, and advanced analytics methodologies.· Assess intricate, multi-source dat...",
+            "AWS, Azure, Snowflake), modern data stacks, and production analytics workflows.· Experience contributing to reusable methodologies, frameworks, or analytics products.· Comfort w..."
+          ],
+          "confidence": 0.82,
+          "source": "deterministic"
+        }
+      ],
+      "collaboration_demands": [
+        {
+          "label": "Partner closely across creative teams, strategy teams, media teams, CX teams",
+          "counterparts": [
+            "creative teams",
+            "strategy teams",
+            "media teams",
+            "CX teams",
+            "client teams",
+            "commerce teams"
+          ],
+          "evidence": [
+            "You will translate convoluted data into human-centered insights that inform creative ideas, experience design, and commercial outcomes — including for large-scale ecommerce orga...",
+            "· Discover and interrogate insights using EDGE’s proprietary data solutions, connected identity assets, and advanced analytics methodologies.· Assess intricate, multi-source dat..."
+          ],
+          "confidence": 1,
+          "source": "deterministic"
+        }
+      ],
+      "secondary_methods": [
+        {
+          "label": "Python",
+          "evidence": [
+            "· Advertising agency experience preferred· Proven experience in analytics, data science, or applied insights roles.· Strong foundations in statistics, analytics, and data modell..."
+          ],
+          "confidence": 0.6,
+          "source": "deterministic"
+        },
+        {
+          "label": "SQL",
+          "evidence": [
+            "· Advertising agency experience preferred· Proven experience in analytics, data science, or applied insights roles.· Strong foundations in statistics, analytics, and data modell..."
+          ],
+          "confidence": 0.6,
+          "source": "deterministic"
+        },
+        {
+          "label": "Advanced analytics techniques",
+          "evidence": [
+            "· Discover and interrogate insights using EDGE’s proprietary data solutions, connected identity assets, and advanced analytics methodologies.· Assess intricate, multi-source dat...",
+            "· Advertising agency experience preferred· Proven experience in analytics, data science, or applied insights roles.· Strong foundations in statistics, analytics, and data modell..."
+          ],
+          "confidence": 0.7,
+          "source": "deterministic"
+        },
+        {
+          "label": "Cloud and modern data stack",
+          "evidence": [
+            "· Advertising agency experience preferred· Proven experience in analytics, data science, or applied insights roles.· Strong foundations in statistics, analytics, and data modell...",
+            "AWS, Azure, Snowflake), modern data stacks, and production analytics workflows.· Experience contributing to reusable methodologies, frameworks, or analytics products.· Comfort w..."
+          ],
+          "confidence": 0.7,
+          "source": "deterministic"
+        },
+        {
+          "label": "Reusable frameworks and documentation",
+          "evidence": [
+            "We build and operate proprietary data solutions, methodologies and platforms that enable agencies and clients to move faster, think smarter, and create more meaningful customer ...",
+            "The Analytics Manager is accountable for discovering, assessing and presenting insights using Publicis proprietary data solutions and methodologies to help creative, CX and comm..."
+          ],
+          "confidence": 0.7,
+          "source": "deterministic"
+        }
+      ],
+      "domain_modifiers": [
+        {
+          "label": "Agency / client delivery context",
+          "evidence": [
+            "Publicis Groupe ANZAnalytics ManagerSydney, New South Wales, Australia · 22 hours ago · 7 people clicked applyPromoted by hirer · Responses managed off LinkedInHybridFull-timeAp...",
+            "Publicis EDGE sits at the centre of how data, AI, creativity and experience come together to solve modern brand problems."
+          ],
+          "confidence": 0.68,
+          "source": "deterministic"
+        },
+        {
+          "label": "Brand / creative / media context",
+          "evidence": [
+            "Publicis Groupe ANZAnalytics ManagerSydney, New South Wales, Australia · 22 hours ago · 7 people clicked applyPromoted by hirer · Responses managed off LinkedInHybridFull-timeAp...",
+            "Publicis EDGE sits at the centre of how data, AI, creativity and experience come together to solve modern brand problems."
+          ],
+          "confidence": 0.68,
+          "source": "deterministic"
+        },
+        {
+          "label": "Customer / CX / commerce context",
+          "evidence": [
+            "We build and operate proprietary data solutions, methodologies and platforms that enable agencies and clients to move faster, think smarter, and create more meaningful customer ...",
+            "You’ll work on real brand problems, with real data, alongside some of the strongest creative and CX teams in the market, while helping build the future-ready data and AI capabil..."
+          ],
+          "confidence": 0.68,
+          "source": "deterministic"
+        },
+        {
+          "label": "Data / AI platform context",
+          "evidence": [
+            "Publicis Groupe ANZAnalytics ManagerSydney, New South Wales, Australia · 22 hours ago · 7 people clicked applyPromoted by hirer · Responses managed off LinkedInHybridFull-timeAp...",
+            "Publicis EDGE sits at the centre of how data, AI, creativity and experience come together to solve modern brand problems."
+          ],
+          "confidence": 0.68,
+          "source": "deterministic"
+        },
+        {
+          "label": "analytics",
+          "evidence": [
+            "analytics"
+          ],
+          "confidence": 0.4,
+          "source": "deterministic"
+        }
+      ],
+      "seniority_shape": {
+        "level": "junior",
+        "leadership_scope": "Individual contributor or manager operating through cross-functional embedding",
+        "autonomy": "High autonomy in framing and delivering analytics work",
+        "evidence": [
+          "Analytics Manager"
+        ],
+        "confidence": 0.56,
+        "source": "deterministic"
+      },
+      "blocker_like_requirements": [
+        {
+          "label": "· Discover and interrogate insights using EDGE’s proprietary data solutions, connected id...",
+          "reason": "Explicit context or background expectation",
+          "evidence": [
+            "· Discover and interrogate insights using EDGE’s proprietary data solutions, connected identity assets, and advanced analytics methodologies.· Assess intricate, multi-source dat..."
+          ],
+          "confidence": 0.68,
+          "source": "deterministic"
+        },
+        {
+          "label": "· Advertising agency experience preferred· Proven experience in analytics, data science, ...",
+          "reason": "Explicit tooling or platform expectation",
+          "evidence": [
+            "· Advertising agency experience preferred· Proven experience in analytics, data science, or applied insights roles.· Strong foundations in statistics, analytics, and data modell..."
+          ],
+          "confidence": 0.68,
+          "source": "deterministic"
+        }
+      ],
+      "stretch_like_requirements": [
+        {
+          "label": "· Discover and interrogate insights using EDGE’s proprietary data solutions, connected id...",
+          "reason": "Framed as preferred, familiarity-based, or advanced-method stretch",
+          "evidence": [
+            "· Discover and interrogate insights using EDGE’s proprietary data solutions, connected identity assets, and advanced analytics methodologies.· Assess intricate, multi-source dat..."
+          ],
+          "confidence": 0.5,
+          "source": "deterministic"
+        },
+        {
+          "label": "· Advertising agency experience preferred· Proven experience in analytics, data science, ...",
+          "reason": "Framed as preferred, familiarity-based, or advanced-method stretch",
+          "evidence": [
+            "· Advertising agency experience preferred· Proven experience in analytics, data science, or applied insights roles.· Strong foundations in statistics, analytics, and data modell..."
+          ],
+          "confidence": 0.5,
+          "source": "deterministic"
+        }
+      ],
+      "extraction_diagnostics": {
+        "mode": "deterministic_only",
+        "llm_attempted": false,
+        "llm_available": false,
+        "llm_error": null,
+        "scaffold_summary": {
+          "target_title": "Analytics Manager",
+          "seniority_level": "junior",
+          "required_skill_count": 6,
+          "preferred_skill_count": 0,
+          "extracted_capability_count": 3
+        }
+      }
+    },
+    "parsed_job_summary": {
+      "target_title": "Analytics Manager",
+      "normalized_title": "Analytics Manager",
+      "role_family": "analytics",
+      "seniority": "junior",
+      "company": null,
+      "location": "Wales, Australia",
+      "mission_summary": "Analytics Manager is centered on analytics translation & insight storytelling and commercial analytics.",
+      "required_skills": [
+        "Python",
+        "AWS",
+        "Microsoft Azure",
+        "SQL",
+        "Apache Spark",
+        "Communication"
+      ],
+      "preferred_skills": [],
+      "responsibilities": [],
+      "domains": [
+        "analytics",
+        "data",
+        "platform",
+        "transformation",
+        "strategy",
+        "program",
+        "delivery",
+        "commercial"
+      ]
+    },
+    "extracted_requirements": [
+      {
+        "requirement_id": "analytics_translation_storytelling",
+        "display_name": "Analytics Translation & Insight Storytelling",
+        "layer": "core_mission",
+        "importance": "critical",
+        "optionality": "core",
+        "canonical_capabilities": [
+          "commercial analytics",
+          "executive influence & business cases",
+          "strategic planning"
+        ],
+        "transfer_capabilities": [
+          "market & opportunity assessment",
+          "cross-functional stakeholder leadership"
+        ],
+        "evidence": [
+          "Publicis Groupe ANZAnalytics ManagerSydney, New South Wales, Australia · 22 hours ago · 7 people clicked applyPromoted by hirer · Responses managed off LinkedInHybridFull-timeApplySaveUse AI to assess how you fitShow ...",
+          "We build and operate proprietary data solutions, methodologies and platforms that enable agencies and clients to move faster, think smarter, and create more meaningful customer experiences",
+          "· At EDGE, analytics is not a support function — it is a creative and commercial accelerator.",
+          "The Analytics Manager is accountable for discovering, assessing and presenting insights using Publicis proprietary data solutions and methodologies to help creative, CX and commerce teams decode brand and customer pro..."
+        ],
+        "matched_terms": [
+          "insights",
+          "narrative",
+          "analytics",
+          "commercial",
+          "customer",
+          "strategy",
+          "analytics manager"
+        ],
+        "confidence": 1
+      },
+      {
+        "requirement_id": "commercial_analytics",
+        "display_name": "Commercial Analytics",
+        "layer": "core_capability",
+        "importance": "critical",
+        "optionality": "core",
+        "canonical_capabilities": [
+          "commercial analytics"
+        ],
+        "transfer_capabilities": [
+          "market & opportunity assessment",
+          "strategic planning",
+          "analytics automation"
+        ],
+        "evidence": [
+          "Publicis Groupe ANZAnalytics ManagerSydney, New South Wales, Australia · 22 hours ago · 7 people clicked applyPromoted by hirer · Responses managed off LinkedInHybridFull-timeApplySaveUse AI to assess how you fitShow ...",
+          "We build and operate proprietary data solutions, methodologies and platforms that enable agencies and clients to move faster, think smarter, and create more meaningful customer experiences",
+          "· At EDGE, analytics is not a support function — it is a creative and commercial accelerator.",
+          "The Analytics Manager is accountable for discovering, assessing and presenting insights using Publicis proprietary data solutions and methodologies to help creative, CX and commerce teams decode brand and customer pro..."
+        ],
+        "matched_terms": [
+          "performance insights",
+          "performance",
+          "commercial",
+          "analytics",
+          "customer",
+          "growth",
+          "analytics manager",
+          "commercial insights"
+        ],
+        "confidence": 0.93
+      },
+      {
+        "requirement_id": "stakeholder_embedding",
+        "display_name": "Cross-Functional Embedding & Stakeholder Leadership",
+        "layer": "core_capability",
+        "importance": "critical",
+        "optionality": "core",
+        "canonical_capabilities": [
+          "cross-functional stakeholder leadership",
+          "executive influence & business cases"
+        ],
+        "transfer_capabilities": [
+          "people leadership",
+          "strategic planning"
+        ],
+        "evidence": [
+          "Publicis Groupe ANZAnalytics ManagerSydney, New South Wales, Australia · 22 hours ago · 7 people clicked applyPromoted by hirer · Responses managed off LinkedInHybridFull-timeApplySaveUse AI to assess how you fitShow ...",
+          "· At EDGE, analytics is not a support function — it is a creative and commercial accelerator.",
+          "The Analytics Manager is accountable for discovering, assessing and presenting insights using Publicis proprietary data solutions and methodologies to help creative, CX and commerce teams decode brand and customer pro...",
+          "You will translate convoluted data into human-centered insights that inform creative ideas, experience design, and commercial outcomes — including for large-scale ecommerce organisation with convoluted customer journe..."
+        ],
+        "matched_terms": [
+          "embed",
+          "governance",
+          "analytics",
+          "strategy",
+          "commercial",
+          "manager",
+          "lead"
+        ],
+        "confidence": 0.85
+      },
+      {
+        "requirement_id": "transformation_enablement",
+        "display_name": "Transformation / Enablement Through Analytics",
+        "layer": "core_capability",
+        "importance": "important",
+        "optionality": "optional",
+        "canonical_capabilities": [
+          "transformation delivery leadership",
+          "capability uplift & enablement",
+          "change management & adoption",
+          "bi / data platform transformation",
+          "analytics automation"
+        ],
+        "transfer_capabilities": [
+          "cross-functional stakeholder leadership",
+          "strategic planning"
+        ],
+        "evidence": [
+          "Publicis Groupe ANZAnalytics ManagerSydney, New South Wales, Australia · 22 hours ago · 7 people clicked applyPromoted by hirer · Responses managed off LinkedInHybridFull-timeApplySaveUse AI to assess how you fitShow ...",
+          "· At EDGE, analytics is not a support function — it is a creative and commercial accelerator.",
+          "The transformation you will experience:",
+          "The Analytics Manager is accountable for discovering, assessing and presenting insights using Publicis proprietary data solutions and methodologies to help creative, CX and commerce teams decode brand and customer pro..."
+        ],
+        "matched_terms": [
+          "transformation",
+          "training",
+          "governance",
+          "analytics",
+          "manager"
+        ],
+        "confidence": 1
+      },
+      {
+        "requirement_id": "customer_cx_insights",
+        "display_name": "Customer / CX Insight Generation",
+        "layer": "core_capability",
+        "importance": "important",
+        "optionality": "optional",
+        "canonical_capabilities": [
+          "commercial analytics",
+          "market & opportunity assessment"
+        ],
+        "transfer_capabilities": [
+          "cross-functional stakeholder leadership",
+          "strategic planning"
+        ],
+        "evidence": [
+          "Publicis Groupe ANZAnalytics ManagerSydney, New South Wales, Australia · 22 hours ago · 7 people clicked applyPromoted by hirer · Responses managed off LinkedInHybridFull-timeApplySaveUse AI to assess how you fitShow ...",
+          "We build and operate proprietary data solutions, methodologies and platforms that enable agencies and clients to move faster, think smarter, and create more meaningful customer experiences",
+          "· At EDGE, analytics is not a support function — it is a creative and commercial accelerator.",
+          "You’ll work on real brand problems, with real data, alongside some of the strongest creative and CX teams in the market, while helping build the future-ready data and AI capability of Publicis Groupe.· Collaborative a..."
+        ],
+        "matched_terms": [
+          "cx",
+          "research",
+          "customer",
+          "commercial",
+          "analytics",
+          "insights"
+        ],
+        "confidence": 0.77
+      },
+      {
+        "requirement_id": "domain_context_agency_marketing",
+        "display_name": "Domain Context: Agency / Marketing / Client Delivery",
+        "layer": "domain_context",
+        "importance": "supporting",
+        "optionality": "optional",
+        "canonical_capabilities": [
+          "cross-functional stakeholder leadership",
+          "commercial analytics"
+        ],
+        "transfer_capabilities": [
+          "executive influence & business cases",
+          "strategic planning"
+        ],
+        "evidence": [
+          "Publicis Groupe ANZAnalytics ManagerSydney, New South Wales, Australia · 22 hours ago · 7 people clicked applyPromoted by hirer · Responses managed off LinkedInHybridFull-timeApplySaveUse AI to assess how you fitShow ...",
+          "Publicis EDGE sits at the centre of how data, AI, creativity and experience come together to solve modern brand problems.",
+          "We build and operate proprietary data solutions, methodologies and platforms that enable agencies and clients to move faster, think smarter, and create more meaningful customer experiences",
+          "· At EDGE, analytics is not a support function — it is a creative and commercial accelerator."
+        ],
+        "matched_terms": [
+          "agency",
+          "media",
+          "marketing",
+          "client",
+          "advertising",
+          "publicis",
+          "customer",
+          "commercial"
+        ],
+        "confidence": 0.96
+      },
+      {
+        "requirement_id": "data_tooling_delivery",
+        "display_name": "Data Tooling & Analytical Methods",
+        "layer": "secondary_method",
+        "importance": "supporting",
+        "optionality": "optional",
+        "canonical_capabilities": [
+          "analytics automation",
+          "bi / data platform transformation"
+        ],
+        "transfer_capabilities": [
+          "commercial analytics"
+        ],
+        "evidence": [
+          "Publicis Groupe ANZAnalytics ManagerSydney, New South Wales, Australia · 22 hours ago · 7 people clicked applyPromoted by hirer · Responses managed off LinkedInHybridFull-timeApplySaveUse AI to assess how you fitShow ...",
+          "· At EDGE, analytics is not a support function — it is a creative and commercial accelerator.",
+          "The Analytics Manager is accountable for discovering, assessing and presenting insights using Publicis proprietary data solutions and methodologies to help creative, CX and commerce teams decode brand and customer pro...",
+          "You will translate convoluted data into human-centered insights that inform creative ideas, experience design, and commercial outcomes — including for large-scale ecommerce organisation with convoluted customer journe..."
+        ],
+        "matched_terms": [
+          "sql",
+          "python",
+          "reporting",
+          "analytics",
+          "engineering",
+          "bi",
+          "insights"
+        ],
+        "confidence": 0.73
+      }
+    ],
+    "requirement_clusters": [
+      {
+        "cluster_id": "analytics_translation_storytelling",
+        "display_name": "Analytics Translation & Insight Storytelling",
+        "layer": "core_mission",
+        "direct_capabilities": [
+          "commercial analytics",
+          "executive influence & business cases",
+          "strategic planning"
+        ],
+        "transfer_capabilities": [
+          "market & opportunity assessment",
+          "cross-functional stakeholder leadership"
+        ],
+        "transfer_pattern_ids": [
+          "analytics_to_decision_translation",
+          "stakeholder_storytelling_from_analytics",
+          "commercial_customer_analytics"
+        ],
+        "matched_terms": [
+          "insights",
+          "narrative",
+          "analytics",
+          "commercial",
+          "customer",
+          "strategy",
+          "analytics manager"
+        ],
+        "evidence": [
+          "Publicis Groupe ANZAnalytics ManagerSydney, New South Wales, Australia · 22 hours ago · 7 people clicked applyPromoted by hirer · Responses managed off LinkedInHybridFull-timeApplySaveUse AI to assess how you fitShow ...",
+          "We build and operate proprietary data solutions, methodologies and platforms that enable agencies and clients to move faster, think smarter, and create more meaningful customer experiences",
+          "· At EDGE, analytics is not a support function — it is a creative and commercial accelerator.",
+          "The Analytics Manager is accountable for discovering, assessing and presenting insights using Publicis proprietary data solutions and methodologies to help creative, CX and commerce teams decode brand and customer pro..."
+        ],
+        "domain_modifiers": [
+          "analytics",
+          "insights",
+          "commercial",
+          "customer"
+        ],
+        "methods": [
+          "recommendations",
+          "narrative",
+          "storytelling"
+        ],
+        "importance": "critical",
+        "importance_score": 1,
+        "optionality": "core",
+        "confidence": 1
+      },
+      {
+        "cluster_id": "commercial_analytics",
+        "display_name": "Commercial Analytics",
+        "layer": "core_capability",
+        "direct_capabilities": [
+          "commercial analytics"
+        ],
+        "transfer_capabilities": [
+          "market & opportunity assessment",
+          "strategic planning",
+          "analytics automation"
+        ],
+        "transfer_pattern_ids": [
+          "commercial_customer_analytics",
+          "analytics_to_decision_translation",
+          "strategic_problem_solving_with_analytics"
+        ],
+        "matched_terms": [
+          "performance insights",
+          "performance",
+          "commercial",
+          "analytics",
+          "customer",
+          "growth",
+          "analytics manager",
+          "commercial insights"
+        ],
+        "evidence": [
+          "Publicis Groupe ANZAnalytics ManagerSydney, New South Wales, Australia · 22 hours ago · 7 people clicked applyPromoted by hirer · Responses managed off LinkedInHybridFull-timeApplySaveUse AI to assess how you fitShow ...",
+          "We build and operate proprietary data solutions, methodologies and platforms that enable agencies and clients to move faster, think smarter, and create more meaningful customer experiences",
+          "· At EDGE, analytics is not a support function — it is a creative and commercial accelerator.",
+          "The Analytics Manager is accountable for discovering, assessing and presenting insights using Publicis proprietary data solutions and methodologies to help creative, CX and commerce teams decode brand and customer pro..."
+        ],
+        "domain_modifiers": [
+          "commercial",
+          "analytics",
+          "customer",
+          "growth"
+        ],
+        "methods": [
+          "segmentation",
+          "forecasting",
+          "pricing",
+          "performance"
+        ],
+        "importance": "critical",
+        "importance_score": 0.83,
+        "optionality": "core",
+        "confidence": 0.93
+      },
+      {
+        "cluster_id": "stakeholder_embedding",
+        "display_name": "Cross-Functional Embedding & Stakeholder Leadership",
+        "layer": "core_capability",
+        "direct_capabilities": [
+          "cross-functional stakeholder leadership",
+          "executive influence & business cases"
+        ],
+        "transfer_capabilities": [
+          "people leadership",
+          "strategic planning"
+        ],
+        "transfer_pattern_ids": [
+          "stakeholder_storytelling_from_analytics",
+          "cross_functional_analytics_leadership",
+          "analytics_to_decision_translation"
+        ],
+        "matched_terms": [
+          "embed",
+          "governance",
+          "analytics",
+          "strategy",
+          "commercial",
+          "manager",
+          "lead"
+        ],
+        "evidence": [
+          "Publicis Groupe ANZAnalytics ManagerSydney, New South Wales, Australia · 22 hours ago · 7 people clicked applyPromoted by hirer · Responses managed off LinkedInHybridFull-timeApplySaveUse AI to assess how you fitShow ...",
+          "· At EDGE, analytics is not a support function — it is a creative and commercial accelerator.",
+          "The Analytics Manager is accountable for discovering, assessing and presenting insights using Publicis proprietary data solutions and methodologies to help creative, CX and commerce teams decode brand and customer pro...",
+          "You will translate convoluted data into human-centered insights that inform creative ideas, experience design, and commercial outcomes — including for large-scale ecommerce organisation with convoluted customer journe..."
+        ],
+        "domain_modifiers": [
+          "analytics",
+          "strategy",
+          "commercial"
+        ],
+        "methods": [
+          "presentation",
+          "business case",
+          "governance"
+        ],
+        "importance": "critical",
+        "importance_score": 0.83,
+        "optionality": "core",
+        "confidence": 0.85
+      },
+      {
+        "cluster_id": "transformation_enablement",
+        "display_name": "Transformation / Enablement Through Analytics",
+        "layer": "core_capability",
+        "direct_capabilities": [
+          "transformation delivery leadership",
+          "capability uplift & enablement",
+          "change management & adoption",
+          "bi / data platform transformation",
+          "analytics automation"
+        ],
+        "transfer_capabilities": [
+          "cross-functional stakeholder leadership",
+          "strategic planning"
+        ],
+        "transfer_pattern_ids": [
+          "transformation_through_data",
+          "analytics_enablement_adoption",
+          "cross_functional_analytics_leadership",
+          "strategic_problem_solving_with_analytics"
+        ],
+        "matched_terms": [
+          "transformation",
+          "training",
+          "governance",
+          "analytics",
+          "manager"
+        ],
+        "evidence": [
+          "Publicis Groupe ANZAnalytics ManagerSydney, New South Wales, Australia · 22 hours ago · 7 people clicked applyPromoted by hirer · Responses managed off LinkedInHybridFull-timeApplySaveUse AI to assess how you fitShow ...",
+          "· At EDGE, analytics is not a support function — it is a creative and commercial accelerator.",
+          "The transformation you will experience:",
+          "The Analytics Manager is accountable for discovering, assessing and presenting insights using Publicis proprietary data solutions and methodologies to help creative, CX and commerce teams decode brand and customer pro..."
+        ],
+        "domain_modifiers": [
+          "transformation",
+          "analytics",
+          "operations"
+        ],
+        "methods": [
+          "training",
+          "playbook",
+          "governance",
+          "standards"
+        ],
+        "importance": "important",
+        "importance_score": 0.69,
+        "optionality": "optional",
+        "confidence": 1
+      },
+      {
+        "cluster_id": "customer_cx_insights",
+        "display_name": "Customer / CX Insight Generation",
+        "layer": "core_capability",
+        "direct_capabilities": [
+          "commercial analytics",
+          "market & opportunity assessment"
+        ],
+        "transfer_capabilities": [
+          "cross-functional stakeholder leadership",
+          "strategic planning"
+        ],
+        "transfer_pattern_ids": [
+          "commercial_customer_analytics",
+          "analytics_to_decision_translation",
+          "stakeholder_storytelling_from_analytics"
+        ],
+        "matched_terms": [
+          "cx",
+          "research",
+          "customer",
+          "commercial",
+          "analytics",
+          "insights"
+        ],
+        "evidence": [
+          "Publicis Groupe ANZAnalytics ManagerSydney, New South Wales, Australia · 22 hours ago · 7 people clicked applyPromoted by hirer · Responses managed off LinkedInHybridFull-timeApplySaveUse AI to assess how you fitShow ...",
+          "We build and operate proprietary data solutions, methodologies and platforms that enable agencies and clients to move faster, think smarter, and create more meaningful customer experiences",
+          "· At EDGE, analytics is not a support function — it is a creative and commercial accelerator.",
+          "You’ll work on real brand problems, with real data, alongside some of the strongest creative and CX teams in the market, while helping build the future-ready data and AI capability of Publicis Groupe.· Collaborative a..."
+        ],
+        "domain_modifiers": [
+          "customer",
+          "commercial",
+          "analytics"
+        ],
+        "methods": [
+          "measurement",
+          "research",
+          "behavioral insights"
+        ],
+        "importance": "important",
+        "importance_score": 0.69,
+        "optionality": "optional",
+        "confidence": 0.77
+      },
+      {
+        "cluster_id": "domain_context_agency_marketing",
+        "display_name": "Domain Context: Agency / Marketing / Client Delivery",
+        "layer": "domain_context",
+        "direct_capabilities": [
+          "cross-functional stakeholder leadership",
+          "commercial analytics"
+        ],
+        "transfer_capabilities": [
+          "executive influence & business cases",
+          "strategic planning"
+        ],
+        "transfer_pattern_ids": [
+          "analytics_to_decision_translation",
+          "commercial_customer_analytics",
+          "stakeholder_storytelling_from_analytics"
+        ],
+        "matched_terms": [
+          "agency",
+          "media",
+          "marketing",
+          "client",
+          "advertising",
+          "publicis",
+          "customer",
+          "commercial"
+        ],
+        "evidence": [
+          "Publicis Groupe ANZAnalytics ManagerSydney, New South Wales, Australia · 22 hours ago · 7 people clicked applyPromoted by hirer · Responses managed off LinkedInHybridFull-timeApplySaveUse AI to assess how you fitShow ...",
+          "Publicis EDGE sits at the centre of how data, AI, creativity and experience come together to solve modern brand problems.",
+          "We build and operate proprietary data solutions, methodologies and platforms that enable agencies and clients to move faster, think smarter, and create more meaningful customer experiences",
+          "· At EDGE, analytics is not a support function — it is a creative and commercial accelerator."
+        ],
+        "domain_modifiers": [
+          "marketing",
+          "customer",
+          "commercial"
+        ],
+        "methods": [
+          "client delivery",
+          "campaign insights"
+        ],
+        "importance": "supporting",
+        "importance_score": 0.49,
+        "optionality": "optional",
+        "confidence": 0.96
+      },
+      {
+        "cluster_id": "data_tooling_delivery",
+        "display_name": "Data Tooling & Analytical Methods",
+        "layer": "secondary_method",
+        "direct_capabilities": [
+          "analytics automation",
+          "bi / data platform transformation"
+        ],
+        "transfer_capabilities": [
+          "commercial analytics"
+        ],
+        "transfer_pattern_ids": [
+          "strategic_problem_solving_with_analytics",
+          "transformation_through_data",
+          "analytics_enablement_adoption"
+        ],
+        "matched_terms": [
+          "sql",
+          "python",
+          "reporting",
+          "analytics",
+          "engineering",
+          "bi",
+          "insights"
+        ],
+        "evidence": [
+          "Publicis Groupe ANZAnalytics ManagerSydney, New South Wales, Australia · 22 hours ago · 7 people clicked applyPromoted by hirer · Responses managed off LinkedInHybridFull-timeApplySaveUse AI to assess how you fitShow ...",
+          "· At EDGE, analytics is not a support function — it is a creative and commercial accelerator.",
+          "The Analytics Manager is accountable for discovering, assessing and presenting insights using Publicis proprietary data solutions and methodologies to help creative, CX and commerce teams decode brand and customer pro...",
+          "You will translate convoluted data into human-centered insights that inform creative ideas, experience design, and commercial outcomes — including for large-scale ecommerce organisation with convoluted customer journe..."
+        ],
+        "domain_modifiers": [
+          "analytics",
+          "engineering"
+        ],
+        "methods": [
+          "sql",
+          "python",
+          "power bi",
+          "tableau",
+          "looker",
+          "bigquery"
+        ],
+        "importance": "supporting",
+        "importance_score": 0.49,
+        "optionality": "optional",
+        "confidence": 0.73
+      }
+    ],
+    "requirement_importance_by_cluster": [
+      {
+        "cluster_id": "analytics_translation_storytelling",
+        "display_name": "Analytics Translation & Insight Storytelling",
+        "importance": "critical",
+        "importance_score": 1
+      },
+      {
+        "cluster_id": "commercial_analytics",
+        "display_name": "Commercial Analytics",
+        "importance": "critical",
+        "importance_score": 0.83
+      },
+      {
+        "cluster_id": "stakeholder_embedding",
+        "display_name": "Cross-Functional Embedding & Stakeholder Leadership",
+        "importance": "critical",
+        "importance_score": 0.83
+      },
+      {
+        "cluster_id": "transformation_enablement",
+        "display_name": "Transformation / Enablement Through Analytics",
+        "importance": "important",
+        "importance_score": 0.69
+      },
+      {
+        "cluster_id": "customer_cx_insights",
+        "display_name": "Customer / CX Insight Generation",
+        "importance": "important",
+        "importance_score": 0.69
+      },
+      {
+        "cluster_id": "domain_context_agency_marketing",
+        "display_name": "Domain Context: Agency / Marketing / Client Delivery",
+        "importance": "supporting",
+        "importance_score": 0.49
+      },
+      {
+        "cluster_id": "data_tooling_delivery",
+        "display_name": "Data Tooling & Analytical Methods",
+        "importance": "supporting",
+        "importance_score": 0.49
+      }
+    ],
+    "optional_vs_core_requirements": {
+      "core": [
+        "Analytics Translation & Insight Storytelling",
+        "Commercial Analytics",
+        "Cross-Functional Embedding & Stakeholder Leadership"
+      ],
+      "optional": [
+        "Transformation / Enablement Through Analytics",
+        "Customer / CX Insight Generation",
+        "Domain Context: Agency / Marketing / Client Delivery",
+        "Data Tooling & Analytical Methods"
+      ]
+    },
+    "candidate_capabilities": [
+      {
+        "capability_id": "64e4d898-b255-4235-8dac-55bafe44f469",
+        "canonical_name": "strategic planning",
+        "display_name": "Strategic Planning",
+        "strength_score": 0.7429,
+        "weighted_signal_score": 8.149,
+        "signal_count": 10,
+        "transferable_tags": [
+          "strategy",
+          "translation",
+          "planning"
+        ],
+        "domain_tags": [
+          "strategy"
+        ],
+        "top_supporting_signals": [
+          {
+            "evidence_signal_id": "8b3ca56d-cf58-4a44-82fe-8ca86aeabd92",
+            "evidence_piece_id": "a9e61a8e-f44b-4b31-8697-9131b5c27ed8",
+            "contribution_score": 1.8078,
+            "raw_signal_strength": 1.8078,
+            "action": "led",
+            "scope_level": "enterprise",
+            "ownership_level": "lead",
+            "impact_signal": "strategic",
+            "confidence_score": 0.8,
+            "link_contribution_weight": 0.8,
+            "evidence_raw_text": "Led enterprise-wide Power BI transformation: Conducted 20+ stakeholder interviews, launched centralized training portal, partnered with Microsoft to identify capability gaps, streamlined onboarding from 6 months to 1 month"
+          },
+          {
+            "evidence_signal_id": "3e2c3c06-0c03-415f-8f83-5f0ef763396b",
+            "evidence_piece_id": "4f8d05cd-418d-4737-8499-7044b7319f6f",
+            "contribution_score": 1.357,
+            "raw_signal_strength": 1.5605,
+            "action": "drove",
+            "scope_level": "market",
+            "ownership_level": "driver",
+            "impact_signal": "strategic",
+            "confidence_score": 0.65,
+            "link_contribution_weight": 0.65,
+            "evidence_raw_text": "Drove localized growth strategy through granular market opportunity assessment including national and SA3-level competitive landscape analysis across product groups and customer cohorts, collaborating with Go-to-Market teams to define localization strategy, scope initiatives, and monitor performance—identified $5M revenue gap closure opportunity"
+          },
+          {
+            "evidence_signal_id": "8dbcc10a-6f5d-4dca-aeb9-6010643692ea",
+            "evidence_piece_id": "82cc8545-828d-4c0b-a270-9d062dfc3929",
+            "contribution_score": 0.9474,
+            "raw_signal_strength": 1.2317,
+            "action": null,
+            "scope_level": "enterprise",
+            "ownership_level": null,
+            "impact_signal": "strategic",
+            "confidence_score": 0.5,
+            "link_contribution_weight": 0.5,
+            "evidence_raw_text": "Created innovative NPS Impact Score framework—volume-weighted analytical methodology (NPS discrepancy by segment/cohort × volume vs. national level) adopted company-wide as key prioritization metric, fundamentally shifting strategy from simple trend analysis to impact-based resource allocation"
+          },
+          {
+            "evidence_signal_id": "f33aa888-931a-40af-8792-249b12356dec",
+            "evidence_piece_id": "58636254-7f9e-40af-aa1c-dee1ddb30bb1",
+            "contribution_score": 0.8397,
+            "raw_signal_strength": 1.2176,
+            "action": "presented",
+            "scope_level": "task",
+            "ownership_level": "lead",
+            "impact_signal": "strategic",
+            "confidence_score": 0.725,
+            "link_contribution_weight": 0.725,
+            "evidence_raw_text": "Presented business cases to senior leadership for localization analytics strategy, securing budget and executive approval to build dedicated core team"
+          }
+        ],
+        "supporting_evidence_piece_ids": [
+          "a9e61a8e-f44b-4b31-8697-9131b5c27ed8",
+          "4f8d05cd-418d-4737-8499-7044b7319f6f",
+          "82cc8545-828d-4c0b-a270-9d062dfc3929",
+          "58636254-7f9e-40af-aa1c-dee1ddb30bb1"
+        ]
+      },
+      {
+        "capability_id": "5aaa8ec4-c95b-487c-a78e-3d337180538e",
+        "canonical_name": "commercial analytics",
+        "display_name": "Commercial Analytics",
+        "strength_score": 0.5691,
+        "weighted_signal_score": 5.0516,
+        "signal_count": 7,
+        "transferable_tags": [
+          "analytics",
+          "commercial",
+          "insights",
+          "translation"
+        ],
+        "domain_tags": [
+          "analytics",
+          "commercial"
+        ],
+        "top_supporting_signals": [
+          {
+            "evidence_signal_id": "bdba73ba-3f49-4d3e-a0ad-f0b600610e74",
+            "evidence_piece_id": "3acf0174-1bcb-4ac5-a78c-67af28791bae",
+            "contribution_score": 1.3034,
+            "raw_signal_strength": 1.3034,
+            "action": "identified",
+            "scope_level": "market",
+            "ownership_level": "contributor",
+            "impact_signal": "revenue",
+            "confidence_score": 0.5,
+            "link_contribution_weight": 0.5,
+            "evidence_raw_text": "Lead team of 6 analytics professionals with oversight of 22 across business units, fostering commercial thinking and accountability for impact—delivered FY24 outcomes: 381 working days optimized, 1.9M customers supported, $30M+ revenue opportunities identified"
+          },
+          {
+            "evidence_signal_id": "76cfe974-ecfc-41da-8eca-7256de31f524",
+            "evidence_piece_id": "e0a3422e-f08d-4c72-8e72-a35f09171f70",
+            "contribution_score": 1.097,
+            "raw_signal_strength": 1.2615,
+            "action": "identified",
+            "scope_level": "function",
+            "ownership_level": "contributor",
+            "impact_signal": "revenue",
+            "confidence_score": 0.575,
+            "link_contribution_weight": 0.575,
+            "evidence_raw_text": "Identified $25M+ revenue growth opportunities for TV & C (streaming video) portfolio through advanced analytics and customer insights"
+          },
+          {
+            "evidence_signal_id": "782c0481-23f4-4ab2-9fc5-bb15c061c162",
+            "evidence_piece_id": "35913a91-e2c2-4a5b-8e1f-3de65172b1c2",
+            "contribution_score": 0.7256,
+            "raw_signal_strength": 0.9433,
+            "action": "reduced",
+            "scope_level": "project",
+            "ownership_level": "contributor",
+            "impact_signal": "cost",
+            "confidence_score": 0.725,
+            "link_contribution_weight": 0.725,
+            "evidence_raw_text": "Pioneered AI-powered analytics automation using Google BigQuery, Power BI, and LLMs to generate automated executive-level insights for NPS redesign program—reduced analysis time from 3-4 days to 4 hours and completed 7 major analyses"
+          },
+          {
+            "evidence_signal_id": "7ef18fe5-4c49-4010-8494-794a88be8687",
+            "evidence_piece_id": "4f8d05cd-418d-4737-8499-7044b7319f6f",
+            "contribution_score": 0.6367,
+            "raw_signal_strength": 0.9232,
+            "action": "identified",
+            "scope_level": "task",
+            "ownership_level": "contributor",
+            "impact_signal": "revenue",
+            "confidence_score": 0.5,
+            "link_contribution_weight": 0.5,
+            "evidence_raw_text": "Drove localized growth strategy through granular market opportunity assessment including national and SA3-level competitive landscape analysis across product groups and customer cohorts, collaborating with Go-to-Market teams to define localization strategy, scope initiatives, and monitor performance—identified $5M revenue gap closure opportunity"
+          }
+        ],
+        "supporting_evidence_piece_ids": [
+          "3acf0174-1bcb-4ac5-a78c-67af28791bae",
+          "e0a3422e-f08d-4c72-8e72-a35f09171f70",
+          "35913a91-e2c2-4a5b-8e1f-3de65172b1c2",
+          "4f8d05cd-418d-4737-8499-7044b7319f6f"
+        ]
+      },
+      {
+        "capability_id": "79a2ab2e-c20b-477c-b496-cb936f8d32b2",
+        "canonical_name": "operational performance optimization",
+        "display_name": "Operational Performance Optimization",
+        "strength_score": 0.3907,
+        "weighted_signal_score": 2.9727,
+        "signal_count": 4,
+        "transferable_tags": [
+          "operations",
+          "commercial",
+          "transformation"
+        ],
+        "domain_tags": [
+          "operations",
+          "commercial",
+          "transformation"
+        ],
+        "top_supporting_signals": [
+          {
+            "evidence_signal_id": "10505411-ff4c-4ce9-96bc-c7617e13b6ce",
+            "evidence_piece_id": "35913a91-e2c2-4a5b-8e1f-3de65172b1c2",
+            "contribution_score": 1.0608,
+            "raw_signal_strength": 1.0608,
+            "action": "pioneered",
+            "scope_level": "task",
+            "ownership_level": "lead",
+            "impact_signal": "operational",
+            "confidence_score": 0.725,
+            "link_contribution_weight": 0.725,
+            "evidence_raw_text": "Pioneered AI-powered analytics automation using Google BigQuery, Power BI, and LLMs to generate automated executive-level insights for NPS redesign program—reduced analysis time from 3-4 days to 4 hours and completed 7 major analyses"
+          },
+          {
+            "evidence_signal_id": "782c0481-23f4-4ab2-9fc5-bb15c061c162",
+            "evidence_piece_id": "35913a91-e2c2-4a5b-8e1f-3de65172b1c2",
+            "contribution_score": 0.8237,
+            "raw_signal_strength": 0.9472,
+            "action": "reduced",
+            "scope_level": "project",
+            "ownership_level": "contributor",
+            "impact_signal": "cost",
+            "confidence_score": 0.725,
+            "link_contribution_weight": 0.725,
+            "evidence_raw_text": "Pioneered AI-powered analytics automation using Google BigQuery, Power BI, and LLMs to generate automated executive-level insights for NPS redesign program—reduced analysis time from 3-4 days to 4 hours and completed 7 major analyses"
+          },
+          {
+            "evidence_signal_id": "dbf35149-0fda-4a8e-bbf0-721c0741198a",
+            "evidence_piece_id": "d382344b-4695-48b6-91c0-35d5f4696937",
+            "contribution_score": 0.6134,
+            "raw_signal_strength": 0.7974,
+            "action": "drove",
+            "scope_level": "task",
+            "ownership_level": "driver",
+            "impact_signal": "operational",
+            "confidence_score": 0.725,
+            "link_contribution_weight": 0.725,
+            "evidence_raw_text": "Drove marketing automation strategy across all major accounts using AdWords API, Google Analytics API, JavaScript, R, and Python"
+          },
+          {
+            "evidence_signal_id": "b3693684-7173-4a3f-bbbc-14d73befe479",
+            "evidence_piece_id": "3acf0174-1bcb-4ac5-a78c-67af28791bae",
+            "contribution_score": 0.4748,
+            "raw_signal_strength": 0.6885,
+            "action": "delivered",
+            "scope_level": "task",
+            "ownership_level": "contributor",
+            "impact_signal": null,
+            "confidence_score": 0.425,
+            "link_contribution_weight": 0.425,
+            "evidence_raw_text": "Lead team of 6 analytics professionals with oversight of 22 across business units, fostering commercial thinking and accountability for impact—delivered FY24 outcomes: 381 working days optimized, 1.9M customers supported, $30M+ revenue opportunities identified"
+          }
+        ],
+        "supporting_evidence_piece_ids": [
+          "35913a91-e2c2-4a5b-8e1f-3de65172b1c2",
+          "d382344b-4695-48b6-91c0-35d5f4696937",
+          "3acf0174-1bcb-4ac5-a78c-67af28791bae"
+        ]
+      },
+      {
+        "capability_id": "inferred:4a22f035-c501-40b2-9589-03ee6e8a3cfa:analytics automation",
+        "canonical_name": "analytics automation",
+        "display_name": "Analytics Automation",
+        "strength_score": 0.3143,
+        "weighted_signal_score": 2.2641,
+        "signal_count": 4,
+        "transferable_tags": [
+          "analytics",
+          "methods",
+          "tooling",
+          "transformation"
+        ],
+        "domain_tags": [
+          "analytics",
+          "transformation"
+        ],
+        "top_supporting_signals": [
+          {
+            "evidence_signal_id": "2777e92b-d3af-4ce8-bfe5-67bf78bf7b5a",
+            "evidence_piece_id": "70da3927-b2c9-4932-94aa-c2170d2c38f6",
+            "contribution_score": 0.9866,
+            "raw_signal_strength": 0.9866,
+            "action": "developed",
+            "scope_level": "market",
+            "ownership_level": "contributor",
+            "impact_signal": null,
+            "confidence_score": 0.575,
+            "link_contribution_weight": null,
+            "evidence_raw_text": "Developed automated weekly narrative insights delivered to retail executives, identifying root causes of service NPS drops, 20 critical stores across 7 states with consecutive drops, and 4 distinct customer cohorts requiring intervention"
+          },
+          {
+            "evidence_signal_id": "782c0481-23f4-4ab2-9fc5-bb15c061c162",
+            "evidence_piece_id": "35913a91-e2c2-4a5b-8e1f-3de65172b1c2",
+            "contribution_score": 0.9518,
+            "raw_signal_strength": 0.9518,
+            "action": "reduced",
+            "scope_level": "project",
+            "ownership_level": "contributor",
+            "impact_signal": "cost",
+            "confidence_score": 0.725,
+            "link_contribution_weight": null,
+            "evidence_raw_text": "Pioneered AI-powered analytics automation using Google BigQuery, Power BI, and LLMs to generate automated executive-level insights for NPS redesign program—reduced analysis time from 3-4 days to 4 hours and completed 7 major analyses"
+          },
+          {
+            "evidence_signal_id": "8e49c733-34ce-4cee-acf1-ba91ac62618f",
+            "evidence_piece_id": "703f2598-2a22-465c-aa30-cd2e5066f714",
+            "contribution_score": 0.6405,
+            "raw_signal_strength": 0.6405,
+            "action": null,
+            "scope_level": null,
+            "ownership_level": null,
+            "impact_signal": null,
+            "confidence_score": 0.425,
+            "link_contribution_weight": null,
+            "evidence_raw_text": "Deployed AI agents to streamline data discovery, cleaning, and analysis using Claude for automated Python-based data analysis (POC phase)"
+          },
+          {
+            "evidence_signal_id": "5263458f-9e1a-49b4-b8a3-f95b3a67265f",
+            "evidence_piece_id": "421777e0-0145-45b4-ae86-870fa6067fea",
+            "contribution_score": 0.5172,
+            "raw_signal_strength": 0.5172,
+            "action": null,
+            "scope_level": null,
+            "ownership_level": null,
+            "impact_signal": null,
+            "confidence_score": 0.35,
+            "link_contribution_weight": null,
+            "evidence_raw_text": "Conducted pipeline analysis, insights analysis, and campaign cost analysis using Google Analytics, Google AdWords, and Power BI"
+          }
+        ],
+        "supporting_evidence_piece_ids": [
+          "70da3927-b2c9-4932-94aa-c2170d2c38f6",
+          "35913a91-e2c2-4a5b-8e1f-3de65172b1c2",
+          "703f2598-2a22-465c-aa30-cd2e5066f714",
+          "421777e0-0145-45b4-ae86-870fa6067fea"
+        ]
+      },
+      {
+        "capability_id": "460dbb12-6b66-41da-a73b-2702b82cf091",
+        "canonical_name": "bi / data platform transformation",
+        "display_name": "BI / Data Platform Transformation",
+        "strength_score": 0.3123,
+        "weighted_signal_score": 2.2463,
+        "signal_count": 1,
+        "transferable_tags": [
+          "analytics",
+          "tooling",
+          "transformation"
+        ],
+        "domain_tags": [
+          "analytics",
+          "transformation"
+        ],
+        "top_supporting_signals": [
+          {
+            "evidence_signal_id": "8b3ca56d-cf58-4a44-82fe-8ca86aeabd92",
+            "evidence_piece_id": "a9e61a8e-f44b-4b31-8697-9131b5c27ed8",
+            "contribution_score": 1.8285,
+            "raw_signal_strength": 1.8285,
+            "action": "led",
+            "scope_level": "enterprise",
+            "ownership_level": "lead",
+            "impact_signal": "strategic",
+            "confidence_score": 0.8,
+            "link_contribution_weight": 0.8,
+            "evidence_raw_text": "Led enterprise-wide Power BI transformation: Conducted 20+ stakeholder interviews, launched centralized training portal, partnered with Microsoft to identify capability gaps, streamlined onboarding from 6 months to 1 month"
+          },
+          {
+            "evidence_signal_id": "738129db-195f-449f-94fc-5994085d724b",
+            "evidence_piece_id": "f4bb9ae4-08ed-4c6f-bdbf-dd66349ffd97",
+            "contribution_score": 0.6307,
+            "raw_signal_strength": 0.6307,
+            "action": null,
+            "scope_level": null,
+            "ownership_level": null,
+            "impact_signal": null,
+            "confidence_score": 0.35,
+            "link_contribution_weight": null,
+            "evidence_raw_text": "Delivered three-tiered consulting approach: 1) Product-level (built custom analytics solutions post-requirements discovery), 2) Capability-level (upskilled analysts through self-serve playbook to standardize insight delivery), 3) Technology-level (facilitated workshops with Microsoft and Tableau to uplift tool proficiency)"
+          }
+        ],
+        "supporting_evidence_piece_ids": [
+          "a9e61a8e-f44b-4b31-8697-9131b5c27ed8",
+          "f4bb9ae4-08ed-4c6f-bdbf-dd66349ffd97"
+        ]
+      },
+      {
+        "capability_id": "b1c1fa79-cb0b-4d2a-9b0c-0c8f495658ed",
+        "canonical_name": "people leadership",
+        "display_name": "People Leadership",
+        "strength_score": 0.2931,
+        "weighted_signal_score": 2.0811,
+        "signal_count": 2,
+        "transferable_tags": [
+          "leadership",
+          "enablement"
+        ],
+        "domain_tags": [],
+        "top_supporting_signals": [
+          {
+            "evidence_signal_id": "4fcf5ac8-56e9-42cc-9580-9ed985bfba18",
+            "evidence_piece_id": "3acf0174-1bcb-4ac5-a78c-67af28791bae",
+            "contribution_score": 1.1232,
+            "raw_signal_strength": 1.1232,
+            "action": "led",
+            "scope_level": "team",
+            "ownership_level": "lead",
+            "impact_signal": null,
+            "confidence_score": 0.725,
+            "link_contribution_weight": 0.725,
+            "evidence_raw_text": "Lead team of 6 analytics professionals with oversight of 22 across business units, fostering commercial thinking and accountability for impact—delivered FY24 outcomes: 381 working days optimized, 1.9M customers supported, $30M+ revenue opportunities identified"
+          },
+          {
+            "evidence_signal_id": "3d64c772-d19d-48f5-8ecf-ec23cd5e1d63",
+            "evidence_piece_id": "236a4923-ccb1-40af-a5a8-92206ad86414",
+            "contribution_score": 0.9579,
+            "raw_signal_strength": 1.1016,
+            "action": "led",
+            "scope_level": "team",
+            "ownership_level": "lead",
+            "impact_signal": null,
+            "confidence_score": 0.575,
+            "link_contribution_weight": 0.575,
+            "evidence_raw_text": "Led analytics team supporting SubHub (streaming subscription hub) and TV & C, delivering insights to retail executives for weekly trade meetings and strategic decision-making"
+          }
+        ],
+        "supporting_evidence_piece_ids": [
+          "3acf0174-1bcb-4ac5-a78c-67af28791bae",
+          "236a4923-ccb1-40af-a5a8-92206ad86414"
+        ]
+      },
+      {
+        "capability_id": "ff3975ee-49d8-4c52-8c05-e0fc08be3eca",
+        "canonical_name": "market & opportunity assessment",
+        "display_name": "Market & Opportunity Assessment",
+        "strength_score": 0.2823,
+        "weighted_signal_score": 1.99,
+        "signal_count": 2,
+        "transferable_tags": [
+          "analytics",
+          "strategy",
+          "customer",
+          "commercial"
+        ],
+        "domain_tags": [
+          "analytics",
+          "strategy",
+          "customer",
+          "commercial"
+        ],
+        "top_supporting_signals": [
+          {
+            "evidence_signal_id": "bdba73ba-3f49-4d3e-a0ad-f0b600610e74",
+            "evidence_piece_id": "3acf0174-1bcb-4ac5-a78c-67af28791bae",
+            "contribution_score": 1.2895,
+            "raw_signal_strength": 1.2895,
+            "action": "identified",
+            "scope_level": "market",
+            "ownership_level": "contributor",
+            "impact_signal": "revenue",
+            "confidence_score": 0.5,
+            "link_contribution_weight": 0.5,
+            "evidence_raw_text": "Lead team of 6 analytics professionals with oversight of 22 across business units, fostering commercial thinking and accountability for impact—delivered FY24 outcomes: 381 working days optimized, 1.9M customers supported, $30M+ revenue opportunities identified"
+          },
+          {
+            "evidence_signal_id": "aea2dd45-73ac-4e28-925c-f3060ed58962",
+            "evidence_piece_id": "8d564979-afab-4bed-b25d-6494b5f0ce0a",
+            "contribution_score": 0.7005,
+            "raw_signal_strength": 0.8055,
+            "action": null,
+            "scope_level": "market",
+            "ownership_level": null,
+            "impact_signal": null,
+            "confidence_score": 0.35,
+            "link_contribution_weight": 0.35,
+            "evidence_raw_text": "Drove scaled insights project coverage for main seasonal and sub-vertical opportunities across Microsoft Advertising AU market"
+          }
+        ],
+        "supporting_evidence_piece_ids": [
+          "3acf0174-1bcb-4ac5-a78c-67af28791bae",
+          "8d564979-afab-4bed-b25d-6494b5f0ce0a"
+        ]
+      },
+      {
+        "capability_id": "9e6ed248-3f7f-470e-aaa7-b47be1e3a0c8",
+        "canonical_name": "transformation delivery leadership",
+        "display_name": "Transformation Delivery Leadership",
+        "strength_score": 0.2627,
+        "weighted_signal_score": 1.8285,
+        "signal_count": 1,
+        "transferable_tags": [
+          "transformation",
+          "leadership",
+          "embedding"
+        ],
+        "domain_tags": [
+          "transformation"
+        ],
+        "top_supporting_signals": [
+          {
+            "evidence_signal_id": "8b3ca56d-cf58-4a44-82fe-8ca86aeabd92",
+            "evidence_piece_id": "a9e61a8e-f44b-4b31-8697-9131b5c27ed8",
+            "contribution_score": 1.8285,
+            "raw_signal_strength": 1.8285,
+            "action": "led",
+            "scope_level": "enterprise",
+            "ownership_level": "lead",
+            "impact_signal": "strategic",
+            "confidence_score": 0.8,
+            "link_contribution_weight": 0.8,
+            "evidence_raw_text": "Led enterprise-wide Power BI transformation: Conducted 20+ stakeholder interviews, launched centralized training portal, partnered with Microsoft to identify capability gaps, streamlined onboarding from 6 months to 1 month"
+          }
+        ],
+        "supporting_evidence_piece_ids": [
+          "a9e61a8e-f44b-4b31-8697-9131b5c27ed8"
+        ]
+      },
+      {
+        "capability_id": "inferred:4a22f035-c501-40b2-9589-03ee6e8a3cfa:cross-functional stakeholder leadership",
+        "canonical_name": "cross-functional stakeholder leadership",
+        "display_name": "Cross-Functional Stakeholder Leadership",
+        "strength_score": 0.1981,
+        "weighted_signal_score": 1.3243,
+        "signal_count": 2,
+        "transferable_tags": [
+          "stakeholder",
+          "leadership",
+          "embedding"
+        ],
+        "domain_tags": [
+          "stakeholder"
+        ],
+        "top_supporting_signals": [
+          {
+            "evidence_signal_id": "f33aa888-931a-40af-8792-249b12356dec",
+            "evidence_piece_id": "58636254-7f9e-40af-aa1c-dee1ddb30bb1",
+            "contribution_score": 1.2258,
+            "raw_signal_strength": 1.2258,
+            "action": "presented",
+            "scope_level": "task",
+            "ownership_level": "lead",
+            "impact_signal": "strategic",
+            "confidence_score": 0.725,
+            "link_contribution_weight": null,
+            "evidence_raw_text": "Presented business cases to senior leadership for localization analytics strategy, securing budget and executive approval to build dedicated core team"
+          },
+          {
+            "evidence_signal_id": "4fcf5ac8-56e9-42cc-9580-9ed985bfba18",
+            "evidence_piece_id": "3acf0174-1bcb-4ac5-a78c-67af28791bae",
+            "contribution_score": 1.1286,
+            "raw_signal_strength": 1.1286,
+            "action": "led",
+            "scope_level": "team",
+            "ownership_level": "lead",
+            "impact_signal": null,
+            "confidence_score": 0.725,
+            "link_contribution_weight": null,
+            "evidence_raw_text": "Lead team of 6 analytics professionals with oversight of 22 across business units, fostering commercial thinking and accountability for impact—delivered FY24 outcomes: 381 working days optimized, 1.9M customers supported, $30M+ revenue opportunities identified"
+          }
+        ],
+        "supporting_evidence_piece_ids": [
+          "58636254-7f9e-40af-aa1c-dee1ddb30bb1",
+          "3acf0174-1bcb-4ac5-a78c-67af28791bae"
+        ]
+      },
+      {
+        "capability_id": "87aa2594-43fb-4c6e-9388-8daf5954f215",
+        "canonical_name": "executive influence & business cases",
+        "display_name": "Executive Influence & Business Cases",
+        "strength_score": 0.1848,
+        "weighted_signal_score": 1.2258,
+        "signal_count": 1,
+        "transferable_tags": [
+          "stakeholder",
+          "executive",
+          "translation"
+        ],
+        "domain_tags": [
+          "stakeholder"
+        ],
+        "top_supporting_signals": [
+          {
+            "evidence_signal_id": "f33aa888-931a-40af-8792-249b12356dec",
+            "evidence_piece_id": "58636254-7f9e-40af-aa1c-dee1ddb30bb1",
+            "contribution_score": 1.2258,
+            "raw_signal_strength": 1.2258,
+            "action": "presented",
+            "scope_level": "task",
+            "ownership_level": "lead",
+            "impact_signal": "strategic",
+            "confidence_score": 0.725,
+            "link_contribution_weight": 0.725,
+            "evidence_raw_text": "Presented business cases to senior leadership for localization analytics strategy, securing budget and executive approval to build dedicated core team"
+          }
+        ],
+        "supporting_evidence_piece_ids": [
+          "58636254-7f9e-40af-aa1c-dee1ddb30bb1"
+        ]
+      }
+    ],
+    "capability_transfer_inference": {
+      "transfer_patterns": [
+        {
+          "pattern_id": "commercial_customer_analytics",
+          "display_name": "Commercial / Customer Analytics",
+          "transfer_strength": 0.6985,
+          "aggregate_score": 0.6985,
+          "supporting_evidence_piece_ids": [
+            "4f8d05cd-418d-4737-8499-7044b7319f6f",
+            "3acf0174-1bcb-4ac5-a78c-67af28791bae",
+            "4be59d10-30ca-4387-85d6-8926cab7dbff",
+            "93aa5c09-114d-4cce-83df-af04dca35de0",
+            "e0a3422e-f08d-4c72-8e72-a35f09171f70",
+            "58636254-7f9e-40af-aa1c-dee1ddb30bb1"
+          ],
+          "short_explanation": "Commercial / Customer Analytics is supported by 4 adjacent capabilities and 6 evidence pieces, mapping into Commercial / Customer Insight Generation + Analytics Translation & Insight Storytelling.",
+          "reasoning": "Commercial / Customer Analytics: transfer=0.7, capability=0.7, evidence=0.6, ownership=0.61, cluster_alignment=0.67.",
+          "mapped_target_clusters": [
+            "Commercial / Customer Insight Generation",
+            "Analytics Translation & Insight Storytelling",
+            "Operational Performance Optimization",
+            "Transformation / Enablement Through Data"
+          ],
+          "related_capabilities": [
+            "Strategic Planning",
+            "Commercial Analytics",
+            "Operational Performance Optimization",
+            "Analytics Automation"
+          ],
+          "matched_signal_terms": [
+            "commercial",
+            "customer",
+            "growth",
+            "opportunity",
+            "analytics",
+            "marketing"
+          ],
+          "capability_coverage_score": 0.7019,
+          "evidence_quality_score": 0.6007,
+          "ownership_scope_score": 0.6133,
+          "target_cluster_alignment_score": 0.6747
+        },
+        {
+          "pattern_id": "stakeholder_storytelling_from_analytics",
+          "display_name": "Stakeholder Storytelling from Analytics",
+          "transfer_strength": 0.6943,
+          "aggregate_score": 0.6943,
+          "supporting_evidence_piece_ids": [
+            "58636254-7f9e-40af-aa1c-dee1ddb30bb1",
+            "a9e61a8e-f44b-4b31-8697-9131b5c27ed8",
+            "236a4923-ccb1-40af-a5a8-92206ad86414",
+            "35913a91-e2c2-4a5b-8e1f-3de65172b1c2",
+            "4be59d10-30ca-4387-85d6-8926cab7dbff",
+            "93aa5c09-114d-4cce-83df-af04dca35de0"
+          ],
+          "short_explanation": "Stakeholder Storytelling from Analytics is supported by 4 adjacent capabilities and 6 evidence pieces, mapping into Analytics Translation & Insight Storytelling + Commercial / Customer Insight Generation.",
+          "reasoning": "Stakeholder Storytelling from Analytics: transfer=0.69, capability=0.7, evidence=0.54, ownership=0.67, cluster_alignment=0.68.",
+          "mapped_target_clusters": [
+            "Analytics Translation & Insight Storytelling",
+            "Commercial / Customer Insight Generation"
+          ],
+          "related_capabilities": [
+            "Strategic Planning",
+            "Commercial Analytics",
+            "Operational Performance Optimization",
+            "Analytics Automation"
+          ],
+          "matched_signal_terms": [
+            "executive",
+            "business case",
+            "analytics",
+            "strategy",
+            "stakeholder",
+            "commercial",
+            "customer"
+          ],
+          "capability_coverage_score": 0.7019,
+          "evidence_quality_score": 0.5402,
+          "ownership_scope_score": 0.67,
+          "target_cluster_alignment_score": 0.6814
+        },
+        {
+          "pattern_id": "strategic_problem_solving_with_analytics",
+          "display_name": "Strategic Problem Solving with Analytics",
+          "transfer_strength": 0.6884,
+          "aggregate_score": 0.6884,
+          "supporting_evidence_piece_ids": [
+            "4f8d05cd-418d-4737-8499-7044b7319f6f",
+            "58636254-7f9e-40af-aa1c-dee1ddb30bb1",
+            "a9e61a8e-f44b-4b31-8697-9131b5c27ed8",
+            "236a4923-ccb1-40af-a5a8-92206ad86414",
+            "d38f4d63-6730-4521-95f8-cea932b9bb3c",
+            "82cc8545-828d-4c0b-a270-9d062dfc3929"
+          ],
+          "short_explanation": "Strategic Problem Solving with Analytics is supported by 4 adjacent capabilities and 6 evidence pieces, mapping into Analytics Translation & Insight Storytelling + Commercial / Customer Insight Generation.",
+          "reasoning": "Strategic Problem Solving with Analytics: transfer=0.69, capability=0.7, evidence=0.56, ownership=0.57, cluster_alignment=0.71.",
+          "mapped_target_clusters": [
+            "Analytics Translation & Insight Storytelling",
+            "Commercial / Customer Insight Generation",
+            "Operational Performance Optimization",
+            "Transformation / Enablement Through Data"
+          ],
+          "related_capabilities": [
+            "Strategic Planning",
+            "Commercial Analytics",
+            "Operational Performance Optimization",
+            "Analytics Automation"
+          ],
+          "matched_signal_terms": [
+            "opportunity",
+            "strategic",
+            "analytics",
+            "commercial",
+            "strategy",
+            "product",
+            "roadmap",
+            "prioritization"
+          ],
+          "capability_coverage_score": 0.7019,
+          "evidence_quality_score": 0.5603,
+          "ownership_scope_score": 0.5733,
+          "target_cluster_alignment_score": 0.7076
+        },
+        {
+          "pattern_id": "analytics_to_decision_translation",
+          "display_name": "Analytics-to-Decision Translation",
+          "transfer_strength": 0.6788,
+          "aggregate_score": 0.6788,
+          "supporting_evidence_piece_ids": [
+            "236a4923-ccb1-40af-a5a8-92206ad86414",
+            "4be59d10-30ca-4387-85d6-8926cab7dbff",
+            "35913a91-e2c2-4a5b-8e1f-3de65172b1c2",
+            "58636254-7f9e-40af-aa1c-dee1ddb30bb1",
+            "93aa5c09-114d-4cce-83df-af04dca35de0",
+            "a9e61a8e-f44b-4b31-8697-9131b5c27ed8"
+          ],
+          "short_explanation": "Analytics-to-Decision Translation is supported by 4 adjacent capabilities and 6 evidence pieces, mapping into Analytics Translation & Insight Storytelling + Commercial / Customer Insight Generation.",
+          "reasoning": "Analytics-to-Decision Translation: transfer=0.68, capability=0.7, evidence=0.52, ownership=0.67, cluster_alignment=0.62.",
+          "mapped_target_clusters": [
+            "Analytics Translation & Insight Storytelling",
+            "Commercial / Customer Insight Generation",
+            "Operational Performance Optimization",
+            "Transformation / Enablement Through Data"
+          ],
+          "related_capabilities": [
+            "Strategic Planning",
+            "Commercial Analytics",
+            "Operational Performance Optimization",
+            "Analytics Automation"
+          ],
+          "matched_signal_terms": [
+            "decision",
+            "insight",
+            "analytics",
+            "strategy",
+            "commercial"
+          ],
+          "capability_coverage_score": 0.7019,
+          "evidence_quality_score": 0.5218,
+          "ownership_scope_score": 0.67,
+          "target_cluster_alignment_score": 0.6197
+        },
+        {
+          "pattern_id": "transformation_through_data",
+          "display_name": "Transformation-through-Data",
+          "transfer_strength": 0.6684,
+          "aggregate_score": 0.6684,
+          "supporting_evidence_piece_ids": [
+            "a9e61a8e-f44b-4b31-8697-9131b5c27ed8",
+            "4be59d10-30ca-4387-85d6-8926cab7dbff",
+            "35913a91-e2c2-4a5b-8e1f-3de65172b1c2",
+            "c6f86bd1-b64d-4581-a96f-598a9db78cec",
+            "3acf0174-1bcb-4ac5-a78c-67af28791bae",
+            "d38f4d63-6730-4521-95f8-cea932b9bb3c"
+          ],
+          "short_explanation": "Transformation-through-Data is supported by 4 adjacent capabilities and 6 evidence pieces, mapping into Transformation / Enablement Through Data + Analytics Translation & Insight Storytelling.",
+          "reasoning": "Transformation-through-Data: transfer=0.67, capability=0.7, evidence=0.62, ownership=0.54, cluster_alignment=0.55.",
+          "mapped_target_clusters": [
+            "Transformation / Enablement Through Data",
+            "Analytics Translation & Insight Storytelling",
+            "Commercial / Customer Insight Generation",
+            "Operational Performance Optimization"
+          ],
+          "related_capabilities": [
+            "Strategic Planning",
+            "Commercial Analytics",
+            "Operational Performance Optimization",
+            "Analytics Automation"
+          ],
+          "matched_signal_terms": [
+            "transformation",
+            "platform",
+            "bi",
+            "analytics",
+            "analytics automation",
+            "operations",
+            "dashboard",
+            "product"
+          ],
+          "capability_coverage_score": 0.7019,
+          "evidence_quality_score": 0.6172,
+          "ownership_scope_score": 0.5433,
+          "target_cluster_alignment_score": 0.5476
+        },
+        {
+          "pattern_id": "cross_functional_analytics_leadership",
+          "display_name": "Cross-Functional Analytics Leadership",
+          "transfer_strength": 0.628,
+          "aggregate_score": 0.628,
+          "supporting_evidence_piece_ids": [
+            "58636254-7f9e-40af-aa1c-dee1ddb30bb1",
+            "3acf0174-1bcb-4ac5-a78c-67af28791bae",
+            "35913a91-e2c2-4a5b-8e1f-3de65172b1c2",
+            "4be59d10-30ca-4387-85d6-8926cab7dbff",
+            "93aa5c09-114d-4cce-83df-af04dca35de0",
+            "a9e61a8e-f44b-4b31-8697-9131b5c27ed8"
+          ],
+          "short_explanation": "Cross-Functional Analytics Leadership is supported by 4 adjacent capabilities and 6 evidence pieces, mapping into Transformation / Enablement Through Data + Analytics Translation & Insight Storytelling.",
+          "reasoning": "Cross-Functional Analytics Leadership: transfer=0.63, capability=0.7, evidence=0.5, ownership=0.67, cluster_alignment=0.36.",
+          "mapped_target_clusters": [
+            "Transformation / Enablement Through Data",
+            "Analytics Translation & Insight Storytelling",
+            "Commercial / Customer Insight Generation"
+          ],
+          "related_capabilities": [
+            "Strategic Planning",
+            "Commercial Analytics",
+            "Operational Performance Optimization",
+            "Analytics Automation"
+          ],
+          "matched_signal_terms": [
+            "leadership",
+            "analytics",
+            "strategy",
+            "operations",
+            "transformation"
+          ],
+          "capability_coverage_score": 0.7019,
+          "evidence_quality_score": 0.5035,
+          "ownership_scope_score": 0.67,
+          "target_cluster_alignment_score": 0.3623
+        },
+        {
+          "pattern_id": "analytics_enablement_adoption",
+          "display_name": "Analytics Enablement / Adoption",
+          "transfer_strength": 0.606,
+          "aggregate_score": 0.606,
+          "supporting_evidence_piece_ids": [
+            "a9e61a8e-f44b-4b31-8697-9131b5c27ed8",
+            "58636254-7f9e-40af-aa1c-dee1ddb30bb1",
+            "4be59d10-30ca-4387-85d6-8926cab7dbff",
+            "93aa5c09-114d-4cce-83df-af04dca35de0",
+            "f4bb9ae4-08ed-4c6f-bdbf-dd66349ffd97",
+            "236a4923-ccb1-40af-a5a8-92206ad86414"
+          ],
+          "short_explanation": "Analytics Enablement / Adoption is supported by 4 adjacent capabilities and 6 evidence pieces, mapping into Transformation / Enablement Through Data + Analytics Translation & Insight Storytelling.",
+          "reasoning": "Analytics Enablement / Adoption: transfer=0.61, capability=0.61, evidence=0.48, ownership=0.62, cluster_alignment=0.53.",
+          "mapped_target_clusters": [
+            "Transformation / Enablement Through Data",
+            "Analytics Translation & Insight Storytelling",
+            "Commercial / Customer Insight Generation",
+            "Operational Performance Optimization"
+          ],
+          "related_capabilities": [
+            "Commercial Analytics",
+            "Operational Performance Optimization",
+            "Analytics Automation",
+            "BI / Data Platform Transformation"
+          ],
+          "matched_signal_terms": [
+            "training",
+            "analytics",
+            "transformation",
+            "operations",
+            "capability uplift",
+            "playbook",
+            "product"
+          ],
+          "capability_coverage_score": 0.6133,
+          "evidence_quality_score": 0.476,
+          "ownership_scope_score": 0.62,
+          "target_cluster_alignment_score": 0.5276
+        }
+      ],
+      "diagnostics": {
+        "candidate_capability_count": 10,
+        "evidence_piece_count": 46,
+        "evidence_signal_count": 97,
+        "structured_job_cluster_count": 4,
+        "total_patterns_considered": 7
+      }
+    },
+    "transferable_capability_patterns": [
+      {
+        "pattern_id": "commercial_customer_analytics",
+        "display_name": "Commercial / Customer Analytics",
+        "transfer_strength": 0.6985,
+        "aggregate_score": 0.6985,
+        "supporting_evidence_piece_ids": [
+          "4f8d05cd-418d-4737-8499-7044b7319f6f",
+          "3acf0174-1bcb-4ac5-a78c-67af28791bae",
+          "4be59d10-30ca-4387-85d6-8926cab7dbff",
+          "93aa5c09-114d-4cce-83df-af04dca35de0",
+          "e0a3422e-f08d-4c72-8e72-a35f09171f70",
+          "58636254-7f9e-40af-aa1c-dee1ddb30bb1"
+        ],
+        "short_explanation": "Commercial / Customer Analytics is supported by 4 adjacent capabilities and 6 evidence pieces, mapping into Commercial / Customer Insight Generation + Analytics Translation & Insight Storytelling.",
+        "reasoning": "Commercial / Customer Analytics: transfer=0.7, capability=0.7, evidence=0.6, ownership=0.61, cluster_alignment=0.67.",
+        "mapped_target_clusters": [
+          "Commercial / Customer Insight Generation",
+          "Analytics Translation & Insight Storytelling",
+          "Operational Performance Optimization",
+          "Transformation / Enablement Through Data"
+        ],
+        "related_capabilities": [
+          "Strategic Planning",
+          "Commercial Analytics",
+          "Operational Performance Optimization",
+          "Analytics Automation"
+        ],
+        "matched_signal_terms": [
+          "commercial",
+          "customer",
+          "growth",
+          "opportunity",
+          "analytics",
+          "marketing"
+        ],
+        "capability_coverage_score": 0.7019,
+        "evidence_quality_score": 0.6007,
+        "ownership_scope_score": 0.6133,
+        "target_cluster_alignment_score": 0.6747
+      },
+      {
+        "pattern_id": "stakeholder_storytelling_from_analytics",
+        "display_name": "Stakeholder Storytelling from Analytics",
+        "transfer_strength": 0.6943,
+        "aggregate_score": 0.6943,
+        "supporting_evidence_piece_ids": [
+          "58636254-7f9e-40af-aa1c-dee1ddb30bb1",
+          "a9e61a8e-f44b-4b31-8697-9131b5c27ed8",
+          "236a4923-ccb1-40af-a5a8-92206ad86414",
+          "35913a91-e2c2-4a5b-8e1f-3de65172b1c2",
+          "4be59d10-30ca-4387-85d6-8926cab7dbff",
+          "93aa5c09-114d-4cce-83df-af04dca35de0"
+        ],
+        "short_explanation": "Stakeholder Storytelling from Analytics is supported by 4 adjacent capabilities and 6 evidence pieces, mapping into Analytics Translation & Insight Storytelling + Commercial / Customer Insight Generation.",
+        "reasoning": "Stakeholder Storytelling from Analytics: transfer=0.69, capability=0.7, evidence=0.54, ownership=0.67, cluster_alignment=0.68.",
+        "mapped_target_clusters": [
+          "Analytics Translation & Insight Storytelling",
+          "Commercial / Customer Insight Generation"
+        ],
+        "related_capabilities": [
+          "Strategic Planning",
+          "Commercial Analytics",
+          "Operational Performance Optimization",
+          "Analytics Automation"
+        ],
+        "matched_signal_terms": [
+          "executive",
+          "business case",
+          "analytics",
+          "strategy",
+          "stakeholder",
+          "commercial",
+          "customer"
+        ],
+        "capability_coverage_score": 0.7019,
+        "evidence_quality_score": 0.5402,
+        "ownership_scope_score": 0.67,
+        "target_cluster_alignment_score": 0.6814
+      },
+      {
+        "pattern_id": "strategic_problem_solving_with_analytics",
+        "display_name": "Strategic Problem Solving with Analytics",
+        "transfer_strength": 0.6884,
+        "aggregate_score": 0.6884,
+        "supporting_evidence_piece_ids": [
+          "4f8d05cd-418d-4737-8499-7044b7319f6f",
+          "58636254-7f9e-40af-aa1c-dee1ddb30bb1",
+          "a9e61a8e-f44b-4b31-8697-9131b5c27ed8",
+          "236a4923-ccb1-40af-a5a8-92206ad86414",
+          "d38f4d63-6730-4521-95f8-cea932b9bb3c",
+          "82cc8545-828d-4c0b-a270-9d062dfc3929"
+        ],
+        "short_explanation": "Strategic Problem Solving with Analytics is supported by 4 adjacent capabilities and 6 evidence pieces, mapping into Analytics Translation & Insight Storytelling + Commercial / Customer Insight Generation.",
+        "reasoning": "Strategic Problem Solving with Analytics: transfer=0.69, capability=0.7, evidence=0.56, ownership=0.57, cluster_alignment=0.71.",
+        "mapped_target_clusters": [
+          "Analytics Translation & Insight Storytelling",
+          "Commercial / Customer Insight Generation",
+          "Operational Performance Optimization",
+          "Transformation / Enablement Through Data"
+        ],
+        "related_capabilities": [
+          "Strategic Planning",
+          "Commercial Analytics",
+          "Operational Performance Optimization",
+          "Analytics Automation"
+        ],
+        "matched_signal_terms": [
+          "opportunity",
+          "strategic",
+          "analytics",
+          "commercial",
+          "strategy",
+          "product",
+          "roadmap",
+          "prioritization"
+        ],
+        "capability_coverage_score": 0.7019,
+        "evidence_quality_score": 0.5603,
+        "ownership_scope_score": 0.5733,
+        "target_cluster_alignment_score": 0.7076
+      },
+      {
+        "pattern_id": "analytics_to_decision_translation",
+        "display_name": "Analytics-to-Decision Translation",
+        "transfer_strength": 0.6788,
+        "aggregate_score": 0.6788,
+        "supporting_evidence_piece_ids": [
+          "236a4923-ccb1-40af-a5a8-92206ad86414",
+          "4be59d10-30ca-4387-85d6-8926cab7dbff",
+          "35913a91-e2c2-4a5b-8e1f-3de65172b1c2",
+          "58636254-7f9e-40af-aa1c-dee1ddb30bb1",
+          "93aa5c09-114d-4cce-83df-af04dca35de0",
+          "a9e61a8e-f44b-4b31-8697-9131b5c27ed8"
+        ],
+        "short_explanation": "Analytics-to-Decision Translation is supported by 4 adjacent capabilities and 6 evidence pieces, mapping into Analytics Translation & Insight Storytelling + Commercial / Customer Insight Generation.",
+        "reasoning": "Analytics-to-Decision Translation: transfer=0.68, capability=0.7, evidence=0.52, ownership=0.67, cluster_alignment=0.62.",
+        "mapped_target_clusters": [
+          "Analytics Translation & Insight Storytelling",
+          "Commercial / Customer Insight Generation",
+          "Operational Performance Optimization",
+          "Transformation / Enablement Through Data"
+        ],
+        "related_capabilities": [
+          "Strategic Planning",
+          "Commercial Analytics",
+          "Operational Performance Optimization",
+          "Analytics Automation"
+        ],
+        "matched_signal_terms": [
+          "decision",
+          "insight",
+          "analytics",
+          "strategy",
+          "commercial"
+        ],
+        "capability_coverage_score": 0.7019,
+        "evidence_quality_score": 0.5218,
+        "ownership_scope_score": 0.67,
+        "target_cluster_alignment_score": 0.6197
+      },
+      {
+        "pattern_id": "transformation_through_data",
+        "display_name": "Transformation-through-Data",
+        "transfer_strength": 0.6684,
+        "aggregate_score": 0.6684,
+        "supporting_evidence_piece_ids": [
+          "a9e61a8e-f44b-4b31-8697-9131b5c27ed8",
+          "4be59d10-30ca-4387-85d6-8926cab7dbff",
+          "35913a91-e2c2-4a5b-8e1f-3de65172b1c2",
+          "c6f86bd1-b64d-4581-a96f-598a9db78cec",
+          "3acf0174-1bcb-4ac5-a78c-67af28791bae",
+          "d38f4d63-6730-4521-95f8-cea932b9bb3c"
+        ],
+        "short_explanation": "Transformation-through-Data is supported by 4 adjacent capabilities and 6 evidence pieces, mapping into Transformation / Enablement Through Data + Analytics Translation & Insight Storytelling.",
+        "reasoning": "Transformation-through-Data: transfer=0.67, capability=0.7, evidence=0.62, ownership=0.54, cluster_alignment=0.55.",
+        "mapped_target_clusters": [
+          "Transformation / Enablement Through Data",
+          "Analytics Translation & Insight Storytelling",
+          "Commercial / Customer Insight Generation",
+          "Operational Performance Optimization"
+        ],
+        "related_capabilities": [
+          "Strategic Planning",
+          "Commercial Analytics",
+          "Operational Performance Optimization",
+          "Analytics Automation"
+        ],
+        "matched_signal_terms": [
+          "transformation",
+          "platform",
+          "bi",
+          "analytics",
+          "analytics automation",
+          "operations",
+          "dashboard",
+          "product"
+        ],
+        "capability_coverage_score": 0.7019,
+        "evidence_quality_score": 0.6172,
+        "ownership_scope_score": 0.5433,
+        "target_cluster_alignment_score": 0.5476
+      },
+      {
+        "pattern_id": "cross_functional_analytics_leadership",
+        "display_name": "Cross-Functional Analytics Leadership",
+        "transfer_strength": 0.628,
+        "aggregate_score": 0.628,
+        "supporting_evidence_piece_ids": [
+          "58636254-7f9e-40af-aa1c-dee1ddb30bb1",
+          "3acf0174-1bcb-4ac5-a78c-67af28791bae",
+          "35913a91-e2c2-4a5b-8e1f-3de65172b1c2",
+          "4be59d10-30ca-4387-85d6-8926cab7dbff",
+          "93aa5c09-114d-4cce-83df-af04dca35de0",
+          "a9e61a8e-f44b-4b31-8697-9131b5c27ed8"
+        ],
+        "short_explanation": "Cross-Functional Analytics Leadership is supported by 4 adjacent capabilities and 6 evidence pieces, mapping into Transformation / Enablement Through Data + Analytics Translation & Insight Storytelling.",
+        "reasoning": "Cross-Functional Analytics Leadership: transfer=0.63, capability=0.7, evidence=0.5, ownership=0.67, cluster_alignment=0.36.",
+        "mapped_target_clusters": [
+          "Transformation / Enablement Through Data",
+          "Analytics Translation & Insight Storytelling",
+          "Commercial / Customer Insight Generation"
+        ],
+        "related_capabilities": [
+          "Strategic Planning",
+          "Commercial Analytics",
+          "Operational Performance Optimization",
+          "Analytics Automation"
+        ],
+        "matched_signal_terms": [
+          "leadership",
+          "analytics",
+          "strategy",
+          "operations",
+          "transformation"
+        ],
+        "capability_coverage_score": 0.7019,
+        "evidence_quality_score": 0.5035,
+        "ownership_scope_score": 0.67,
+        "target_cluster_alignment_score": 0.3623
+      },
+      {
+        "pattern_id": "analytics_enablement_adoption",
+        "display_name": "Analytics Enablement / Adoption",
+        "transfer_strength": 0.606,
+        "aggregate_score": 0.606,
+        "supporting_evidence_piece_ids": [
+          "a9e61a8e-f44b-4b31-8697-9131b5c27ed8",
+          "58636254-7f9e-40af-aa1c-dee1ddb30bb1",
+          "4be59d10-30ca-4387-85d6-8926cab7dbff",
+          "93aa5c09-114d-4cce-83df-af04dca35de0",
+          "f4bb9ae4-08ed-4c6f-bdbf-dd66349ffd97",
+          "236a4923-ccb1-40af-a5a8-92206ad86414"
+        ],
+        "short_explanation": "Analytics Enablement / Adoption is supported by 4 adjacent capabilities and 6 evidence pieces, mapping into Transformation / Enablement Through Data + Analytics Translation & Insight Storytelling.",
+        "reasoning": "Analytics Enablement / Adoption: transfer=0.61, capability=0.61, evidence=0.48, ownership=0.62, cluster_alignment=0.53.",
+        "mapped_target_clusters": [
+          "Transformation / Enablement Through Data",
+          "Analytics Translation & Insight Storytelling",
+          "Commercial / Customer Insight Generation",
+          "Operational Performance Optimization"
+        ],
+        "related_capabilities": [
+          "Commercial Analytics",
+          "Operational Performance Optimization",
+          "Analytics Automation",
+          "BI / Data Platform Transformation"
+        ],
+        "matched_signal_terms": [
+          "training",
+          "analytics",
+          "transformation",
+          "operations",
+          "capability uplift",
+          "playbook",
+          "product"
+        ],
+        "capability_coverage_score": 0.6133,
+        "evidence_quality_score": 0.476,
+        "ownership_scope_score": 0.62,
+        "target_cluster_alignment_score": 0.5276
+      }
+    ],
+    "candidate_evidence_pieces_used": [
+      {
+        "evidence_piece_id": "58636254-7f9e-40af-aa1c-dee1ddb30bb1",
+        "role": "Analytics Lead/Manager, Data & Analytics",
+        "company": "Optus (Telecommunications & Streaming Media), Sydney |",
+        "text": "Presented business cases to senior leadership for localization analytics strategy, securing budget and executive approval to build dedicated core team"
+      },
+      {
+        "evidence_piece_id": "4be59d10-30ca-4387-85d6-8926cab7dbff",
+        "role": "Scaled Insights Specialist | Advertising Platform Analytics",
+        "company": "Microsoft Advertising, Sydney |",
+        "text": "Led scaled insights projects for Microsoft Advertising AU market across 4 major verticals (Automobile, Education, Energy, Travel), leveraging 1st and 3rd party data to uncover growth opportunities in digital marketing"
+      },
+      {
+        "evidence_piece_id": "70da3927-b2c9-4932-94aa-c2170d2c38f6",
+        "role": "Analytics Lead/Manager, Data & Analytics",
+        "company": "Optus (Telecommunications & Streaming Media), Sydney |",
+        "text": "Developed automated weekly narrative insights delivered to retail executives, identifying root causes of service NPS drops, 20 critical stores across 7 states with consecutive drops, and 4 distinct customer cohorts requiring intervention"
+      },
+      {
+        "evidence_piece_id": "3acf0174-1bcb-4ac5-a78c-67af28791bae",
+        "role": "Analytics Lead/Manager, Data & Analytics",
+        "company": "Optus (Telecommunications & Streaming Media), Sydney |",
+        "text": "Lead team of 6 analytics professionals with oversight of 22 across business units, fostering commercial thinking and accountability for impact—delivered FY24 outcomes: 381 working days optimized, 1.9M customers supported, $30M+ revenue o..."
+      },
+      {
+        "evidence_piece_id": "4f8d05cd-418d-4737-8499-7044b7319f6f",
+        "role": "Analytics Lead/Manager, Data & Analytics",
+        "company": "Optus (Telecommunications & Streaming Media), Sydney |",
+        "text": "Drove localized growth strategy through granular market opportunity assessment including national and SA3-level competitive landscape analysis across product groups and customer cohorts, collaborating with Go-to-Market teams to define lo..."
+      },
+      {
+        "evidence_piece_id": "93aa5c09-114d-4cce-83df-af04dca35de0",
+        "role": "Digital Data Specialist | SEM Analytics & Optimization",
+        "company": "Sparro (Digital Advertising Agency), Sydney |",
+        "text": "Led customer lifetime value projects and major data initiatives across all accounts"
+      },
+      {
+        "evidence_piece_id": "236a4923-ccb1-40af-a5a8-92206ad86414",
+        "role": "Analytics Lead/Manager, Data & Analytics",
+        "company": "Optus (Telecommunications & Streaming Media), Sydney |",
+        "text": "Led analytics team supporting SubHub (streaming subscription hub) and TV & C, delivering insights to retail executives for weekly trade meetings and strategic decision-making"
+      },
+      {
+        "evidence_piece_id": "a9e61a8e-f44b-4b31-8697-9131b5c27ed8",
+        "role": "Analytics Lead/Manager, Data & Analytics",
+        "company": "Optus (Telecommunications & Streaming Media), Sydney |",
+        "text": "Led enterprise-wide Power BI transformation: Conducted 20+ stakeholder interviews, launched centralized training portal, partnered with Microsoft to identify capability gaps, streamlined onboarding from 6 months to 1 month"
+      },
+      {
+        "evidence_piece_id": "35913a91-e2c2-4a5b-8e1f-3de65172b1c2",
+        "role": "Analytics Lead/Manager, Data & Analytics",
+        "company": "Optus (Telecommunications & Streaming Media), Sydney |",
+        "text": "Pioneered AI-powered analytics automation using Google BigQuery, Power BI, and LLMs to generate automated executive-level insights for NPS redesign program—reduced analysis time from 3-4 days to 4 hours and completed 7 major analyses"
+      }
+    ],
+    "evidence_to_capability_links": [
+      {
+        "evidence_piece_id": "3acf0174-1bcb-4ac5-a78c-67af28791bae",
+        "evidence_signal_id": "bdba73ba-3f49-4d3e-a0ad-f0b600610e74",
+        "capability": "Commercial Analytics",
+        "contribution_weight": 0.3093,
+        "reason": "Signal-backed support for Analytics Translation & Insight Storytelling"
+      },
+      {
+        "evidence_piece_id": "e0a3422e-f08d-4c72-8e72-a35f09171f70",
+        "evidence_signal_id": "76cfe974-ecfc-41da-8eca-7256de31f524",
+        "capability": "Commercial Analytics",
+        "contribution_weight": 0.36,
+        "reason": "Signal-backed support for Analytics Translation & Insight Storytelling"
+      },
+      {
+        "evidence_piece_id": "35913a91-e2c2-4a5b-8e1f-3de65172b1c2",
+        "evidence_signal_id": "782c0481-23f4-4ab2-9fc5-bb15c061c162",
+        "capability": "Commercial Analytics",
+        "contribution_weight": 0.2453,
+        "reason": "Signal-backed support for Analytics Translation & Insight Storytelling"
+      },
+      {
+        "evidence_piece_id": "4f8d05cd-418d-4737-8499-7044b7319f6f",
+        "evidence_signal_id": "7ef18fe5-4c49-4010-8494-794a88be8687",
+        "capability": "Commercial Analytics",
+        "contribution_weight": 0.2453,
+        "reason": "Signal-backed support for Analytics Translation & Insight Storytelling"
+      },
+      {
+        "evidence_piece_id": "58636254-7f9e-40af-aa1c-dee1ddb30bb1",
+        "evidence_signal_id": "f33aa888-931a-40af-8792-249b12356dec",
+        "capability": "Executive Influence & Business Cases",
+        "contribution_weight": 0.3733,
+        "reason": "Signal-backed support for Analytics Translation & Insight Storytelling"
+      },
+      {
+        "evidence_piece_id": "a9e61a8e-f44b-4b31-8697-9131b5c27ed8",
+        "evidence_signal_id": "8b3ca56d-cf58-4a44-82fe-8ca86aeabd92",
+        "capability": "Strategic Planning",
+        "contribution_weight": 0.304,
+        "reason": "Signal-backed support for Analytics Translation & Insight Storytelling"
+      },
+      {
+        "evidence_piece_id": "4f8d05cd-418d-4737-8499-7044b7319f6f",
+        "evidence_signal_id": "3e2c3c06-0c03-415f-8f83-5f0ef763396b",
+        "capability": "Strategic Planning",
+        "contribution_weight": 0.3813,
+        "reason": "Signal-backed support for Analytics Translation & Insight Storytelling"
+      },
+      {
+        "evidence_piece_id": "82cc8545-828d-4c0b-a270-9d062dfc3929",
+        "evidence_signal_id": "8dbcc10a-6f5d-4dca-aeb9-6010643692ea",
+        "capability": "Strategic Planning",
+        "contribution_weight": 0.2027,
+        "reason": "Signal-backed support for Analytics Translation & Insight Storytelling"
+      },
+      {
+        "evidence_piece_id": "58636254-7f9e-40af-aa1c-dee1ddb30bb1",
+        "evidence_signal_id": "f33aa888-931a-40af-8792-249b12356dec",
+        "capability": "Strategic Planning",
+        "contribution_weight": 0.3733,
+        "reason": "Signal-backed support for Analytics Translation & Insight Storytelling"
+      },
+      {
+        "evidence_piece_id": "a9e61a8e-f44b-4b31-8697-9131b5c27ed8",
+        "evidence_signal_id": "8b3ca56d-cf58-4a44-82fe-8ca86aeabd92",
+        "capability": "Strategic Planning",
+        "contribution_weight": 0.304,
+        "reason": "Signal-backed support for Analytics Translation & Insight Storytelling"
+      },
+      {
+        "evidence_piece_id": "4f8d05cd-418d-4737-8499-7044b7319f6f",
+        "evidence_signal_id": "3e2c3c06-0c03-415f-8f83-5f0ef763396b",
+        "capability": "Strategic Planning",
+        "contribution_weight": 0.3813,
+        "reason": "Signal-backed support for Analytics Translation & Insight Storytelling"
+      },
+      {
+        "evidence_piece_id": "82cc8545-828d-4c0b-a270-9d062dfc3929",
+        "evidence_signal_id": "8dbcc10a-6f5d-4dca-aeb9-6010643692ea",
+        "capability": "Strategic Planning",
+        "contribution_weight": 0.2027,
+        "reason": "Signal-backed support for Analytics Translation & Insight Storytelling"
+      },
+      {
+        "evidence_piece_id": "3acf0174-1bcb-4ac5-a78c-67af28791bae",
+        "evidence_signal_id": "bdba73ba-3f49-4d3e-a0ad-f0b600610e74",
+        "capability": "Commercial Analytics",
+        "contribution_weight": 0.296,
+        "reason": "Signal-backed support for Commercial Analytics"
+      },
+      {
+        "evidence_piece_id": "e0a3422e-f08d-4c72-8e72-a35f09171f70",
+        "evidence_signal_id": "76cfe974-ecfc-41da-8eca-7256de31f524",
+        "capability": "Commercial Analytics",
+        "contribution_weight": 0.4,
+        "reason": "Signal-backed support for Commercial Analytics"
+      },
+      {
+        "evidence_piece_id": "35913a91-e2c2-4a5b-8e1f-3de65172b1c2",
+        "evidence_signal_id": "782c0481-23f4-4ab2-9fc5-bb15c061c162",
+        "capability": "Commercial Analytics",
+        "contribution_weight": 0.232,
+        "reason": "Signal-backed support for Commercial Analytics"
+      },
+      {
+        "evidence_piece_id": "4f8d05cd-418d-4737-8499-7044b7319f6f",
+        "evidence_signal_id": "7ef18fe5-4c49-4010-8494-794a88be8687",
+        "capability": "Commercial Analytics",
+        "contribution_weight": 0.292,
+        "reason": "Signal-backed support for Commercial Analytics"
+      },
+      {
+        "evidence_piece_id": "a9e61a8e-f44b-4b31-8697-9131b5c27ed8",
+        "evidence_signal_id": "8b3ca56d-cf58-4a44-82fe-8ca86aeabd92",
+        "capability": "Strategic Planning",
+        "contribution_weight": 0.304,
+        "reason": "Signal-backed support for Commercial Analytics"
+      },
+      {
+        "evidence_piece_id": "4f8d05cd-418d-4737-8499-7044b7319f6f",
+        "evidence_signal_id": "3e2c3c06-0c03-415f-8f83-5f0ef763396b",
+        "capability": "Strategic Planning",
+        "contribution_weight": 0.428,
+        "reason": "Signal-backed support for Commercial Analytics"
+      },
+      {
+        "evidence_piece_id": "82cc8545-828d-4c0b-a270-9d062dfc3929",
+        "evidence_signal_id": "8dbcc10a-6f5d-4dca-aeb9-6010643692ea",
+        "capability": "Strategic Planning",
+        "contribution_weight": 0.136,
+        "reason": "Signal-backed support for Commercial Analytics"
+      },
+      {
+        "evidence_piece_id": "58636254-7f9e-40af-aa1c-dee1ddb30bb1",
+        "evidence_signal_id": "f33aa888-931a-40af-8792-249b12356dec",
+        "capability": "Strategic Planning",
+        "contribution_weight": 0.3,
+        "reason": "Signal-backed support for Commercial Analytics"
+      },
+      {
+        "evidence_piece_id": "3acf0174-1bcb-4ac5-a78c-67af28791bae",
+        "evidence_signal_id": "bdba73ba-3f49-4d3e-a0ad-f0b600610e74",
+        "capability": "Commercial Analytics",
+        "contribution_weight": 0.296,
+        "reason": "Signal-backed support for Commercial Analytics"
+      },
+      {
+        "evidence_piece_id": "e0a3422e-f08d-4c72-8e72-a35f09171f70",
+        "evidence_signal_id": "76cfe974-ecfc-41da-8eca-7256de31f524",
+        "capability": "Commercial Analytics",
+        "contribution_weight": 0.4,
+        "reason": "Signal-backed support for Commercial Analytics"
+      },
+      {
+        "evidence_piece_id": "35913a91-e2c2-4a5b-8e1f-3de65172b1c2",
+        "evidence_signal_id": "782c0481-23f4-4ab2-9fc5-bb15c061c162",
+        "capability": "Commercial Analytics",
+        "contribution_weight": 0.232,
+        "reason": "Signal-backed support for Commercial Analytics"
+      },
+      {
+        "evidence_piece_id": "4f8d05cd-418d-4737-8499-7044b7319f6f",
+        "evidence_signal_id": "7ef18fe5-4c49-4010-8494-794a88be8687",
+        "capability": "Commercial Analytics",
+        "contribution_weight": 0.292,
+        "reason": "Signal-backed support for Commercial Analytics"
+      }
+    ],
+    "requirement_to_candidate_match_breakdown": [
+      {
+        "cluster_id": "analytics_translation_storytelling",
+        "display_name": "Analytics Translation & Insight Storytelling",
+        "layer": "core_mission",
+        "importance": "critical",
+        "optionality": "core",
+        "direct_score": 0.7429,
+        "transfer_score": 0.7545,
+        "transfer_pattern_score": 0.6845,
+        "evidence_score": 0.466,
+        "literal_overlap_score": 0.2857,
+        "ownership_scope_score": 0.67,
+        "final_cluster_score": 0.674,
+        "weight": 1,
+        "weighted_contribution": 0.674,
+        "match_status": "partial",
+        "gap_classification": "aligned",
+        "supporting_capabilities": [
+          "Strategic Planning",
+          "Strategic Planning",
+          "Commercial Analytics"
+        ],
+        "supporting_patterns": [
+          "Commercial / Customer Analytics",
+          "Stakeholder Storytelling from Analytics",
+          "Analytics-to-Decision Translation"
+        ],
+        "supporting_evidence_piece_ids": [
+          "58636254-7f9e-40af-aa1c-dee1ddb30bb1",
+          "4be59d10-30ca-4387-85d6-8926cab7dbff",
+          "70da3927-b2c9-4932-94aa-c2170d2c38f6",
+          "3acf0174-1bcb-4ac5-a78c-67af28791bae",
+          "4f8d05cd-418d-4737-8499-7044b7319f6f",
+          "93aa5c09-114d-4cce-83df-af04dca35de0"
+        ],
+        "missing_facets": [
+          "Method/tool evidence is present but not strongly explicit."
+        ],
+        "reasoning": "Analytics Translation & Insight Storytelling: direct=0.74, transfer=0.75, patterns=0.68, evidence=0.47, ownership=0.67."
+      },
+      {
+        "cluster_id": "commercial_analytics",
+        "display_name": "Commercial Analytics",
+        "layer": "core_capability",
+        "importance": "critical",
+        "optionality": "core",
+        "direct_score": 0.5691,
+        "transfer_score": 0.6847,
+        "transfer_pattern_score": 0.6147,
+        "evidence_score": 0.4544,
+        "literal_overlap_score": 0.25,
+        "ownership_scope_score": 0.73,
+        "final_cluster_score": 0.626,
+        "weight": 1,
+        "weighted_contribution": 0.626,
+        "match_status": "partial",
+        "gap_classification": "aligned",
+        "supporting_capabilities": [
+          "Strategic Planning",
+          "Commercial Analytics",
+          "Commercial Analytics"
+        ],
+        "supporting_patterns": [
+          "Commercial / Customer Analytics",
+          "Strategic Problem Solving with Analytics",
+          "Analytics-to-Decision Translation"
+        ],
+        "supporting_evidence_piece_ids": [
+          "4be59d10-30ca-4387-85d6-8926cab7dbff",
+          "58636254-7f9e-40af-aa1c-dee1ddb30bb1",
+          "3acf0174-1bcb-4ac5-a78c-67af28791bae",
+          "236a4923-ccb1-40af-a5a8-92206ad86414",
+          "4f8d05cd-418d-4737-8499-7044b7319f6f",
+          "93aa5c09-114d-4cce-83df-af04dca35de0"
+        ],
+        "missing_facets": [
+          "Method/tool evidence is present but not strongly explicit."
+        ],
+        "reasoning": "Commercial Analytics: direct=0.57, transfer=0.68, patterns=0.61, evidence=0.45, ownership=0.73."
+      },
+      {
+        "cluster_id": "stakeholder_embedding",
+        "display_name": "Cross-Functional Embedding & Stakeholder Leadership",
+        "layer": "core_capability",
+        "importance": "critical",
+        "optionality": "core",
+        "direct_score": 0.1981,
+        "transfer_score": 0.681,
+        "transfer_pattern_score": 0.611,
+        "evidence_score": 0.477,
+        "literal_overlap_score": 0.1786,
+        "ownership_scope_score": 0.75,
+        "final_cluster_score": 0.5481,
+        "weight": 1,
+        "weighted_contribution": 0.5481,
+        "match_status": "partial",
+        "gap_classification": "stretch_gap",
+        "supporting_capabilities": [
+          "Strategic Planning",
+          "Commercial Analytics",
+          "Operational Performance Optimization"
+        ],
+        "supporting_patterns": [
+          "Stakeholder Storytelling from Analytics",
+          "Analytics-to-Decision Translation",
+          "Cross-Functional Analytics Leadership"
+        ],
+        "supporting_evidence_piece_ids": [
+          "58636254-7f9e-40af-aa1c-dee1ddb30bb1",
+          "3acf0174-1bcb-4ac5-a78c-67af28791bae",
+          "a9e61a8e-f44b-4b31-8697-9131b5c27ed8",
+          "4be59d10-30ca-4387-85d6-8926cab7dbff",
+          "236a4923-ccb1-40af-a5a8-92206ad86414",
+          "35913a91-e2c2-4a5b-8e1f-3de65172b1c2"
+        ],
+        "missing_facets": [
+          "Direct canonical capability support is lighter than transferable support.",
+          "Method/tool evidence is present but not strongly explicit."
+        ],
+        "reasoning": "Cross-Functional Embedding & Stakeholder Leadership: direct=0.2, transfer=0.68, patterns=0.61, evidence=0.48, ownership=0.75."
+      },
+      {
+        "cluster_id": "transformation_enablement",
+        "display_name": "Transformation / Enablement Through Analytics",
+        "layer": "core_capability",
+        "importance": "important",
+        "optionality": "optional",
+        "direct_score": 0.3143,
+        "transfer_score": 0.6758,
+        "transfer_pattern_score": 0.6058,
+        "evidence_score": 0.4575,
+        "literal_overlap_score": 0.2,
+        "ownership_scope_score": 0.75,
+        "final_cluster_score": 0.5703,
+        "weight": 0.504,
+        "weighted_contribution": 0.2874,
+        "match_status": "partial",
+        "gap_classification": "aligned",
+        "supporting_capabilities": [
+          "Strategic Planning",
+          "Commercial Analytics",
+          "Operational Performance Optimization"
+        ],
+        "supporting_patterns": [
+          "Strategic Problem Solving with Analytics",
+          "Transformation-through-Data",
+          "Cross-Functional Analytics Leadership"
+        ],
+        "supporting_evidence_piece_ids": [
+          "a9e61a8e-f44b-4b31-8697-9131b5c27ed8",
+          "58636254-7f9e-40af-aa1c-dee1ddb30bb1",
+          "4be59d10-30ca-4387-85d6-8926cab7dbff",
+          "3acf0174-1bcb-4ac5-a78c-67af28791bae",
+          "4f8d05cd-418d-4737-8499-7044b7319f6f",
+          "236a4923-ccb1-40af-a5a8-92206ad86414"
+        ],
+        "missing_facets": [
+          "Direct canonical capability support is lighter than transferable support.",
+          "Method/tool evidence is present but not strongly explicit."
+        ],
+        "reasoning": "Transformation / Enablement Through Analytics: direct=0.31, transfer=0.68, patterns=0.61, evidence=0.46, ownership=0.75."
+      },
+      {
+        "cluster_id": "customer_cx_insights",
+        "display_name": "Customer / CX Insight Generation",
+        "layer": "core_capability",
+        "importance": "important",
+        "optionality": "optional",
+        "direct_score": 0.5691,
+        "transfer_score": 0.6847,
+        "transfer_pattern_score": 0.6147,
+        "evidence_score": 0.4804,
+        "literal_overlap_score": 0.3,
+        "ownership_scope_score": 0.73,
+        "final_cluster_score": 0.6311,
+        "weight": 0.504,
+        "weighted_contribution": 0.3181,
+        "match_status": "partial",
+        "gap_classification": "aligned",
+        "supporting_capabilities": [
+          "Strategic Planning",
+          "Commercial Analytics",
+          "Commercial Analytics"
+        ],
+        "supporting_patterns": [
+          "Commercial / Customer Analytics",
+          "Stakeholder Storytelling from Analytics",
+          "Analytics-to-Decision Translation"
+        ],
+        "supporting_evidence_piece_ids": [
+          "4be59d10-30ca-4387-85d6-8926cab7dbff",
+          "3acf0174-1bcb-4ac5-a78c-67af28791bae",
+          "236a4923-ccb1-40af-a5a8-92206ad86414",
+          "58636254-7f9e-40af-aa1c-dee1ddb30bb1",
+          "4f8d05cd-418d-4737-8499-7044b7319f6f",
+          "93aa5c09-114d-4cce-83df-af04dca35de0"
+        ],
+        "missing_facets": [
+          "Method/tool evidence is present but not strongly explicit."
+        ],
+        "reasoning": "Customer / CX Insight Generation: direct=0.57, transfer=0.68, patterns=0.61, evidence=0.48, ownership=0.73."
+      },
+      {
+        "cluster_id": "domain_context_agency_marketing",
+        "display_name": "Domain Context: Agency / Marketing / Client Delivery",
+        "layer": "domain_context",
+        "importance": "supporting",
+        "optionality": "optional",
+        "direct_score": 0.5691,
+        "transfer_score": 0.6847,
+        "transfer_pattern_score": 0.6147,
+        "evidence_score": 0.3069,
+        "literal_overlap_score": 0.0625,
+        "ownership_scope_score": 0.665,
+        "final_cluster_score": 0.5146,
+        "weight": 0.266,
+        "weighted_contribution": 0.1369,
+        "match_status": "weak",
+        "gap_classification": "stretch_gap",
+        "supporting_capabilities": [
+          "Strategic Planning",
+          "Commercial Analytics",
+          "Commercial Analytics"
+        ],
+        "supporting_patterns": [
+          "Commercial / Customer Analytics",
+          "Stakeholder Storytelling from Analytics",
+          "Analytics-to-Decision Translation"
+        ],
+        "supporting_evidence_piece_ids": [
+          "3acf0174-1bcb-4ac5-a78c-67af28791bae",
+          "a9e61a8e-f44b-4b31-8697-9131b5c27ed8",
+          "4f8d05cd-418d-4737-8499-7044b7319f6f",
+          "35913a91-e2c2-4a5b-8e1f-3de65172b1c2",
+          "4be59d10-30ca-4387-85d6-8926cab7dbff",
+          "93aa5c09-114d-4cce-83df-af04dca35de0"
+        ],
+        "missing_facets": [
+          "Method/tool evidence is present but not strongly explicit."
+        ],
+        "reasoning": "Domain Context: Agency / Marketing / Client Delivery: direct=0.57, transfer=0.68, patterns=0.61, evidence=0.31, ownership=0.67."
+      },
+      {
+        "cluster_id": "data_tooling_delivery",
+        "display_name": "Data Tooling & Analytical Methods",
+        "layer": "secondary_method",
+        "importance": "supporting",
+        "optionality": "optional",
+        "direct_score": 0.3143,
+        "transfer_score": 0.6758,
+        "transfer_pattern_score": 0.6058,
+        "evidence_score": 0.4674,
+        "literal_overlap_score": 0.1667,
+        "ownership_scope_score": 0.73,
+        "final_cluster_score": 0.4474,
+        "weight": 0.266,
+        "weighted_contribution": 0.119,
+        "match_status": "weak",
+        "gap_classification": "stretch_gap",
+        "supporting_capabilities": [
+          "Commercial Analytics",
+          "Analytics Automation",
+          "Analytics Automation"
+        ],
+        "supporting_patterns": [
+          "Strategic Problem Solving with Analytics",
+          "Transformation-through-Data",
+          "Analytics Enablement / Adoption"
+        ],
+        "supporting_evidence_piece_ids": [
+          "35913a91-e2c2-4a5b-8e1f-3de65172b1c2",
+          "a9e61a8e-f44b-4b31-8697-9131b5c27ed8",
+          "4be59d10-30ca-4387-85d6-8926cab7dbff",
+          "58636254-7f9e-40af-aa1c-dee1ddb30bb1",
+          "4f8d05cd-418d-4737-8499-7044b7319f6f",
+          "236a4923-ccb1-40af-a5a8-92206ad86414"
+        ],
+        "missing_facets": [
+          "Direct canonical capability support is lighter than transferable support.",
+          "Method/tool evidence is present but not strongly explicit."
+        ],
+        "reasoning": "Data Tooling & Analytical Methods: direct=0.31, transfer=0.68, patterns=0.61, evidence=0.47, ownership=0.73."
+      }
+    ],
+    "positive_contributors": [
+      {
+        "label": "Analytics Translation & Insight Storytelling",
+        "contribution": 0.674,
+        "reason": "Analytics Translation & Insight Storytelling: direct=0.74, transfer=0.75, patterns=0.68, evidence=0.47, ownership=0.67."
+      },
+      {
+        "label": "Commercial Analytics",
+        "contribution": 0.626,
+        "reason": "Commercial Analytics: direct=0.57, transfer=0.68, patterns=0.61, evidence=0.45, ownership=0.73."
+      },
+      {
+        "label": "Customer / CX Insight Generation",
+        "contribution": 0.3181,
+        "reason": "Customer / CX Insight Generation: direct=0.57, transfer=0.68, patterns=0.61, evidence=0.48, ownership=0.73."
+      },
+      {
+        "label": "Transformation / Enablement Through Analytics",
+        "contribution": 0.2874,
+        "reason": "Transformation / Enablement Through Analytics: direct=0.31, transfer=0.68, patterns=0.61, evidence=0.46, ownership=0.75."
+      }
+    ],
+    "negative_contributors": [
+      {
+        "label": "Cross-Functional Embedding & Stakeholder Leadership",
+        "contribution": 0.4519,
+        "reason": "Cross-Functional Embedding & Stakeholder Leadership: direct=0.2, transfer=0.68, patterns=0.61, evidence=0.48, ownership=0.75."
+      },
+      {
+        "label": "Data Tooling & Analytical Methods",
+        "contribution": 0.147,
+        "reason": "Data Tooling & Analytical Methods: direct=0.31, transfer=0.68, patterns=0.61, evidence=0.47, ownership=0.73."
+      },
+      {
+        "label": "Domain Context: Agency / Marketing / Client Delivery",
+        "contribution": 0.1291,
+        "reason": "Domain Context: Agency / Marketing / Client Delivery: direct=0.57, transfer=0.68, patterns=0.61, evidence=0.31, ownership=0.67."
+      }
+    ],
+    "penalties": [
+      {
+        "label": "Stretch gap penalty",
+        "contribution": 0.016,
+        "reason": "Partial-but-fragile requirements."
+      },
+      {
+        "label": "Title prior penalty",
+        "contribution": 0.004,
+        "reason": "Candidate title history is in the same role family as the job (Analytics Lead/Manager, Data & Analytics)."
+      }
+    ],
+    "title_prior_effect": {
+      "match_level": "adjacent",
+      "penalty": 0.004,
+      "score": 0.8,
+      "reason": "Candidate title history is in the same role family as the job (Analytics Lead/Manager, Data & Analytics)."
+    },
+    "domain_prior_effect": {
+      "match_level": "direct",
+      "penalty": 0,
+      "score": 1,
+      "reason": "Candidate evidence already spans the job domain(s): analytics, strategy, commercial."
+    },
+    "raw_score_breakdown": {
+      "base_requirement_score": 0.5968,
+      "weighted_requirement_score": 0.5968,
+      "core_requirement_score": 0.616,
+      "secondary_requirement_score": 0.5409,
+      "transfer_match_score": 0.6916,
+      "transfer_pattern_score": 0.6216,
+      "evidence_alignment_score": 0.4442,
+      "literal_overlap_score": 0.2062,
+      "ownership_scope_score": 0.7179,
+      "mission_alignment_bonus": 0.018,
+      "adjacent_transfer_bonus": 0.024,
+      "high_fit_readiness_bonus": 0.032,
+      "positive_bonus": 0.12,
+      "blocking_gap_penalty": 0,
+      "stretch_gap_penalty": 0.016,
+      "title_prior_penalty": 0.004,
+      "domain_prior_penalty": 0,
+      "ats_penalty_injection": 0,
+      "final_score": 0.6968
+    },
+    "final_bucket_reasoning": "Medium-fit classification reflects credible evidence alignment with 0 blocking gap(s); priors are adjacent/direct.",
+    "ats_risk_reasoning": "ATS title risk is limited because the role family is already present or adjacent in title history.",
+    "tailor_recommendation_reasoning": "Recommend tailoring: evidence-based alignment is strong enough that a narrative-forward CV should help conversion."
+  }
+}

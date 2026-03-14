@@ -1,6 +1,7 @@
 const profileIdInput = document.getElementById("profileId");
 const apiBaseUrlInput = document.getElementById("apiBaseUrl");
 const saveBtn = document.getElementById("saveBtn");
+const openSidepanelBtn = document.getElementById("openSidepanelBtn");
 const statusEl = document.getElementById("status");
 
 function setStatus(text, isError) {
@@ -44,4 +45,24 @@ saveBtn.addEventListener("click", () => {
 });
 
 loadSettings();
+
+openSidepanelBtn.addEventListener("click", async () => {
+  try {
+    const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
+    const tab = tabs && tabs[0] ? tabs[0] : null;
+    if (!tab || typeof tab.id !== "number") {
+      setStatus("No active tab found.", true);
+      return;
+    }
+    await chrome.sidePanel.setOptions({
+      tabId: tab.id,
+      path: "sidepanel/sidepanel.html",
+      enabled: true,
+    });
+    await chrome.sidePanel.open({ tabId: tab.id });
+    window.close();
+  } catch (error) {
+    setStatus(error instanceof Error ? error.message : "Failed to open side panel.", true);
+  }
+});
 

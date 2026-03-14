@@ -1,6 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient } from "@/lib/db/supabase/server";
 
+// legacy route.
+// compatibility-only path for older consumers.
+// canonical matching runtime is in lib/career-engine/matching/capability-match-v2.ts and job-copilot flows.
+// do not use for new runtime paths.
+// see: docs/system_map.md, docs/schema_inventory.md, docs/canonical_schema.md
+
 export async function POST(request: NextRequest) {
     try {
         const body = await request.json();
@@ -220,6 +226,7 @@ export async function POST(request: NextRequest) {
         // 12. Career Simulation
         const { simulateGapResolution } = await import("@/lib/career-engine/strategy/career-simulator");
         const simulation = simulateGapResolution(profileInput, parsedJD, matchResult, gapReport);
+        // legacy job_matches shape (user_id + matched_skills/missing_skills/gap_analysis) for compatibility-only writes.
         const { error: dbError } = await supabase
             .from("job_matches")
             .insert({

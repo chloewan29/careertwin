@@ -26,6 +26,23 @@ export type JobCopilotAnalyzeResponse = {
             label: string;
             score: number;
         }>;
+        job_analysis: {
+            confidence: "high" | "medium" | "low";
+            job_profile_quality: "strong" | "usable" | "sparse" | "empty";
+            interpretation_note: string;
+            matched_capabilities: string[];
+            key_gaps: string[];
+            evidence_highlights: Array<{
+                evidencePieceId: string;
+                label: string;
+                score?: number;
+            }>;
+            extraction_notices: Array<{
+                code: "sparse_extraction" | "empty_extraction" | "weak_job_signals";
+                severity: "warning" | "critical";
+                message: string;
+            }>;
+        };
         resume: {
             ready: boolean;
             preview: string | null;

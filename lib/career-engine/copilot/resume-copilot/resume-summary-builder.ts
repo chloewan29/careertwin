@@ -1,4 +1,5 @@
 import type { RankedResumeEvidence, ResumeSummaryDebug } from "./resume-copilot-types";
+import type { CapabilityMatchResult } from "@/lib/career-engine/matching/capability-match-v1";
 
 export type ResumeSummaryEvidenceItem = {
     evidence_piece_id: string;
@@ -281,15 +282,16 @@ export function buildResumeSummary(params: {
         && item.score > 0,
     );
 
+    const explicitMatchedCapabilities = unique(params.matchedCapabilities);
     const matchedCapabilities = unique([
-        ...params.matchedCapabilities,
+        ...explicitMatchedCapabilities,
         ...cleanedSelected.flatMap((item) => item.matched_capabilities ?? []),
     ]);
 
     const weakJdMode = params.weakJdModeOverride ?? (
         !(params.targetTitle ?? "").trim()
         && !(params.roleFamily ?? "").trim()
-        && matchedCapabilities.length === 0
+        && explicitMatchedCapabilities.length === 0
     );
 
     if (cleanedSelected.length === 0) {
@@ -391,11 +393,36 @@ export function buildGroundedResumeSummary(params: {
         required_skills?: string[];
         responsibilities?: string[];
     };
+    capabilityMatch?: CapabilityMatchResult | null;
 }): { summary: string | null; matchedCapabilities: string[]; summary_debug: ResumeSummaryDebug } {
     const selected = toSummaryInput(params.selectedEvidence);
-    const matchedCapabilities = unique(
-        params.selectedEvidence.flatMap((item) => item.score.matched_capabilities),
+    const capabilityMatch = params.capabilityMatch ?? null;
+    const matchedFromEvidence = unique(params.selectedEvidence.flatMap((item) => item.score.matched_capabilities));
+    const matchedFromJobMatch = capabilityMatch
+        ? capabilityMatch.matched_strengths.map((item) => item.display_name)
+        : [];
+    const strongestCandidateCapabilities = capabilityMatch
+        ? capabilityMatch.candidate_capability_profile
+            .slice(0, 3)
+            .map((item) => item.display_name)
+        : [];
+    const leadershipImpactThemes = unique(
+        params.selectedEvidence
+            .flatMap((item) => item.supportingSignalDetails ?? [])
+            .flatMap((signal) => {
+                const derived: string[] = [];
+                if (signal.ownership_level === "lead" || signal.ownership_level === "owner") derived.push("leadership");
+                if (signal.impact_signal === "revenue" || signal.impact_signal === "strategic") derived.push("business impact");
+                if (signal.linked_capabilities.some((capability) => /\btransform/i.test(capability))) derived.push("transformation");
+                return derived;
+            }),
     );
+    const matchedCapabilities = unique([
+        ...matchedFromJobMatch,
+        ...matchedFromEvidence,
+        ...strongestCandidateCapabilities,
+        ...leadershipImpactThemes,
+    ]);
 
     const weakJdMode = !(params.jobSignals.target_title ?? "").trim()
         && !(params.jobSignals.role_family ?? "").trim()

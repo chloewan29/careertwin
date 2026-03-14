@@ -1,0 +1,12 @@
+{
+  "fixture_version": "human_alignment_benchmark_v1_seed",
+  "profile_id": "8ec2c318-dbd0-42e2-acc7-10a103284b53",
+  "career_id": "4a22f035-c501-40b2-9589-03ee6e8a3cfa",
+  "total_cases": 20,
+  "bucket_agreement": 0.75,
+  "over_reject_rate": 0,
+  "over_accept_rate": 0,
+  "avg_score_human_high_fit": 72.8,
+  "avg_score_human_medium_fit": 65.42,
+  "avg_score_human_low_fit": 46.11
+}

@@ -2,6 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { createClient } from "@supabase/supabase-js";
 import { buildEvidencePieces } from "@/lib/career-engine/evidence/evidence-pieces";
+import { extractEvidenceSignalsFromPieces } from "@/lib/career-engine/evidence/evidence-signals";
 import { deriveStructuredEvidenceFields } from "@/lib/career-engine/evidence/structured-evidence";
 import { parseResumeText } from "@/lib/career-engine/parsing/resume-parser";
 import type { ParsedResume } from "@/lib/career-engine/parsing/resume-parser";
@@ -44,6 +45,16 @@ function parseArgs(): { profileId: string | null; careerId: string | null; repar
     };
 }
 
+async function evidencePiecesHasBusinessContext(supabase: ReturnType<typeof createClient>): Promise<boolean> {
+    const { error } = await supabase
+        .from("evidence_pieces")
+        .select("business_context")
+        .limit(1);
+    if (!error) return true;
+    if (error.code === "42703" || /column .*business_context.* does not exist/i.test(error.message)) return false;
+    throw new Error(`Failed probing evidence_pieces.business_context: ${error.message}`);
+}
+
 async function run(): Promise<void> {
     loadEnvLocal();
 
@@ -59,6 +70,7 @@ async function run(): Promise<void> {
     }
 
     const supabase = createClient(supabaseUrl, supabaseAnonKey);
+    const hasBusinessContext = await evidencePiecesHasBusinessContext(supabase);
 
     let careerId: string;
     let profileId: string;
@@ -153,7 +165,7 @@ async function run(): Promise<void> {
                 impact: structured.impact,
                 stakeholders: structured.stakeholders,
                 tools_methods: structured.tools_methods,
-                business_context: structured.business_context,
+                ...(hasBusinessContext ? { business_context: structured.business_context } : {}),
                 inferred_scale: structured.inferred_scale,
                 inferred_scope: structured.inferred_scope,
                 confidence: structured.confidence,
@@ -161,26 +173,7 @@ async function run(): Promise<void> {
                 sort_order: index,
             };
         })
-        .filter((row): row is {
-            career_id: string;
-            experience_id: string;
-            company: string;
-            role: string;
-            date_range: string;
-            raw_text: string;
-            source_type: "resume_bullet";
-            summary: string | null;
-            action: string | null;
-            impact: string | null;
-            stakeholders: string[];
-            tools_methods: string[];
-            business_context: string | null;
-            inferred_scale: Record<string, unknown> | null;
-            inferred_scope: Record<string, unknown> | null;
-            confidence: number;
-            missing_fields: string[];
-            sort_order: number;
-        } => row !== null);
+        .filter((row): row is NonNullable<typeof row> => row !== null);
 
     const { data: existingEvidence, error: existingEvidenceError } = await supabase
         .from("evidence_pieces")
@@ -215,6 +208,25 @@ async function run(): Promise<void> {
         insertedRows = data ?? [];
     }
 
+    let insertedSignalRows: Array<{ id: string; evidence_piece_id: string }> = [];
+    if (insertedRows.length > 0) {
+        const signalRows = extractEvidenceSignalsFromPieces(
+            insertedRows.map((row) => ({
+                id: row.id,
+                career_id: careerId,
+                raw_text: row.raw_text,
+            }))
+        );
+        if (signalRows.length > 0) {
+            const { data, error } = await supabase
+                .from("evidence_signals")
+                .insert(signalRows)
+                .select("id, evidence_piece_id");
+            if (error) throw new Error(`Failed to insert evidence_signals: ${error.message}`);
+            insertedSignalRows = data ?? [];
+        }
+    }
+
     console.log("[RematerializeEvidence] Done", {
         profileId,
         careerId,
@@ -224,6 +236,7 @@ async function run(): Promise<void> {
         parsedExperienceEntries: parsedResume.experience_entries?.length ?? 0,
         generatedEvidencePieces: evidencePieces.length,
         insertedEvidencePieces: insertedRows.length,
+        insertedEvidenceSignals: insertedSignalRows.length,
         firstFive: insertedRows.slice(0, 5).map((row) => ({
             id: row.id,
             source_type: row.source_type,

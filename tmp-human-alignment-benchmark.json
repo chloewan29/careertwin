@@ -1,0 +1,1058 @@
+{
+  "fixture_version": "human_alignment_benchmark_v1_seed",
+  "profile_id": "8ec2c318-dbd0-42e2-acc7-10a103284b53",
+  "career_id": "4a22f035-c501-40b2-9589-03ee6e8a3cfa",
+  "job_count": 20,
+  "baseline_v1": {
+    "metrics": {
+      "bucket_agreement": 0.3,
+      "over_reject_rate": 0.25,
+      "over_accept_rate": 0.05,
+      "average_score_for_human_high_fit_cases": 31.19,
+      "average_score_for_human_low_fit_cases": 27.4
+    },
+    "rows": [
+      {
+        "id": "job-01",
+        "title": "Analytics Manager",
+        "human_label": "high_fit",
+        "human_reasoning_short": "Materially relevant analytics leadership role with business translation, stakeholder partnership, and commercial insight requirements.",
+        "resolved_source": "inline",
+        "model_score": 37.88,
+        "model_bucket": "low_fit",
+        "agreement": "disagree",
+        "likely_cause_of_disagreement": "Cross-Functional Stakeholder Leadership",
+        "top_transfer_patterns": [],
+        "mapped_target_clusters": []
+      },
+      {
+        "id": "job-02",
+        "title": "Commercial Insights Lead",
+        "human_label": "high_fit",
+        "human_reasoning_short": "Strong match on commercial analytics, stakeholder influence, and strategy translation.",
+        "resolved_source": "inline",
+        "model_score": 26.83,
+        "model_bucket": "low_fit",
+        "agreement": "disagree",
+        "likely_cause_of_disagreement": "Executive Influence & Business Cases",
+        "top_transfer_patterns": [],
+        "mapped_target_clusters": []
+      },
+      {
+        "id": "job-03",
+        "title": "Customer Insights & CX Strategy Manager",
+        "human_label": "high_fit",
+        "human_reasoning_short": "High overlap on customer insights, strategy, and translating analytics into action.",
+        "resolved_source": "inline",
+        "model_score": 35.6,
+        "model_bucket": "low_fit",
+        "agreement": "disagree",
+        "likely_cause_of_disagreement": "Cross-Functional Stakeholder Leadership",
+        "top_transfer_patterns": [],
+        "mapped_target_clusters": []
+      },
+      {
+        "id": "job-04",
+        "title": "Product Analytics Manager",
+        "human_label": "medium_fit",
+        "human_reasoning_short": "Strong analytics and stakeholder overlap, but product experimentation depth may be a stretch.",
+        "resolved_source": "inline",
+        "model_score": 43.26,
+        "model_bucket": "medium_fit",
+        "agreement": "agree",
+        "likely_cause_of_disagreement": "Aligned with human label.",
+        "top_transfer_patterns": [],
+        "mapped_target_clusters": []
+      },
+      {
+        "id": "job-05",
+        "title": "BI Transformation Program Lead",
+        "human_label": "medium_fit",
+        "human_reasoning_short": "Transferable analytics and enablement signals, but heavier platform transformation leadership than core profile.",
+        "resolved_source": "inline",
+        "model_score": 8.53,
+        "model_bucket": "low_fit",
+        "agreement": "disagree",
+        "likely_cause_of_disagreement": "Boundary disagreement near threshold.",
+        "top_transfer_patterns": [],
+        "mapped_target_clusters": []
+      },
+      {
+        "id": "job-06",
+        "title": "Marketing Science Lead",
+        "human_label": "high_fit",
+        "human_reasoning_short": "Very close to analytics-in-agency translation and stakeholder advisory work.",
+        "resolved_source": "inline",
+        "model_score": 17.63,
+        "model_bucket": "low_fit",
+        "agreement": "disagree",
+        "likely_cause_of_disagreement": "Cross-Functional Stakeholder Leadership",
+        "top_transfer_patterns": [],
+        "mapped_target_clusters": []
+      },
+      {
+        "id": "job-07",
+        "title": "Transformation Enablement Manager",
+        "human_label": "medium_fit",
+        "human_reasoning_short": "Relevant on enablement and analytics-led change, but broader transformation delivery leadership is only partial.",
+        "resolved_source": "inline",
+        "model_score": 3.03,
+        "model_bucket": "low_fit",
+        "agreement": "disagree",
+        "likely_cause_of_disagreement": "Boundary disagreement near threshold.",
+        "top_transfer_patterns": [],
+        "mapped_target_clusters": []
+      },
+      {
+        "id": "job-08",
+        "title": "Revenue Strategy Manager",
+        "human_label": "high_fit",
+        "human_reasoning_short": "High overlap with strategic planning, commercial analytics, and executive narrative work.",
+        "resolved_source": "inline",
+        "model_score": 60.38,
+        "model_bucket": "medium_fit",
+        "agreement": "disagree",
+        "likely_cause_of_disagreement": "Boundary disagreement near threshold.",
+        "top_transfer_patterns": [],
+        "mapped_target_clusters": []
+      },
+      {
+        "id": "job-09",
+        "title": "Data & Insights Manager",
+        "human_label": "high_fit",
+        "human_reasoning_short": "Close analytics manager variant with insight storytelling and stakeholder advisory focus.",
+        "resolved_source": "inline",
+        "model_score": 0,
+        "model_bucket": "low_fit",
+        "agreement": "disagree",
+        "likely_cause_of_disagreement": "Cross-Functional Stakeholder Leadership",
+        "top_transfer_patterns": [],
+        "mapped_target_clusters": []
+      },
+      {
+        "id": "job-10",
+        "title": "Analytics Enablement Manager",
+        "human_label": "medium_fit",
+        "human_reasoning_short": "Credible due to analytics capability uplift and stakeholder work, but more enablement-operating-model heavy.",
+        "resolved_source": "inline",
+        "model_score": 10.08,
+        "model_bucket": "low_fit",
+        "agreement": "disagree",
+        "likely_cause_of_disagreement": "Boundary disagreement near threshold.",
+        "top_transfer_patterns": [],
+        "mapped_target_clusters": []
+      },
+      {
+        "id": "job-11",
+        "title": "Commercial Strategy Director",
+        "human_label": "medium_fit",
+        "human_reasoning_short": "Relevant strategy and commercial evidence, but director-level scope may overstate fit.",
+        "resolved_source": "inline",
+        "model_score": 44.89,
+        "model_bucket": "medium_fit",
+        "agreement": "agree",
+        "likely_cause_of_disagreement": "Aligned with human label.",
+        "top_transfer_patterns": [],
+        "mapped_target_clusters": []
+      },
+      {
+        "id": "job-12",
+        "title": "Customer Analytics Consultant",
+        "human_label": "high_fit",
+        "human_reasoning_short": "Strong overlap on customer analytics, storytelling, and cross-functional advisory work.",
+        "resolved_source": "inline",
+        "model_score": 40,
+        "model_bucket": "medium_fit",
+        "agreement": "disagree",
+        "likely_cause_of_disagreement": "Boundary disagreement near threshold.",
+        "top_transfer_patterns": [],
+        "mapped_target_clusters": []
+      },
+      {
+        "id": "job-13",
+        "title": "Enterprise Sales Director",
+        "human_label": "low_fit",
+        "human_reasoning_short": "Primarily quota-carrying sales execution, not analytics translation.",
+        "resolved_source": "inline",
+        "model_score": 38.51,
+        "model_bucket": "medium_fit",
+        "agreement": "disagree",
+        "likely_cause_of_disagreement": "Boundary disagreement near threshold.",
+        "top_transfer_patterns": [],
+        "mapped_target_clusters": []
+      },
+      {
+        "id": "job-14",
+        "title": "Clinical Research Coordinator",
+        "human_label": "low_fit",
+        "human_reasoning_short": "Domain and capability mismatch; only generic coordination overlap.",
+        "resolved_source": "inline",
+        "model_score": 0,
+        "model_bucket": "low_fit",
+        "agreement": "agree",
+        "likely_cause_of_disagreement": "Aligned with human label.",
+        "top_transfer_patterns": [],
+        "mapped_target_clusters": []
+      },
+      {
+        "id": "job-15",
+        "title": "Software Engineering Manager",
+        "human_label": "low_fit",
+        "human_reasoning_short": "People leadership overlaps, but core capability cluster is engineering delivery.",
+        "resolved_source": "inline",
+        "model_score": 0,
+        "model_bucket": "low_fit",
+        "agreement": "agree",
+        "likely_cause_of_disagreement": "Aligned with human label.",
+        "top_transfer_patterns": [],
+        "mapped_target_clusters": []
+      },
+      {
+        "id": "job-16",
+        "title": "SEO Manager",
+        "human_label": "low_fit",
+        "human_reasoning_short": "Marketing domain is adjacent, but the role is channel-specialist rather than analytics translation leadership.",
+        "resolved_source": "inline",
+        "model_score": 70.15,
+        "model_bucket": "high_fit",
+        "agreement": "disagree",
+        "likely_cause_of_disagreement": "Over-accept driven by insufficient blocking-gap enforcement.",
+        "top_transfer_patterns": [],
+        "mapped_target_clusters": []
+      },
+      {
+        "id": "job-17",
+        "title": "Operations Excellence Manager",
+        "human_label": "medium_fit",
+        "human_reasoning_short": "Some transformation and performance improvement transfer, but less direct analytics-storytelling emphasis.",
+        "resolved_source": "inline",
+        "model_score": 15.64,
+        "model_bucket": "low_fit",
+        "agreement": "disagree",
+        "likely_cause_of_disagreement": "Boundary disagreement near threshold.",
+        "top_transfer_patterns": [],
+        "mapped_target_clusters": []
+      },
+      {
+        "id": "job-18",
+        "title": "Media Insights Director",
+        "human_label": "medium_fit",
+        "human_reasoning_short": "Agency and insights context fits, but director scope may stretch title seniority.",
+        "resolved_source": "inline",
+        "model_score": 40,
+        "model_bucket": "medium_fit",
+        "agreement": "agree",
+        "likely_cause_of_disagreement": "Aligned with human label.",
+        "top_transfer_patterns": [],
+        "mapped_target_clusters": []
+      },
+      {
+        "id": "job-19",
+        "title": "Change Manager",
+        "human_label": "medium_fit",
+        "human_reasoning_short": "Relevant enablement and stakeholder work, but not as directly anchored in analytics capability translation.",
+        "resolved_source": "inline",
+        "model_score": 5.74,
+        "model_bucket": "low_fit",
+        "agreement": "disagree",
+        "likely_cause_of_disagreement": "Boundary disagreement near threshold.",
+        "top_transfer_patterns": [],
+        "mapped_target_clusters": []
+      },
+      {
+        "id": "job-20",
+        "title": "Research Operations Coordinator",
+        "human_label": "low_fit",
+        "human_reasoning_short": "Too administrative and operational; lacks analytics strategy and business translation center of gravity.",
+        "resolved_source": "inline",
+        "model_score": 28.33,
+        "model_bucket": "low_fit",
+        "agreement": "agree",
+        "likely_cause_of_disagreement": "Aligned with human label.",
+        "top_transfer_patterns": [],
+        "mapped_target_clusters": []
+      }
+    ]
+  },
+  "before_v2": {
+    "variant": "without_transfer_pattern_aggregation",
+    "metrics": {
+      "bucket_agreement": 0.55,
+      "over_reject_rate": 0,
+      "over_accept_rate": 0,
+      "average_score_for_human_high_fit_cases": 60.01,
+      "average_score_for_human_low_fit_cases": 39.93
+    },
+    "rows": [
+      {
+        "id": "job-01",
+        "title": "Analytics Manager",
+        "human_label": "high_fit",
+        "human_reasoning_short": "Materially relevant analytics leadership role with business translation, stakeholder partnership, and commercial insight requirements.",
+        "resolved_source": "inline",
+        "model_score": 60.12,
+        "model_bucket": "medium_fit",
+        "agreement": "disagree",
+        "likely_cause_of_disagreement": "Partial-but-fragile requirements.",
+        "top_transfer_patterns": [],
+        "mapped_target_clusters": []
+      },
+      {
+        "id": "job-02",
+        "title": "Commercial Insights Lead",
+        "human_label": "high_fit",
+        "human_reasoning_short": "Strong match on commercial analytics, stakeholder influence, and strategy translation.",
+        "resolved_source": "inline",
+        "model_score": 59.83,
+        "model_bucket": "medium_fit",
+        "agreement": "disagree",
+        "likely_cause_of_disagreement": "Partial-but-fragile requirements.",
+        "top_transfer_patterns": [],
+        "mapped_target_clusters": []
+      },
+      {
+        "id": "job-03",
+        "title": "Customer Insights & CX Strategy Manager",
+        "human_label": "high_fit",
+        "human_reasoning_short": "High overlap on customer insights, strategy, and translating analytics into action.",
+        "resolved_source": "inline",
+        "model_score": 60.89,
+        "model_bucket": "medium_fit",
+        "agreement": "disagree",
+        "likely_cause_of_disagreement": "Partial-but-fragile requirements.",
+        "top_transfer_patterns": [],
+        "mapped_target_clusters": []
+      },
+      {
+        "id": "job-04",
+        "title": "Product Analytics Manager",
+        "human_label": "medium_fit",
+        "human_reasoning_short": "Strong analytics and stakeholder overlap, but product experimentation depth may be a stretch.",
+        "resolved_source": "inline",
+        "model_score": 56.55,
+        "model_bucket": "medium_fit",
+        "agreement": "agree",
+        "likely_cause_of_disagreement": "Aligned with human label.",
+        "top_transfer_patterns": [],
+        "mapped_target_clusters": []
+      },
+      {
+        "id": "job-05",
+        "title": "BI Transformation Program Lead",
+        "human_label": "medium_fit",
+        "human_reasoning_short": "Transferable analytics and enablement signals, but heavier platform transformation leadership than core profile.",
+        "resolved_source": "inline",
+        "model_score": 48.72,
+        "model_bucket": "medium_fit",
+        "agreement": "agree",
+        "likely_cause_of_disagreement": "Aligned with human label.",
+        "top_transfer_patterns": [],
+        "mapped_target_clusters": []
+      },
+      {
+        "id": "job-06",
+        "title": "Marketing Science Lead",
+        "human_label": "high_fit",
+        "human_reasoning_short": "Very close to analytics-in-agency translation and stakeholder advisory work.",
+        "resolved_source": "inline",
+        "model_score": 60.41,
+        "model_bucket": "medium_fit",
+        "agreement": "disagree",
+        "likely_cause_of_disagreement": "Partial-but-fragile requirements.",
+        "top_transfer_patterns": [],
+        "mapped_target_clusters": []
+      },
+      {
+        "id": "job-07",
+        "title": "Transformation Enablement Manager",
+        "human_label": "medium_fit",
+        "human_reasoning_short": "Relevant on enablement and analytics-led change, but broader transformation delivery leadership is only partial.",
+        "resolved_source": "inline",
+        "model_score": 57.35,
+        "model_bucket": "medium_fit",
+        "agreement": "agree",
+        "likely_cause_of_disagreement": "Aligned with human label.",
+        "top_transfer_patterns": [],
+        "mapped_target_clusters": []
+      },
+      {
+        "id": "job-08",
+        "title": "Revenue Strategy Manager",
+        "human_label": "high_fit",
+        "human_reasoning_short": "High overlap with strategic planning, commercial analytics, and executive narrative work.",
+        "resolved_source": "inline",
+        "model_score": 59.93,
+        "model_bucket": "medium_fit",
+        "agreement": "disagree",
+        "likely_cause_of_disagreement": "Partial-but-fragile requirements.",
+        "top_transfer_patterns": [],
+        "mapped_target_clusters": []
+      },
+      {
+        "id": "job-09",
+        "title": "Data & Insights Manager",
+        "human_label": "high_fit",
+        "human_reasoning_short": "Close analytics manager variant with insight storytelling and stakeholder advisory focus.",
+        "resolved_source": "inline",
+        "model_score": 59.42,
+        "model_bucket": "medium_fit",
+        "agreement": "disagree",
+        "likely_cause_of_disagreement": "Partial-but-fragile requirements.",
+        "top_transfer_patterns": [],
+        "mapped_target_clusters": []
+      },
+      {
+        "id": "job-10",
+        "title": "Analytics Enablement Manager",
+        "human_label": "medium_fit",
+        "human_reasoning_short": "Credible due to analytics capability uplift and stakeholder work, but more enablement-operating-model heavy.",
+        "resolved_source": "inline",
+        "model_score": 53.51,
+        "model_bucket": "medium_fit",
+        "agreement": "agree",
+        "likely_cause_of_disagreement": "Aligned with human label.",
+        "top_transfer_patterns": [],
+        "mapped_target_clusters": []
+      },
+      {
+        "id": "job-11",
+        "title": "Commercial Strategy Director",
+        "human_label": "medium_fit",
+        "human_reasoning_short": "Relevant strategy and commercial evidence, but director-level scope may overstate fit.",
+        "resolved_source": "inline",
+        "model_score": 60.02,
+        "model_bucket": "medium_fit",
+        "agreement": "agree",
+        "likely_cause_of_disagreement": "Aligned with human label.",
+        "top_transfer_patterns": [],
+        "mapped_target_clusters": []
+      },
+      {
+        "id": "job-12",
+        "title": "Customer Analytics Consultant",
+        "human_label": "high_fit",
+        "human_reasoning_short": "Strong overlap on customer analytics, storytelling, and cross-functional advisory work.",
+        "resolved_source": "inline",
+        "model_score": 59.48,
+        "model_bucket": "medium_fit",
+        "agreement": "disagree",
+        "likely_cause_of_disagreement": "Partial-but-fragile requirements.",
+        "top_transfer_patterns": [],
+        "mapped_target_clusters": []
+      },
+      {
+        "id": "job-13",
+        "title": "Enterprise Sales Director",
+        "human_label": "low_fit",
+        "human_reasoning_short": "Primarily quota-carrying sales execution, not analytics translation.",
+        "resolved_source": "inline",
+        "model_score": 53.1,
+        "model_bucket": "medium_fit",
+        "agreement": "disagree",
+        "likely_cause_of_disagreement": "Partial-but-fragile requirements.",
+        "top_transfer_patterns": [],
+        "mapped_target_clusters": []
+      },
+      {
+        "id": "job-14",
+        "title": "Clinical Research Coordinator",
+        "human_label": "low_fit",
+        "human_reasoning_short": "Domain and capability mismatch; only generic coordination overlap.",
+        "resolved_source": "inline",
+        "model_score": 13.96,
+        "model_bucket": "low_fit",
+        "agreement": "agree",
+        "likely_cause_of_disagreement": "Aligned with human label.",
+        "top_transfer_patterns": [],
+        "mapped_target_clusters": []
+      },
+      {
+        "id": "job-15",
+        "title": "Software Engineering Manager",
+        "human_label": "low_fit",
+        "human_reasoning_short": "People leadership overlaps, but core capability cluster is engineering delivery.",
+        "resolved_source": "inline",
+        "model_score": 34.92,
+        "model_bucket": "low_fit",
+        "agreement": "agree",
+        "likely_cause_of_disagreement": "Aligned with human label.",
+        "top_transfer_patterns": [],
+        "mapped_target_clusters": []
+      },
+      {
+        "id": "job-16",
+        "title": "SEO Manager",
+        "human_label": "low_fit",
+        "human_reasoning_short": "Marketing domain is adjacent, but the role is channel-specialist rather than analytics translation leadership.",
+        "resolved_source": "inline",
+        "model_score": 56.56,
+        "model_bucket": "medium_fit",
+        "agreement": "disagree",
+        "likely_cause_of_disagreement": "Partial-but-fragile requirements.",
+        "top_transfer_patterns": [],
+        "mapped_target_clusters": []
+      },
+      {
+        "id": "job-17",
+        "title": "Operations Excellence Manager",
+        "human_label": "medium_fit",
+        "human_reasoning_short": "Some transformation and performance improvement transfer, but less direct analytics-storytelling emphasis.",
+        "resolved_source": "inline",
+        "model_score": 51.68,
+        "model_bucket": "medium_fit",
+        "agreement": "agree",
+        "likely_cause_of_disagreement": "Aligned with human label.",
+        "top_transfer_patterns": [],
+        "mapped_target_clusters": []
+      },
+      {
+        "id": "job-18",
+        "title": "Media Insights Director",
+        "human_label": "medium_fit",
+        "human_reasoning_short": "Agency and insights context fits, but director scope may stretch title seniority.",
+        "resolved_source": "inline",
+        "model_score": 60.27,
+        "model_bucket": "medium_fit",
+        "agreement": "agree",
+        "likely_cause_of_disagreement": "Aligned with human label.",
+        "top_transfer_patterns": [],
+        "mapped_target_clusters": []
+      },
+      {
+        "id": "job-19",
+        "title": "Change Manager",
+        "human_label": "medium_fit",
+        "human_reasoning_short": "Relevant enablement and stakeholder work, but not as directly anchored in analytics capability translation.",
+        "resolved_source": "inline",
+        "model_score": 51.22,
+        "model_bucket": "medium_fit",
+        "agreement": "agree",
+        "likely_cause_of_disagreement": "Aligned with human label.",
+        "top_transfer_patterns": [],
+        "mapped_target_clusters": []
+      },
+      {
+        "id": "job-20",
+        "title": "Research Operations Coordinator",
+        "human_label": "low_fit",
+        "human_reasoning_short": "Too administrative and operational; lacks analytics strategy and business translation center of gravity.",
+        "resolved_source": "inline",
+        "model_score": 41.12,
+        "model_bucket": "low_fit",
+        "agreement": "agree",
+        "likely_cause_of_disagreement": "Aligned with human label.",
+        "top_transfer_patterns": [],
+        "mapped_target_clusters": []
+      }
+    ]
+  },
+  "improved_v2": {
+    "metrics": {
+      "bucket_agreement": 0.8,
+      "over_reject_rate": 0,
+      "over_accept_rate": 0,
+      "average_score_for_human_high_fit_cases": 72.61,
+      "average_score_for_human_low_fit_cases": 45.04
+    },
+    "rows": [
+      {
+        "id": "job-01",
+        "title": "Analytics Manager",
+        "human_label": "high_fit",
+        "human_reasoning_short": "Materially relevant analytics leadership role with business translation, stakeholder partnership, and commercial insight requirements.",
+        "resolved_source": "inline",
+        "model_score": 71.59,
+        "model_bucket": "high_fit",
+        "agreement": "agree",
+        "likely_cause_of_disagreement": "Aligned with human label.",
+        "top_transfer_patterns": [
+          "Stakeholder Storytelling from Analytics",
+          "Strategic Problem Solving with Analytics",
+          "Commercial / Customer Analytics"
+        ],
+        "mapped_target_clusters": [
+          "Analytics Translation & Insight Storytelling",
+          "Cross-Functional Embedding & Stakeholder Leadership",
+          "Commercial / Customer Insight Generation",
+          "Data Tooling & Analytical Methods"
+        ]
+      },
+      {
+        "id": "job-02",
+        "title": "Commercial Insights Lead",
+        "human_label": "high_fit",
+        "human_reasoning_short": "Strong match on commercial analytics, stakeholder influence, and strategy translation.",
+        "resolved_source": "inline",
+        "model_score": 73.29,
+        "model_bucket": "high_fit",
+        "agreement": "agree",
+        "likely_cause_of_disagreement": "Aligned with human label.",
+        "top_transfer_patterns": [
+          "Commercial / Customer Analytics",
+          "Stakeholder Storytelling from Analytics",
+          "Strategic Problem Solving with Analytics"
+        ],
+        "mapped_target_clusters": [
+          "Analytics Translation & Insight Storytelling",
+          "Commercial / Customer Insight Generation",
+          "Cross-Functional Embedding & Stakeholder Leadership"
+        ]
+      },
+      {
+        "id": "job-03",
+        "title": "Customer Insights & CX Strategy Manager",
+        "human_label": "high_fit",
+        "human_reasoning_short": "High overlap on customer insights, strategy, and translating analytics into action.",
+        "resolved_source": "inline",
+        "model_score": 73.34,
+        "model_bucket": "high_fit",
+        "agreement": "agree",
+        "likely_cause_of_disagreement": "Aligned with human label.",
+        "top_transfer_patterns": [
+          "Stakeholder Storytelling from Analytics",
+          "Commercial / Customer Analytics",
+          "Cross-Functional Analytics Leadership"
+        ],
+        "mapped_target_clusters": [
+          "Analytics Translation & Insight Storytelling",
+          "Cross-Functional Embedding & Stakeholder Leadership",
+          "Commercial / Customer Insight Generation"
+        ]
+      },
+      {
+        "id": "job-04",
+        "title": "Product Analytics Manager",
+        "human_label": "medium_fit",
+        "human_reasoning_short": "Strong analytics and stakeholder overlap, but product experimentation depth may be a stretch.",
+        "resolved_source": "inline",
+        "model_score": 70.68,
+        "model_bucket": "medium_fit",
+        "agreement": "agree",
+        "likely_cause_of_disagreement": "Aligned with human label.",
+        "top_transfer_patterns": [
+          "Stakeholder Storytelling from Analytics",
+          "Cross-Functional Analytics Leadership",
+          "Strategic Problem Solving with Analytics"
+        ],
+        "mapped_target_clusters": [
+          "Analytics Translation & Insight Storytelling",
+          "Cross-Functional Embedding & Stakeholder Leadership",
+          "Commercial / Customer Insight Generation"
+        ]
+      },
+      {
+        "id": "job-05",
+        "title": "BI Transformation Program Lead",
+        "human_label": "medium_fit",
+        "human_reasoning_short": "Transferable analytics and enablement signals, but heavier platform transformation leadership than core profile.",
+        "resolved_source": "inline",
+        "model_score": 54.74,
+        "model_bucket": "medium_fit",
+        "agreement": "agree",
+        "likely_cause_of_disagreement": "Aligned with human label.",
+        "top_transfer_patterns": [
+          "Transformation-through-Data",
+          "Cross-Functional Analytics Leadership",
+          "Stakeholder Storytelling from Analytics"
+        ],
+        "mapped_target_clusters": [
+          "Cross-Functional Embedding & Stakeholder Leadership",
+          "Transformation / Enablement Through Data",
+          "Data Tooling & Analytical Methods"
+        ]
+      },
+      {
+        "id": "job-06",
+        "title": "Marketing Science Lead",
+        "human_label": "high_fit",
+        "human_reasoning_short": "Very close to analytics-in-agency translation and stakeholder advisory work.",
+        "resolved_source": "inline",
+        "model_score": 72.18,
+        "model_bucket": "high_fit",
+        "agreement": "agree",
+        "likely_cause_of_disagreement": "Aligned with human label.",
+        "top_transfer_patterns": [
+          "Cross-Functional Analytics Leadership",
+          "Analytics-to-Decision Translation",
+          "Strategic Problem Solving with Analytics"
+        ],
+        "mapped_target_clusters": [
+          "Cross-Functional Embedding & Stakeholder Leadership",
+          "Analytics Translation & Insight Storytelling",
+          "Commercial / Customer Insight Generation"
+        ]
+      },
+      {
+        "id": "job-07",
+        "title": "Transformation Enablement Manager",
+        "human_label": "medium_fit",
+        "human_reasoning_short": "Relevant on enablement and analytics-led change, but broader transformation delivery leadership is only partial.",
+        "resolved_source": "inline",
+        "model_score": 68.46,
+        "model_bucket": "medium_fit",
+        "agreement": "agree",
+        "likely_cause_of_disagreement": "Aligned with human label.",
+        "top_transfer_patterns": [
+          "Cross-Functional Analytics Leadership",
+          "Stakeholder Storytelling from Analytics",
+          "Transformation-through-Data"
+        ],
+        "mapped_target_clusters": [
+          "Cross-Functional Embedding & Stakeholder Leadership",
+          "Transformation / Enablement Through Data"
+        ]
+      },
+      {
+        "id": "job-08",
+        "title": "Revenue Strategy Manager",
+        "human_label": "high_fit",
+        "human_reasoning_short": "High overlap with strategic planning, commercial analytics, and executive narrative work.",
+        "resolved_source": "inline",
+        "model_score": 72.02,
+        "model_bucket": "high_fit",
+        "agreement": "agree",
+        "likely_cause_of_disagreement": "Aligned with human label.",
+        "top_transfer_patterns": [
+          "Commercial / Customer Analytics",
+          "Analytics-to-Decision Translation",
+          "Stakeholder Storytelling from Analytics"
+        ],
+        "mapped_target_clusters": [
+          "Analytics Translation & Insight Storytelling",
+          "Commercial / Customer Insight Generation",
+          "Cross-Functional Embedding & Stakeholder Leadership"
+        ]
+      },
+      {
+        "id": "job-09",
+        "title": "Data & Insights Manager",
+        "human_label": "high_fit",
+        "human_reasoning_short": "Close analytics manager variant with insight storytelling and stakeholder advisory focus.",
+        "resolved_source": "inline",
+        "model_score": 72.98,
+        "model_bucket": "high_fit",
+        "agreement": "agree",
+        "likely_cause_of_disagreement": "Aligned with human label.",
+        "top_transfer_patterns": [
+          "Stakeholder Storytelling from Analytics",
+          "Cross-Functional Analytics Leadership",
+          "Commercial / Customer Analytics"
+        ],
+        "mapped_target_clusters": [
+          "Cross-Functional Embedding & Stakeholder Leadership"
+        ]
+      },
+      {
+        "id": "job-10",
+        "title": "Analytics Enablement Manager",
+        "human_label": "medium_fit",
+        "human_reasoning_short": "Credible due to analytics capability uplift and stakeholder work, but more enablement-operating-model heavy.",
+        "resolved_source": "inline",
+        "model_score": 66.6,
+        "model_bucket": "medium_fit",
+        "agreement": "agree",
+        "likely_cause_of_disagreement": "Aligned with human label.",
+        "top_transfer_patterns": [
+          "Cross-Functional Analytics Leadership",
+          "Stakeholder Storytelling from Analytics",
+          "Transformation-through-Data"
+        ],
+        "mapped_target_clusters": [
+          "Cross-Functional Embedding & Stakeholder Leadership",
+          "Transformation / Enablement Through Data"
+        ]
+      },
+      {
+        "id": "job-11",
+        "title": "Commercial Strategy Director",
+        "human_label": "medium_fit",
+        "human_reasoning_short": "Relevant strategy and commercial evidence, but director-level scope may overstate fit.",
+        "resolved_source": "inline",
+        "model_score": 72.13,
+        "model_bucket": "high_fit",
+        "agreement": "disagree",
+        "likely_cause_of_disagreement": "Partial-but-fragile requirements.",
+        "top_transfer_patterns": [
+          "Commercial / Customer Analytics",
+          "Analytics-to-Decision Translation",
+          "Strategic Problem Solving with Analytics"
+        ],
+        "mapped_target_clusters": [
+          "Analytics Translation & Insight Storytelling",
+          "Commercial / Customer Insight Generation",
+          "Cross-Functional Embedding & Stakeholder Leadership"
+        ]
+      },
+      {
+        "id": "job-12",
+        "title": "Customer Analytics Consultant",
+        "human_label": "high_fit",
+        "human_reasoning_short": "Strong overlap on customer analytics, storytelling, and cross-functional advisory work.",
+        "resolved_source": "inline",
+        "model_score": 72.87,
+        "model_bucket": "high_fit",
+        "agreement": "agree",
+        "likely_cause_of_disagreement": "Aligned with human label.",
+        "top_transfer_patterns": [
+          "Commercial / Customer Analytics",
+          "Analytics-to-Decision Translation",
+          "Stakeholder Storytelling from Analytics"
+        ],
+        "mapped_target_clusters": [
+          "Analytics Translation & Insight Storytelling",
+          "Commercial / Customer Insight Generation",
+          "Cross-Functional Embedding & Stakeholder Leadership"
+        ]
+      },
+      {
+        "id": "job-13",
+        "title": "Enterprise Sales Director",
+        "human_label": "low_fit",
+        "human_reasoning_short": "Primarily quota-carrying sales execution, not analytics translation.",
+        "resolved_source": "inline",
+        "model_score": 65.15,
+        "model_bucket": "medium_fit",
+        "agreement": "disagree",
+        "likely_cause_of_disagreement": "Partial-but-fragile requirements.",
+        "top_transfer_patterns": [
+          "Cross-Functional Analytics Leadership",
+          "Commercial / Customer Analytics",
+          "Stakeholder Storytelling from Analytics"
+        ],
+        "mapped_target_clusters": [
+          "Cross-Functional Embedding & Stakeholder Leadership",
+          "Analytics Translation & Insight Storytelling",
+          "Commercial / Customer Insight Generation"
+        ]
+      },
+      {
+        "id": "job-14",
+        "title": "Clinical Research Coordinator",
+        "human_label": "low_fit",
+        "human_reasoning_short": "Domain and capability mismatch; only generic coordination overlap.",
+        "resolved_source": "inline",
+        "model_score": 15.22,
+        "model_bucket": "low_fit",
+        "agreement": "agree",
+        "likely_cause_of_disagreement": "Aligned with human label.",
+        "top_transfer_patterns": [
+          "Transformation-through-Data",
+          "Analytics Enablement / Adoption",
+          "Commercial / Customer Analytics"
+        ],
+        "mapped_target_clusters": [
+          "Transformation / Enablement Through Data"
+        ]
+      },
+      {
+        "id": "job-15",
+        "title": "Software Engineering Manager",
+        "human_label": "low_fit",
+        "human_reasoning_short": "People leadership overlaps, but core capability cluster is engineering delivery.",
+        "resolved_source": "inline",
+        "model_score": 35.51,
+        "model_bucket": "low_fit",
+        "agreement": "agree",
+        "likely_cause_of_disagreement": "Aligned with human label.",
+        "top_transfer_patterns": [
+          "Commercial / Customer Analytics",
+          "Stakeholder Storytelling from Analytics",
+          "Transformation-through-Data"
+        ],
+        "mapped_target_clusters": []
+      },
+      {
+        "id": "job-16",
+        "title": "SEO Manager",
+        "human_label": "low_fit",
+        "human_reasoning_short": "Marketing domain is adjacent, but the role is channel-specialist rather than analytics translation leadership.",
+        "resolved_source": "inline",
+        "model_score": 65.06,
+        "model_bucket": "medium_fit",
+        "agreement": "disagree",
+        "likely_cause_of_disagreement": "Partial-but-fragile requirements.",
+        "top_transfer_patterns": [
+          "Commercial / Customer Analytics",
+          "Strategic Problem Solving with Analytics",
+          "Analytics-to-Decision Translation"
+        ],
+        "mapped_target_clusters": [
+          "Commercial / Customer Insight Generation",
+          "Analytics Translation & Insight Storytelling",
+          "Operational Performance Optimization"
+        ]
+      },
+      {
+        "id": "job-17",
+        "title": "Operations Excellence Manager",
+        "human_label": "medium_fit",
+        "human_reasoning_short": "Some transformation and performance improvement transfer, but less direct analytics-storytelling emphasis.",
+        "resolved_source": "inline",
+        "model_score": 57.71,
+        "model_bucket": "medium_fit",
+        "agreement": "agree",
+        "likely_cause_of_disagreement": "Aligned with human label.",
+        "top_transfer_patterns": [
+          "Cross-Functional Analytics Leadership",
+          "Stakeholder Storytelling from Analytics",
+          "Transformation-through-Data"
+        ],
+        "mapped_target_clusters": [
+          "Transformation / Enablement Through Data",
+          "Operational Performance Optimization"
+        ]
+      },
+      {
+        "id": "job-18",
+        "title": "Media Insights Director",
+        "human_label": "medium_fit",
+        "human_reasoning_short": "Agency and insights context fits, but director scope may stretch title seniority.",
+        "resolved_source": "inline",
+        "model_score": 72.59,
+        "model_bucket": "high_fit",
+        "agreement": "disagree",
+        "likely_cause_of_disagreement": "Partial-but-fragile requirements.",
+        "top_transfer_patterns": [
+          "Cross-Functional Analytics Leadership",
+          "Strategic Problem Solving with Analytics",
+          "Analytics-to-Decision Translation"
+        ],
+        "mapped_target_clusters": [
+          "Cross-Functional Embedding & Stakeholder Leadership",
+          "Analytics Translation & Insight Storytelling",
+          "Commercial / Customer Insight Generation"
+        ]
+      },
+      {
+        "id": "job-19",
+        "title": "Change Manager",
+        "human_label": "medium_fit",
+        "human_reasoning_short": "Relevant enablement and stakeholder work, but not as directly anchored in analytics capability translation.",
+        "resolved_source": "inline",
+        "model_score": 57.62,
+        "model_bucket": "medium_fit",
+        "agreement": "agree",
+        "likely_cause_of_disagreement": "Aligned with human label.",
+        "top_transfer_patterns": [
+          "Stakeholder Storytelling from Analytics",
+          "Cross-Functional Analytics Leadership",
+          "Transformation-through-Data"
+        ],
+        "mapped_target_clusters": [
+          "Transformation / Enablement Through Data"
+        ]
+      },
+      {
+        "id": "job-20",
+        "title": "Research Operations Coordinator",
+        "human_label": "low_fit",
+        "human_reasoning_short": "Too administrative and operational; lacks analytics strategy and business translation center of gravity.",
+        "resolved_source": "inline",
+        "model_score": 44.25,
+        "model_bucket": "low_fit",
+        "agreement": "agree",
+        "likely_cause_of_disagreement": "Aligned with human label.",
+        "top_transfer_patterns": [
+          "Stakeholder Storytelling from Analytics",
+          "Cross-Functional Analytics Leadership",
+          "Transformation-through-Data"
+        ],
+        "mapped_target_clusters": [
+          "Cross-Functional Embedding & Stakeholder Leadership",
+          "Transformation / Enablement Through Data"
+        ]
+      }
+    ]
+  },
+  "promoted_cases": [
+    {
+      "id": "job-01",
+      "title": "Analytics Manager",
+      "human_label": "high_fit",
+      "before_bucket": "medium_fit",
+      "after_bucket": "high_fit",
+      "score_delta": 11.47,
+      "why": "Analytics Translation & Insight Storytelling; Stakeholder Storytelling from Analytics; Strategic Problem Solving with Analytics"
+    },
+    {
+      "id": "job-02",
+      "title": "Commercial Insights Lead",
+      "human_label": "high_fit",
+      "before_bucket": "medium_fit",
+      "after_bucket": "high_fit",
+      "score_delta": 13.46,
+      "why": "Analytics Translation & Insight Storytelling; Commercial / Customer Analytics; Stakeholder Storytelling from Analytics"
+    },
+    {
+      "id": "job-03",
+      "title": "Customer Insights & CX Strategy Manager",
+      "human_label": "high_fit",
+      "before_bucket": "medium_fit",
+      "after_bucket": "high_fit",
+      "score_delta": 12.45,
+      "why": "Analytics Translation & Insight Storytelling; Stakeholder Storytelling from Analytics; Commercial / Customer Analytics"
+    },
+    {
+      "id": "job-06",
+      "title": "Marketing Science Lead",
+      "human_label": "high_fit",
+      "before_bucket": "medium_fit",
+      "after_bucket": "high_fit",
+      "score_delta": 11.77,
+      "why": "Cross-Functional Embedding & Stakeholder Leadership; Cross-Functional Analytics Leadership; Analytics-to-Decision Translation"
+    },
+    {
+      "id": "job-08",
+      "title": "Revenue Strategy Manager",
+      "human_label": "high_fit",
+      "before_bucket": "medium_fit",
+      "after_bucket": "high_fit",
+      "score_delta": 12.09,
+      "why": "Analytics Translation & Insight Storytelling; Commercial / Customer Analytics; Analytics-to-Decision Translation"
+    },
+    {
+      "id": "job-09",
+      "title": "Data & Insights Manager",
+      "human_label": "high_fit",
+      "before_bucket": "medium_fit",
+      "after_bucket": "high_fit",
+      "score_delta": 13.56,
+      "why": "Analytics Translation & Insight Storytelling; Stakeholder Storytelling from Analytics; Cross-Functional Analytics Leadership"
+    },
+    {
+      "id": "job-11",
+      "title": "Commercial Strategy Director",
+      "human_label": "medium_fit",
+      "before_bucket": "medium_fit",
+      "after_bucket": "high_fit",
+      "score_delta": 12.11,
+      "why": "Analytics Translation & Insight Storytelling; Commercial / Customer Analytics; Analytics-to-Decision Translation"
+    },
+    {
+      "id": "job-12",
+      "title": "Customer Analytics Consultant",
+      "human_label": "high_fit",
+      "before_bucket": "medium_fit",
+      "after_bucket": "high_fit",
+      "score_delta": 13.39,
+      "why": "Analytics Translation & Insight Storytelling; Commercial / Customer Analytics; Analytics-to-Decision Translation"
+    },
+    {
+      "id": "job-18",
+      "title": "Media Insights Director",
+      "human_label": "medium_fit",
+      "before_bucket": "medium_fit",
+      "after_bucket": "high_fit",
+      "score_delta": 12.32,
+      "why": "Cross-Functional Embedding & Stakeholder Leadership; Cross-Functional Analytics Leadership; Strategic Problem Solving with Analytics"
+    }
+  ],
+  "guardrails": {
+    "before_v2_over_reject_rate": 0,
+    "improved_v2_over_reject_rate": 0,
+    "before_v2_over_accept_rate": 0,
+    "improved_v2_over_accept_rate": 0,
+    "over_reject_non_regression": true,
+    "over_accept_non_regression": true
+  }
+}

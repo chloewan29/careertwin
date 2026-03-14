@@ -1,0 +1,29 @@
+{
+  "alignment": {
+    "total_cases": 20,
+    "bucket_agreement": 0.8,
+    "over_reject_rate": 0,
+    "over_accept_rate": 0,
+    "avg_score_human_high_fit": 72.81,
+    "avg_score_human_medium_fit": 64.87,
+    "avg_score_human_low_fit": 46.11
+  },
+  "differentiation": {
+    "total_cases": 20,
+    "average_top5_overlap": 0.4421,
+    "max_top5_overlap": 1,
+    "min_top5_overlap": 0,
+    "number_of_pairs_above_0_8_overlap": 37,
+    "number_of_pairs_below_0_4_overlap": 68
+  },
+  "signal_quality": {
+    "total_cases": 20,
+    "rich_count": 0,
+    "medium_count": 0,
+    "sparse_count": 20,
+    "sparse_rate": 1,
+    "average_description_length": 257.5,
+    "average_requirement_cluster_count": 7.95,
+    "average_capability_cluster_count": 2.45
+  }
+}
