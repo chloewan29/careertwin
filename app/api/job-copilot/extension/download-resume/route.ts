@@ -27,6 +27,18 @@ export async function POST(request: NextRequest) {
             selectedEvidenceIds: Array.isArray(body.selectedEvidenceIds)
                 ? body.selectedEvidenceIds.filter((item): item is string => typeof item === "string")
                 : [],
+            calibrationAnswers: Array.isArray(body.calibrationAnswers)
+                ? body.calibrationAnswers
+                    .filter((item): item is { questionId: string; answer: "yes" | "no" } =>
+                        Boolean(item && typeof item === "object" && typeof item.questionId === "string" && (item.answer === "yes" || item.answer === "no")))
+                    .map((item) => ({ questionId: item.questionId.trim(), answer: item.answer }))
+                : [],
+            confirmedStrengthAreas: Array.isArray(body.confirmedStrengthAreas)
+                ? body.confirmedStrengthAreas.filter((item): item is string => typeof item === "string")
+                : [],
+            positioningHints: Array.isArray(body.positioningHints)
+                ? body.positioningHints.filter((item): item is string => typeof item === "string")
+                : [],
         });
 
         return NextResponse.json(result);

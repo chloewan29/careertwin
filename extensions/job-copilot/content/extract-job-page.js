@@ -4,6 +4,7 @@
   const PayloadHelpers = globalThis.CareerTwinJobPayload || {};
   const MIN_JD_CHARS = Constants.MIN_JD_CHARS || 120;
   const MIN_SPARSE_JD_CHARS = 40;
+  const PREVIEW_NOT_READY_MAX_CHARS = 950;
 
   function debugLog(label, value) {
     try {
@@ -11,6 +12,14 @@
       console.debug(`[CareerTwin][extract] ${label}`, summary);
     } catch {
       console.debug(`[CareerTwin][extract] ${label}`);
+    }
+  }
+
+  function jdExtractionLog(label, value) {
+    try {
+      console.debug(`[CareerTwin][jd-extraction] ${label}`, value);
+    } catch {
+      console.debug(`[CareerTwin][jd-extraction] ${label}`);
     }
   }
 
@@ -30,6 +39,33 @@
   function cleanDescription(text) {
     const cleaned = normalizeWhitespace(text || "");
     return cleaned.slice(0, 24000);
+  }
+
+  function previewSnippet(text, maxChars = 200) {
+    return normalizeWhitespace(String(text || "").replace(/\n+/g, " ")).slice(0, maxChars);
+  }
+
+  function logLinkedInExtractionDecision(params) {
+    const payload = params.payload;
+    if (!payload || payload.platform !== "linkedin") return;
+    const sourceMetadata = payload.source_metadata || {};
+    const reason = params.reason || null;
+    const rawLength = typeof sourceMetadata.raw_description_length === "number"
+      ? sourceMetadata.raw_description_length
+      : (payload.job_description_text || "").length;
+
+    jdExtractionLog("extract_decision", {
+      flow: "extract_job_page_payload",
+      page_type: sourceMetadata.page_type || sourceMetadata.linkedin_surface || "unknown",
+      raw_jd_length: rawLength,
+      normalized_jd_length: (payload.job_description_text || "").length,
+      see_more_clicked: Boolean(sourceMetadata.more_expand_clicked_by_flow),
+      preview_not_ready_triggered: reason === "preview_not_ready_yet" || Boolean(sourceMetadata.preview_not_ready),
+      job_description_collapsed_detected: reason === "job_description_collapsed" || Boolean(sourceMetadata.jd_collapsed_likely),
+      ready_for_analysis: Boolean(params.readyForAnalysis),
+      extraction_reason: reason,
+      jd_preview_200: previewSnippet(payload.job_description_text, 200),
+    });
   }
 
   function summarize(payload) {
@@ -72,6 +108,9 @@
     const jdLength = (payload.job_description_text || "").length;
     const hasTitle = Boolean(payload.job_title);
     const hasCompany = Boolean(payload.company_name);
+    const linkedInPreview = isLinkedInPreview(payload);
+    const jdCollapsedLikely = Boolean(sourceMetadata.jd_collapsed_likely);
+    const previewNotReady = Boolean(sourceMetadata.preview_not_ready);
 
     if (!hasTitle) {
       return "missing_job_title";
@@ -82,17 +121,26 @@
     }
 
     if (!payload.job_description_text) {
-      if (sourceMetadata.preview_not_ready) return "preview_not_ready_yet";
+      if (previewNotReady) return "preview_not_ready_yet";
+      if (jdCollapsedLikely) return "job_description_collapsed";
       if (sourceMetadata.parser_selector_miss) return "parser_selector_miss";
       return "missing_job_description";
     }
 
+    if (jdCollapsedLikely) {
+      return "job_description_collapsed";
+    }
+
+    if (linkedInPreview && previewNotReady && jdLength < PREVIEW_NOT_READY_MAX_CHARS) {
+      return "preview_not_ready_yet";
+    }
+
     if (jdLength < MIN_JD_CHARS) {
+      if (linkedInPreview && previewNotReady) {
+        return "preview_not_ready_yet";
+      }
       if (jdLength >= MIN_SPARSE_JD_CHARS) {
         return "sparse_job_description";
-      }
-      if (isLinkedInPreview(payload) && sourceMetadata.preview_not_ready) {
-        return jdLength > 0 ? "sparse_job_description" : "preview_not_ready_yet";
       }
       return "job_description_too_short";
     }
@@ -111,10 +159,16 @@
         ? payload.source_metadata.detected_selectors
         : [],
       jd_collapsed_likely: payload.source_metadata ? Boolean(payload.source_metadata.jd_collapsed_likely) : false,
+      more_expand_clicked_by_flow: payload.source_metadata ? Boolean(payload.source_metadata.more_expand_clicked_by_flow) : false,
       expand_control_present: payload.source_metadata ? Boolean(payload.source_metadata.expand_control_present) : false,
       expand_control_expanded: payload.source_metadata
         ? payload.source_metadata.expand_control_expanded
         : null,
+    });
+    logLinkedInExtractionDecision({
+      payload,
+      reason,
+      readyForAnalysis: false,
     });
 
     return {
@@ -186,6 +240,11 @@
     const reason = deriveFailureReason(payload);
     if (reason !== "unknown_extract_failure") {
       if (reason === "sparse_job_description") {
+        logLinkedInExtractionDecision({
+          payload,
+          reason,
+          readyForAnalysis: true,
+        });
         return {
           ok: true,
           state: "ready",
@@ -202,7 +261,7 @@
         };
       }
 
-      if (reason === "missing_job_title" || reason === "missing_job_description" || reason === "parser_selector_miss" || reason === "preview_not_ready_yet" || reason === "job_description_too_short") {
+      if (reason === "missing_job_title" || reason === "missing_job_description" || reason === "parser_selector_miss" || reason === "preview_not_ready_yet" || reason === "job_description_too_short" || reason === "job_description_collapsed") {
         return buildFailureResult(payload, reason);
       }
 
@@ -211,6 +270,11 @@
       }
     }
 
+    logLinkedInExtractionDecision({
+      payload,
+      reason: null,
+      readyForAnalysis: true,
+    });
     return {
       ok: true,
       state: "ready",

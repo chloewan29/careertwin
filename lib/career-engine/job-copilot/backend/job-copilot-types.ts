@@ -1,6 +1,7 @@
 import type { ResumeCopilotPublicOutput } from "@/lib/career-engine/copilot/resume-copilot/resume-copilot-types";
 import type { JobCopilotSource, JobCopilotVerdict } from "@/lib/career-engine/job-copilot/extension-contract";
 import type { JobCopilotAnalysis } from "@/lib/career-engine/job-copilot/job-analysis";
+import type { JobFitScore, JobFitScoreDebug } from "@/lib/career-engine/job-copilot/job-fit-score-v1";
 
 export type JobCopilotAnalyzeInput = {
     profileId: string;
@@ -13,14 +14,47 @@ export type JobCopilotAnalyzeInput = {
     topEvidenceLimit?: number;
 };
 
+export type JobCopilotCalibrationAnswerInput = {
+    questionId: string;
+    answer: "yes" | "no";
+};
+
+export type JobCopilotRecalibrateInput = JobCopilotAnalyzeInput & {
+    calibrationAnswers: JobCopilotCalibrationAnswerInput[];
+};
+
 export type JobCopilotTopEvidenceItem = { evidencePieceId: string; label: string; score?: number };
 
 export type JobCopilotResumePreview = Pick<ResumeCopilotPublicOutput, "summary" | "experience">;
+
+export type JobCopilotApplyRecommendation = {
+    score: number;
+    band: "strong" | "consider" | "weak";
+};
 
 export type JobCopilotResponse = {
     verdict: JobCopilotVerdict;
     matchScore: number;
     verdictText: string;
+    applyRecommendation: JobCopilotApplyRecommendation;
+    careerInsight: string;
+    whyFit: string[];
+    risks: string[];
+    positioningHints: string[];
+    calibrationQuestions: Array<{
+        id: string;
+        question: string;
+        targetArea: string;
+        importance: "critical" | "important" | "supporting";
+        answer?: "yes" | "no" | null;
+    }>;
+    calibrationState: {
+        required: boolean;
+        answeredCount: number;
+        totalQuestions: number;
+        recalibrated: boolean;
+        scoreDelta: number;
+    };
     matchedCapabilities: string[];
     keyGaps: string[];
     topEvidence: JobCopilotTopEvidenceItem[];
@@ -58,6 +92,8 @@ export type JobCopilotResponse = {
         fallbackUsed: boolean;
         totalEvidenceConsidered: number;
     };
+    jobFitScore: JobFitScore;
+    jobFitScoreDebug: JobFitScoreDebug;
 };
 
 export type JobCopilotAnalyzeOutput = {
@@ -91,6 +127,9 @@ export type JobCopilotDownloadInput = {
     matchScore?: number | null;
     verdict?: JobCopilotVerdict | null;
     selectedEvidenceIds?: string[];
+    calibrationAnswers?: JobCopilotCalibrationAnswerInput[];
+    confirmedStrengthAreas?: string[];
+    positioningHints?: string[];
 };
 
 export type JobCopilotDownloadOutput = {

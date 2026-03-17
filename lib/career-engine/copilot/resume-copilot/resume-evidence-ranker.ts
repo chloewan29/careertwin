@@ -87,6 +87,10 @@ function matchRoleFamily(roleFamily: string | null, rawText: string, roleText: s
     return candidates.filter((candidate) => fullText.includes(candidate));
 }
 
+function isPresent<T>(value: T | null): value is T {
+    return value !== null;
+}
+
 function compareRankedEvidence(a: RankedResumeEvidence, b: RankedResumeEvidence): number {
     if (b.score.total_score !== a.score.total_score) {
         return b.score.total_score - a.score.total_score;
@@ -201,7 +205,7 @@ export function rankResumeEvidence(params: {
     );
 
     return params.evidencePool
-        .map((poolEntry) => {
+        .map((poolEntry): RankedResumeEvidence | null => {
             const evidence = poolEntry.evidence;
             const rawText = evidence.raw_text;
             const roleText = evidence.role ?? "";
@@ -237,7 +241,7 @@ export function rankResumeEvidence(params: {
             const strongMatchedCapabilities = matchedCapabilities.filter((name) => strongCapabilitySet.has(name));
             const partialMatchedCapabilities = matchedCapabilities.filter((name) => partialCapabilitySet.has(name));
             const matchedCapabilityDetails = matchedCapabilities
-                .map((name) => {
+                .map((name): NonNullable<RankedResumeEvidence["matchedCapabilitiesDetailed"]>[number] | null => {
                     const fromStrong = capabilityMatch?.matched_strengths.find((entry) => normalizeCapability(entry.canonical_name) === name);
                     const fromPartial = capabilityMatch?.partial_matches.find((entry) => normalizeCapability(entry.canonical_name) === name);
                     const source = fromStrong ?? fromPartial ?? null;
@@ -250,7 +254,7 @@ export function rankResumeEvidence(params: {
                         match_status: source.match_status,
                     };
                 })
-                .filter((item): item is NonNullable<typeof item> => item !== null);
+                .filter(isPresent);
 
             const importanceWeight = (value: "critical" | "important" | "supporting"): number => {
                 if (value === "critical") return 1;
@@ -387,7 +391,7 @@ export function rankResumeEvidence(params: {
                 experienceOrder: experienceOrder.get(evidence.experience_id) ?? Number.MAX_SAFE_INTEGER,
             };
         })
-        .filter((ranked): ranked is RankedResumeEvidence => ranked !== null)
+        .filter(isPresent)
         .filter((ranked) => ranked.score.total_score > 0)
         .sort(compareRankedEvidence);
 }

@@ -1,0 +1,95 @@
+{
+  "mode": "live_deepseek_after_prompt_cleanup",
+  "count": 3,
+  "fetch_calls": 3,
+  "results": [
+    {
+      "id": "job-01-analytics-strategy-manager",
+      "title": "Senior Manager, Analytics Strategy and Automation",
+      "critical_capabilities": [
+        "analytics automation",
+        "cross-functional stakeholder leadership",
+        "strategic planning",
+        "bi / data platform transformation",
+        "commercial analytics",
+        "executive influence"
+      ],
+      "important_capabilities": [
+        "people leadership",
+        "market & opportunity assessment",
+        "team leadership",
+        "market analysis",
+        "revenue optimization"
+      ],
+      "supporting_capabilities": [
+        "data visualization",
+        "business case development"
+      ],
+      "role_family": "analytics leadership",
+      "seniority_level": "senior manager",
+      "transformation_scope": false,
+      "tooling": [
+        "SQL",
+        "Python",
+        "Power BI",
+        "Tableau"
+      ],
+      "llm_enriched": true,
+      "llm_error": null
+    },
+    {
+      "id": "job-04-ops-automation-manager",
+      "title": "Operational Automation Manager",
+      "critical_capabilities": [
+        "analytics automation",
+        "cross-functional stakeholder leadership",
+        "process optimization",
+        "automation delivery"
+      ],
+      "important_capabilities": [
+        "operational performance optimization",
+        "operational efficiency",
+        "performance measurement"
+      ],
+      "supporting_capabilities": [
+        "data analysis"
+      ],
+      "role_family": "operations",
+      "seniority_level": "manager",
+      "transformation_scope": false,
+      "tooling": [
+        "SQL",
+        "Python",
+        "BI tools"
+      ],
+      "llm_enriched": true,
+      "llm_error": null
+    },
+    {
+      "id": "job-07-commercial-growth-director",
+      "title": "Commercial Growth Director",
+      "critical_capabilities": [
+        "cross-functional stakeholder leadership",
+        "strategic planning",
+        "executive influence & business cases",
+        "commercial strategy"
+      ],
+      "important_capabilities": [
+        "market & opportunity assessment",
+        "commercial analytics",
+        "market expansion",
+        "performance tracking",
+        "operational cadence"
+      ],
+      "supporting_capabilities": [
+        "opportunity prioritization"
+      ],
+      "role_family": "commercial leadership",
+      "seniority_level": "director",
+      "transformation_scope": false,
+      "tooling": [],
+      "llm_enriched": true,
+      "llm_error": null
+    }
+  ]
+}

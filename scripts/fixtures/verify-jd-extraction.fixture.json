@@ -1,0 +1,19 @@
+{
+  "version": "verify_jd_extraction_v1",
+  "cases": [
+    {
+      "id": "jd-structured-01",
+      "title_hint": "Senior Analytics Manager",
+      "job_description": "Senior Analytics Manager at Publicis Groupe ANZ\nResponsibilities:\n- Lead campaign and customer analytics programs across media and commercial teams.\n- Translate analysis into executive recommendations and business cases.\nRequired:\n- Must have SQL and stakeholder management expertise.\n- Must have leadership and communication across executive stakeholders.\n- Must have commercial analytics and strategic planning capability.\nPreferred:\n- Power BI\n- Tableau\n- Agency experience",
+      "expected": {
+        "company_required": true,
+        "min_responsibilities": 2,
+        "min_requirements": 3,
+        "min_critical_requirements": 1,
+        "min_required_skills": 1,
+        "min_core_capability_clusters": 1,
+        "min_business_outcomes": 1
+      }
+    }
+  ]
+}

@@ -171,6 +171,10 @@ export type ResumeCopilotServiceOptions = {
     maxBulletsPerExperience?: number;
     minBulletsPerExperience?: number;
     includeDebug?: boolean;
+    calibrationContext?: {
+        confirmed_strength_areas?: string[];
+        positioning_hints?: string[];
+    };
 };
 
 export type ResumeCopilotServiceInput = {

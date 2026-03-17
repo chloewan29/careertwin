@@ -1,0 +1,6 @@
+{
+  "command": "cmd /c /d /s /c npx tsx scripts/verify-typecheck-debt.ts --summaryOut C:\\Users\\chloe\\SandboxProjects\\careertwin\\artifacts\\typescript-debt-summary.json --detailsOut C:\\Users\\chloe\\SandboxProjects\\careertwin\\artifacts\\typescript-debt-details.json --trendOut C:\\Users\\chloe\\SandboxProjects\\careertwin\\artifacts\\typescript-debt-delta.json",
+  "exit_code": 0,
+  "stdout": "{\n  \"step_name\": \"typescript_debt_audit\",\n  \"full_repo_typecheck_passed\": false,\n  \"total_error_count\": 82,\n  \"category_counts\": {\n    \"core_careertwin_path\": 0,\n    \"legacy_or_debt_path\": 82\n  },\n  \"summary_out\": \"C:\\\\Users\\\\chloe\\\\SandboxProjects\\\\careertwin\\\\artifacts\\\\typescript-debt-summary.json\",\n  \"details_out\": \"C:\\\\Users\\\\chloe\\\\SandboxProjects\\\\careertwin\\\\artifacts\\\\typescript-debt-details.json\",\n  \"trend_out\": \"C:\\\\Users\\\\chloe\\\\SandboxProjects\\\\careertwin\\\\artifacts\\\\typescript-debt-delta.json\"\n}\n",
+  "stderr": ""
+}

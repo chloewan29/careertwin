@@ -1,0 +1,113 @@
+{
+  "step_name": "typescript_debt_audit",
+  "full_repo_typecheck_passed": false,
+  "command": "cmd /c /d /s /c npx tsc --noEmit --pretty false",
+  "total_error_count": 82,
+  "category_counts": {
+    "core_careertwin_path": 0,
+    "legacy_or_debt_path": 82
+  },
+  "top_error_codes": [
+    {
+      "code": "TS2307",
+      "count": 32
+    },
+    {
+      "code": "TS2339",
+      "count": 15
+    },
+    {
+      "code": "TS7006",
+      "count": 14
+    },
+    {
+      "code": "TS2345",
+      "count": 7
+    },
+    {
+      "code": "TS2352",
+      "count": 5
+    },
+    {
+      "code": "TS2322",
+      "count": 5
+    },
+    {
+      "code": "TS2769",
+      "count": 2
+    },
+    {
+      "code": "TS18047",
+      "count": 1
+    },
+    {
+      "code": "TS2677",
+      "count": 1
+    }
+  ],
+  "top_files": [
+    {
+      "file": "scripts/debug-resume-tailoring-e2e.ts",
+      "count": 14,
+      "category": "legacy_or_debt_path"
+    },
+    {
+      "file": "scripts/rematerialize-signal-capability-pipeline.ts",
+      "count": 8,
+      "category": "legacy_or_debt_path"
+    },
+    {
+      "file": "tests/test-sim.ts",
+      "count": 7,
+      "category": "legacy_or_debt_path"
+    },
+    {
+      "file": "tests/test-rewrite.ts",
+      "count": 6,
+      "category": "legacy_or_debt_path"
+    },
+    {
+      "file": "tests/test-sim-json.ts",
+      "count": 6,
+      "category": "legacy_or_debt_path"
+    },
+    {
+      "file": "tests/test-sim2.ts",
+      "count": 6,
+      "category": "legacy_or_debt_path"
+    },
+    {
+      "file": "lib/career-engine/profile/resume-rewriter.ts",
+      "count": 5,
+      "category": "legacy_or_debt_path"
+    },
+    {
+      "file": "tests/test-matcher2.ts",
+      "count": 4,
+      "category": "legacy_or_debt_path"
+    },
+    {
+      "file": "lib/career-engine/strategy/career-simulator.ts",
+      "count": 3,
+      "category": "legacy_or_debt_path"
+    },
+    {
+      "file": "lib/career-engine/strategy/career-strategy.ts",
+      "count": 3,
+      "category": "legacy_or_debt_path"
+    },
+    {
+      "file": "lib/career-engine/strategy/role-recommender.ts",
+      "count": 3,
+      "category": "legacy_or_debt_path"
+    },
+    {
+      "file": "tests/test-matcher.ts",
+      "count": 3,
+      "category": "legacy_or_debt_path"
+    }
+  ],
+  "recommended_smallest_safe_cleanup_order": [
+    "3) Quarantine or repair legacy/debt TypeScript paths (legacy tests, debug scripts, strategy modules) with minimal-scope changes, without touching canonical runtime behavior."
+  ]
+}

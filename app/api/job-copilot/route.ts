@@ -349,11 +349,17 @@ export async function POST(request: NextRequest) {
             .select("skills(name)")
             .eq("user_id", profile.user_id);
 
-        type UserSkillRow = { skills: { name: string | null } | null };
-        const dbSkills: string[] = userSkills
-            ? (userSkills as UserSkillRow[])
-                .map((us) => us.skills?.name)
-                .filter((name): name is string => Boolean(name))
+        const dbSkills: string[] = Array.isArray(userSkills)
+            ? userSkills.flatMap((row) => {
+                const relation = (row as { skills?: unknown }).skills;
+                if (Array.isArray(relation)) {
+                    return relation
+                        .map((item) => (item as { name?: unknown }).name)
+                        .filter((name): name is string => typeof name === "string" && name.trim().length > 0);
+                }
+                const name = (relation as { name?: unknown } | null | undefined)?.name;
+                return typeof name === "string" && name.trim().length > 0 ? [name] : [];
+            })
             : [];
 
         const { data: latestResume } = await supabase

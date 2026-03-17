@@ -18,7 +18,9 @@
     "debug:capability-cross-candidate-eval": "tsx scripts/debug-capability-cross-candidate-eval.ts",
     "debug:resume-tailoring-e2e": "tsx scripts/debug-resume-tailoring-e2e.ts",
     "debug:replay-match-audit": "tsx scripts/replay-match-audit.ts",
-    "debug:human-alignment-benchmark": "tsx scripts/human-alignment-benchmark.ts"
+    "debug:human-alignment-benchmark": "tsx scripts/human-alignment-benchmark.ts",
+    "verify:domain-ontology": "tsx scripts/verify-domain-ontology.ts",
+    "verify": "tsx scripts/verify.ts"
   },
   "dependencies": {
     "@google/genai": "^1.44.0",

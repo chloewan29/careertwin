@@ -1,4 +1,4 @@
-import { extractSkills } from "./skill-extractor";
+import { extractSkills } from "../parsing/skill-extractor";
 
 export interface MatchResult {
     score: number;

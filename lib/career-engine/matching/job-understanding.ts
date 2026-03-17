@@ -1,10 +1,13 @@
-import { GoogleGenAI } from "@google/genai";
 import { buildJobSignalsFromRawJd } from "@/lib/career-engine/job-copilot/backend/job-signals-from-raw-jd";
 import {
     extractJobCapabilityProfileV1,
     type ExtractedJobCapability,
     type JobCapabilityImportance,
 } from "@/lib/career-engine/matching/job-capability-extractor";
+import {
+    getLlmJobSignalExtraction,
+    type LlmJobSignalExtraction,
+} from "@/lib/career-engine/matching/llm-job-signal-extractor";
 import { parseJobDescription, type ParsedJobDescription } from "@/lib/career-engine/parsing/jd-parser";
 
 type UnderstandingSource = "deterministic" | "llm" | "hybrid";
@@ -75,6 +78,7 @@ export type JobUnderstandingDiagnostics = {
     mode: "deterministic_only" | "llm_augmented" | "llm_fallback";
     llm_attempted: boolean;
     llm_available: boolean;
+    llm_enriched: boolean;
     llm_error: string | null;
     scaffold_summary: {
         target_title: string | null;
@@ -198,6 +202,10 @@ function uniqueStrings(values: Array<string | null | undefined>): string[] {
     ));
 }
 
+function isPresent<T>(value: T | null): value is T {
+    return value !== null;
+}
+
 function splitUnits(text: string): string[] {
     return text
         .split(/\r?\n|(?<=[.!?])\s+/)
@@ -217,7 +225,7 @@ function groupCapabilities(capabilities: ExtractedJobCapability[]): JobCapabilit
         .map((group) => {
             const matches = capabilities.filter((capability) => group.capability_names.includes(capability.canonical_name));
             if (matches.length === 0) return null;
-            const importance = matches.some((item) => item.importance === "critical")
+            const importance: JobCapabilityImportance = matches.some((item) => item.importance === "critical")
                 ? "critical"
                 : matches.some((item) => item.importance === "important")
                     ? "important"
@@ -232,7 +240,7 @@ function groupCapabilities(capabilities: ExtractedJobCapability[]): JobCapabilit
                 source: "deterministic" as const,
             };
         })
-        .filter((cluster): cluster is JobCapabilityClusterUnderstanding => Boolean(cluster));
+        .filter(isPresent);
 
     const leftovers = capabilities
         .filter((capability) => !clusters.some((cluster) => cluster.capabilities.includes(capability.display_name)))
@@ -287,7 +295,7 @@ function buildBusinessOutcomes(context: UnderstandingContext): JobOutcomeUnderst
                 source: "deterministic" as const,
             };
         })
-        .filter((item): item is JobOutcomeUnderstanding => Boolean(item))
+        .filter(isPresent)
         .slice(0, 5);
 }
 
@@ -320,13 +328,13 @@ function buildSecondaryMethods(context: UnderstandingContext): JobMethodUndersta
                 source: "deterministic" as const,
             };
         })
-        .filter((item): item is JobMethodUnderstanding => Boolean(item));
+        .filter(isPresent);
 
     const preferredSkillItems = context.parsed.preferred_skills
         .slice(0, 3)
         .map((skill) => ({
-            label: skill.display_name,
-            evidence: [skill.display_name],
+            label: skill.normalized,
+            evidence: [skill.normalized],
             confidence: 0.42,
             source: "deterministic" as const,
         }));
@@ -346,7 +354,7 @@ function buildDomainModifiers(context: UnderstandingContext): JobModifierUnderst
                 source: "deterministic" as const,
             };
         })
-        .filter((item): item is JobModifierUnderstanding => Boolean(item));
+        .filter(isPresent);
 
     const signalDomains = context.jobSignals.domains
         .slice(0, 3)
@@ -448,9 +456,9 @@ function buildBlockerLikeRequirements(context: UnderstandingContext): JobRequire
 function buildStretchLikeRequirements(context: UnderstandingContext): JobRequirementUnderstanding[] {
     const units = context.units.filter((unit) => /\b(preferred|exposure|familiarity|nice to have|bonus|where appropriate)\b/i.test(unit));
     const preferredSkills = context.parsed.preferred_skills.map((skill) => ({
-        label: skill.display_name,
+        label: skill.normalized,
         reason: "Parsed as preferred or nice-to-have skill",
-        evidence: [skill.display_name],
+        evidence: [skill.normalized],
         confidence: 0.44,
         source: "deterministic" as const,
     }));
@@ -494,7 +502,8 @@ function buildDeterministicUnderstanding(params: {
         extraction_diagnostics: {
             mode: "deterministic_only",
             llm_attempted: false,
-            llm_available: Boolean(process.env.GEMINI_API_KEY),
+            llm_available: Boolean(process.env.DEEPSEEK_API_KEY),
+            llm_enriched: false,
             llm_error: null,
             scaffold_summary: {
                 target_title: title,
@@ -507,170 +516,139 @@ function buildDeterministicUnderstanding(params: {
     };
 }
 
-function normalizeMissionCandidate(value: unknown, fallback: JobMissionUnderstanding): JobMissionUnderstanding {
-    if (!value || typeof value !== "object") return fallback;
-    const candidate = value as Record<string, unknown>;
-    return {
-        summary: typeof candidate.summary === "string" && candidate.summary.trim() ? candidate.summary.trim() : fallback.summary,
-        evidence: uniqueStrings(Array.isArray(candidate.evidence) ? candidate.evidence.map((item) => typeof item === "string" ? item : "") : fallback.evidence).slice(0, 4),
-        confidence: typeof candidate.confidence === "number" ? round(clamp(candidate.confidence)) : fallback.confidence,
-        source: "hybrid",
-    };
+function normalizeCapabilityLabel(value: string): string {
+    return value.toLowerCase().replace(/\s+/g, " ").trim();
 }
 
-function normalizeListItems<T extends { label: string; evidence: string[]; confidence: number; source: UnderstandingSource }>(
-    value: unknown,
-    fallback: T[],
-    enrich: (candidate: Record<string, unknown>, base: T | null) => T,
-): T[] {
-    if (!Array.isArray(value)) return fallback;
-    const items = value
-        .map((entry) => {
-            if (!entry || typeof entry !== "object") return null;
-            const candidate = entry as Record<string, unknown>;
-            const label = typeof candidate.label === "string" ? candidate.label.trim() : "";
-            if (!label) return null;
-            const base = fallback.find((item) => normalizeText(item.label) === normalizeText(label)) ?? null;
-            return enrich(candidate, base);
-        })
-        .filter((item): item is T => Boolean(item));
-    return items.length > 0 ? items : fallback;
+function importanceRank(value: JobCapabilityImportance): number {
+    if (value === "critical") return 3;
+    if (value === "important") return 2;
+    return 1;
 }
 
-function mergeUnderstanding(
+function toDisplayLabel(value: string): string {
+    return value
+        .split(" ")
+        .filter(Boolean)
+        .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+        .join(" ");
+}
+
+function llmCapabilityEntries(signals: LlmJobSignalExtraction): Array<{ label: string; importance: JobCapabilityImportance }> {
+    return [
+        ...signals.critical_capabilities.map((label) => ({ label, importance: "critical" as const })),
+        ...signals.important_capabilities.map((label) => ({ label, importance: "important" as const })),
+        ...signals.supporting_capabilities.map((label) => ({ label, importance: "supporting" as const })),
+    ];
+}
+
+function mergeUnderstandingWithLlmSignals(
     deterministic: StructuredJobUnderstanding,
-    llmValue: unknown,
+    signals: LlmJobSignalExtraction,
 ): StructuredJobUnderstanding {
-    if (!llmValue || typeof llmValue !== "object") return deterministic;
-    const candidate = llmValue as Record<string, unknown>;
+    const mergedClusters = deterministic.core_capability_clusters.map((cluster) => ({
+        ...cluster,
+        capabilities: [...cluster.capabilities],
+        evidence: [...cluster.evidence],
+    }));
 
-    return {
-        core_mission: normalizeMissionCandidate(candidate.core_mission, deterministic.core_mission),
-        core_capability_clusters: normalizeListItems(candidate.core_capability_clusters, deterministic.core_capability_clusters, (item, base) => ({
-            label: typeof item.label === "string" ? item.label.trim() : (base?.label ?? "Capability Cluster"),
-            capabilities: uniqueStrings(Array.isArray(item.capabilities) ? item.capabilities.map((value) => typeof value === "string" ? value : "") : (base?.capabilities ?? [])).slice(0, 6),
-            importance: item.importance === "critical" || item.importance === "important" || item.importance === "supporting"
-                ? item.importance
-                : (base?.importance ?? "important"),
-            evidence: uniqueStrings(Array.isArray(item.evidence) ? item.evidence.map((value) => typeof value === "string" ? value : "") : (base?.evidence ?? [])).slice(0, 4),
-            confidence: typeof item.confidence === "number" ? round(clamp(item.confidence)) : (base?.confidence ?? 0.55),
-            source: "hybrid",
-        })),
-        business_outcomes: normalizeListItems(candidate.business_outcomes, deterministic.business_outcomes, (item, base) => ({
-            label: typeof item.label === "string" ? item.label.trim() : (base?.label ?? "Business Outcome"),
-            evidence: uniqueStrings(Array.isArray(item.evidence) ? item.evidence.map((value) => typeof value === "string" ? value : "") : (base?.evidence ?? [])).slice(0, 4),
-            confidence: typeof item.confidence === "number" ? round(clamp(item.confidence)) : (base?.confidence ?? 0.55),
-            source: "hybrid",
-        })),
-        collaboration_demands: normalizeListItems(candidate.collaboration_demands, deterministic.collaboration_demands, (item, base) => ({
-            label: typeof item.label === "string" ? item.label.trim() : (base?.label ?? "Collaboration Demand"),
-            counterparts: uniqueStrings(Array.isArray(item.counterparts) ? item.counterparts.map((value) => typeof value === "string" ? value : "") : (base?.counterparts ?? [])).slice(0, 8),
-            evidence: uniqueStrings(Array.isArray(item.evidence) ? item.evidence.map((value) => typeof value === "string" ? value : "") : (base?.evidence ?? [])).slice(0, 4),
-            confidence: typeof item.confidence === "number" ? round(clamp(item.confidence)) : (base?.confidence ?? 0.55),
-            source: "hybrid",
-        })),
-        secondary_methods: normalizeListItems(candidate.secondary_methods, deterministic.secondary_methods, (item, base) => ({
-            label: typeof item.label === "string" ? item.label.trim() : (base?.label ?? "Secondary Method"),
-            evidence: uniqueStrings(Array.isArray(item.evidence) ? item.evidence.map((value) => typeof value === "string" ? value : "") : (base?.evidence ?? [])).slice(0, 4),
-            confidence: typeof item.confidence === "number" ? round(clamp(item.confidence)) : (base?.confidence ?? 0.45),
-            source: "hybrid",
-        })),
-        domain_modifiers: normalizeListItems(candidate.domain_modifiers, deterministic.domain_modifiers, (item, base) => ({
-            label: typeof item.label === "string" ? item.label.trim() : (base?.label ?? "Domain Modifier"),
-            evidence: uniqueStrings(Array.isArray(item.evidence) ? item.evidence.map((value) => typeof value === "string" ? value : "") : (base?.evidence ?? [])).slice(0, 4),
-            confidence: typeof item.confidence === "number" ? round(clamp(item.confidence)) : (base?.confidence ?? 0.45),
-            source: "hybrid",
-        })),
-        seniority_shape: {
-            level: typeof candidate.seniority_shape === "object" && candidate.seniority_shape && typeof (candidate.seniority_shape as Record<string, unknown>).level === "string"
-                ? ((candidate.seniority_shape as Record<string, unknown>).level as string)
-                : deterministic.seniority_shape.level,
-            leadership_scope: typeof candidate.seniority_shape === "object" && candidate.seniority_shape && typeof (candidate.seniority_shape as Record<string, unknown>).leadership_scope === "string"
-                ? ((candidate.seniority_shape as Record<string, unknown>).leadership_scope as string)
-                : deterministic.seniority_shape.leadership_scope,
-            autonomy: typeof candidate.seniority_shape === "object" && candidate.seniority_shape && typeof (candidate.seniority_shape as Record<string, unknown>).autonomy === "string"
-                ? ((candidate.seniority_shape as Record<string, unknown>).autonomy as string)
-                : deterministic.seniority_shape.autonomy,
-            evidence: uniqueStrings(
-                typeof candidate.seniority_shape === "object" && candidate.seniority_shape && Array.isArray((candidate.seniority_shape as Record<string, unknown>).evidence)
-                    ? ((candidate.seniority_shape as Record<string, unknown>).evidence as unknown[]).map((value) => typeof value === "string" ? value : "")
-                    : deterministic.seniority_shape.evidence,
-            ).slice(0, 4),
-            confidence: typeof candidate.seniority_shape === "object" && candidate.seniority_shape && typeof (candidate.seniority_shape as Record<string, unknown>).confidence === "number"
-                ? round(clamp((candidate.seniority_shape as Record<string, unknown>).confidence as number))
-                : deterministic.seniority_shape.confidence,
-            source: "hybrid",
-        },
-        blocker_like_requirements: normalizeListItems(candidate.blocker_like_requirements, deterministic.blocker_like_requirements, (item, base) => ({
-            label: typeof item.label === "string" ? item.label.trim() : (base?.label ?? "Blocker-Like Requirement"),
-            reason: typeof item.reason === "string" ? item.reason.trim() : (base?.reason ?? "Potentially gating requirement"),
-            evidence: uniqueStrings(Array.isArray(item.evidence) ? item.evidence.map((value) => typeof value === "string" ? value : "") : (base?.evidence ?? [])).slice(0, 4),
-            confidence: typeof item.confidence === "number" ? round(clamp(item.confidence)) : (base?.confidence ?? 0.6),
-            source: "hybrid",
-        })),
-        stretch_like_requirements: normalizeListItems(candidate.stretch_like_requirements, deterministic.stretch_like_requirements, (item, base) => ({
-            label: typeof item.label === "string" ? item.label.trim() : (base?.label ?? "Stretch-Like Requirement"),
-            reason: typeof item.reason === "string" ? item.reason.trim() : (base?.reason ?? "Potentially narrative-sensitive or stretch requirement"),
-            evidence: uniqueStrings(Array.isArray(item.evidence) ? item.evidence.map((value) => typeof value === "string" ? value : "") : (base?.evidence ?? [])).slice(0, 4),
-            confidence: typeof item.confidence === "number" ? round(clamp(item.confidence)) : (base?.confidence ?? 0.48),
-            source: "hybrid",
-        })),
-        extraction_diagnostics: deterministic.extraction_diagnostics,
-    };
-}
-
-async function augmentUnderstandingWithLlm(params: {
-    rawJobText: string;
-    deterministicUnderstanding: StructuredJobUnderstanding;
-}): Promise<StructuredJobUnderstanding> {
-    const apiKey = process.env.GEMINI_API_KEY;
-    if (!apiKey) {
-        return params.deterministicUnderstanding;
+    const capabilityIndex = new Map<string, number>();
+    for (let i = 0; i < mergedClusters.length; i += 1) {
+        for (const capability of mergedClusters[i].capabilities) {
+            capabilityIndex.set(normalizeCapabilityLabel(capability), i);
+        }
     }
 
-    const prompt = `
-You are analyzing a job description. Convert the role into a structured job understanding object.
+    for (const entry of llmCapabilityEntries(signals)) {
+        const normalized = normalizeCapabilityLabel(entry.label);
+        if (!normalized) continue;
+        const existingIndex = capabilityIndex.get(normalized);
+        if (existingIndex !== undefined) {
+            const existing = mergedClusters[existingIndex];
+            if (importanceRank(entry.importance) > importanceRank(existing.importance)) {
+                existing.importance = entry.importance;
+            }
+            existing.source = "hybrid";
+            existing.confidence = round(clamp(Math.max(existing.confidence, 0.58)));
+            existing.evidence = uniqueStrings([...existing.evidence, `LLM signal: ${entry.label}`]).slice(0, 4);
+            continue;
+        }
 
-Use the deterministic scaffold as your anchor. Refine semantics, cluster related requirements, and clarify mission, outcomes, collaboration, blockers, and stretch items. Do not score the role. Do not infer candidate fit. Do not invent unsupported requirements.
+        const displayLabel = toDisplayLabel(normalized);
+        mergedClusters.push({
+            label: displayLabel,
+            capabilities: [displayLabel],
+            importance: entry.importance,
+            evidence: [`LLM signal: ${entry.label}`],
+            confidence: 0.48,
+            source: "hybrid",
+        });
+        capabilityIndex.set(normalized, mergedClusters.length - 1);
+    }
 
-Return JSON only with these keys:
-- core_mission: { summary, evidence, confidence }
-- core_capability_clusters: [{ label, capabilities, importance, evidence, confidence }]
-- business_outcomes: [{ label, evidence, confidence }]
-- collaboration_demands: [{ label, counterparts, evidence, confidence }]
-- secondary_methods: [{ label, evidence, confidence }]
-- domain_modifiers: [{ label, evidence, confidence }]
-- seniority_shape: { level, leadership_scope, autonomy, evidence, confidence }
-- blocker_like_requirements: [{ label, reason, evidence, confidence }]
-- stretch_like_requirements: [{ label, reason, evidence, confidence }]
+    const llmMethods = signals.tooling.map((tool) => ({
+        label: tool,
+        evidence: [`LLM signal: ${tool}`],
+        confidence: 0.4,
+        source: "hybrid" as const,
+    }));
+    const llmDomainModifiers = signals.domain_context.map((domain) => ({
+        label: domain,
+        evidence: [`LLM signal: ${domain}`],
+        confidence: 0.4,
+        source: "hybrid" as const,
+    }));
+    const llmRiskBlockers = signals.hiring_risks.map((risk) => ({
+        label: risk,
+        reason: "LLM-identified hiring risk signal",
+        evidence: [`LLM signal: ${risk}`],
+        confidence: 0.4,
+        source: "hybrid" as const,
+    }));
 
-Rules:
-1. Stay faithful to the raw JD text.
-2. Keep evidence snippets short and traceable to the JD.
-3. blocker_like_requirements should be requirements that look gating or explicitly required.
-4. stretch_like_requirements should be preferred, advanced, or narrative-sensitive asks.
-5. Confidence must be between 0 and 1.
+    const seniorityLevel = signals.seniority_level.trim() ? signals.seniority_level.trim() : deterministic.seniority_shape.level;
+    const leadershipScope = signals.ownership_scope.trim() ? signals.ownership_scope.trim() : deterministic.seniority_shape.leadership_scope;
+    const autonomy = signals.delivery_scope.trim() ? signals.delivery_scope.trim() : deterministic.seniority_shape.autonomy;
 
-DETERMINISTIC SCAFFOLD:
-${JSON.stringify(params.deterministicUnderstanding, null, 2)}
-
-RAW JOB DESCRIPTION:
-${params.rawJobText.slice(0, 12000)}
-`;
-
-    const ai = new GoogleGenAI({ apiKey });
-    const response = await ai.models.generateContent({
-        model: "gemini-2.5-flash",
-        contents: prompt,
-        config: {
-            temperature: 0.1,
-            responseMimeType: "application/json",
+    return {
+        ...deterministic,
+        core_capability_clusters: mergedClusters,
+        secondary_methods: uniqueStrings([...deterministic.secondary_methods.map((item) => item.label), ...llmMethods.map((item) => item.label)])
+            .map((label) => llmMethods.find((item) => normalizeText(item.label) === normalizeText(label))
+                ?? deterministic.secondary_methods.find((item) => normalizeText(item.label) === normalizeText(label))
+                ?? {
+                    label,
+                    evidence: [label],
+                    confidence: 0.35,
+                    source: "hybrid" as const,
+                })
+            .slice(0, 6),
+        domain_modifiers: uniqueStrings([...deterministic.domain_modifiers.map((item) => item.label), ...llmDomainModifiers.map((item) => item.label)])
+            .map((label) => llmDomainModifiers.find((item) => normalizeText(item.label) === normalizeText(label))
+                ?? deterministic.domain_modifiers.find((item) => normalizeText(item.label) === normalizeText(label))
+                ?? {
+                    label,
+                    evidence: [label],
+                    confidence: 0.35,
+                    source: "hybrid" as const,
+                })
+            .slice(0, 6),
+        seniority_shape: {
+            ...deterministic.seniority_shape,
+            level: seniorityLevel,
+            leadership_scope: leadershipScope,
+            autonomy,
+            source: "hybrid",
+            evidence: uniqueStrings([
+                ...deterministic.seniority_shape.evidence,
+                signals.seniority_level,
+                signals.ownership_scope,
+                signals.delivery_scope,
+            ]).slice(0, 4),
+            confidence: round(clamp(Math.max(deterministic.seniority_shape.confidence, 0.55))),
         },
-    });
-
-    if (!response.text) return params.deterministicUnderstanding;
-    const parsed = JSON.parse(response.text) as unknown;
-    return mergeUnderstanding(params.deterministicUnderstanding, parsed);
+        blocker_like_requirements: dedupeRequirements([...deterministic.blocker_like_requirements, ...llmRiskBlockers]).slice(0, 6),
+    };
 }
 
 export async function getStructuredJobUnderstanding(params: {
@@ -678,35 +656,38 @@ export async function getStructuredJobUnderstanding(params: {
     jobTitleHint?: string | null;
 }): Promise<StructuredJobUnderstanding> {
     const deterministicUnderstanding = buildDeterministicUnderstanding(params);
-    if (!process.env.GEMINI_API_KEY) {
+    const llmResult = await getLlmJobSignalExtraction({
+        rawJobText: params.rawJobText,
+        jobTitleHint: params.jobTitleHint,
+    });
+
+    if (!llmResult.enriched || !llmResult.signals) {
+        if (llmResult.attempted || llmResult.error) {
+            return {
+                ...deterministicUnderstanding,
+                extraction_diagnostics: {
+                    ...deterministicUnderstanding.extraction_diagnostics,
+                    mode: "llm_fallback",
+                    llm_attempted: llmResult.attempted,
+                    llm_available: llmResult.available,
+                    llm_enriched: false,
+                    llm_error: llmResult.error,
+                },
+            };
+        }
         return deterministicUnderstanding;
     }
 
-    try {
-        const augmented = await augmentUnderstandingWithLlm({
-            rawJobText: params.rawJobText,
-            deterministicUnderstanding,
-        });
-        return {
-            ...augmented,
-            extraction_diagnostics: {
-                ...deterministicUnderstanding.extraction_diagnostics,
-                mode: "llm_augmented",
-                llm_attempted: true,
-                llm_available: true,
-                llm_error: null,
-            },
-        };
-    } catch (error) {
-        return {
-            ...deterministicUnderstanding,
-            extraction_diagnostics: {
-                ...deterministicUnderstanding.extraction_diagnostics,
-                mode: "llm_fallback",
-                llm_attempted: true,
-                llm_available: true,
-                llm_error: error instanceof Error ? error.message : "Unknown LLM error",
-            },
-        };
-    }
+    const mergedUnderstanding = mergeUnderstandingWithLlmSignals(deterministicUnderstanding, llmResult.signals);
+    return {
+        ...mergedUnderstanding,
+        extraction_diagnostics: {
+            ...deterministicUnderstanding.extraction_diagnostics,
+            mode: "llm_augmented",
+            llm_attempted: llmResult.attempted,
+            llm_available: llmResult.available,
+            llm_enriched: true,
+            llm_error: llmResult.error,
+        },
+    };
 }

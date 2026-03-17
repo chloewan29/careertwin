@@ -1,0 +1,6 @@
+{
+  "command": "cmd /c /d /s /c npx tsx scripts/verify-extension-lifecycle.ts --summaryOut C:\\Users\\chloe\\SandboxProjects\\careertwin\\artifacts\\extension-lifecycle-summary.json --detailsOut C:\\Users\\chloe\\SandboxProjects\\careertwin\\artifacts\\extension-lifecycle-details.json",
+  "exit_code": 0,
+  "stdout": "{\n  \"step_name\": \"extension_lifecycle\",\n  \"total_tests\": 9,\n  \"passed_tests\": 9,\n  \"failed_tests\": 0,\n  \"terminal_state_breakdown\": {\n    \"ok\": 2,\n    \"ready\": 2,\n    \"error\": 5\n  },\n  \"static_checks\": {\n    \"stale_response_guard_present\": true,\n    \"pending_refresh_guard_present\": true,\n    \"explicit_terminal_state_branches_present\": true,\n    \"preview_not_ready_terminalized\": true,\n    \"bounded_retry_schedule_present\": true,\n    \"collapsed_extraction_retry_present\": true\n  },\n  \"timeout_codes\": {\n    \"analysis_timeout_code\": \"sidepanel_request_timeout\",\n    \"download_timeout_code\": \"sidepanel_download_timeout\"\n  },\n  \"longest_state_trace_length\": 5,\n  \"founder_readable_terminalized_case_rate\": 1,\n  \"thresholds\": {\n    \"required_pass_rate\": 1\n  }\n}\n",
+  "stderr": ""
+}

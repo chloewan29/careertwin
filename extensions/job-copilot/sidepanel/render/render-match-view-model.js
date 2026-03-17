@@ -211,6 +211,23 @@
     const verdict = data && typeof data.verdict === "string" ? data.verdict : null;
     const matchScore = toScoreNumber(data && data.matchScore);
     const fallbackScore = toScoreNumber(analysis && analysis.match_score);
+    const calibrationAnswers = asArray(analysis && analysis.calibration && analysis.calibration.answers)
+      .map((item) => {
+        if (!item || typeof item !== "object") return null;
+        const questionId = toString(item.question_id || item.questionId);
+        const answer = toString(item.answer).toLowerCase();
+        if (!questionId || (answer !== "yes" && answer !== "no")) return null;
+        return { questionId, answer };
+      })
+      .filter(Boolean);
+    const confirmedStrengthAreas = asArray(analysis && analysis.calibration && analysis.calibration.confirmed_strength_areas)
+      .filter((item) => typeof item === "string")
+      .map((item) => toString(item))
+      .filter(Boolean);
+    const positioningHints = asArray(analysis && analysis.positioning_hints)
+      .filter((item) => typeof item === "string")
+      .map((item) => toString(item))
+      .filter(Boolean);
 
     return {
       jobId: job.jobId,
@@ -224,6 +241,9 @@
       matchScore: typeof matchScore === "number" ? matchScore : fallbackScore,
       verdict: verdict || undefined,
       selectedEvidenceIds,
+      calibrationAnswers,
+      confirmedStrengthAreas,
+      positioningHints,
     };
   }
 
@@ -267,59 +287,241 @@
     return typeof explanation.score === "number" || hasText(explanation.score);
   }
 
+  function toApplyRecommendation(data, analysis) {
+    const fromAnalysis = analysis && analysis.apply_recommendation ? analysis.apply_recommendation : null;
+    const fromData = data && data.applyRecommendation ? data.applyRecommendation : null;
+    const source = fromAnalysis || fromData || {};
+    const score = toScoreNumber(source.score);
+    const fallback = toScoreNumber(data && data.matchScore) || toScoreNumber(analysis && analysis.match_score) || null;
+    const finalScore = typeof score === "number"
+      ? Math.round(score)
+      : (typeof fallback === "number" ? Math.round(fallback) : null);
+    const band = toString(source.band).toLowerCase();
+    if (band === "strong" || band === "consider" || band === "weak") {
+      return {
+        score: finalScore,
+        band,
+      };
+    }
+    if (typeof finalScore === "number" && finalScore >= 80) return { score: finalScore, band: "strong" };
+    if (typeof finalScore === "number" && finalScore >= 60) return { score: finalScore, band: "consider" };
+    return { score: finalScore, band: "weak" };
+  }
+
+  function toApplyBandLabel(band) {
+    if (band === "strong") return "Strong";
+    if (band === "consider") return "Consider";
+    return "Weak";
+  }
+
+  function normalizeJobFitScore(data) {
+    const raw = data && data.jobFitScore && typeof data.jobFitScore === "object"
+      ? data.jobFitScore
+      : null;
+    if (!raw) return null;
+
+    const totalScore = toScoreNumber(raw.total_score);
+    const bucket = toString(raw.bucket);
+    const breakdown = raw.breakdown && typeof raw.breakdown === "object" ? raw.breakdown : {};
+    const specializationFit = toScoreNumber(breakdown.specialization_fit);
+    const capabilityMatch = toScoreNumber(breakdown.capability_match);
+    const evidenceStrength = toScoreNumber(breakdown.evidence_strength);
+    if (typeof totalScore !== "number" || !bucket) return null;
+
+    return {
+      bucket,
+      totalScore: Math.round(totalScore),
+      specializationFit: typeof specializationFit === "number" ? Math.round(specializationFit) : null,
+      capabilityMatch: typeof capabilityMatch === "number" ? Math.round(capabilityMatch) : null,
+      evidenceStrength: typeof evidenceStrength === "number" ? Math.round(evidenceStrength) : null,
+    };
+  }
+
+  function normalizeWhyFitItems(rawItems, fallbackItems) {
+    const textItems = asArray(rawItems)
+      .filter((item) => typeof item === "string")
+      .map((item) => toString(item))
+      .filter(Boolean)
+      .slice(0, 3);
+    if (textItems.length > 0) {
+      return textItems.map((item, index) => ({
+        label: `Career fit ${index + 1}`,
+        explanation: truncateText(item, 160),
+      }));
+    }
+    return fallbackItems;
+  }
+
+  function normalizeRiskItems(rawItems, fallbackItems) {
+    const textItems = asArray(rawItems)
+      .filter((item) => typeof item === "string")
+      .map((item) => toString(item))
+      .filter(Boolean)
+      .slice(0, 3);
+    if (textItems.length > 0) {
+      return textItems.map((item, index) => ({
+        label: `Risk ${index + 1}`,
+        explanation: truncateText(item, 160),
+      }));
+    }
+    return fallbackItems;
+  }
+
+  function normalizeQuickChecks(data, analysis) {
+    const fromAnalysis = analysis && analysis.calibration && Array.isArray(analysis.calibration.questions)
+      ? analysis.calibration.questions
+      : [];
+    const fromData = data && Array.isArray(data.calibrationQuestions)
+      ? data.calibrationQuestions
+      : [];
+    const source = fromAnalysis.length > 0 ? fromAnalysis : fromData;
+
+    const items = source
+      .map((item) => {
+        if (!item || typeof item !== "object") return null;
+        const id = toString(item.id);
+        const question = toString(item.question);
+        if (!id || !question) return null;
+        const answerRaw = toString(item.answer).toLowerCase();
+        const answer = answerRaw === "yes" || answerRaw === "no" ? answerRaw : null;
+        return {
+          id,
+          question,
+          answer,
+        };
+      })
+      .filter(Boolean)
+      .slice(0, 3);
+
+    const calibration = analysis && analysis.calibration ? analysis.calibration : {};
+    const answeredCount = typeof calibration.answered_count === "number"
+      ? calibration.answered_count
+      : items.filter((item) => item.answer === "yes" || item.answer === "no").length;
+    const totalQuestions = typeof calibration.total_questions === "number"
+      ? calibration.total_questions
+      : items.length;
+    const scoreDelta = typeof calibration.score_delta === "number"
+      ? calibration.score_delta
+      : 0;
+    const deltaText = scoreDelta === 0
+      ? ""
+      : scoreDelta > 0
+        ? `Score adjusted +${Math.round(scoreDelta)}`
+        : `Score adjusted ${Math.round(scoreDelta)}`;
+    const statusText = totalQuestions > 0
+      ? `${answeredCount}/${totalQuestions} answered. ${deltaText}`.trim()
+      : "";
+
+    return {
+      sectionTitle: "A few quick checks",
+      items,
+      statusText,
+    };
+  }
+
+  function normalizePositioningHints(data, analysis) {
+    const fromAnalysis = asArray(analysis && analysis.positioning_hints)
+      .filter((item) => typeof item === "string")
+      .map((item) => toString(item))
+      .filter(Boolean);
+    const fromData = asArray(data && data.positioningHints)
+      .filter((item) => typeof item === "string")
+      .map((item) => toString(item))
+      .filter(Boolean);
+    const items = (fromAnalysis.length > 0 ? fromAnalysis : fromData).slice(0, 3);
+    return {
+      sectionTitle: "How to position yourself",
+      items,
+    };
+  }
+
   function toViewModelFromEngine(data, analysis, explanation) {
+    const recommendation = toApplyRecommendation(data, analysis);
     const score = toScoreNumber(explanation.score);
+    const effectiveScore = typeof recommendation.score === "number"
+      ? recommendation.score
+      : (typeof score === "number" ? Math.round(score) : null);
+    const jobFitScore = normalizeJobFitScore(data);
     return {
       matchHeader: {
-        sectionTitle: "Match header",
-        verdictLabel: toString(explanation.verdict_label) || toVerdictLabel({
-          score,
-          fitLevel: toString(analysis.fit_level),
-        }),
-        score: typeof score === "number" ? Math.round(score) : null,
+        sectionTitle: "Apply Recommendation",
+        verdictLabel: toApplyBandLabel(recommendation.band),
+        score: effectiveScore,
         summary: truncateText(toString(explanation.summary), 190),
       },
+      jobFitScore,
+      careerInsight: {
+        sectionTitle: "Career Insight",
+        text: toString(analysis.career_insight || data.careerInsight),
+      },
       whyFit: {
-        sectionTitle: "Why this role fits you",
-        items: normalizeEngineItems(explanation.strengths, 3),
+        sectionTitle: "Why this role fits your career",
+        items: normalizeWhyFitItems(
+          analysis.why_fit || data.whyFit,
+          normalizeEngineItems(explanation.strengths, 3),
+        ),
       },
       potentialRisks: {
-        sectionTitle: "Potential risks",
-        items: normalizeEngineItems(explanation.risks, 2),
+        sectionTitle: "Potential career risk",
+        items: normalizeRiskItems(
+          analysis.potential_risks || data.risks,
+          normalizeEngineItems(explanation.risks, 2),
+        ),
       },
+      quickChecks: normalizeQuickChecks(data, analysis),
+      positioning: normalizePositioningHints(data, analysis),
       applyCta: buildApplyCta(data, analysis),
     };
   }
 
   function toMatchPanelViewModel(data) {
     const analysis = data && data.job_analysis ? data.job_analysis : {};
+    const recommendation = toApplyRecommendation(data, analysis);
     const matchExplanation = analysis && analysis.match_explanation ? analysis.match_explanation : null;
     if (hasEngineExplanation(matchExplanation)) {
       return toViewModelFromEngine(data, analysis, matchExplanation);
     }
 
-    const score = toScoreNumber(analysis.match_score);
+    const score = typeof recommendation.score === "number"
+      ? recommendation.score
+      : toScoreNumber(analysis.match_score);
     const capabilities = normalizeCapabilityRows(analysis.top_matched_capabilities);
-    const verdictLabel = toVerdictLabel({
-      score,
-      fitLevel: toString(analysis.fit_level),
-    });
+    const verdictLabel = toApplyBandLabel(recommendation.band) || toVerdictLabel({
+          score,
+          fitLevel: toString(analysis.fit_level),
+        });
+    const fallbackWhyFit = buildWhyFitItems(analysis.top_matched_capabilities, analysis.evidence_highlights);
+    const fallbackRisks = buildRiskItems(analysis);
+    const jobFitScore = normalizeJobFitScore(data);
 
     return {
       matchHeader: {
-        sectionTitle: "Match header",
+        sectionTitle: "Apply Recommendation",
         verdictLabel,
         score: typeof score === "number" ? Math.round(score) : null,
         summary: buildSummarySentence(capabilities),
       },
+      jobFitScore,
+      careerInsight: {
+        sectionTitle: "Career Insight",
+        text: toString(analysis.career_insight || data.careerInsight),
+      },
       whyFit: {
-        sectionTitle: "Why this role fits you",
-        items: buildWhyFitItems(analysis.top_matched_capabilities, analysis.evidence_highlights),
+        sectionTitle: "Why this role fits your career",
+        items: normalizeWhyFitItems(
+          analysis.why_fit || data.whyFit,
+          fallbackWhyFit,
+        ),
       },
       potentialRisks: {
-        sectionTitle: "Potential risks",
-        items: buildRiskItems(analysis),
+        sectionTitle: "Potential career risk",
+        items: normalizeRiskItems(
+          analysis.potential_risks || data.risks,
+          fallbackRisks,
+        ),
       },
+      quickChecks: normalizeQuickChecks(data, analysis),
+      positioning: normalizePositioningHints(data, analysis),
       applyCta: buildApplyCta(data, analysis),
     };
   }

@@ -210,6 +210,100 @@
     };
   }
 
+  async function recalculateJobPayload(params) {
+    const payload = params && params.payload ? params.payload : null;
+    const calibrationAnswers = params && Array.isArray(params.calibrationAnswers)
+      ? params.calibrationAnswers
+      : [];
+    if (!payload) {
+      return {
+        ok: false,
+        error: "Missing job payload for recalibration.",
+        code: "missing_recalibration_payload",
+      };
+    }
+
+    const settings = await getSettings();
+    const profileId = settings.profileId ? String(settings.profileId).trim() : "";
+    const apiBaseUrlResult = normalizeApiBaseUrl(settings.apiBaseUrl || DEFAULT_API_BASE_URL);
+    const apiBaseUrl = apiBaseUrlResult.baseUrl;
+    if (apiBaseUrlResult.usedFallback) {
+      maybeRepairStoredApiBaseUrl(apiBaseUrlResult);
+    }
+
+    if (!profileId) {
+      return {
+        ok: false,
+        error: "Profile ID missing. Configure it in extension settings.",
+        code: "missing_profile_id",
+      };
+    }
+
+    const backendSource = mapPlatformForBackend(payload.platform);
+    debugLog("recalibrate_request", {
+      profileId,
+      sourcePlatform: backendSource,
+      jobTitle: payload.job_title,
+      company: payload.company_name || null,
+      calibrationAnswerCount: calibrationAnswers.length,
+      calibrationQuestionIds: calibrationAnswers.map((item) => item.questionId || item.question_id).filter(Boolean),
+    });
+    let response;
+    try {
+      response = await sendJson(`${apiBaseUrl}/api/job-copilot/extension/recalibrate`, {
+        profileId,
+        extractedJob: {
+          sourcePlatform: backendSource,
+          jobUrl: payload.url,
+          jobTitle: payload.job_title,
+          company: payload.company_name || null,
+          location: payload.location || null,
+          jobDescription: payload.job_description_text,
+        },
+      calibrationAnswers,
+      topEvidenceLimit: DEFAULT_TOP_EVIDENCE_LIMIT,
+      });
+    } catch (error) {
+      const timeout = error && (error.name === "AbortError" || error.message === "The operation was aborted.");
+      debugLog("recalibrate_network_error", {
+        timeout: Boolean(timeout),
+        message: error instanceof Error ? error.message : String(error || "recalibration_failed"),
+      });
+      return {
+        ok: false,
+        error: timeout ? "Calibration update timed out." : "Calibration update failed.",
+        code: timeout ? "recalibration_timeout" : "recalibration_failed",
+        status: 0,
+      };
+    }
+
+    const data = await safeReadJson(response);
+    if (!response.ok) {
+      debugLog("recalibrate_response_error", {
+        status: response.status,
+        code: data && data.code ? data.code : "recalibration_failed",
+      });
+      return {
+        ok: false,
+        error: data && data.error ? data.error : "Calibration update failed.",
+        code: data && data.code ? data.code : "recalibration_failed",
+        status: response.status,
+      };
+    }
+
+    debugLog("recalibrate_response_ok", {
+      status: response.status,
+      hasJobAnalysis: Boolean(
+        data
+        && (
+          (data.response && data.response.job_analysis)
+          || data.job_analysis
+        ),
+      ),
+    });
+    return { ok: true, data, status: response.status };
+  }
+
   async function downloadResume(payload) {
     const settings = await getSettings();
     const profileId = settings.profileId ? String(settings.profileId).trim() : "";
@@ -238,6 +332,9 @@
         matchScore: payload.matchScore,
         verdict: payload.verdict,
         selectedEvidenceIds: payload.selectedEvidenceIds,
+        calibrationAnswers: payload.calibrationAnswers,
+        confirmedStrengthAreas: payload.confirmedStrengthAreas,
+        positioningHints: payload.positioningHints,
       });
     } catch (error) {
       const timeout = error && (error.name === "AbortError" || error.message === "The operation was aborted.");
@@ -263,6 +360,7 @@
 
   globalThis.CareerTwinApiClient = {
     analyzeJobPayload,
+    recalculateJobPayload,
     downloadResume,
   };
 })();

@@ -1,4 +1,4 @@
-import type { ParsedResume } from "./parsing/resume-parser";
+import type { ParsedResume } from "../parsing/resume-parser";
 
 export interface MatchedEvidence {
     skill: string;

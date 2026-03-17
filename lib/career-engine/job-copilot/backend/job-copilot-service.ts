@@ -10,8 +10,10 @@ import {
 import type {
     JobCopilotAnalyzeInput,
     JobCopilotAnalyzeOutput,
+    JobCopilotCalibrationAnswerInput,
     JobCopilotDownloadInput,
     JobCopilotDownloadOutput,
+    JobCopilotRecalibrateInput,
 } from "./job-copilot-types";
 import { buildJobSignalsFromRawJd } from "./job-signals-from-raw-jd";
 import {
@@ -26,6 +28,21 @@ import {
     buildJobCopilotAnalysis,
     getTailoringDecisionFromMatchScore,
 } from "@/lib/career-engine/job-copilot/job-copilot-ui-adapter";
+import type { JobCalibrationAnswer } from "@/lib/career-engine/job-copilot/job-analysis";
+import { normalizeTitle } from "@/lib/career-engine/parsing/title-normalizer";
+import {
+    buildCareerInsightSelectionAudit,
+    generateCareerInsightSections,
+} from "@/lib/career-engine/job-copilot/career-insight-generator";
+import { detectRoleIdentity } from "@/lib/career-engine/job-copilot/role-identity-detector";
+import {
+    applyCalibrationAnswers,
+    buildApplyRecommendation,
+    buildCalibrationQuestions,
+    type ExplanationConsistencyContext,
+} from "@/lib/career-engine/job-copilot/fit-calibration-engine";
+import { buildDomainOntologySpecializationAudit } from "@/lib/career-engine/job-copilot/domain-ontology-audit";
+import { buildJobFitScoreV1 } from "@/lib/career-engine/job-copilot/job-fit-score-v1";
 import { writeAppliedPipelineAction } from "./pipeline-write-integration";
 import { markInteractionApplied, persistExtensionViewedJob } from "./extension-job-persistence";
 
@@ -150,7 +167,23 @@ async function ensureExtensionJob(params: {
     };
 }
 
-export async function analyzeJobForCopilot(input: JobCopilotAnalyzeInput): Promise<JobCopilotAnalyzeOutput> {
+function toCalibrationAnswers(answers: JobCopilotCalibrationAnswerInput[] | undefined): JobCalibrationAnswer[] {
+    if (!answers || answers.length === 0) return [];
+    const byQuestionId = new Map<string, "yes" | "no">();
+    for (const item of answers) {
+        const questionId = item?.questionId?.trim();
+        if (!questionId) continue;
+        if (item.answer !== "yes" && item.answer !== "no") continue;
+        byQuestionId.set(questionId, item.answer);
+    }
+    return Array.from(byQuestionId.entries()).map(([question_id, answer]) => ({ question_id, answer }));
+}
+
+async function analyzeJobForCopilotInternal(params: {
+    input: JobCopilotAnalyzeInput;
+    calibrationAnswers: JobCalibrationAnswer[];
+}): Promise<JobCopilotAnalyzeOutput> {
+    const input = params.input;
     if (!input.profileId?.trim()) throw new Error("profileId is required");
     if (!input.jobTitle?.trim()) throw new Error("jobTitle is required");
     if (!input.jobDescription?.trim() || input.jobDescription.trim().length < 120) {
@@ -158,6 +191,9 @@ export async function analyzeJobForCopilot(input: JobCopilotAnalyzeInput): Promi
     }
 
     const cleanedTitle = input.jobTitle.trim();
+    const normalizedInputTitle = normalizeTitle(cleanedTitle);
+    const normalizedDisplayTitle = normalizedInputTitle.normalized || cleanedTitle;
+    const stableRoleFamily = normalizedInputTitle.function ?? null;
     const careerGraph = await loadCareerGraph(input.profileId.trim());
     const parsedSignals = buildJobSignalsFromRawJd({
         rawJd: input.jobDescription,
@@ -200,7 +236,86 @@ export async function analyzeJobForCopilot(input: JobCopilotAnalyzeInput): Promi
                 .map((item) => item.display_name),
         profileKeyGaps: [],
     });
-    const matchScore = Number((capabilityMatch.overall_match_score * 100).toFixed(2));
+    const baseMatchScore = Number((capabilityMatch.overall_match_score * 100).toFixed(2));
+    const roleIdentity = detectRoleIdentity({
+        jobTitle: normalizedDisplayTitle,
+        parsedSignals,
+        matchResult: capabilityMatch,
+    });
+    const roleIdentityWithDomain = roleIdentity;
+    const ontologySpecializationAudit = buildDomainOntologySpecializationAudit({
+        jobTitle: normalizedDisplayTitle,
+        parsedSignals,
+        matchResult: capabilityMatch,
+        detectorWinningFamily: roleIdentityWithDomain.domainAnchor.domainFamily,
+    });
+    const topSpecialization = ontologySpecializationAudit.top_specializations[0] ?? null;
+    const topSpecializationVote = topSpecialization
+        ? ontologySpecializationAudit.specialization_votes
+            .find((item) => item.specialization === topSpecialization.specialization)
+        : null;
+    const specializationContext = {
+        topSpecialization: topSpecialization?.specialization ?? null,
+        matchedCanonicalSignals: Array.from(
+            new Set((topSpecializationVote?.matched_canonical_signals ?? []).map((item) => item.signal)),
+        ).slice(0, 3),
+    };
+    const jobFitScore = buildJobFitScoreV1({
+        capabilityMatch,
+        ontologyAudit: ontologySpecializationAudit,
+    });
+    const initialCalibrationQuestions = buildCalibrationQuestions({
+        matchResult: capabilityMatch,
+        existingAnswers: params.calibrationAnswers,
+        roleIdentity: roleIdentityWithDomain,
+        specializationContext,
+        maxQuestions: 3,
+    });
+    const initialCalibrationResult = applyCalibrationAnswers({
+        baseScore: baseMatchScore,
+        questions: initialCalibrationQuestions.questions,
+        answers: params.calibrationAnswers,
+    });
+    const consistencyAudit = buildCareerInsightSelectionAudit({
+        matchResult: capabilityMatch,
+        calibration: initialCalibrationResult.calibration,
+        roleIdentity: roleIdentityWithDomain,
+        maxStrengths: 3,
+        maxRisks: 3,
+    });
+    const consistencyContext: ExplanationConsistencyContext = {
+        excludedConsistencyKeys: Array.from(
+            new Set([
+                ...consistencyAudit.selectedWhyFitConsistencyKeys,
+            ]),
+        ),
+        preferredUncertaintyKey: consistencyAudit.primaryUncertaintyThemeKey,
+    };
+    const calibrationQuestions = buildCalibrationQuestions({
+        matchResult: capabilityMatch,
+        existingAnswers: params.calibrationAnswers,
+        roleIdentity: roleIdentityWithDomain,
+        specializationContext,
+        maxQuestions: 3,
+        consistencyContext,
+    });
+    const calibrationResult = applyCalibrationAnswers({
+        baseScore: baseMatchScore,
+        questions: calibrationQuestions.questions,
+        answers: params.calibrationAnswers,
+    });
+    const applyRecommendation = buildApplyRecommendation(calibrationResult.applyRecommendation.score);
+    const matchScore = applyRecommendation.score;
+    const careerInsight = generateCareerInsightSections({
+        recommendation: applyRecommendation,
+        topStrengths: whyYouMatch,
+        topRisks: keyGaps,
+        calibration: calibrationResult.calibration,
+        jobTitle: normalizedDisplayTitle,
+        matchResult: capabilityMatch,
+        roleIdentity: roleIdentityWithDomain,
+        specializationContext,
+    });
     const weakJdMode = !parsedSignals.target_title
         && !parsedSignals.role_family
         && parsedSignals.required_skills.length === 0
@@ -235,7 +350,13 @@ export async function analyzeJobForCopilot(input: JobCopilotAnalyzeInput): Promi
         const resumeResult = await generateResumeCopilot({
             profileId: input.profileId,
             jobId: persisted.jobId,
-            options: { includeDebug: true },
+            options: {
+                includeDebug: true,
+                calibrationContext: {
+                    confirmed_strength_areas: calibrationResult.calibration.confirmed_strength_areas,
+                    positioning_hints: careerInsight.positioningHints,
+                },
+            },
         });
 
         resumePreview = resumeResult.resume;
@@ -284,8 +405,8 @@ export async function analyzeJobForCopilot(input: JobCopilotAnalyzeInput): Promi
         matchedCapabilities: whyYouMatch,
         keyGaps,
         evidenceHighlights: topEvidence,
-        jdTitle: parsedSignals.target_title ?? cleanedTitle,
-        jdRoleFamily: parsedSignals.role_family,
+        jdTitle: normalizedDisplayTitle,
+        jdRoleFamily: stableRoleFamily ?? parsedSignals.role_family,
         candidateTitles: careerGraph.experiences.map((experience) => experience.title),
         atsRiskReasoning: capabilityMatch.audit.ats_risk_reasoning,
         bucketReasoning: capabilityMatch.audit.final_bucket_reasoning,
@@ -296,6 +417,12 @@ export async function analyzeJobForCopilot(input: JobCopilotAnalyzeInput): Promi
         requiredSkills: parsedSignals.required_skills,
         responsibilities: parsedSignals.responsibilities,
     });
+    jobAnalysis.apply_recommendation = applyRecommendation;
+    jobAnalysis.career_insight = careerInsight.careerInsight;
+    jobAnalysis.why_fit = careerInsight.whyFit;
+    jobAnalysis.potential_risks = careerInsight.potentialRisks;
+    jobAnalysis.positioning_hints = careerInsight.positioningHints;
+    jobAnalysis.calibration = calibrationResult.calibration;
 
     return buildJobCopilotAnalyzeOutput({
         job: {
@@ -312,6 +439,25 @@ export async function analyzeJobForCopilot(input: JobCopilotAnalyzeInput): Promi
             selectedEvidenceIds,
         },
         matchScore,
+        applyRecommendation,
+        careerInsight: careerInsight.careerInsight,
+        whyFit: careerInsight.whyFit,
+        risks: careerInsight.potentialRisks,
+        positioningHints: careerInsight.positioningHints,
+        calibrationQuestions: calibrationResult.calibration.questions.map((question) => ({
+            id: question.id,
+            question: question.question,
+            targetArea: question.target_area,
+            importance: question.importance,
+            answer: question.answer ?? null,
+        })),
+        calibrationState: {
+            required: calibrationResult.calibration.required,
+            answeredCount: calibrationResult.calibration.answered_count,
+            totalQuestions: calibrationResult.calibration.total_questions,
+            recalibrated: calibrationResult.calibration.recalibrated,
+            scoreDelta: calibrationResult.calibration.score_delta,
+        },
         scoreExplainability: {
             model: capabilityMatch.model,
             capabilityFitScore: Number((capabilityMatch.overall_match_score * 100).toFixed(2)),
@@ -344,11 +490,27 @@ export async function analyzeJobForCopilot(input: JobCopilotAnalyzeInput): Promi
             fallbackUsed,
             totalEvidenceConsidered,
         },
+        jobFitScore: jobFitScore.score,
+        jobFitScoreDebug: jobFitScore.debug,
         jobAnalysis,
         whyYouMatch,
         keyGaps,
         topEvidence,
         resumePreview: resumePreview,
+    });
+}
+
+export async function analyzeJobForCopilot(input: JobCopilotAnalyzeInput): Promise<JobCopilotAnalyzeOutput> {
+    return analyzeJobForCopilotInternal({
+        input,
+        calibrationAnswers: [],
+    });
+}
+
+export async function recalculateFitAfterCalibration(input: JobCopilotRecalibrateInput): Promise<JobCopilotAnalyzeOutput> {
+    return analyzeJobForCopilotInternal({
+        input: input,
+        calibrationAnswers: toCalibrationAnswers(input.calibrationAnswers),
     });
 }
 
@@ -381,13 +543,16 @@ export async function downloadTailoredResumeAndMarkApplied(input: JobCopilotDown
         .eq("career_id", careerId)
         .eq("job_id", jobId)
         .limit(1);
-    const matchScore = jobMatchRows?.[0]?.match_score;
-    if (typeof matchScore !== "number") {
+    const persistedMatchScore = jobMatchRows?.[0]?.match_score;
+    const effectiveMatchScore = typeof input.matchScore === "number"
+        ? input.matchScore
+        : persistedMatchScore;
+    if (typeof effectiveMatchScore !== "number") {
         throw new Error("Run analyze before downloading resume");
     }
-    const tailoringDecision = getTailoringDecisionFromMatchScore(matchScore);
+    const tailoringDecision = getTailoringDecisionFromMatchScore(effectiveMatchScore);
     if (!tailoringDecision.allowed) {
-        throw new Error(`Low fit role (${matchScore}). ${tailoringDecision.message}`);
+        throw new Error(`Low fit role (${effectiveMatchScore}). ${tailoringDecision.message}`);
     }
 
     const { data: jobRows } = await supabase
@@ -403,7 +568,13 @@ export async function downloadTailoredResumeAndMarkApplied(input: JobCopilotDown
     const resumeResult = await generateResumeCopilot({
         profileId,
         jobId,
-        options: { includeDebug: false },
+        options: {
+            includeDebug: false,
+            calibrationContext: {
+                confirmed_strength_areas: input.confirmedStrengthAreas ?? [],
+                positioning_hints: input.positioningHints ?? [],
+            },
+        },
     });
     const resumeText = buildResumeTextFile({
         roleTitle: jobTitle,
@@ -419,7 +590,7 @@ export async function downloadTailoredResumeAndMarkApplied(input: JobCopilotDown
         sourcePlatform: input.sourcePlatform ?? null,
         location: input.location ?? null,
         jobDescriptionSnapshot: input.jobDescriptionSnapshot ?? null,
-        matchScore: input.matchScore ?? matchScore,
+        matchScore: effectiveMatchScore,
         verdict: input.verdict ?? null,
         selectedEvidenceIds: input.selectedEvidenceIds ?? [],
     });
@@ -428,7 +599,7 @@ export async function downloadTailoredResumeAndMarkApplied(input: JobCopilotDown
         supabase,
         profileId,
         jobSnapshotId: input.jobSnapshotId ?? null,
-        matchScore: input.matchScore ?? matchScore,
+        matchScore: effectiveMatchScore,
         verdict: input.verdict ?? null,
         selectedEvidenceIds: input.selectedEvidenceIds ?? [],
         resumeGenerated: true,
@@ -436,7 +607,7 @@ export async function downloadTailoredResumeAndMarkApplied(input: JobCopilotDown
 
     await supabase
         .from("job_matches")
-        .update({ status: "applied" })
+        .update({ status: "applied", match_score: effectiveMatchScore })
         .eq("career_id", careerId)
         .eq("job_id", jobId);
 
@@ -446,6 +617,6 @@ export async function downloadTailoredResumeAndMarkApplied(input: JobCopilotDown
         mime_type: "text/plain",
         resume_text: resumeText,
         applied_recorded: true,
-        match_score: matchScore,
+        match_score: effectiveMatchScore,
     };
 }

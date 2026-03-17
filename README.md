@@ -52,6 +52,16 @@ npm run build
 npm start
 ```
 
+### Canonical Verification Loop
+
+Run the founder-safe verification entrypoint:
+
+```bash
+npm run verify
+```
+
+This command runs compile + machine-verifiable checks and writes artifacts to `artifacts/`, including `artifacts/verify-summary.json`.
+
 ## Pages
 
 | Route | Description |

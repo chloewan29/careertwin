@@ -1,0 +1,68 @@
+{
+  "status": "passed",
+  "overall_verification_state": "passed",
+  "first_failing_step": null,
+  "core_path_ts_debt_count": 0,
+  "matcher_regression_status": "passed",
+  "extension_lifecycle_regression_status": "passed",
+  "recommended_next_action": "Core path is clean; legacy/debt TypeScript errors remain (82). Prioritize smallest legacy cleanup batch.",
+  "started_at": "2026-03-17T01:57:22.480Z",
+  "finished_at": "2026-03-17T01:57:33.253Z",
+  "duration_ms": 10773,
+  "steps": [
+    {
+      "name": "compile",
+      "status": "passed",
+      "started_at": "2026-03-17T01:57:22.481Z",
+      "finished_at": "2026-03-17T01:57:24.561Z",
+      "duration_ms": 2081,
+      "artifact_path": "C:\\Users\\chloe\\SandboxProjects\\careertwin\\artifacts\\compile-summary.json",
+      "error": null
+    },
+    {
+      "name": "typescript_debt_audit",
+      "status": "passed",
+      "started_at": "2026-03-17T01:57:24.561Z",
+      "finished_at": "2026-03-17T01:57:28.636Z",
+      "duration_ms": 4075,
+      "artifact_path": "C:\\Users\\chloe\\SandboxProjects\\careertwin\\artifacts\\typescript-debt-step.json",
+      "error": null
+    },
+    {
+      "name": "tests",
+      "status": "passed",
+      "started_at": "2026-03-17T01:57:28.636Z",
+      "finished_at": "2026-03-17T01:57:29.742Z",
+      "duration_ms": 1106,
+      "artifact_path": "C:\\Users\\chloe\\SandboxProjects\\careertwin\\artifacts\\tests-step.json",
+      "error": null
+    },
+    {
+      "name": "jd_extraction",
+      "status": "passed",
+      "started_at": "2026-03-17T01:57:29.742Z",
+      "finished_at": "2026-03-17T01:57:30.806Z",
+      "duration_ms": 1063,
+      "artifact_path": "C:\\Users\\chloe\\SandboxProjects\\careertwin\\artifacts\\jd-extraction-step.json",
+      "error": null
+    },
+    {
+      "name": "matcher",
+      "status": "passed",
+      "started_at": "2026-03-17T01:57:30.806Z",
+      "finished_at": "2026-03-17T01:57:32.141Z",
+      "duration_ms": 1335,
+      "artifact_path": "C:\\Users\\chloe\\SandboxProjects\\careertwin\\artifacts\\matcher-step.json",
+      "error": null
+    },
+    {
+      "name": "extension_lifecycle",
+      "status": "passed",
+      "started_at": "2026-03-17T01:57:32.141Z",
+      "finished_at": "2026-03-17T01:57:33.253Z",
+      "duration_ms": 1112,
+      "artifact_path": "C:\\Users\\chloe\\SandboxProjects\\careertwin\\artifacts\\extension-lifecycle-step.json",
+      "error": null
+    }
+  ]
+}

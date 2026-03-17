@@ -5,8 +5,13 @@
 
   const DESCRIPTION_MIN_CHARS = 40;
   const STRATEGY_LOG_LIMIT = 18;
+  const MAX_AUTO_EXPAND_CLICKS = 2;
+  const AUTO_EXPAND_COOLDOWN_MS = 7000;
+  const JD_COLLAPSED_LIKELY_MAX_CHARS = 950;
+  const PREVIEW_NOT_READY_MAX_CHARS = 950;
   const Constants = globalThis.CareerTwinConstants || {};
   const JD_AUDIT_RUNTIME_ENABLED = Boolean(Constants.LINKEDIN_JD_AUDIT_ENABLED);
+  const autoExpandClickMemory = new Map();
   const JD_AUDIT_THRESHOLDS = {
     EMPTY_MAX_CHARS: 39,
     SHORT_PREVIEW_MAX_CHARS: 420,
@@ -76,6 +81,14 @@
       console.debug(`[CareerTwin][linkedin-parser] ${label}`, summary);
     } catch {
       console.debug(`[CareerTwin][linkedin-parser] ${label}`);
+    }
+  }
+
+  function jdExtractionLog(label, value) {
+    try {
+      console.debug(`[CareerTwin][jd-extraction] ${label}`, value);
+    } catch {
+      console.debug(`[CareerTwin][jd-extraction] ${label}`);
     }
   }
 
@@ -181,6 +194,10 @@
     return input.length <= size ? input : input.slice(input.length - size);
   }
 
+  function previewSnippet(text, maxChars = 200) {
+    return normalizeWhitespace(String(text || "").replace(/\n+/g, " ")).slice(0, maxChars);
+  }
+
   function matchesAnyPattern(text, patterns) {
     return patterns.some((pattern) => pattern.test(text));
   }
@@ -237,7 +254,7 @@
       current_url: String(location.href || ""),
       loading_when_extraction_started: Boolean(params.loadingAtStart),
       more_expand_detected: Boolean(params.expandControls && params.expandControls.present),
-      more_expand_clicked_by_flow: false,
+      more_expand_clicked_by_flow: Boolean(params.moreExpandClickedByFlow),
       raw_extracted_jd_length: params.rawDescriptionText.length,
       normalized_extracted_jd_length: normalizedLength,
       extracted_text_first_300: firstChars(params.normalizedDescriptionText, 300),
@@ -356,11 +373,12 @@
   }
 
   function detectExpandControls(root) {
-    if (!root) return { present: false, expanded: null };
+    if (!root) return { present: false, expanded: null, controls: [] };
     const controls = Array.from(root.querySelectorAll("button, a, span, div[role='button']")).slice(0, 120);
 
     let present = false;
     let expanded = null;
+    const detectedControls = [];
     for (const control of controls) {
       const text = normalizeWhitespace(control.textContent || "").toLowerCase();
       const ariaLabel = normalizeWhitespace(control.getAttribute ? control.getAttribute("aria-label") || "" : "").toLowerCase();
@@ -376,14 +394,80 @@
       present = true;
 
       const ariaExpanded = control.getAttribute ? control.getAttribute("aria-expanded") : null;
+      const inDescriptionRegion = Boolean(control.closest(
+        ".jobs-description, .jobs-description__container, .jobs-description-content, .show-more-less-html, [data-test-job-description], .jobs-search__job-details--container, .jobs-search-two-pane__details, .job-view-layout, .jobs-details",
+      ));
+      const controlSignature = `${nodeSignature(control)}|${hashText(`${text}|${ariaLabel}|${className}`)}`;
       if (ariaExpanded === "true" || text.includes("show less")) {
         expanded = true;
       } else if ((ariaExpanded === "false" || text.includes("show more") || text.includes("read more")) && expanded !== true) {
         expanded = false;
       }
+      detectedControls.push({
+        control,
+        text,
+        ariaLabel,
+        ariaExpanded,
+        inDescriptionRegion,
+        signature: controlSignature,
+      });
     }
 
-    return { present, expanded };
+    return { present, expanded, controls: detectedControls };
+  }
+
+  function safeClickExpandControl(control) {
+    if (!control || typeof control.click !== "function") return false;
+    try {
+      control.click();
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  function maybeAutoExpandDescription(params) {
+    const pageType = params.pageType;
+    const currentJobId = params.currentJobId || "";
+    const expandControls = params.expandControls;
+    if (!expandControls || !expandControls.present || !Array.isArray(expandControls.controls)) {
+      return { clicked: false, clickCount: 0, attempted: 0 };
+    }
+
+    const now = Date.now();
+    const candidates = expandControls.controls.filter((entry) => {
+      if (!entry || !entry.control || !entry.inDescriptionRegion) return false;
+      if (!isVisible(entry.control)) return false;
+      if (entry.ariaExpanded === "true") return false;
+
+      const text = `${entry.text || ""} ${entry.ariaLabel || ""}`.toLowerCase();
+      if (!(text.includes("show more") || text.includes("see more") || text.includes("read more") || text.includes("more"))) {
+        return false;
+      }
+
+      const memoryKey = `${pageType}|${currentJobId}|${entry.signature}`;
+      const lastClickedAt = autoExpandClickMemory.get(memoryKey) || 0;
+      if (now - lastClickedAt < AUTO_EXPAND_COOLDOWN_MS) return false;
+
+      entry.memoryKey = memoryKey;
+      return true;
+    });
+
+    let clickCount = 0;
+    for (const candidate of candidates) {
+      if (clickCount >= MAX_AUTO_EXPAND_CLICKS) break;
+      if (!safeClickExpandControl(candidate.control)) continue;
+      clickCount += 1;
+      if (candidate.memoryKey) {
+        autoExpandClickMemory.set(candidate.memoryKey, now);
+      }
+    }
+
+    return {
+      clicked: clickCount > 0,
+      clickCount,
+      attempted: Math.min(MAX_AUTO_EXPAND_CLICKS, candidates.length),
+    };
   }
 
   function findCurrentJobId() {
@@ -713,10 +797,12 @@
 
     const panelRootResult = pickPanelRoot(pageType);
     const panelRoot = panelRootResult.node || document;
+    const currentJobId = findCurrentJobId();
     debugLog("panel_root_found", {
       page_type: pageType,
       panelRootFound: panelRootResult.found,
       selector: panelRootResult.selector || null,
+      current_job_id: currentJobId || null,
     });
 
     const title = queryText([
@@ -746,6 +832,15 @@
     const loadingAtExtractionStart = Boolean(
       panelRoot.querySelector("[aria-busy='true'], .artdeco-loader, .jobs-search-two-pane__loading"),
     );
+    const expandControlsBeforeExtraction = detectExpandControls(panelRoot);
+    const autoExpandAttempt = maybeAutoExpandDescription({
+      pageType,
+      currentJobId,
+      expandControls: expandControlsBeforeExtraction,
+    });
+    const expandControls = autoExpandAttempt.clicked
+      ? detectExpandControls(panelRoot)
+      : expandControlsBeforeExtraction;
     const descriptionResult = resolveDescription(panelRoot, pageType);
     const rawDescriptionText = normalizeWhitespace(descriptionResult.rawText || descriptionResult.text || "");
     const descriptionText = cleanDescriptionText(descriptionResult.text || rawDescriptionText);
@@ -755,7 +850,6 @@
       descriptionLength: descriptionText.length,
     });
 
-    const currentJobId = findCurrentJobId();
     const canonicalJobUrl = currentJobId
       ? `https://www.linkedin.com/jobs/view/${currentJobId}`
       : location.href;
@@ -767,21 +861,23 @@
     const resolvedLocation = locationField.text
       || normalizeWhitespace((document.querySelector(".topcard__flavor--bullet") || {}).textContent || "");
 
-    const expandControls = detectExpandControls(panelRoot);
     const hasLoadingIndicators = Boolean(
       panelRoot.querySelector("[aria-busy='true'], .artdeco-loader, .jobs-search-two-pane__loading"),
     );
     const parserSelectorMiss = descriptionText.length === 0;
 
+    const previewCompletenessRisk = hasLoadingIndicators
+      || !panelRootResult.found
+      || parserSelectorMiss
+      || autoExpandAttempt.clicked;
     const previewNotReady = pageType === "search_results_preview"
       && Boolean(resolvedTitle)
-      && descriptionText.length === 0
-      && (hasLoadingIndicators || !panelRootResult.found);
+      && previewCompletenessRisk
+      && descriptionText.length < PREVIEW_NOT_READY_MAX_CHARS;
 
     const jdCollapsedLikely = expandControls.present
       && expandControls.expanded === false
-      && descriptionText.length > 0
-      && descriptionText.length < 900;
+      && descriptionText.length < JD_COLLAPSED_LIKELY_MAX_CHARS;
 
     const previewSignature = buildPreviewSignature({
       currentJobId,
@@ -807,6 +903,7 @@
         currentJobId,
         loadingAtStart: loadingAtExtractionStart,
         expandControls,
+        moreExpandClickedByFlow: autoExpandAttempt.clicked,
         rawDescriptionText,
         normalizedDescriptionText: descriptionText,
         strategyAttempts: descriptionResult.attempts || [],
@@ -822,7 +919,20 @@
       description_strategy: descriptionResult.strategy || "none",
       description_length: descriptionText.length,
       preview_not_ready: previewNotReady,
+      more_expand_clicked_by_flow: autoExpandAttempt.clicked,
+      more_expand_click_count: autoExpandAttempt.clickCount,
       parser_selector_miss: parserSelectorMiss,
+    });
+    jdExtractionLog("linkedin_parser", {
+      flow: "linkedin_parser_live",
+      page_type: pageType,
+      raw_jd_length: rawDescriptionText.length,
+      normalized_jd_length: descriptionText.length,
+      see_more_clicked: autoExpandAttempt.clicked,
+      preview_not_ready_triggered: previewNotReady,
+      job_description_collapsed_detected: jdCollapsedLikely,
+      ready_for_analysis_candidate: !previewNotReady && !jdCollapsedLikely && descriptionText.length >= DESCRIPTION_MIN_CHARS,
+      jd_preview_200: previewSnippet(descriptionText, 200),
     });
     if (jdAuditRecord && jdAuditRecord.audit_mode_enabled) {
       debugLog("jd_extraction_audit", jdAuditRecord);
@@ -854,6 +964,9 @@
         jd_collapsed_likely: jdCollapsedLikely,
         expand_control_present: expandControls.present,
         expand_control_expanded: expandControls.expanded,
+        more_expand_detected: expandControls.present,
+        more_expand_clicked_by_flow: autoExpandAttempt.clicked,
+        more_expand_click_count: autoExpandAttempt.clickCount,
         detected_selectors: parserSelectors,
         ...(jdAuditRecord ? { jd_extraction_audit: jdAuditRecord } : {}),
       },

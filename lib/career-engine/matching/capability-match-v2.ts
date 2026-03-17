@@ -84,7 +84,7 @@ type JobRequirementCluster = {
     layer: RequirementLayer;
     direct_capabilities: string[];
     transfer_capabilities: string[];
-    transfer_pattern_ids: string[];
+    transfer_pattern_ids: CapabilityTransferPatternId[];
     matched_terms: string[];
     evidence: string[];
     domain_modifiers: string[];
@@ -182,6 +182,16 @@ type CapabilityRankingAudit = {
     literal_signal_bonus: number;
     section_signal_bonus: number;
     role_coherence_bonus: number;
+    distinctiveness_bonus: number;
+    distinctiveness_penalty: number;
+    broad_gate_penalty: number;
+    distinctiveness_score: number;
+    distinctiveness_factor: number;
+    role_discrimination_score: number;
+    broad_family: boolean;
+    broad_top_explanation_eligible: boolean;
+    broad_top_explanation_signals_met: number;
+    diversity_family_key: string;
     generic_penalty: number;
     tie_break_score: number;
     genericity: "broad" | "balanced" | "specific";
@@ -191,6 +201,30 @@ type CapabilityRankingAudit = {
     jd_high_weight_signal_units: number;
     role_signal_coherence: number;
     reason: string;
+};
+
+type RoleEmphasisContext = {
+    role_has_specific_shape: boolean;
+    specific_signal_cluster_count: number;
+    average_signal_strength: number;
+};
+
+type BroadExplanationGate = {
+    eligible: boolean;
+    signals_met: number;
+};
+
+type ExplanationSelectionCandidate = {
+    index: number;
+    item: CapabilityMatchItem & { reasoning?: string };
+    ranking?: CapabilityRankingAudit;
+    cluster?: JobRequirementCluster;
+    broadEligible: boolean;
+    distinctivenessScore: number;
+    roleDiscriminationScore: number;
+    familyKey: string;
+    isBroad: boolean;
+    isRoleSpecific: boolean;
 };
 
 type PriorEffect = {
@@ -334,8 +368,8 @@ const STOPWORDS = new Set([
 
 const IMPORTANCE_WEIGHT: Record<JobCapabilityImportance, number> = {
     critical: 1,
-    important: 0.72,
-    supporting: 0.38,
+    important: 0.6,
+    supporting: 0.3,
 };
 
 const ROLE_FAMILY_PATTERNS: Array<{ family: string; pattern: RegExp }> = [
@@ -903,6 +937,10 @@ function uniqueStrings(values: Array<string | null | undefined>): string[] {
     ));
 }
 
+function isPresent<T>(value: T | null): value is T {
+    return value !== null;
+}
+
 function buildCandidateContext(params: {
     careerGraph: CareerGraph;
     candidateProfile: CandidateCapabilityForMatch[];
@@ -1198,7 +1236,7 @@ function buildJobRequirementModel(params: {
                         jobRoleFamilies.includes(family)),
                 } satisfies JobRequirementCluster;
             })
-            .filter((cluster): cluster is JobRequirementCluster => cluster !== null)
+            .filter(isPresent)
             .sort((a, b) => {
                 if (b.importance_score !== a.importance_score) return b.importance_score - a.importance_score;
                 return b.confidence - a.confidence;
@@ -1446,6 +1484,384 @@ function requirementWeights(layer: RequirementLayer): {
     return { direct: 0.22, transfer: 0.36, evidence: 0.12, literal: 0.04, ownership: 0.26 };
 }
 
+function roleDifferentiationFactor(cluster: JobRequirementCluster): number {
+    const repeatedSignalScore = clamp(cluster.jd_repeated_signal_units / 3);
+    const sectionCoverageScore = clamp((cluster.jd_section_coverage - 1) / 2);
+    const highWeightPlacementScore = clamp(cluster.jd_high_weight_signal_units / 3);
+    const roleCoherenceScore = clamp(cluster.role_signal_coherence);
+    const emphasisScore = clamp(
+        (repeatedSignalScore * 0.34)
+        + (sectionCoverageScore * 0.24)
+        + (highWeightPlacementScore * 0.22)
+        + (roleCoherenceScore * 0.2),
+    );
+    return round(clamp(0.9 + (emphasisScore * 0.3), 0.9, 1.2), 4);
+}
+
+function clusterRoleSignalStrength(cluster: JobRequirementCluster): number {
+    const repeatedSignalScore = clamp(cluster.jd_repeated_signal_units / 3);
+    const sectionCoverageScore = clamp((cluster.jd_section_coverage - 1) / 2);
+    const highWeightPlacementScore = clamp(cluster.jd_high_weight_signal_units / 3);
+    const literalSignalScore = clamp(cluster.jd_literal_signal_count / 4);
+    const roleCoherenceScore = clamp(cluster.role_signal_coherence);
+    const specificityScore = clamp(cluster.specificity_score);
+    return round(clamp(
+        (repeatedSignalScore * 0.26)
+        + (sectionCoverageScore * 0.22)
+        + (highWeightPlacementScore * 0.18)
+        + (literalSignalScore * 0.16)
+        + (roleCoherenceScore * 0.1)
+        + (specificityScore * 0.08),
+    ), 4);
+}
+
+function buildRoleEmphasisContext(clusters: JobRequirementCluster[]): RoleEmphasisContext {
+    const strengths = clusters.map((cluster) => clusterRoleSignalStrength(cluster));
+    const averageSignalStrength = strengths.length > 0
+        ? clamp(strengths.reduce((sum, value) => sum + value, 0) / strengths.length)
+        : 0;
+    const specificSignalClusterCount = clusters.filter((cluster) =>
+        cluster.genericity === "specific"
+        && (clusterRoleSignalStrength(cluster) >= 0.48 || cluster.jd_literal_signal_count >= 2 || cluster.jd_section_coverage >= 2)).length;
+    return {
+        role_has_specific_shape: specificSignalClusterCount >= 1,
+        specific_signal_cluster_count: specificSignalClusterCount,
+        average_signal_strength: round(averageSignalStrength, 4),
+    };
+}
+
+function roleEmphasisWeight(cluster: JobRequirementCluster, context: RoleEmphasisContext): number {
+    const signalStrength = clusterRoleSignalStrength(cluster);
+    const importanceBase = cluster.importance === "critical"
+        ? 1.03
+        : cluster.importance === "important"
+            ? 1
+            : 0.93;
+    const genericityBase = cluster.genericity === "specific"
+        ? 1.06
+        : cluster.genericity === "balanced"
+            ? 1
+            : 0.92;
+    const sectionBoost = Math.min(0.11, Math.max(0, cluster.jd_section_coverage - 1) * 0.035);
+    const repeatedBoost = Math.min(0.12, Math.max(0, cluster.jd_repeated_signal_units - 1) * 0.04);
+    const highWeightBoost = Math.min(0.1, cluster.jd_high_weight_signal_units * 0.03);
+    const literalBoost = Math.min(0.11, cluster.jd_literal_signal_count * 0.028);
+    const specificityBoost = cluster.genericity === "specific"
+        ? Math.min(0.1, cluster.specificity_score * 0.09)
+        : Math.min(0.05, cluster.specificity_score * 0.04);
+
+    const roleShapeDampening = context.role_has_specific_shape
+        && cluster.genericity === "broad"
+        && signalStrength < Math.max(0.42, context.average_signal_strength)
+        ? 0.84
+        : 1;
+    const roleShapeSpecificBoost = context.role_has_specific_shape
+        && cluster.genericity === "specific"
+        && signalStrength >= 0.52
+        ? 1.06
+        : 1;
+
+    const raw = importanceBase
+        * genericityBase
+        * (1 + sectionBoost + repeatedBoost + highWeightBoost + literalBoost + specificityBoost)
+        * roleShapeDampening
+        * roleShapeSpecificBoost;
+
+    return round(clamp(raw, 0.72, 1.42), 4);
+}
+
+function roleSignalEvidenceSummary(cluster: JobRequirementCluster): string {
+    return `signals(literal=${cluster.jd_literal_signal_count}, repeated=${cluster.jd_repeated_signal_units}, sections=${cluster.jd_section_coverage}, high_weight=${cluster.jd_high_weight_signal_units})`;
+}
+
+const BROAD_FAMILY_CLUSTER_IDS = new Set([
+    "analytics_translation_storytelling",
+    "insight_generation_reporting",
+    "stakeholder_embedding",
+]);
+
+function isBroadFamily(cluster: JobRequirementCluster): boolean {
+    return cluster.genericity === "broad" || BROAD_FAMILY_CLUSTER_IDS.has(cluster.cluster_id);
+}
+
+function clusterDistinctivenessScore(params: {
+    cluster: JobRequirementCluster;
+    breakdown: RequirementMatchBreakdown;
+    emphasisWeight: number;
+}): number {
+    const cluster = params.cluster;
+    const breakdown = params.breakdown;
+    const directStrength = clamp(breakdown.direct_score);
+    const literalStrength = clamp(breakdown.literal_overlap_score);
+    const repeatedStrength = clamp(cluster.jd_repeated_signal_units / 3);
+    const sectionStrength = clamp((cluster.jd_section_coverage - 1) / 2);
+    const highWeightStrength = clamp(cluster.jd_high_weight_signal_units / 3);
+    const coherenceStrength = clamp(cluster.role_signal_coherence);
+    const specificityStrength = clamp(cluster.specificity_score);
+    const transferDominancePenalty = breakdown.transfer_score > (breakdown.direct_score + 0.12) && breakdown.direct_score < 0.48
+        ? 0.07
+        : 0;
+    const broadPenalty = cluster.genericity === "broad"
+        ? 0.07
+        : cluster.genericity === "balanced"
+            ? 0.02
+            : 0;
+    const emphasisLift = Math.max(0, params.emphasisWeight - 1) * 0.08;
+    return round(clamp(
+        (directStrength * 0.3)
+        + (literalStrength * 0.18)
+        + (repeatedStrength * 0.15)
+        + (sectionStrength * 0.12)
+        + (highWeightStrength * 0.1)
+        + (coherenceStrength * 0.08)
+        + (specificityStrength * 0.07)
+        + emphasisLift
+        - transferDominancePenalty
+        - broadPenalty,
+    ), 4);
+}
+
+function clusterDistinctivenessFactor(distinctivenessScore: number): number {
+    return round(clamp(0.88 + (clamp(distinctivenessScore) * 0.24), 0.88, 1.12), 4);
+}
+
+function computeRoleDiscriminationScore(params: {
+    cluster: JobRequirementCluster;
+    breakdown: RequirementMatchBreakdown;
+    emphasisWeight: number;
+    distinctivenessScore: number;
+}): number {
+    const cluster = params.cluster;
+    const literalStrength = clamp(params.breakdown.literal_overlap_score);
+    const directStrength = clamp(params.breakdown.direct_score);
+    const repeatedStrength = clamp(cluster.jd_repeated_signal_units / 3);
+    const highWeightStrength = clamp(cluster.jd_high_weight_signal_units / 2);
+    const sectionStrength = clamp((cluster.jd_section_coverage - 1) / 2);
+    const coherenceStrength = clamp(cluster.role_signal_coherence);
+    const emphasisStrength = clamp((params.emphasisWeight - 0.82) / 0.28);
+    const importanceStrength = cluster.importance === "critical"
+        ? 1
+        : cluster.importance === "important"
+            ? 0.72
+            : 0.5;
+    const broadPenalty = isBroadFamily(cluster)
+        ? 0.12
+        : 0;
+    const transferDominancePenalty = params.breakdown.transfer_score > (params.breakdown.direct_score + 0.12)
+        && params.breakdown.direct_score < 0.48
+        ? 0.06
+        : 0;
+    return round(clamp(
+        (params.distinctivenessScore * 0.27)
+        + (directStrength * 0.18)
+        + (literalStrength * 0.17)
+        + (repeatedStrength * 0.1)
+        + (highWeightStrength * 0.1)
+        + (sectionStrength * 0.06)
+        + (coherenceStrength * 0.05)
+        + (emphasisStrength * 0.05)
+        + (importanceStrength * 0.05)
+        - broadPenalty
+        - transferDominancePenalty,
+    ), 4);
+}
+
+function broadClusterTopExplanationGate(params: {
+    cluster: JobRequirementCluster;
+    breakdown: RequirementMatchBreakdown;
+}): BroadExplanationGate {
+    const cluster = params.cluster;
+    if (cluster.genericity !== "broad") {
+        return { eligible: true, signals_met: 5 };
+    }
+
+    const checks = [
+        cluster.jd_repeated_signal_units >= 2,
+        cluster.jd_high_weight_signal_units >= 1 || cluster.jd_section_coverage >= 2,
+        cluster.jd_literal_signal_count >= 2 || params.breakdown.literal_overlap_score >= 0.58,
+        cluster.importance === "critical",
+        cluster.role_signal_coherence >= 0.58,
+    ];
+    const signalsMet = checks.filter(Boolean).length;
+    return {
+        eligible: signalsMet >= 2,
+        signals_met: signalsMet,
+    };
+}
+
+function explanationDiversityFamilyKey(cluster: JobRequirementCluster): string {
+    if (
+        cluster.cluster_id === "analytics_translation_storytelling"
+        || cluster.cluster_id === "insight_generation_reporting"
+        || cluster.cluster_id === "stakeholder_embedding"
+    ) {
+        return "broad:analytics_translation";
+    }
+    const roleFamilies = uniqueStrings(cluster.role_family_alignment.slice(0, 2).map((value) => normalizeText(value)));
+    if (roleFamilies.length > 0) {
+        return `${cluster.genericity}:${roleFamilies.join("|")}`;
+    }
+    const domains = uniqueStrings(cluster.domain_modifiers.slice(0, 2).map((value) => normalizeText(value)));
+    if (domains.length > 0) {
+        return `${cluster.genericity}:${domains.join("|")}`;
+    }
+    return `${cluster.genericity}:${cluster.layer}`;
+}
+
+function isRoleSpecificCluster(params: {
+    cluster: JobRequirementCluster;
+    ranking?: CapabilityRankingAudit;
+}): boolean {
+    const { cluster, ranking } = params;
+    const distinctivenessScore = ranking?.distinctiveness_score ?? 0;
+    const roleDiscriminationScore = ranking?.role_discrimination_score ?? 0;
+    const broadFamily = ranking?.broad_family ?? isBroadFamily(cluster);
+
+    if (broadFamily) return false;
+    if (cluster.importance === "critical" && roleDiscriminationScore >= 0.58 && distinctivenessScore >= 0.56) {
+        return true;
+    }
+    if (cluster.genericity === "specific") return roleDiscriminationScore >= 0.5 && distinctivenessScore >= 0.5;
+    if (cluster.genericity === "balanced") return roleDiscriminationScore >= 0.66 && distinctivenessScore >= 0.64;
+    return roleDiscriminationScore >= 0.8 && distinctivenessScore >= 0.78;
+}
+
+function shouldSuppressBroadClusterForTopSlot(params: {
+    candidate: ExplanationSelectionCandidate;
+    slotIndex: number;
+    hasRoleSpecificAlternative: boolean;
+}): boolean {
+    const { candidate, slotIndex, hasRoleSpecificAlternative } = params;
+    if (slotIndex > 1) return false;
+    if (!candidate.cluster || !candidate.ranking) return false;
+    if (!candidate.isBroad) return false;
+    if (candidate.cluster.importance === "critical") return false;
+    if (!hasRoleSpecificAlternative) return false;
+
+    const literalWeak = candidate.cluster.jd_literal_signal_count <= 1
+        && (candidate.ranking.literal_signal_bonus ?? 0) < 0.015;
+    const highWeightWeak = candidate.cluster.jd_high_weight_signal_units < 1;
+    const repeatedWeak = candidate.cluster.jd_repeated_signal_units < 2;
+    const anchorWeak = candidate.distinctivenessScore < (slotIndex === 0 ? 0.55 : 0.5);
+    const gateWeak = !candidate.broadEligible || (candidate.ranking.broad_top_explanation_signals_met ?? 0) < 2;
+    const veryWeakGate = !candidate.broadEligible || (candidate.ranking.broad_top_explanation_signals_met ?? 0) <= 1;
+    const discriminationWeak = candidate.roleDiscriminationScore < (slotIndex === 0 ? 0.52 : 0.5);
+
+    if (slotIndex === 0) {
+        return literalWeak
+            && highWeightWeak
+            && repeatedWeak
+            && anchorWeak
+            && veryWeakGate
+            && discriminationWeak;
+    }
+    return literalWeak && repeatedWeak && anchorWeak && gateWeak && discriminationWeak;
+}
+
+function candidateTopSlotPriority(candidate: ExplanationSelectionCandidate): number {
+    return candidate.roleDiscriminationScore
+        + (candidate.isRoleSpecific ? 0.45 : 0)
+        + (candidate.isBroad ? -0.08 : 0)
+        + (candidate.distinctivenessScore * 0.2);
+}
+
+function compareTopSlotCandidates(
+    left: ExplanationSelectionCandidate,
+    right: ExplanationSelectionCandidate,
+): number {
+    const leftScore = candidateTopSlotPriority(left);
+    const rightScore = candidateTopSlotPriority(right);
+    if (rightScore !== leftScore) return rightScore - leftScore;
+    if (right.item.match_score_contribution !== left.item.match_score_contribution) {
+        return right.item.match_score_contribution - left.item.match_score_contribution;
+    }
+    return left.index - right.index;
+}
+
+function applyTopSlotSuppressionPass(params: {
+    orderedCandidates: ExplanationSelectionCandidate[];
+    topSlots: number;
+}): ExplanationSelectionCandidate[] {
+    const maxSuppressionSlot = Math.min(2, params.topSlots, params.orderedCandidates.length);
+    if (maxSuppressionSlot <= 0) return params.orderedCandidates;
+
+    const reordered = [...params.orderedCandidates];
+    for (let slotIndex = 0; slotIndex < maxSuppressionSlot; slotIndex += 1) {
+        const current = reordered[slotIndex];
+        if (!current) continue;
+        const alternatives = reordered.slice(slotIndex + 1);
+        const hasRoleSpecificAlternative = alternatives.some((candidate) => candidate.isRoleSpecific);
+
+        if (!shouldSuppressBroadClusterForTopSlot({
+            candidate: current,
+            slotIndex,
+            hasRoleSpecificAlternative,
+        })) {
+            continue;
+        }
+
+        const replacement = [...alternatives]
+            .filter((candidate) => {
+                if (slotIndex === 0 && !candidate.isRoleSpecific && hasRoleSpecificAlternative) {
+                    return false;
+                }
+                return !shouldSuppressBroadClusterForTopSlot({
+                    candidate,
+                    slotIndex,
+                    hasRoleSpecificAlternative,
+                });
+            })
+            .sort(compareTopSlotCandidates)[0];
+        if (!replacement) continue;
+
+        const replacementIndex = reordered.findIndex((candidate) => candidate.item.canonical_name === replacement.item.canonical_name);
+        if (replacementIndex === -1) continue;
+        const currentAtSlot = reordered[slotIndex];
+        reordered[slotIndex] = replacement;
+        reordered[replacementIndex] = currentAtSlot;
+    }
+
+    for (let slotIndex = 0; slotIndex < maxSuppressionSlot; slotIndex += 1) {
+        const current = reordered[slotIndex];
+        if (
+            !current
+            || current.isRoleSpecific
+            || !current.isBroad
+            || current.broadEligible
+            || !current.cluster
+            || current.cluster.importance === "critical"
+        ) {
+            continue;
+        }
+
+        const alternatives = reordered.slice(slotIndex + 1);
+        const replacement = [...alternatives]
+            .filter((candidate) => {
+                if (!candidate.isRoleSpecific) return false;
+                return !shouldSuppressBroadClusterForTopSlot({
+                    candidate,
+                    slotIndex,
+                    hasRoleSpecificAlternative: true,
+                });
+            })
+            .sort(compareTopSlotCandidates)[0];
+        if (!replacement) continue;
+        const replacementPriority = candidateTopSlotPriority(replacement);
+        const currentPriority = candidateTopSlotPriority(current);
+        if (replacementPriority < (currentPriority + 0.16)) {
+            continue;
+        }
+
+        const replacementIndex = reordered.findIndex((candidate) => candidate.item.canonical_name === replacement.item.canonical_name);
+        if (replacementIndex === -1) continue;
+        const currentAtSlot = reordered[slotIndex];
+        reordered[slotIndex] = replacement;
+        reordered[replacementIndex] = currentAtSlot;
+    }
+
+    return reordered;
+}
+
 function resolveConfidence(params: {
     quality: JobCapabilityProfileQuality;
     clusterCount: number;
@@ -1638,11 +2054,13 @@ function buildCapabilityRankingAudits(params: {
         cluster.genericity === "specific" && cluster.specificity_score >= 0.52 && cluster.confidence >= 0.24).length;
     const specificCoverageRatio = strongSpecificCount / Math.max(1, params.requirementClusters.length);
     const jobHasSpecificShape = strongSpecificCount >= 1 && specificCoverageRatio >= 0.2;
+    const roleEmphasisContext = buildRoleEmphasisContext(params.requirementClusters);
     const ranking = new Map<string, CapabilityRankingAudit>();
 
     for (const breakdown of params.breakdowns) {
         const cluster = clustersById.get(breakdown.cluster_id);
         if (!cluster) continue;
+        const emphasisWeight = roleEmphasisWeight(cluster, roleEmphasisContext);
 
         const roleAlignmentBonus = round(
             cluster.genericity === "broad"
@@ -1730,8 +2148,8 @@ function buildCapabilityRankingAudits(params: {
                 ? Math.max(
                     0,
                     Math.min(
-                        0.2,
-                        0.095
+                        0.24,
+                        0.11
                             + (Math.max(0, strongSpecificCount - 1) * 0.018)
                             + broadSignalPenaltyLift
                             + broadLiteralPenaltyLift
@@ -1741,6 +2159,31 @@ function buildCapabilityRankingAudits(params: {
                 : 0,
             4,
         );
+        const roleEmphasisBonus = round(Math.max(0, emphasisWeight - 1) * 0.2, 4);
+        const roleEmphasisPenalty = round(Math.max(0, 1 - emphasisWeight) * 0.18, 4);
+        const distinctivenessScore = clusterDistinctivenessScore({
+            cluster,
+            breakdown,
+            emphasisWeight,
+        });
+        const distinctivenessFactor = clusterDistinctivenessFactor(distinctivenessScore);
+        const roleDiscriminationScore = computeRoleDiscriminationScore({
+            cluster,
+            breakdown,
+            emphasisWeight,
+            distinctivenessScore,
+        });
+        const broadFamily = isBroadFamily(cluster);
+        const broadGate = broadClusterTopExplanationGate({
+            cluster,
+            breakdown,
+        });
+        const diversityFamilyKey = explanationDiversityFamilyKey(cluster);
+        const distinctivenessBonus = round(Math.max(0, distinctivenessFactor - 1) * 0.18, 4);
+        const distinctivenessPenalty = round(Math.max(0, 1 - distinctivenessFactor) * 0.16, 4);
+        const broadGatePenalty = !broadGate.eligible
+            ? 0.022
+            : 0;
         const tieBreakScore = round(
             Math.min(
                 0.06,
@@ -1761,8 +2204,13 @@ function buildCapabilityRankingAudits(params: {
             + literalSignalBonus
             + sectionSignalBonus
             + roleCoherenceBonus
+            + roleEmphasisBonus
+            + distinctivenessBonus
             + tieBreakScore
-            - genericPenalty,
+            - genericPenalty
+            - roleEmphasisPenalty
+            - distinctivenessPenalty
+            - broadGatePenalty,
         ), 4);
 
         ranking.set(breakdown.cluster_id, {
@@ -1776,6 +2224,16 @@ function buildCapabilityRankingAudits(params: {
             literal_signal_bonus: literalSignalBonus,
             section_signal_bonus: sectionSignalBonus,
             role_coherence_bonus: roleCoherenceBonus,
+            distinctiveness_bonus: distinctivenessBonus,
+            distinctiveness_penalty: distinctivenessPenalty,
+            broad_gate_penalty: broadGatePenalty,
+            distinctiveness_score: distinctivenessScore,
+            distinctiveness_factor: distinctivenessFactor,
+            role_discrimination_score: roleDiscriminationScore,
+            broad_family: broadFamily,
+            broad_top_explanation_eligible: broadGate.eligible,
+            broad_top_explanation_signals_met: broadGate.signals_met,
+            diversity_family_key: diversityFamilyKey,
             generic_penalty: genericPenalty,
             tie_break_score: tieBreakScore,
             genericity: cluster.genericity,
@@ -1785,14 +2243,112 @@ function buildCapabilityRankingAudits(params: {
             jd_high_weight_signal_units: cluster.jd_high_weight_signal_units,
             role_signal_coherence: cluster.role_signal_coherence,
             reason: cluster.genericity === "broad" && genericPenalty > 0
-                ? "Broad cluster dampened because the JD also contains clearer role-shaped signals."
+                ? `Broad cluster dampened because the JD also contains clearer role-shaped signals; ${roleSignalEvidenceSummary(cluster)}, distinctiveness=${distinctivenessScore}, discrimination=${roleDiscriminationScore}, broad_gate=${broadGate.eligible ? "pass" : "soft_block"}(${broadGate.signals_met}/5).`
                 : cluster.genericity === "specific" && (specificityBoost > 0.06 || repeatedSignalBonus > 0.03 || literalSignalBonus > 0.02 || sectionSignalBonus > 0.02)
-                    ? "Specific cluster boosted because literal, repeated, and section-weighted JD signals are coherent."
-                    : "Ranking preserves base contribution with a small deterministic specificity tie-break.",
+                    ? `Specific cluster boosted because literal, repeated, and section-weighted JD signals are coherent; ${roleSignalEvidenceSummary(cluster)}, distinctiveness=${distinctivenessScore}, discrimination=${roleDiscriminationScore}.`
+                    : `Ranking preserves base contribution with deterministic role-emphasis and distinctiveness tie-breaks; ${roleSignalEvidenceSummary(cluster)}, distinctiveness=${distinctivenessScore}, discrimination=${roleDiscriminationScore}.`,
         });
     }
 
     return ranking;
+}
+
+function applyExplanationDiversityPass(params: {
+    items: Array<CapabilityMatchItem & { reasoning?: string }>;
+    rankingAudits: Map<string, CapabilityRankingAudit>;
+    requirementClusters: JobRequirementCluster[];
+    topSlots: number;
+}): Array<CapabilityMatchItem & { reasoning?: string }> {
+    if (params.items.length <= 1) return params.items;
+
+    const clustersById = new Map(params.requirementClusters.map((cluster) => [cluster.cluster_id, cluster]));
+    const candidates: ExplanationSelectionCandidate[] = params.items.map((item, index) => {
+        const ranking = params.rankingAudits.get(item.canonical_name);
+        const cluster = clustersById.get(item.canonical_name);
+        const distinctivenessScore = ranking?.distinctiveness_score ?? 0;
+        const roleDiscriminationScore = ranking?.role_discrimination_score ?? 0;
+        return {
+            index,
+            item,
+            ranking,
+            cluster,
+            broadEligible: ranking?.broad_top_explanation_eligible ?? true,
+            distinctivenessScore,
+            roleDiscriminationScore,
+            familyKey: ranking?.diversity_family_key ?? (cluster ? explanationDiversityFamilyKey(cluster) : ""),
+            isBroad: cluster ? isBroadFamily(cluster) : false,
+            isRoleSpecific: cluster ? isRoleSpecificCluster({ cluster, ranking }) : false,
+        };
+    });
+
+    const hasRoleSpecificCandidate = candidates.some((candidate) => candidate.isRoleSpecific);
+    const selected: typeof candidates = [];
+    const deferred: typeof candidates = [];
+    const seenFamilies = new Set<string>();
+
+    for (const candidate of candidates) {
+        if (selected.length >= params.topSlots) {
+            continue;
+        }
+        const sameFamilyAlreadySelected = candidate.familyKey
+            ? seenFamilies.has(candidate.familyKey)
+            : false;
+        const shouldDeferBroad = candidate.isBroad && !candidate.broadEligible;
+        const shouldDeferForDiversity = sameFamilyAlreadySelected && candidate.distinctivenessScore < 0.66;
+        if (shouldDeferBroad || shouldDeferForDiversity) {
+            deferred.push(candidate);
+            continue;
+        }
+        selected.push(candidate);
+        if (candidate.familyKey) seenFamilies.add(candidate.familyKey);
+    }
+
+    for (const candidate of deferred) {
+        if (selected.length >= params.topSlots) break;
+        selected.push(candidate);
+        if (candidate.familyKey) seenFamilies.add(candidate.familyKey);
+    }
+
+    if (hasRoleSpecificCandidate) {
+        const hasRoleSpecificInTop = selected.some((candidate) => candidate.isRoleSpecific);
+        if (!hasRoleSpecificInTop) {
+            const roleSpecificCandidate = candidates
+                .filter((candidate) => candidate.isRoleSpecific && !selected.includes(candidate))
+                .sort((left, right) => {
+                    if (right.distinctivenessScore !== left.distinctivenessScore) {
+                        return right.distinctivenessScore - left.distinctivenessScore;
+                    }
+                    return right.item.match_score_contribution - left.item.match_score_contribution;
+                })[0];
+
+            if (roleSpecificCandidate) {
+                const replaceIndex = selected
+                    .map((candidate, index) => ({ candidate, index }))
+                    .sort((left, right) => {
+                        const leftScore = left.candidate.distinctivenessScore + (left.candidate.isRoleSpecific ? 0.2 : 0);
+                        const rightScore = right.candidate.distinctivenessScore + (right.candidate.isRoleSpecific ? 0.2 : 0);
+                        if (leftScore !== rightScore) return leftScore - rightScore;
+                        return left.candidate.item.match_score_contribution - right.candidate.item.match_score_contribution;
+                    })[0]?.index;
+                if (typeof replaceIndex === "number") {
+                    selected[replaceIndex] = roleSpecificCandidate;
+                }
+            }
+        }
+    }
+
+    const selectedIds = new Set(selected.map((candidate) => candidate.item.canonical_name));
+    const orderedCandidates = [
+        ...selected,
+        ...candidates
+            .filter((candidate) => !selectedIds.has(candidate.item.canonical_name))
+            .sort((left, right) => left.index - right.index),
+    ];
+    const postSuppression = applyTopSlotSuppressionPass({
+        orderedCandidates,
+        topSlots: params.topSlots,
+    });
+    return postSuppression.map((candidate) => candidate.item);
 }
 
 function toCapabilityMatchItem(input: {
@@ -2009,6 +2565,7 @@ export async function getCapabilityMatchV2FromContext(params: {
     const evidenceById = new Map(params.candidateContext.evidence_pieces.map((piece) => [piece.id, piece]));
     const byCanonical = new Map(candidateAudits.map((item) => [normalizeText(item.canonical_name), item]));
     const patternsById = new Map(transferablePatternAudits.map((pattern) => [pattern.pattern_id, pattern]));
+    const roleEmphasisContext = buildRoleEmphasisContext(requirementModel.requirement_clusters);
     const breakdowns: RequirementMatchBreakdown[] = [];
     const evidenceLinks: EvidenceCapabilityLink[] = [];
 
@@ -2072,7 +2629,11 @@ export async function getCapabilityMatchV2FromContext(params: {
                 : matchStatus === "weak" || (matchStatus === "partial" && cluster.optionality === "core" && finalClusterScore < 0.58)
                     ? "stretch_gap"
                     : "aligned";
-        const weight = IMPORTANCE_WEIGHT[cluster.importance] * (cluster.optionality === "core" ? 1 : 0.7);
+        const baseWeight = IMPORTANCE_WEIGHT[cluster.importance] * (cluster.optionality === "core" ? 1 : 0.7);
+        const roleDiffWeight = roleDifferentiationFactor(cluster);
+        const emphasisWeight = roleEmphasisWeight(cluster, roleEmphasisContext);
+        const weight = round(baseWeight * roleDiffWeight * emphasisWeight, 4);
+        const roleSignalSummary = roleSignalEvidenceSummary(cluster);
         const topCapabilities = [...directCapabilities, ...transferCapabilities]
             .sort((a, b) => b.strength_score - a.strength_score)
             .slice(0, 3);
@@ -2113,7 +2674,7 @@ export async function getCapabilityMatchV2FromContext(params: {
                 ...transferPatterns.flatMap((pattern) => pattern.supporting_evidence_piece_ids),
             ]).slice(0, 6),
             missing_facets: missingFacets,
-            reasoning: `${cluster.display_name}: direct=${round(directScore, 2)}, transfer=${round(transferScore, 2)}, patterns=${round(transferPatternScore, 2)}, evidence=${round(evidenceMatch.evidence_score, 2)}, ownership=${round(evidenceMatch.ownership_scope_score, 2)}.`,
+            reasoning: `${cluster.display_name}: direct=${round(directScore, 2)}, transfer=${round(transferScore, 2)}, patterns=${round(transferPatternScore, 2)}, evidence=${round(evidenceMatch.evidence_score, 2)}, ownership=${round(evidenceMatch.ownership_scope_score, 2)}, emphasis=${round(roleDiffWeight * emphasisWeight, 2)} (${roleSignalSummary}).`,
         });
     }
 
@@ -2274,6 +2835,12 @@ export async function getCapabilityMatchV2FromContext(params: {
         if ((rightRanking?.role_coherence_bonus ?? 0) !== (leftRanking?.role_coherence_bonus ?? 0)) {
             return (rightRanking?.role_coherence_bonus ?? 0) - (leftRanking?.role_coherence_bonus ?? 0);
         }
+        if ((rightRanking?.distinctiveness_score ?? 0) !== (leftRanking?.distinctiveness_score ?? 0)) {
+            return (rightRanking?.distinctiveness_score ?? 0) - (leftRanking?.distinctiveness_score ?? 0);
+        }
+        if ((rightRanking?.broad_top_explanation_eligible ?? true) !== (leftRanking?.broad_top_explanation_eligible ?? true)) {
+            return (rightRanking?.broad_top_explanation_eligible ? 1 : 0) - (leftRanking?.broad_top_explanation_eligible ? 1 : 0);
+        }
         if ((rightRanking?.specificity_score ?? 0) !== (leftRanking?.specificity_score ?? 0)) {
             return (rightRanking?.specificity_score ?? 0) - (leftRanking?.specificity_score ?? 0);
         }
@@ -2286,9 +2853,21 @@ export async function getCapabilityMatchV2FromContext(params: {
     const matchedStrengths = items
         .filter((item) => item.match_status === "strong")
         .sort(sortByCapabilityRanking);
+    const diversifiedMatchedStrengths = applyExplanationDiversityPass({
+        items: matchedStrengths,
+        rankingAudits,
+        requirementClusters: requirementModel.requirement_clusters,
+        topSlots: 3,
+    });
     const partialMatches = items
         .filter((item) => item.match_status === "partial" || item.match_status === "weak")
         .sort(sortByCapabilityRanking);
+    const diversifiedPartialMatches = applyExplanationDiversityPass({
+        items: partialMatches,
+        rankingAudits,
+        requirementClusters: requirementModel.requirement_clusters,
+        topSlots: 3,
+    });
     const gaps = items
         .filter((item) => item.match_status === "weak" || item.match_status === "missing")
         .sort((a, b) => {
@@ -2302,6 +2881,9 @@ export async function getCapabilityMatchV2FromContext(params: {
             }
             if ((bRanking?.section_signal_bonus ?? 0) !== (aRanking?.section_signal_bonus ?? 0)) {
                 return (bRanking?.section_signal_bonus ?? 0) - (aRanking?.section_signal_bonus ?? 0);
+            }
+            if ((bRanking?.distinctiveness_score ?? 0) !== (aRanking?.distinctiveness_score ?? 0)) {
+                return (bRanking?.distinctiveness_score ?? 0) - (aRanking?.distinctiveness_score ?? 0);
             }
             if ((bRanking?.specificity_score ?? 0) !== (aRanking?.specificity_score ?? 0)) {
                 return (bRanking?.specificity_score ?? 0) - (aRanking?.specificity_score ?? 0);
@@ -2330,8 +2912,8 @@ export async function getCapabilityMatchV2FromContext(params: {
         },
         candidate_capability_profile: params.candidateContext.candidate_profile,
         job_capability_profile: requirementModel.flat_profile.capabilities,
-        matched_strengths: matchedStrengths,
-        partial_matches: partialMatches,
+        matched_strengths: diversifiedMatchedStrengths,
+        partial_matches: diversifiedPartialMatches,
         gaps,
         audit,
     };

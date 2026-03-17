@@ -1,0 +1,1497 @@
+{
+  "generated_at": "2026-03-16T21:44:37.107Z",
+  "input": {
+    "case_id": "job-06",
+    "source": "fixture:scripts/fixtures/human-alignment-benchmark.seed.json#job-06",
+    "profile_id": "8ec2c318-dbd0-42e2-acc7-10a103284b53",
+    "career_id": "4a22f035-c501-40b2-9589-03ee6e8a3cfa",
+    "job_title": "Marketing Science Lead",
+    "company": "Agency Network",
+    "expected": {}
+  },
+  "stage_1_jd_signal_audit": {
+    "parsed_signal_categories": {
+      "required_skills": [
+        "Communication",
+        "Leadership",
+        "Storytelling"
+      ],
+      "preferred_skills": [],
+      "responsibilities": [],
+      "domains": [
+        "analytics",
+        "strategy",
+        "commercial"
+      ],
+      "keywords": [
+        "marketing",
+        "science",
+        "lead",
+        "turn",
+        "campaign",
+        "audience",
+        "analytics",
+        "commercial",
+        "client",
+        "recommendations",
+        "partner",
+        "strategy",
+        "media",
+        "teams",
+        "support",
+        "storytelling",
+        "influence",
+        "planning",
+        "decisions",
+        "required",
+        "translation",
+        "cross",
+        "functional",
+        "stakeholder",
+        "leadership",
+        "facing",
+        "insight",
+        "communication"
+      ]
+    },
+    "signal_weights": {
+      "strong": 3.2,
+      "method": 2.8,
+      "tool": 2.4,
+      "support": 1.6,
+      "repeatBonus": 0.5
+    },
+    "matched_signals": [
+      {
+        "family": "data",
+        "specialization": "bi_reporting",
+        "category": "strong",
+        "signal": "reporting",
+        "hits": 3,
+        "weight": 3.2,
+        "weightedContribution": 9.6
+      },
+      {
+        "family": "product",
+        "specialization": "experimentation",
+        "category": "strong",
+        "signal": "experimentation",
+        "hits": 3,
+        "weight": 3.2,
+        "weightedContribution": 9.6
+      },
+      {
+        "family": "business",
+        "specialization": "commercial_strategy",
+        "category": "strong",
+        "signal": "commercial strategy",
+        "hits": 2,
+        "weight": 3.2,
+        "weightedContribution": 6.4
+      },
+      {
+        "family": "business",
+        "specialization": "commercial_strategy",
+        "category": "strong",
+        "signal": "revenue strategy",
+        "hits": 2,
+        "weight": 3.2,
+        "weightedContribution": 6.4
+      },
+      {
+        "family": "business",
+        "specialization": "financial_analysis",
+        "category": "strong",
+        "signal": "forecasting",
+        "hits": 2,
+        "weight": 3.2,
+        "weightedContribution": 6.4
+      },
+      {
+        "family": "consulting",
+        "specialization": "client_delivery",
+        "category": "strong",
+        "signal": "client delivery",
+        "hits": 2,
+        "weight": 3.2,
+        "weightedContribution": 6.4
+      },
+      {
+        "family": "data",
+        "specialization": "bi_reporting",
+        "category": "strong",
+        "signal": "bi",
+        "hits": 1,
+        "weight": 3.2,
+        "weightedContribution": 3.2
+      },
+      {
+        "family": "data",
+        "specialization": "bi_reporting",
+        "category": "strong",
+        "signal": "dashboard",
+        "hits": 1,
+        "weight": 3.2,
+        "weightedContribution": 3.2
+      },
+      {
+        "family": "product",
+        "specialization": "experimentation",
+        "category": "strong",
+        "signal": "a b testing",
+        "hits": 1,
+        "weight": 3.2,
+        "weightedContribution": 3.2
+      },
+      {
+        "family": "product",
+        "specialization": "experimentation",
+        "category": "strong",
+        "signal": "ab testing",
+        "hits": 1,
+        "weight": 3.2,
+        "weightedContribution": 3.2
+      },
+      {
+        "family": "product",
+        "specialization": "product_analytics",
+        "category": "strong",
+        "signal": "product analytics",
+        "hits": 1,
+        "weight": 3.2,
+        "weightedContribution": 3.2
+      },
+      {
+        "family": "product",
+        "specialization": "product_analytics",
+        "category": "strong",
+        "signal": "retention",
+        "hits": 1,
+        "weight": 3.2,
+        "weightedContribution": 3.2
+      },
+      {
+        "family": "marketing",
+        "specialization": "campaign_analytics",
+        "category": "strong",
+        "signal": "campaign analytics",
+        "hits": 1,
+        "weight": 3.2,
+        "weightedContribution": 3.2
+      },
+      {
+        "family": "marketing",
+        "specialization": "marketing_measurement",
+        "category": "strong",
+        "signal": "media measurement",
+        "hits": 1,
+        "weight": 3.2,
+        "weightedContribution": 3.2
+      },
+      {
+        "family": "marketing",
+        "specialization": "marketing_measurement",
+        "category": "strong",
+        "signal": "attribution",
+        "hits": 1,
+        "weight": 3.2,
+        "weightedContribution": 3.2
+      },
+      {
+        "family": "marketing",
+        "specialization": "marketing_measurement",
+        "category": "strong",
+        "signal": "incrementality",
+        "hits": 1,
+        "weight": 3.2,
+        "weightedContribution": 3.2
+      },
+      {
+        "family": "data",
+        "specialization": "data_strategy",
+        "category": "method",
+        "signal": "roadmap",
+        "hits": 1,
+        "weight": 2.8,
+        "weightedContribution": 2.8
+      },
+      {
+        "family": "marketing",
+        "specialization": "campaign_analytics",
+        "category": "method",
+        "signal": "a b testing",
+        "hits": 1,
+        "weight": 2.8,
+        "weightedContribution": 2.8
+      },
+      {
+        "family": "marketing",
+        "specialization": "campaign_analytics",
+        "category": "method",
+        "signal": "ab testing",
+        "hits": 1,
+        "weight": 2.8,
+        "weightedContribution": 2.8
+      },
+      {
+        "family": "marketing",
+        "specialization": "media_effectiveness",
+        "category": "method",
+        "signal": "incrementality",
+        "hits": 1,
+        "weight": 2.8,
+        "weightedContribution": 2.8
+      },
+      {
+        "family": "data",
+        "specialization": "bi_reporting",
+        "category": "tool",
+        "signal": "power bi",
+        "hits": 1,
+        "weight": 2.4,
+        "weightedContribution": 2.4
+      },
+      {
+        "family": "data",
+        "specialization": "bi_reporting",
+        "category": "tool",
+        "signal": "tableau",
+        "hits": 1,
+        "weight": 2.4,
+        "weightedContribution": 2.4
+      },
+      {
+        "family": "data",
+        "specialization": "bi_reporting",
+        "category": "tool",
+        "signal": "looker",
+        "hits": 1,
+        "weight": 2.4,
+        "weightedContribution": 2.4
+      },
+      {
+        "family": "data",
+        "specialization": "data_platform",
+        "category": "tool",
+        "signal": "bigquery",
+        "hits": 1,
+        "weight": 2.4,
+        "weightedContribution": 2.4
+      },
+      {
+        "family": "marketing",
+        "specialization": "campaign_analytics",
+        "category": "tool",
+        "signal": "looker",
+        "hits": 1,
+        "weight": 2.4,
+        "weightedContribution": 2.4
+      },
+      {
+        "family": "marketing",
+        "specialization": "campaign_analytics",
+        "category": "support",
+        "signal": "funnel",
+        "hits": 1,
+        "weight": 1.6,
+        "weightedContribution": 1.6
+      },
+      {
+        "family": "consulting",
+        "specialization": "strategy_advisory",
+        "category": "support",
+        "signal": "business case",
+        "hits": 1,
+        "weight": 1.6,
+        "weightedContribution": 1.6
+      }
+    ],
+    "important_missed_terms_if_detectable": []
+  },
+  "stage_2_requirement_cluster_audit": {
+    "clusters": [
+      {
+        "clusterId": "stakeholder_embedding",
+        "displayName": "Cross-Functional Embedding & Stakeholder Leadership",
+        "importance": "critical",
+        "confidence": 1,
+        "genericity": "broad",
+        "interpretationLayer": "work_mode",
+        "interpretationLayerScore": 0.9375,
+        "finalClusterScore": 0.5545,
+        "sourceSignals": {
+          "matchedTerms": [
+            "cross-functional",
+            "stakeholder",
+            "partner with",
+            "analytics",
+            "strategy",
+            "commercial",
+            "lead"
+          ],
+          "methods": [
+            "presentation",
+            "business case",
+            "governance"
+          ],
+          "domainModifiers": [
+            "analytics",
+            "strategy",
+            "commercial"
+          ],
+          "evidence": [
+            "Turn campaign and audience analytics into commercial and client recommendations.",
+            "Partner with strategy and media teams, support client storytelling, and influence planning decisions.",
+            "Required: analytics translation, cross-functional stakeholder leadership, and client-facing insight communication."
+          ]
+        }
+      },
+      {
+        "clusterId": "insight_generation_reporting",
+        "displayName": "Insight Generation / Reporting Leadership",
+        "importance": "critical",
+        "confidence": 1,
+        "genericity": "specific",
+        "interpretationLayer": "work_mode",
+        "interpretationLayerScore": 1,
+        "finalClusterScore": 0.6293,
+        "sourceSignals": {
+          "matchedTerms": [
+            "insight communication",
+            "analytics",
+            "campaign",
+            "stakeholder translation"
+          ],
+          "methods": [
+            "reporting",
+            "dashboard",
+            "insight generation",
+            "insight communication"
+          ],
+          "domainModifiers": [
+            "analytics",
+            "insights",
+            "reporting",
+            "campaign"
+          ],
+          "evidence": [
+            "Turn campaign and audience analytics into commercial and client recommendations.",
+            "Partner with strategy and media teams, support client storytelling, and influence planning decisions.",
+            "Required: analytics translation, cross-functional stakeholder leadership, and client-facing insight communication."
+          ]
+        }
+      },
+      {
+        "clusterId": "analytics_translation_storytelling",
+        "displayName": "Analytics Translation & Insight Storytelling",
+        "importance": "important",
+        "confidence": 1,
+        "genericity": "broad",
+        "interpretationLayer": "generic",
+        "interpretationLayerScore": 0.2562,
+        "finalClusterScore": 0.6914,
+        "sourceSignals": {
+          "matchedTerms": [
+            "storytelling",
+            "recommendations",
+            "analytics",
+            "commercial",
+            "strategy",
+            "stakeholder translation"
+          ],
+          "methods": [
+            "recommendations",
+            "narrative",
+            "storytelling"
+          ],
+          "domainModifiers": [
+            "analytics",
+            "insights",
+            "commercial",
+            "customer"
+          ],
+          "evidence": [
+            "Turn campaign and audience analytics into commercial and client recommendations.",
+            "Partner with strategy and media teams, support client storytelling, and influence planning decisions.",
+            "Required: analytics translation, cross-functional stakeholder leadership, and client-facing insight communication."
+          ]
+        }
+      },
+      {
+        "clusterId": "commercial_analytics",
+        "displayName": "Commercial Analytics",
+        "importance": "important",
+        "confidence": 0.62,
+        "genericity": "balanced",
+        "interpretationLayer": "domain_defining",
+        "interpretationLayerScore": 0,
+        "finalClusterScore": 0.6323,
+        "sourceSignals": {
+          "matchedTerms": [
+            "commercial",
+            "analytics"
+          ],
+          "methods": [
+            "segmentation",
+            "forecasting",
+            "pricing",
+            "performance"
+          ],
+          "domainModifiers": [
+            "commercial",
+            "analytics",
+            "customer",
+            "growth"
+          ],
+          "evidence": [
+            "Turn campaign and audience analytics into commercial and client recommendations.",
+            "Required: analytics translation, cross-functional stakeholder leadership, and client-facing insight communication."
+          ]
+        }
+      },
+      {
+        "clusterId": "marketing_science_measurement",
+        "displayName": "Marketing Science / Media Measurement",
+        "importance": "important",
+        "confidence": 1,
+        "genericity": "specific",
+        "interpretationLayer": "domain_defining",
+        "interpretationLayerScore": 1,
+        "finalClusterScore": 0.5865,
+        "sourceSignals": {
+          "matchedTerms": [
+            "marketing science",
+            "audience analytics",
+            "marketing",
+            "media",
+            "campaign",
+            "audience"
+          ],
+          "methods": [
+            "measurement",
+            "attribution",
+            "incrementality",
+            "media analytics",
+            "campaign analytics",
+            "experimentation"
+          ],
+          "domainModifiers": [
+            "marketing",
+            "media",
+            "campaign",
+            "audience"
+          ],
+          "evidence": [
+            "Marketing Science Lead.",
+            "Turn campaign and audience analytics into commercial and client recommendations.",
+            "Partner with strategy and media teams, support client storytelling, and influence planning decisions."
+          ]
+        }
+      },
+      {
+        "clusterId": "domain_context_agency_marketing",
+        "displayName": "Domain Context: Agency / Marketing / Client Delivery",
+        "importance": "important",
+        "confidence": 1,
+        "genericity": "balanced",
+        "interpretationLayer": "domain_defining",
+        "interpretationLayerScore": 0,
+        "finalClusterScore": 0.5777,
+        "sourceSignals": {
+          "matchedTerms": [
+            "media",
+            "marketing",
+            "campaign",
+            "client",
+            "commercial",
+            "analytics"
+          ],
+          "methods": [
+            "client delivery",
+            "campaign insights"
+          ],
+          "domainModifiers": [
+            "marketing",
+            "customer",
+            "commercial"
+          ],
+          "evidence": [
+            "Marketing Science Lead.",
+            "Turn campaign and audience analytics into commercial and client recommendations.",
+            "Partner with strategy and media teams, support client storytelling, and influence planning decisions.",
+            "Required: analytics translation, cross-functional stakeholder leadership, and client-facing insight communication."
+          ]
+        }
+      },
+      {
+        "clusterId": "commercial_strategy_planning",
+        "displayName": "Commercial Planning / Revenue Strategy",
+        "importance": "important",
+        "confidence": 1,
+        "genericity": "specific",
+        "interpretationLayer": "domain_defining",
+        "interpretationLayerScore": 0,
+        "finalClusterScore": 0.6538,
+        "sourceSignals": {
+          "matchedTerms": [
+            "planning",
+            "commercial",
+            "strategy"
+          ],
+          "methods": [
+            "planning",
+            "forecasting",
+            "prioritization",
+            "business cases",
+            "performance reviews"
+          ],
+          "domainModifiers": [
+            "commercial",
+            "revenue",
+            "strategy",
+            "growth"
+          ],
+          "evidence": [
+            "Turn campaign and audience analytics into commercial and client recommendations.",
+            "Partner with strategy and media teams, support client storytelling, and influence planning decisions."
+          ]
+        }
+      },
+      {
+        "clusterId": "customer_cx_insights",
+        "displayName": "Customer / CX Insight Generation",
+        "importance": "important",
+        "confidence": 0.76,
+        "genericity": "specific",
+        "interpretationLayer": "domain_defining",
+        "interpretationLayerScore": 0,
+        "finalClusterScore": 0.6426,
+        "sourceSignals": {
+          "matchedTerms": [
+            "commercial",
+            "analytics"
+          ],
+          "methods": [
+            "measurement",
+            "research",
+            "behavioral insights"
+          ],
+          "domainModifiers": [
+            "customer",
+            "commercial",
+            "analytics"
+          ],
+          "evidence": [
+            "Turn campaign and audience analytics into commercial and client recommendations.",
+            "Required: analytics translation, cross-functional stakeholder leadership, and client-facing insight communication."
+          ]
+        }
+      },
+      {
+        "clusterId": "product_analytics_experimentation",
+        "displayName": "Product Analytics / Experimentation Insight",
+        "importance": "important",
+        "confidence": 0.58,
+        "genericity": "specific",
+        "interpretationLayer": "domain_defining",
+        "interpretationLayerScore": 0.7697,
+        "finalClusterScore": 0.5735,
+        "sourceSignals": {
+          "matchedTerms": [],
+          "methods": [
+            "experimentation",
+            "a/b testing",
+            "ab testing",
+            "funnel",
+            "retention",
+            "cohort"
+          ],
+          "domainModifiers": [
+            "product",
+            "engineering",
+            "roadmap"
+          ],
+          "evidence": []
+        }
+      },
+      {
+        "clusterId": "transformation_enablement",
+        "displayName": "Transformation / Enablement Through Analytics",
+        "importance": "important",
+        "confidence": 0.325,
+        "genericity": "specific",
+        "interpretationLayer": "domain_defining",
+        "interpretationLayerScore": 0,
+        "finalClusterScore": 0.5801,
+        "sourceSignals": {
+          "matchedTerms": [
+            "analytics"
+          ],
+          "methods": [
+            "training",
+            "playbook",
+            "governance",
+            "standards"
+          ],
+          "domainModifiers": [
+            "transformation",
+            "analytics",
+            "operations"
+          ],
+          "evidence": [
+            "Turn campaign and audience analytics into commercial and client recommendations.",
+            "Required: analytics translation, cross-functional stakeholder leadership, and client-facing insight communication."
+          ]
+        }
+      },
+      {
+        "clusterId": "data_tooling_delivery",
+        "displayName": "Data Tooling & Analytical Methods",
+        "importance": "supporting",
+        "confidence": 0.205,
+        "genericity": "specific",
+        "interpretationLayer": "domain_defining",
+        "interpretationLayerScore": 0.246,
+        "finalClusterScore": 0.4704,
+        "sourceSignals": {
+          "matchedTerms": [
+            "analytics"
+          ],
+          "methods": [
+            "sql",
+            "python",
+            "power bi",
+            "tableau",
+            "looker",
+            "bigquery"
+          ],
+          "domainModifiers": [
+            "analytics",
+            "engineering"
+          ],
+          "evidence": [
+            "Turn campaign and audience analytics into commercial and client recommendations.",
+            "Required: analytics translation, cross-functional stakeholder leadership, and client-facing insight communication."
+          ]
+        }
+      }
+    ],
+    "domain_defining_signals_survived_clustering": true,
+    "domain_defining_cluster_count": 8
+  },
+  "stage_3_role_identity_audit": {
+    "primaryRoleType": "analytics_leadership",
+    "secondaryRoleTypes": [],
+    "deliveryScope": "multi_team",
+    "confidence": 0.96,
+    "evidence": [
+      "body_hits:2",
+      "cluster_hits:4"
+    ]
+  },
+  "stage_4_domain_anchor_audit": {
+    "family_score_breakdown": [
+      {
+        "family": "data",
+        "score": 25.376,
+        "domainEvidenceStrength": 8.7,
+        "specializationScores": [
+          {
+            "key": "bi_reporting",
+            "interpretationLayer": "domain_defining",
+            "score": 24.2,
+            "strongHits": 5,
+            "methodHits": 0,
+            "toolHits": 3,
+            "supportHits": 0,
+            "evidence": [
+              "strong:bi:1",
+              "strong:reporting:3",
+              "strong:dashboard:1",
+              "tool:power bi:1",
+              "tool:tableau:1",
+              "tool:looker:1"
+            ]
+          },
+          {
+            "key": "data_strategy",
+            "interpretationLayer": "domain_defining",
+            "score": 2.8,
+            "strongHits": 0,
+            "methodHits": 1,
+            "toolHits": 0,
+            "supportHits": 0,
+            "evidence": [
+              "method:roadmap:1"
+            ]
+          },
+          {
+            "key": "data_platform",
+            "interpretationLayer": "domain_defining",
+            "score": 2.4,
+            "strongHits": 0,
+            "methodHits": 0,
+            "toolHits": 1,
+            "supportHits": 0,
+            "evidence": [
+              "tool:bigquery:1"
+            ]
+          },
+          {
+            "key": "ai_data_transformation",
+            "interpretationLayer": "domain_defining",
+            "score": 0,
+            "strongHits": 0,
+            "methodHits": 0,
+            "toolHits": 0,
+            "supportHits": 0,
+            "evidence": []
+          }
+        ]
+      },
+      {
+        "family": "product",
+        "score": 19.688,
+        "domainEvidenceStrength": 6.8,
+        "specializationScores": [
+          {
+            "key": "experimentation",
+            "interpretationLayer": "domain_defining",
+            "score": 17,
+            "strongHits": 5,
+            "methodHits": 0,
+            "toolHits": 0,
+            "supportHits": 0,
+            "evidence": [
+              "strong:experimentation:3",
+              "strong:a b testing:1",
+              "strong:ab testing:1"
+            ]
+          },
+          {
+            "key": "product_analytics",
+            "interpretationLayer": "domain_defining",
+            "score": 6.4,
+            "strongHits": 2,
+            "methodHits": 0,
+            "toolHits": 0,
+            "supportHits": 0,
+            "evidence": [
+              "strong:product analytics:1",
+              "strong:retention:1"
+            ]
+          },
+          {
+            "key": "product_management",
+            "interpretationLayer": "domain_defining",
+            "score": 0,
+            "strongHits": 0,
+            "methodHits": 0,
+            "toolHits": 0,
+            "supportHits": 0,
+            "evidence": []
+          }
+        ]
+      },
+      {
+        "family": "marketing",
+        "score": 16.832,
+        "domainEvidenceStrength": 5.5,
+        "specializationScores": [
+          {
+            "key": "campaign_analytics",
+            "interpretationLayer": "domain_defining",
+            "score": 12.8,
+            "strongHits": 1,
+            "methodHits": 2,
+            "toolHits": 1,
+            "supportHits": 1,
+            "evidence": [
+              "strong:campaign analytics:1",
+              "method:a b testing:1",
+              "method:ab testing:1",
+              "tool:looker:1",
+              "support:funnel:1"
+            ]
+          },
+          {
+            "key": "marketing_measurement",
+            "interpretationLayer": "domain_defining",
+            "score": 9.6,
+            "strongHits": 3,
+            "methodHits": 0,
+            "toolHits": 0,
+            "supportHits": 0,
+            "evidence": [
+              "strong:media measurement:1",
+              "strong:attribution:1",
+              "strong:incrementality:1"
+            ]
+          },
+          {
+            "key": "media_effectiveness",
+            "interpretationLayer": "domain_defining",
+            "score": 2.8,
+            "strongHits": 0,
+            "methodHits": 1,
+            "toolHits": 0,
+            "supportHits": 0,
+            "evidence": [
+              "method:incrementality:1"
+            ]
+          },
+          {
+            "key": "martech_stack",
+            "interpretationLayer": "domain_defining",
+            "score": 0,
+            "strongHits": 0,
+            "methodHits": 0,
+            "toolHits": 0,
+            "supportHits": 0,
+            "evidence": []
+          }
+        ]
+      },
+      {
+        "family": "business",
+        "score": 16.698,
+        "domainEvidenceStrength": 5.6,
+        "specializationScores": [
+          {
+            "key": "commercial_strategy",
+            "interpretationLayer": "domain_defining",
+            "score": 13.8,
+            "strongHits": 4,
+            "methodHits": 0,
+            "toolHits": 0,
+            "supportHits": 0,
+            "evidence": [
+              "strong:commercial strategy:2",
+              "strong:revenue strategy:2"
+            ]
+          },
+          {
+            "key": "financial_analysis",
+            "interpretationLayer": "domain_defining",
+            "score": 6.9,
+            "strongHits": 2,
+            "methodHits": 0,
+            "toolHits": 0,
+            "supportHits": 0,
+            "evidence": [
+              "strong:forecasting:2"
+            ]
+          },
+          {
+            "key": "business_planning",
+            "interpretationLayer": "domain_defining",
+            "score": 0,
+            "strongHits": 0,
+            "methodHits": 0,
+            "toolHits": 0,
+            "supportHits": 0,
+            "evidence": []
+          }
+        ]
+      },
+      {
+        "family": "consulting",
+        "score": 7.572,
+        "domainEvidenceStrength": 2.4,
+        "specializationScores": [
+          {
+            "key": "client_delivery",
+            "interpretationLayer": "domain_defining",
+            "score": 6.9,
+            "strongHits": 2,
+            "methodHits": 0,
+            "toolHits": 0,
+            "supportHits": 0,
+            "evidence": [
+              "strong:client delivery:2"
+            ]
+          },
+          {
+            "key": "strategy_advisory",
+            "interpretationLayer": "domain_defining",
+            "score": 1.6,
+            "strongHits": 0,
+            "methodHits": 0,
+            "toolHits": 0,
+            "supportHits": 1,
+            "evidence": [
+              "support:business case:1"
+            ]
+          },
+          {
+            "key": "transformation_advisory",
+            "interpretationLayer": "domain_defining",
+            "score": 0,
+            "strongHits": 0,
+            "methodHits": 0,
+            "toolHits": 0,
+            "supportHits": 0,
+            "evidence": []
+          }
+        ]
+      },
+      {
+        "family": "engineering",
+        "score": 0,
+        "domainEvidenceStrength": 0,
+        "specializationScores": [
+          {
+            "key": "software_delivery",
+            "interpretationLayer": "domain_defining",
+            "score": 0,
+            "strongHits": 0,
+            "methodHits": 0,
+            "toolHits": 0,
+            "supportHits": 0,
+            "evidence": []
+          },
+          {
+            "key": "ml_platform",
+            "interpretationLayer": "domain_defining",
+            "score": 0,
+            "strongHits": 0,
+            "methodHits": 0,
+            "toolHits": 0,
+            "supportHits": 0,
+            "evidence": []
+          },
+          {
+            "key": "platform_engineering",
+            "interpretationLayer": "domain_defining",
+            "score": 0,
+            "strongHits": 0,
+            "methodHits": 0,
+            "toolHits": 0,
+            "supportHits": 0,
+            "evidence": []
+          }
+        ]
+      },
+      {
+        "family": "operations",
+        "score": 0,
+        "domainEvidenceStrength": 0,
+        "specializationScores": [
+          {
+            "key": "program_delivery",
+            "interpretationLayer": "domain_defining",
+            "score": 0,
+            "strongHits": 0,
+            "methodHits": 0,
+            "toolHits": 0,
+            "supportHits": 0,
+            "evidence": []
+          },
+          {
+            "key": "service_operations",
+            "interpretationLayer": "domain_defining",
+            "score": 0,
+            "strongHits": 0,
+            "methodHits": 0,
+            "toolHits": 0,
+            "supportHits": 0,
+            "evidence": []
+          },
+          {
+            "key": "process_optimization",
+            "interpretationLayer": "domain_defining",
+            "score": 0,
+            "strongHits": 0,
+            "methodHits": 0,
+            "toolHits": 0,
+            "supportHits": 0,
+            "evidence": []
+          }
+        ]
+      },
+      {
+        "family": "domain_specialist",
+        "score": 0,
+        "domainEvidenceStrength": 0,
+        "specializationScores": [
+          {
+            "key": "legal",
+            "interpretationLayer": "domain_defining",
+            "score": 0,
+            "strongHits": 0,
+            "methodHits": 0,
+            "toolHits": 0,
+            "supportHits": 0,
+            "evidence": []
+          },
+          {
+            "key": "healthcare",
+            "interpretationLayer": "domain_defining",
+            "score": 0,
+            "strongHits": 0,
+            "methodHits": 0,
+            "toolHits": 0,
+            "supportHits": 0,
+            "evidence": []
+          },
+          {
+            "key": "finance",
+            "interpretationLayer": "domain_defining",
+            "score": 0,
+            "strongHits": 0,
+            "methodHits": 0,
+            "toolHits": 0,
+            "supportHits": 0,
+            "evidence": []
+          },
+          {
+            "key": "supply_chain",
+            "interpretationLayer": "domain_defining",
+            "score": 0,
+            "strongHits": 0,
+            "methodHits": 0,
+            "toolHits": 0,
+            "supportHits": 0,
+            "evidence": []
+          }
+        ]
+      }
+    ],
+    "winning_family": "marketing",
+    "winning_specialization_hints": [
+      "campaign_analytics",
+      "marketing_measurement"
+    ],
+    "tie_break_override_trace": [
+      "initial_winner:data:score=25.376",
+      "final_winner:data:score=25.376",
+      "domain_override_applied:vertical_signal_override:marketing:dominance=36.500"
+    ],
+    "dominant_layers": [
+      "work_mode",
+      "domain_defining",
+      "generic"
+    ]
+  },
+  "stage_5_interpretation_hierarchy_audit": {
+    "dominant_signals_by_layer": [
+      {
+        "layer": "work_mode",
+        "score": 22.6,
+        "evidence": [
+          "work_mode/support:stakeholder leadership:2",
+          "work_mode/support:cross functional:3",
+          "work_mode/support:cross-functional:3",
+          "work_mode/support:reporting:3",
+          "work_mode/support:dashboard:1",
+          "work_mode/support:communication:4"
+        ]
+      },
+      {
+        "layer": "domain_defining",
+        "score": 22.4,
+        "evidence": [
+          "marketing/campaign_analytics/strong:campaign analytics:1",
+          "marketing/campaign_analytics/method:a b testing:1",
+          "marketing/campaign_analytics/method:ab testing:1",
+          "marketing/campaign_analytics/tool:looker:1",
+          "marketing/campaign_analytics/support:funnel:1",
+          "marketing/marketing_measurement/strong:media measurement:1",
+          "marketing/marketing_measurement/strong:attribution:1",
+          "marketing/marketing_measurement/strong:incrementality:1"
+        ]
+      },
+      {
+        "layer": "generic",
+        "score": 10.65,
+        "evidence": [
+          "generic/support:insight storytelling:1",
+          "generic/support:communication:4",
+          "generic/support:leadership:4"
+        ]
+      }
+    ],
+    "explanation_priority_trace": [
+      {
+        "displayName": "Marketing Science / Media Measurement",
+        "interpretationLayer": "domain_defining",
+        "score": 16.0042,
+        "selected": true,
+        "selectionReason": "selected_by_hierarchy:domain_defining"
+      },
+      {
+        "displayName": "Product Analytics / Experimentation Insight",
+        "interpretationLayer": "domain_defining",
+        "score": 13.7618,
+        "selected": true,
+        "selectionReason": "selected_by_hierarchy:domain_defining"
+      },
+      {
+        "displayName": "Customer / CX Insight Generation",
+        "interpretationLayer": "domain_defining",
+        "score": 13.7352,
+        "selected": true,
+        "selectionReason": "selected_by_hierarchy:domain_defining"
+      },
+      {
+        "displayName": "Commercial Analytics",
+        "interpretationLayer": "domain_defining",
+        "score": 12.8915,
+        "selected": false,
+        "selectionReason": "not_selected_lower_rank:domain_defining"
+      },
+      {
+        "displayName": "Domain Context: Agency / Marketing / Client Delivery",
+        "interpretationLayer": "domain_defining",
+        "score": 12.7198,
+        "selected": false,
+        "selectionReason": "not_selected_lower_rank:domain_defining"
+      },
+      {
+        "displayName": "Transformation / Enablement Through Analytics",
+        "interpretationLayer": "domain_defining",
+        "score": 11.7358,
+        "selected": false,
+        "selectionReason": "not_selected_lower_rank:domain_defining"
+      },
+      {
+        "displayName": "Commercial Planning / Revenue Strategy",
+        "interpretationLayer": "domain_defining",
+        "score": 11.617,
+        "selected": false,
+        "selectionReason": "not_selected_lower_rank:domain_defining"
+      },
+      {
+        "displayName": "Insight Generation / Reporting Leadership",
+        "interpretationLayer": "work_mode",
+        "score": 11.5081,
+        "selected": false,
+        "selectionReason": "not_selected_lower_rank:work_mode"
+      },
+      {
+        "displayName": "Cross-Functional Embedding & Stakeholder Leadership",
+        "interpretationLayer": "work_mode",
+        "score": 10.4495,
+        "selected": false,
+        "selectionReason": "not_selected_lower_rank:work_mode"
+      },
+      {
+        "displayName": "Analytics Translation & Insight Storytelling",
+        "interpretationLayer": "generic",
+        "score": 6.8801,
+        "selected": false,
+        "selectionReason": "not_selected_lower_rank:generic"
+      }
+    ],
+    "higher_layer_signals_available_but_not_selected": false
+  },
+  "stage_6_selection_audit": {
+    "final_outputs": {
+      "applyRecommendation": {
+        "score": 70,
+        "band": "consider"
+      },
+      "careerInsight": "Apply Recommendation is 70/100 for Marketing Science Lead. You have a viable path if you position marketing science / media measurement as direct campaign analytics evidence. Main risk to address is insight generation / reporting leadership. Answering quick checks can improve confidence in this recommendation.",
+      "whyFit": [
+        "This JD leans on campaign analytics, and your background shows adjacent proof in that area.",
+        "Your experience in Marketing Science / Media Measurement aligns with this role's day-to-day priorities.",
+        "Your experience in Product Analytics / Experimentation Insight aligns with this role's day-to-day priorities."
+      ],
+      "risks": [
+        "Depth in Insight Generation / Reporting Leadership may need stronger proof of ownership and decision impact for this role.",
+        "Depth in Commercial Analytics may need stronger proof of ownership and decision impact for this role."
+      ],
+      "quickChecks": [
+        {
+          "id": "cal_insight_generation_reporting",
+          "question": "Have you led a BI, reporting, or data platform migration across teams?",
+          "target_area": "Insight Generation / Reporting Leadership",
+          "importance": "critical",
+          "answer": null
+        },
+        {
+          "id": "cal_stakeholder_embedding",
+          "question": "Have you directly aligned executive and cross-functional stakeholders on strategic decisions?",
+          "target_area": "Cross-Functional Embedding & Stakeholder Leadership",
+          "importance": "critical",
+          "answer": null
+        }
+      ]
+    },
+    "consistency_context": {
+      "excluded_consistency_keys": [
+        "marketing_measurement",
+        "product_analytics",
+        "customer_cx_insight"
+      ],
+      "preferred_uncertainty_key": "insight_generation_reporting"
+    },
+    "why_fit_candidates": [
+      {
+        "sourceRequirementId": "marketing_science_measurement",
+        "displayName": "Marketing Science / Media Measurement",
+        "consistencyKey": "marketing_measurement",
+        "interpretationLayer": "domain_defining",
+        "score": 16.0042,
+        "jdImportance": "important",
+        "candidateSupportLevel": "partial",
+        "domainRelevance": 0.286,
+        "roleRelevance": 0.9315,
+        "selected": true,
+        "selectionReason": "selected_by_hierarchy:domain_defining",
+        "displayReason": "strength_candidate|interpretation_layer:domain_defining|support_level:partial"
+      },
+      {
+        "sourceRequirementId": "product_analytics_experimentation",
+        "displayName": "Product Analytics / Experimentation Insight",
+        "consistencyKey": "product_analytics",
+        "interpretationLayer": "domain_defining",
+        "score": 13.7618,
+        "jdImportance": "important",
+        "candidateSupportLevel": "partial",
+        "domainRelevance": 0.2012,
+        "roleRelevance": 0.9044,
+        "selected": true,
+        "selectionReason": "selected_by_hierarchy:domain_defining",
+        "displayReason": "strength_candidate|interpretation_layer:domain_defining|support_level:partial"
+      },
+      {
+        "sourceRequirementId": "customer_cx_insights",
+        "displayName": "Customer / CX Insight Generation",
+        "consistencyKey": "customer_cx_insight",
+        "interpretationLayer": "domain_defining",
+        "score": 13.7352,
+        "jdImportance": "important",
+        "candidateSupportLevel": "partial",
+        "domainRelevance": 0,
+        "roleRelevance": 1,
+        "selected": true,
+        "selectionReason": "selected_by_hierarchy:domain_defining",
+        "displayReason": "strength_candidate|interpretation_layer:domain_defining|support_level:partial"
+      },
+      {
+        "sourceRequirementId": "commercial_analytics",
+        "displayName": "Commercial Analytics",
+        "consistencyKey": "commercial_analytics",
+        "interpretationLayer": "domain_defining",
+        "score": 12.8915,
+        "jdImportance": "important",
+        "candidateSupportLevel": "partial",
+        "domainRelevance": 0,
+        "roleRelevance": 0.84,
+        "selected": false,
+        "selectionReason": "not_selected_lower_rank:domain_defining",
+        "displayReason": "strength_candidate|interpretation_layer:domain_defining|support_level:partial"
+      },
+      {
+        "sourceRequirementId": "domain_context_agency_marketing",
+        "displayName": "Domain Context: Agency / Marketing / Client Delivery",
+        "consistencyKey": "domain_context_agency",
+        "interpretationLayer": "domain_defining",
+        "score": 12.7198,
+        "jdImportance": "important",
+        "candidateSupportLevel": "partial",
+        "domainRelevance": 0,
+        "roleRelevance": 0,
+        "selected": false,
+        "selectionReason": "not_selected_lower_rank:domain_defining",
+        "displayReason": "strength_candidate|interpretation_layer:domain_defining|support_level:partial"
+      },
+      {
+        "sourceRequirementId": "transformation_enablement",
+        "displayName": "Transformation / Enablement Through Analytics",
+        "consistencyKey": "transformation_enablement_through",
+        "interpretationLayer": "domain_defining",
+        "score": 11.7358,
+        "jdImportance": "important",
+        "candidateSupportLevel": "partial",
+        "domainRelevance": 0,
+        "roleRelevance": 0.42,
+        "selected": false,
+        "selectionReason": "not_selected_lower_rank:domain_defining",
+        "displayReason": "strength_candidate|interpretation_layer:domain_defining|support_level:partial"
+      },
+      {
+        "sourceRequirementId": "commercial_strategy_planning",
+        "displayName": "Commercial Planning / Revenue Strategy",
+        "consistencyKey": "commercial_planning_revenue",
+        "interpretationLayer": "domain_defining",
+        "score": 11.617,
+        "jdImportance": "important",
+        "candidateSupportLevel": "partial",
+        "domainRelevance": 0,
+        "roleRelevance": 0,
+        "selected": false,
+        "selectionReason": "not_selected_lower_rank:domain_defining",
+        "displayReason": "strength_candidate|interpretation_layer:domain_defining|support_level:partial"
+      },
+      {
+        "sourceRequirementId": "insight_generation_reporting",
+        "displayName": "Insight Generation / Reporting Leadership",
+        "consistencyKey": "insight_generation_reporting",
+        "interpretationLayer": "work_mode",
+        "score": 11.5081,
+        "jdImportance": "critical",
+        "candidateSupportLevel": "partial",
+        "domainRelevance": 0,
+        "roleRelevance": 1,
+        "selected": false,
+        "selectionReason": "not_selected_lower_rank:work_mode",
+        "displayReason": "strength_candidate|interpretation_layer:work_mode|support_level:partial"
+      },
+      {
+        "sourceRequirementId": "stakeholder_embedding",
+        "displayName": "Cross-Functional Embedding & Stakeholder Leadership",
+        "consistencyKey": "cross_functional_alignment",
+        "interpretationLayer": "work_mode",
+        "score": 10.4495,
+        "jdImportance": "critical",
+        "candidateSupportLevel": "partial",
+        "domainRelevance": 0,
+        "roleRelevance": 0.42,
+        "selected": false,
+        "selectionReason": "not_selected_lower_rank:work_mode",
+        "displayReason": "strength_candidate|interpretation_layer:work_mode|support_level:partial"
+      },
+      {
+        "sourceRequirementId": "analytics_translation_storytelling",
+        "displayName": "Analytics Translation & Insight Storytelling",
+        "consistencyKey": "analytics_translation_insight",
+        "interpretationLayer": "generic",
+        "score": 6.8801,
+        "jdImportance": "important",
+        "candidateSupportLevel": "partial",
+        "domainRelevance": 0,
+        "roleRelevance": 0.84,
+        "selected": false,
+        "selectionReason": "not_selected_lower_rank:generic",
+        "displayReason": "strength_candidate|interpretation_layer:generic|support_level:partial"
+      }
+    ],
+    "risk_candidates": [
+      {
+        "sourceRequirementId": "marketing_science_measurement",
+        "displayName": "Marketing Science / Media Measurement",
+        "consistencyKey": "marketing_measurement",
+        "interpretationLayer": "domain_defining",
+        "score": 20.311,
+        "jdImportance": "important",
+        "candidateSupportLevel": "partial",
+        "domainRelevance": 0.286,
+        "roleRelevance": 0.9315,
+        "selected": false,
+        "selectionReason": "excluded_fit_overlap",
+        "displayReason": "explicit_or_repeated_jd_signal|role_specific_requirement|non_broad_family|domain_anchor_weak|interpretation_layer:domain_defining"
+      },
+      {
+        "sourceRequirementId": "product_analytics_experimentation",
+        "displayName": "Product Analytics / Experimentation Insight",
+        "consistencyKey": "product_analytics",
+        "interpretationLayer": "domain_defining",
+        "score": 18.139,
+        "jdImportance": "important",
+        "candidateSupportLevel": "partial",
+        "domainRelevance": 0.2012,
+        "roleRelevance": 0.9044,
+        "selected": false,
+        "selectionReason": "excluded_fit_overlap",
+        "displayReason": "explicit_or_repeated_jd_signal|role_specific_requirement|non_broad_family|domain_anchor_weak|interpretation_layer:domain_defining"
+      },
+      {
+        "sourceRequirementId": "insight_generation_reporting",
+        "displayName": "Insight Generation / Reporting Leadership",
+        "consistencyKey": "insight_generation_reporting",
+        "interpretationLayer": "work_mode",
+        "score": 17.3498,
+        "jdImportance": "critical",
+        "candidateSupportLevel": "partial",
+        "domainRelevance": 0,
+        "roleRelevance": 1,
+        "selected": true,
+        "selectionReason": "selected_by_hierarchy:work_mode",
+        "displayReason": "explicit_or_repeated_jd_signal|role_specific_requirement|broad_family_detected|domain_anchor_weak|interpretation_layer:work_mode"
+      },
+      {
+        "sourceRequirementId": "customer_cx_insights",
+        "displayName": "Customer / CX Insight Generation",
+        "consistencyKey": "customer_cx_insight",
+        "interpretationLayer": "domain_defining",
+        "score": 17.2252,
+        "jdImportance": "important",
+        "candidateSupportLevel": "partial",
+        "domainRelevance": 0,
+        "roleRelevance": 1,
+        "selected": false,
+        "selectionReason": "excluded_fit_overlap",
+        "displayReason": "explicit_or_repeated_jd_signal|role_specific_requirement|non_broad_family|domain_anchor_weak|interpretation_layer:domain_defining"
+      },
+      {
+        "sourceRequirementId": "commercial_analytics",
+        "displayName": "Commercial Analytics",
+        "consistencyKey": "commercial_analytics",
+        "interpretationLayer": "domain_defining",
+        "score": 16.618,
+        "jdImportance": "important",
+        "candidateSupportLevel": "partial",
+        "domainRelevance": 0,
+        "roleRelevance": 0.84,
+        "selected": true,
+        "selectionReason": "selected_by_hierarchy:domain_defining",
+        "displayReason": "explicit_or_repeated_jd_signal|role_specific_requirement|non_broad_family|domain_anchor_weak|interpretation_layer:domain_defining"
+      },
+      {
+        "sourceRequirementId": "stakeholder_embedding",
+        "displayName": "Cross-Functional Embedding & Stakeholder Leadership",
+        "consistencyKey": "cross_functional_alignment",
+        "interpretationLayer": "work_mode",
+        "score": 16.2036,
+        "jdImportance": "critical",
+        "candidateSupportLevel": "partial",
+        "domainRelevance": 0,
+        "roleRelevance": 0.42,
+        "selected": true,
+        "selectionReason": "selected_by_hierarchy:work_mode",
+        "displayReason": "explicit_or_repeated_jd_signal|role_specific_requirement|broad_family_detected|domain_anchor_weak|interpretation_layer:work_mode"
+      }
+    ],
+    "quick_check_candidates": [
+      {
+        "sourceRequirementId": "insight_generation_reporting",
+        "questionId": "cal_insight_generation_reporting",
+        "targetArea": "Insight Generation / Reporting Leadership",
+        "consistencyKey": "insight_generation_reporting",
+        "interpretationLayer": "work_mode",
+        "score": 20.8917,
+        "jdImportance": "critical",
+        "candidateSupportLevel": "partial",
+        "domainRelevance": 0,
+        "roleRelevance": 1,
+        "selected": true,
+        "selectionReason": "selected_by_hierarchy:work_mode",
+        "displayReason": "explicit_or_repeated_jd_signal|role_specific_requirement|broad_family_detected|interpretation_layer:work_mode",
+        "questionText": "Have you led a BI, reporting, or data platform migration across teams?"
+      },
+      {
+        "sourceRequirementId": "stakeholder_embedding",
+        "questionId": "cal_stakeholder_embedding",
+        "targetArea": "Cross-Functional Embedding & Stakeholder Leadership",
+        "consistencyKey": "cross_functional_alignment",
+        "interpretationLayer": "work_mode",
+        "score": 19.9429,
+        "jdImportance": "critical",
+        "candidateSupportLevel": "partial",
+        "domainRelevance": 0,
+        "roleRelevance": 0.42,
+        "selected": true,
+        "selectionReason": "selected_by_hierarchy:work_mode",
+        "displayReason": "explicit_or_repeated_jd_signal|role_specific_requirement|broad_family_detected|interpretation_layer:work_mode",
+        "questionText": "Have you directly aligned executive and cross-functional stakeholders on strategic decisions?"
+      }
+    ]
+  },
+  "failure_summary": {
+    "likelyFailureStage": "No obvious single-stage failure",
+    "summary": "Audit trace appears internally consistent. If output is still poor, investigate threshold tuning and copy synthesis.",
+    "details": []
+  }
+}

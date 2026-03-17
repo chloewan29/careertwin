@@ -1,0 +1,47 @@
+{
+  "mode": "heuristic_only",
+  "results": [
+    {
+      "id": "sample_ops_manager",
+      "title": "Operations Manager, Process Excellence",
+      "critical_capabilities": [
+        "operational performance optimization"
+      ],
+      "important_capabilities": [
+        "cross-functional stakeholder leadership"
+      ],
+      "supporting_capabilities": [
+        "analytics automation"
+      ],
+      "role_family": null,
+      "seniority_level": "manager",
+      "transformation_scope": null,
+      "tooling": [
+        "SQL"
+      ],
+      "llm_enriched": false,
+      "extraction_mode": "deterministic_only",
+      "llm_error": null
+    },
+    {
+      "id": "sample_transformation_lead",
+      "title": "Transformation Program Lead, Data Platform",
+      "critical_capabilities": [
+        "capability uplift & enablement",
+        "transformation delivery leadership"
+      ],
+      "important_capabilities": [
+        "bi / data platform transformation",
+        "strategic planning"
+      ],
+      "supporting_capabilities": [],
+      "role_family": null,
+      "seniority_level": "lead",
+      "transformation_scope": null,
+      "tooling": [],
+      "llm_enriched": false,
+      "extraction_mode": "deterministic_only",
+      "llm_error": null
+    }
+  ]
+}

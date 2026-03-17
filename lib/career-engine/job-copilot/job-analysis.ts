@@ -1,6 +1,38 @@
 export type JobAnalysisFitLevel = "strong" | "moderate" | "stretch" | "low";
 export type JobAnalysisConfidence = "high" | "medium" | "low";
 export type JobAnalysisProfileQuality = "strong" | "usable" | "sparse" | "empty";
+export type ApplyRecommendationBand = "strong" | "consider" | "weak";
+export type CalibrationAnswerValue = "yes" | "no";
+
+export type ApplyRecommendation = {
+    score: number;
+    band: ApplyRecommendationBand;
+};
+
+export type JobCalibrationQuestion = {
+    id: string;
+    question: string;
+    target_area: string;
+    importance: "critical" | "important" | "supporting";
+    answer?: CalibrationAnswerValue | null;
+};
+
+export type JobCalibrationAnswer = {
+    question_id: string;
+    answer: CalibrationAnswerValue;
+};
+
+export type JobCalibrationState = {
+    required: boolean;
+    questions: JobCalibrationQuestion[];
+    answers: JobCalibrationAnswer[];
+    answered_count: number;
+    total_questions: number;
+    recalibrated: boolean;
+    score_delta: number;
+    confirmed_strength_areas: string[];
+    confirmed_risk_areas: string[];
+};
 
 export type JobAnalysisEvidenceHighlight = {
     evidencePieceId: string;
@@ -46,6 +78,12 @@ export type JobCopilotAnalysis = {
     fit_level: JobAnalysisFitLevel;
     score_confidence: JobAnalysisConfidence;
     job_profile_quality: JobAnalysisProfileQuality;
+    apply_recommendation?: ApplyRecommendation;
+    career_insight?: string;
+    why_fit?: string[];
+    potential_risks?: string[];
+    positioning_hints?: string[];
+    calibration?: JobCalibrationState;
     interpretation_note: string;
     top_matched_capabilities: string[];
     key_gaps: string[];

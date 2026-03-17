@@ -1,0 +1,64 @@
+{
+  "mode": "heuristic_plus_live_deepseek",
+  "key_detected": true,
+  "key_prefix_redacted": "sk-***",
+  "network_fetch_count_total": 2,
+  "one_call_same_jd_confirmed": true,
+  "results": [
+    {
+      "id": "sample_ops_manager",
+      "title": "Operations Manager, Process Excellence",
+      "critical_capabilities": [
+        "operational performance optimization",
+        "cross-functional stakeholder leadership",
+        "operational kpi management",
+        "delivery of efficiency programs"
+      ],
+      "important_capabilities": [
+        "sql dashboards",
+        "automation exposure"
+      ],
+      "supporting_capabilities": [
+        "analytics automation"
+      ],
+      "role_family": "Operations",
+      "seniority_level": "Manager",
+      "transformation_scope": true,
+      "tooling": [
+        "SQL dashboards"
+      ],
+      "llm_enriched": true,
+      "extraction_mode": "llm_augmented",
+      "llm_error": null,
+      "fetch_calls_for_first_jd_first_call": 1,
+      "fetch_calls_for_first_jd_second_call": 0,
+      "second_call_llm_enriched": true
+    },
+    {
+      "id": "sample_transformation_lead",
+      "title": "Transformation Program Lead, Data Platform",
+      "critical_capabilities": [
+        "transformation delivery leadership",
+        "capability uplift & enablement",
+        "executive steering committee engagement",
+        "enterprise modernization roadmap leadership"
+      ],
+      "important_capabilities": [
+        "bi / data platform transformation",
+        "strategic planning",
+        "migration of bi/reporting stack",
+        "governance standards implementation",
+        "change adoption across business units"
+      ],
+      "supporting_capabilities": [],
+      "role_family": "Program Management/Leadership",
+      "seniority_level": "Lead/Senior",
+      "transformation_scope": true,
+      "tooling": [],
+      "llm_enriched": true,
+      "extraction_mode": "llm_augmented",
+      "llm_error": null,
+      "fetch_calls_for_second_jd_first_call": 1
+    }
+  ]
+}

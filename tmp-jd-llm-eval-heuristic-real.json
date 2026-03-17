@@ -1,0 +1,198 @@
+{
+  "mode": "heuristic_only_real",
+  "count": 10,
+  "results": [
+    {
+      "id": "job-01-analytics-strategy-manager",
+      "title": "Senior Manager, Analytics Strategy and Automation",
+      "critical_capabilities": [
+        "analytics automation",
+        "bi / data platform transformation"
+      ],
+      "important_capabilities": [
+        "cross-functional stakeholder leadership",
+        "strategic planning",
+        "people leadership",
+        "market & opportunity assessment"
+      ],
+      "supporting_capabilities": [],
+      "role_family": null,
+      "seniority_level": "senior",
+      "transformation_scope": null,
+      "tooling": [
+        "Python",
+        "SQL"
+      ],
+      "llm_enriched": false,
+      "extraction_mode": "deterministic_only"
+    },
+    {
+      "id": "job-02-commercial-insights-lead",
+      "title": "Commercial Insights Lead",
+      "critical_capabilities": [
+        "market & opportunity assessment",
+        "commercial analytics"
+      ],
+      "important_capabilities": [
+        "cross-functional stakeholder leadership"
+      ],
+      "supporting_capabilities": [],
+      "role_family": null,
+      "seniority_level": "senior",
+      "transformation_scope": null,
+      "tooling": [],
+      "llm_enriched": false,
+      "extraction_mode": "deterministic_only"
+    },
+    {
+      "id": "job-03-bi-transformation-program-lead",
+      "title": "BI Transformation Program Lead",
+      "critical_capabilities": [
+        "bi / data platform transformation",
+        "capability uplift & enablement",
+        "change management & adoption",
+        "cross-functional stakeholder leadership"
+      ],
+      "important_capabilities": [
+        "transformation delivery leadership"
+      ],
+      "supporting_capabilities": [],
+      "role_family": null,
+      "seniority_level": "lead",
+      "transformation_scope": null,
+      "tooling": [],
+      "llm_enriched": false,
+      "extraction_mode": "deterministic_only"
+    },
+    {
+      "id": "job-04-ops-automation-manager",
+      "title": "Operational Automation Manager",
+      "critical_capabilities": [
+        "analytics automation"
+      ],
+      "important_capabilities": [
+        "cross-functional stakeholder leadership",
+        "operational performance optimization"
+      ],
+      "supporting_capabilities": [],
+      "role_family": null,
+      "seniority_level": "manager",
+      "transformation_scope": null,
+      "tooling": [
+        "Python",
+        "SQL"
+      ],
+      "llm_enriched": false,
+      "extraction_mode": "deterministic_only"
+    },
+    {
+      "id": "job-05-enterprise-sales-director",
+      "title": "Enterprise Sales Director",
+      "critical_capabilities": [
+        "commercial analytics",
+        "executive influence & business cases"
+      ],
+      "important_capabilities": [
+        "cross-functional stakeholder leadership",
+        "people leadership"
+      ],
+      "supporting_capabilities": [],
+      "role_family": null,
+      "seniority_level": "lead",
+      "transformation_scope": null,
+      "tooling": [],
+      "llm_enriched": false,
+      "extraction_mode": "deterministic_only"
+    },
+    {
+      "id": "job-06-product-analytics-manager",
+      "title": "Product Analytics Manager",
+      "critical_capabilities": [
+        "strategic planning",
+        "commercial analytics"
+      ],
+      "important_capabilities": [
+        "people leadership",
+        "cross-functional stakeholder leadership"
+      ],
+      "supporting_capabilities": [],
+      "role_family": null,
+      "seniority_level": "lead",
+      "transformation_scope": null,
+      "tooling": [],
+      "llm_enriched": false,
+      "extraction_mode": "deterministic_only"
+    },
+    {
+      "id": "job-07-commercial-growth-director",
+      "title": "Commercial Growth Director",
+      "critical_capabilities": [],
+      "important_capabilities": [
+        "cross-functional stakeholder leadership",
+        "strategic planning",
+        "market & opportunity assessment",
+        "commercial analytics",
+        "executive influence & business cases"
+      ],
+      "supporting_capabilities": [],
+      "role_family": null,
+      "seniority_level": "lead",
+      "transformation_scope": null,
+      "tooling": [],
+      "llm_enriched": false,
+      "extraction_mode": "deterministic_only"
+    },
+    {
+      "id": "job-08-enterprise-account-sales-lead",
+      "title": "Enterprise Account Sales Lead",
+      "critical_capabilities": [],
+      "important_capabilities": [
+        "strategic planning",
+        "commercial analytics"
+      ],
+      "supporting_capabilities": [
+        "executive influence & business cases",
+        "cross-functional stakeholder leadership",
+        "people leadership"
+      ],
+      "role_family": null,
+      "seniority_level": "senior",
+      "transformation_scope": null,
+      "tooling": [],
+      "llm_enriched": false,
+      "extraction_mode": "deterministic_only"
+    },
+    {
+      "id": "job-09-transformation-operating-model-lead",
+      "title": "Transformation Operating Model Lead",
+      "critical_capabilities": [],
+      "important_capabilities": [
+        "cross-functional stakeholder leadership",
+        "capability uplift & enablement",
+        "transformation delivery leadership"
+      ],
+      "supporting_capabilities": [],
+      "role_family": null,
+      "seniority_level": "lead",
+      "transformation_scope": null,
+      "tooling": [],
+      "llm_enriched": false,
+      "extraction_mode": "deterministic_only"
+    },
+    {
+      "id": "job-10-clinical-research-coordinator",
+      "title": "Clinical Research Coordinator",
+      "critical_capabilities": [],
+      "important_capabilities": [
+        "change management & adoption"
+      ],
+      "supporting_capabilities": [],
+      "role_family": null,
+      "seniority_level": null,
+      "transformation_scope": null,
+      "tooling": [],
+      "llm_enriched": false,
+      "extraction_mode": "deterministic_only"
+    }
+  ]
+}

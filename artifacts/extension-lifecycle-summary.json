@@ -1,0 +1,28 @@
+{
+  "step_name": "extension_lifecycle",
+  "total_tests": 9,
+  "passed_tests": 9,
+  "failed_tests": 0,
+  "terminal_state_breakdown": {
+    "ok": 2,
+    "ready": 2,
+    "error": 5
+  },
+  "static_checks": {
+    "stale_response_guard_present": true,
+    "pending_refresh_guard_present": true,
+    "explicit_terminal_state_branches_present": true,
+    "preview_not_ready_terminalized": true,
+    "bounded_retry_schedule_present": true,
+    "collapsed_extraction_retry_present": true
+  },
+  "timeout_codes": {
+    "analysis_timeout_code": "sidepanel_request_timeout",
+    "download_timeout_code": "sidepanel_download_timeout"
+  },
+  "longest_state_trace_length": 5,
+  "founder_readable_terminalized_case_rate": 1,
+  "thresholds": {
+    "required_pass_rate": 1
+  }
+}

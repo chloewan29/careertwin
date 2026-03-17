@@ -1,3 +1,8 @@
+import {
+    peekCachedLlmJobSignalExtraction,
+    type LlmJobSignalExtraction,
+} from "@/lib/career-engine/matching/llm-job-signal-extractor";
+
 export type JobCapabilityImportance = "critical" | "important" | "supporting";
 export type JobCapabilitySourceTier = "structured" | "lexical_fallback" | "title_prior";
 export type JobCapabilityProfileQuality = "strong" | "usable" | "sparse" | "empty";
@@ -577,6 +582,180 @@ function sortCapabilities(capabilities: ExtractedJobCapability[]): ExtractedJobC
     });
 }
 
+function normalizeCapabilityMergeKey(value: string): string {
+    return value.toLowerCase().replace(/\s+/g, " ").trim();
+}
+
+const LLM_PROVENANCE_PREFIX = "[llm_enriched]";
+const CAPABILITY_TOKEN_STOPWORDS = new Set(["and", "or", "with", "for", "of", "the", "to", "a", "an"]);
+const CAPABILITY_QUALIFIER_TOKENS = new Set([
+    "cross",
+    "functional",
+    "lead",
+    "leader",
+    "leadership",
+    "manage",
+    "management",
+    "delivery",
+    "execution",
+    "team",
+    "teams",
+    "stakeholder",
+    "stakeholders",
+]);
+
+function stemCapabilityToken(token: string): string {
+    return token
+        .replace(/'s$/g, "")
+        .replace(/(ing|ed|ment|ship|s)$/g, "");
+}
+
+function capabilityTokens(value: string): string[] {
+    return normalizeCapabilityMergeKey(value)
+        .split(/[^a-z0-9]+/)
+        .map((token) => stemCapabilityToken(token))
+        .filter((token) => token.length >= 2 && !CAPABILITY_TOKEN_STOPWORDS.has(token));
+}
+
+function capabilityTokenOverlap(left: string[], right: string[]): { overlapCount: number; sharedTokens: string[] } {
+    const leftSet = new Set(left);
+    const shared = Array.from(new Set(right.filter((token) => leftSet.has(token))));
+    return {
+        overlapCount: shared.length,
+        sharedTokens: shared,
+    };
+}
+
+function isNearDuplicateCapabilityLabel(leftLabel: string, rightLabel: string): boolean {
+    const left = normalizeCapabilityMergeKey(leftLabel);
+    const right = normalizeCapabilityMergeKey(rightLabel);
+    if (!left || !right) return false;
+    if (left === right) return true;
+    if ((left.includes(right) || right.includes(left)) && Math.min(left.split(" ").length, right.split(" ").length) >= 2) {
+        return true;
+    }
+
+    const leftTokens = capabilityTokens(left);
+    const rightTokens = capabilityTokens(right);
+    if (leftTokens.length === 0 || rightTokens.length === 0) return false;
+    const { overlapCount, sharedTokens } = capabilityTokenOverlap(leftTokens, rightTokens);
+    const overlapRatio = overlapCount / Math.max(1, Math.min(leftTokens.length, rightTokens.length));
+    if (overlapCount >= 2 && overlapRatio >= 0.66) return true;
+
+    if (overlapCount === 1 && sharedTokens[0].length >= 10) {
+        const leftHasQualifier = leftTokens.some((token) => CAPABILITY_QUALIFIER_TOKENS.has(token));
+        const rightHasQualifier = rightTokens.some((token) => CAPABILITY_QUALIFIER_TOKENS.has(token));
+        if (leftHasQualifier && rightHasQualifier && leftTokens.length <= 5 && rightTokens.length <= 5) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+function llmEvidenceSnippet(label: string): string {
+    return `${LLM_PROVENANCE_PREFIX} ${label}`;
+}
+
+function findNearDuplicateCapabilityIndex(
+    merged: ExtractedJobCapability[],
+    normalizedLabel: string,
+): number | undefined {
+    for (let i = 0; i < merged.length; i += 1) {
+        const candidate = merged[i];
+        if (
+            isNearDuplicateCapabilityLabel(normalizedLabel, candidate.canonical_name)
+            || isNearDuplicateCapabilityLabel(normalizedLabel, candidate.display_name)
+        ) {
+            return i;
+        }
+    }
+    return undefined;
+}
+
+function importanceRank(value: JobCapabilityImportance): number {
+    if (value === "critical") return 3;
+    if (value === "important") return 2;
+    return 1;
+}
+
+function capabilityDisplayName(value: string): string {
+    return value
+        .split(" ")
+        .filter(Boolean)
+        .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+        .join(" ");
+}
+
+function llmCapabilityEntries(signals: LlmJobSignalExtraction): Array<{ label: string; importance: JobCapabilityImportance }> {
+    return [
+        ...signals.critical_capabilities.map((label) => ({ label, importance: "critical" as const })),
+        ...signals.important_capabilities.map((label) => ({ label, importance: "important" as const })),
+        ...signals.supporting_capabilities.map((label) => ({ label, importance: "supporting" as const })),
+    ];
+}
+
+function llmSeedConfidence(importance: JobCapabilityImportance): number {
+    if (importance === "critical") return 0.42;
+    if (importance === "important") return 0.36;
+    return 0.3;
+}
+
+function mergeWithLlmCapabilities(params: {
+    heuristic: ExtractedJobCapability[];
+    llmSignals: LlmJobSignalExtraction | null;
+}): ExtractedJobCapability[] {
+    if (!params.llmSignals) return params.heuristic;
+    const merged = params.heuristic.map((item) => ({
+        ...item,
+        evidence: [...item.evidence],
+        matched_terms: [...item.matched_terms],
+        matched_snippets: [...item.matched_snippets],
+    }));
+    const index = new Map<string, number>();
+    for (let i = 0; i < merged.length; i += 1) {
+        index.set(normalizeCapabilityMergeKey(merged[i].canonical_name), i);
+        index.set(normalizeCapabilityMergeKey(merged[i].display_name), i);
+    }
+
+    for (const llmEntry of llmCapabilityEntries(params.llmSignals)) {
+        const normalized = normalizeCapabilityMergeKey(llmEntry.label);
+        if (!normalized) continue;
+        const provenanceSnippet = llmEvidenceSnippet(llmEntry.label);
+        const existingIndex = index.get(normalized) ?? findNearDuplicateCapabilityIndex(merged, normalized);
+        if (existingIndex !== undefined) {
+            const existing = merged[existingIndex];
+            if (importanceRank(llmEntry.importance) > importanceRank(existing.importance)) {
+                existing.importance = llmEntry.importance;
+            }
+            existing.evidence = Array.from(new Set([...existing.evidence, provenanceSnippet])).slice(0, 4);
+            existing.matched_terms = Array.from(new Set([...existing.matched_terms, llmEntry.label])).slice(0, 6);
+            existing.matched_snippets = Array.from(new Set([...existing.matched_snippets, provenanceSnippet])).slice(0, 4);
+            existing.confidence = Math.max(existing.confidence, llmSeedConfidence(llmEntry.importance));
+            index.set(normalized, existingIndex);
+            continue;
+        }
+
+        const displayName = capabilityDisplayName(normalized);
+        const seeded: ExtractedJobCapability = {
+            canonical_name: normalized,
+            display_name: displayName,
+            importance: llmEntry.importance,
+            evidence: [provenanceSnippet],
+            confidence: llmSeedConfidence(llmEntry.importance),
+            source_tier: "lexical_fallback",
+            matched_terms: [llmEntry.label],
+            matched_snippets: [provenanceSnippet],
+            role_family_basis: null,
+        };
+        merged.push(seeded);
+        index.set(normalized, merged.length - 1);
+        index.set(normalizeCapabilityMergeKey(displayName), merged.length - 1);
+    }
+
+    return merged;
+}
+
 export function extractJobCapabilityProfileV1(input: {
     jobDescription: string;
     titleHint?: string | null;
@@ -621,7 +800,14 @@ export function extractJobCapabilityProfileV1(input: {
         });
     }
 
-    const capabilities = sortCapabilities([...structured, ...lexical, ...titlePrior]);
+    const llmSignals = peekCachedLlmJobSignalExtraction({
+        rawJobText: input.jobDescription,
+        jobTitleHint: input.titleHint,
+    });
+    const capabilities = sortCapabilities(mergeWithLlmCapabilities({
+        heuristic: [...structured, ...lexical, ...titlePrior],
+        llmSignals,
+    }));
     const classified = classifyProfileQuality({ capabilities });
     return {
         capabilities,

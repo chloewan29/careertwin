@@ -95,8 +95,17 @@ export function buildResumeTextFile(params: {
 export function buildJobCopilotAnalyzeOutput(params: {
     job: JobCopilotAnalyzeOutput["job"];
     matchScore: number;
+    applyRecommendation: JobCopilotResponse["applyRecommendation"];
+    careerInsight: string;
+    whyFit: string[];
+    risks: string[];
+    positioningHints: string[];
+    calibrationQuestions: JobCopilotResponse["calibrationQuestions"];
+    calibrationState: JobCopilotResponse["calibrationState"];
     scoreExplainability: NonNullable<JobCopilotResponse["scoreExplainability"]>;
     diagnostics: NonNullable<JobCopilotResponse["diagnostics"]>;
+    jobFitScore: JobCopilotResponse["jobFitScore"];
+    jobFitScoreDebug: JobCopilotResponse["jobFitScoreDebug"];
     whyYouMatch: string[];
     keyGaps: string[];
     topEvidence: JobCopilotTopEvidenceItem[];
@@ -105,13 +114,11 @@ export function buildJobCopilotAnalyzeOutput(params: {
 }): JobCopilotAnalyzeOutput {
     const verdict = getVerdictFromScore(params.matchScore);
     const resumeReady = params.jobAnalysis.tailoring_decision.allowed;
-    const verdictText = verdict === "strong_fit"
-        ? "You are a strong fit for this role"
-        : verdict === "possible_fit"
-            ? "You could be a fit for this role"
-            : verdict === "stretch"
-                ? "This role may be a stretch"
-                : "This role is likely not a strong fit";
+    const verdictText = params.applyRecommendation.band === "strong"
+        ? "You are likely ready to apply for this role"
+        : params.applyRecommendation.band === "consider"
+            ? "This role is worth considering with focused positioning"
+            : "This role is currently a weak apply recommendation";
     const previewText = params.resumePreview?.summary ?? null;
 
     return {
@@ -121,6 +128,13 @@ export function buildJobCopilotAnalyzeOutput(params: {
             verdict,
             matchScore: params.matchScore,
             verdictText,
+            applyRecommendation: params.applyRecommendation,
+            careerInsight: params.careerInsight,
+            whyFit: params.whyFit,
+            risks: params.risks,
+            positioningHints: params.positioningHints,
+            calibrationQuestions: params.calibrationQuestions,
+            calibrationState: params.calibrationState,
             matchedCapabilities: params.whyYouMatch.slice(0, 4),
             keyGaps: params.keyGaps.slice(0, 3),
             topEvidence: params.topEvidence,
@@ -134,6 +148,8 @@ export function buildJobCopilotAnalyzeOutput(params: {
             },
             scoreExplainability: params.scoreExplainability,
             diagnostics: params.diagnostics,
+            jobFitScore: params.jobFitScore,
+            jobFitScoreDebug: params.jobFitScoreDebug,
         },
     };
 }

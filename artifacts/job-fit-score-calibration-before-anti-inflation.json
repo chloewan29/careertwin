@@ -1,0 +1,516 @@
+{
+  "generated_at": "2026-03-17T01:46:37.701Z",
+  "fixture_path": "scripts/fixtures/human-alignment-benchmark.seed.json",
+  "profile_id": "8ec2c318-dbd0-42e2-acc7-10a103284b53",
+  "career_id": "4a22f035-c501-40b2-9589-03ee6e8a3cfa",
+  "total_cases_analyzed": 20,
+  "average_score": 58.8,
+  "median_score": 62.2,
+  "score_distribution": {
+    "0-20": 0,
+    "20-40": 1,
+    "40-60": 7,
+    "60-80": 12,
+    "80-100": 0
+  },
+  "bucket_distribution": {
+    "Strong Match": 0,
+    "Good Match": 12,
+    "Partial Match": 6,
+    "Weak Match": 2
+  },
+  "specialization_score_alignment": [
+    {
+      "specialization": "product_analytics",
+      "case_count": 7,
+      "average_score": 68.6,
+      "min_score": 67.3,
+      "max_score": 69.2,
+      "bucket_distribution": {
+        "Strong Match": 0,
+        "Good Match": 7,
+        "Partial Match": 0,
+        "Weak Match": 0
+      }
+    },
+    {
+      "specialization": "consumer_insights",
+      "case_count": 4,
+      "average_score": 64.5,
+      "min_score": 57.6,
+      "max_score": 70.1,
+      "bucket_distribution": {
+        "Strong Match": 0,
+        "Good Match": 3,
+        "Partial Match": 1,
+        "Weak Match": 0
+      }
+    },
+    {
+      "specialization": "management_consulting",
+      "case_count": 3,
+      "average_score": 46.5,
+      "min_score": 42.1,
+      "max_score": 51.2,
+      "bucket_distribution": {
+        "Strong Match": 0,
+        "Good Match": 0,
+        "Partial Match": 2,
+        "Weak Match": 1
+      }
+    },
+    {
+      "specialization": "data_analytics",
+      "case_count": 1,
+      "average_score": 62.2,
+      "min_score": 62.2,
+      "max_score": 62.2,
+      "bucket_distribution": {
+        "Strong Match": 0,
+        "Good Match": 1,
+        "Partial Match": 0,
+        "Weak Match": 0
+      }
+    },
+    {
+      "specialization": "audience_analytics",
+      "case_count": 1,
+      "average_score": 62.1,
+      "min_score": 62.1,
+      "max_score": 62.1,
+      "bucket_distribution": {
+        "Strong Match": 0,
+        "Good Match": 1,
+        "Partial Match": 0,
+        "Weak Match": 0
+      }
+    },
+    {
+      "specialization": "data_science",
+      "case_count": 1,
+      "average_score": 59.7,
+      "min_score": 59.7,
+      "max_score": 59.7,
+      "bucket_distribution": {
+        "Strong Match": 0,
+        "Good Match": 0,
+        "Partial Match": 1,
+        "Weak Match": 0
+      }
+    },
+    {
+      "specialization": "marketing_measurement",
+      "case_count": 1,
+      "average_score": 46.7,
+      "min_score": 46.7,
+      "max_score": 46.7,
+      "bucket_distribution": {
+        "Strong Match": 0,
+        "Good Match": 0,
+        "Partial Match": 1,
+        "Weak Match": 0
+      }
+    },
+    {
+      "specialization": "analytics_engineering",
+      "case_count": 1,
+      "average_score": 46.5,
+      "min_score": 46.5,
+      "max_score": 46.5,
+      "bucket_distribution": {
+        "Strong Match": 0,
+        "Good Match": 0,
+        "Partial Match": 1,
+        "Weak Match": 0
+      }
+    },
+    {
+      "specialization": "unknown",
+      "case_count": 1,
+      "average_score": 21.6,
+      "min_score": 21.6,
+      "max_score": 21.6,
+      "bucket_distribution": {
+        "Strong Match": 0,
+        "Good Match": 0,
+        "Partial Match": 0,
+        "Weak Match": 1
+      }
+    }
+  ],
+  "flagged_cases": {
+    "potential_under_scoring": [
+      {
+        "job_id": "job-01",
+        "domain_family": "marketing",
+        "top_specialization": "product_analytics",
+        "total_score": 68.7,
+        "bucket": "Good Match",
+        "specialization_fit": 35.6,
+        "capability_match": 21.5,
+        "evidence_strength": 11.6
+      },
+      {
+        "job_id": "job-03",
+        "domain_family": "marketing",
+        "top_specialization": "consumer_insights",
+        "total_score": 69.8,
+        "bucket": "Good Match",
+        "specialization_fit": 35.8,
+        "capability_match": 22,
+        "evidence_strength": 12
+      },
+      {
+        "job_id": "job-04",
+        "domain_family": "marketing",
+        "top_specialization": "product_analytics",
+        "total_score": 68.8,
+        "bucket": "Good Match",
+        "specialization_fit": 35.6,
+        "capability_match": 21.5,
+        "evidence_strength": 11.7
+      },
+      {
+        "job_id": "job-06",
+        "domain_family": "marketing",
+        "top_specialization": "product_analytics",
+        "total_score": 68.8,
+        "bucket": "Good Match",
+        "specialization_fit": 35.6,
+        "capability_match": 21.4,
+        "evidence_strength": 11.8
+      },
+      {
+        "job_id": "job-08",
+        "domain_family": "marketing",
+        "top_specialization": "product_analytics",
+        "total_score": 68.8,
+        "bucket": "Good Match",
+        "specialization_fit": 35.6,
+        "capability_match": 21.5,
+        "evidence_strength": 11.7
+      },
+      {
+        "job_id": "job-11",
+        "domain_family": "marketing",
+        "top_specialization": "product_analytics",
+        "total_score": 68.5,
+        "bucket": "Good Match",
+        "specialization_fit": 35.6,
+        "capability_match": 21.4,
+        "evidence_strength": 11.5
+      },
+      {
+        "job_id": "job-12",
+        "domain_family": "marketing",
+        "top_specialization": "product_analytics",
+        "total_score": 69.2,
+        "bucket": "Good Match",
+        "specialization_fit": 35.6,
+        "capability_match": 22,
+        "evidence_strength": 11.6
+      },
+      {
+        "job_id": "job-13",
+        "domain_family": "marketing",
+        "top_specialization": "product_analytics",
+        "total_score": 67.3,
+        "bucket": "Good Match",
+        "specialization_fit": 35.6,
+        "capability_match": 20.2,
+        "evidence_strength": 11.5
+      }
+    ],
+    "potential_over_scoring": []
+  },
+  "key_findings": [
+    "Most cases are concentrated in 60-80 (12/20).",
+    "Strong Match bucket is rarely triggered in current benchmark mix.",
+    "Average score (58.8) sits in the Partial Match range.",
+    "Median score is 62.2.",
+    "Potential under-scoring flags: 8.",
+    "Potential over-scoring flags: 0."
+  ],
+  "cases": [
+    {
+      "job_id": "job-01",
+      "job_title": "Analytics Manager",
+      "company": "Publicis Groupe ANZ",
+      "domain_family": "marketing",
+      "top_specialization": "product_analytics",
+      "total_score": 68.7,
+      "bucket": "Good Match",
+      "breakdown": {
+        "specialization_fit": 35.6,
+        "capability_match": 21.5,
+        "evidence_strength": 11.6
+      }
+    },
+    {
+      "job_id": "job-02",
+      "job_title": "Commercial Insights Lead",
+      "company": "Growth Co",
+      "domain_family": "marketing",
+      "top_specialization": "data_analytics",
+      "total_score": 62.2,
+      "bucket": "Good Match",
+      "breakdown": {
+        "specialization_fit": 28.6,
+        "capability_match": 22,
+        "evidence_strength": 11.6
+      }
+    },
+    {
+      "job_id": "job-03",
+      "job_title": "Customer Insights & CX Strategy Manager",
+      "company": "Retail Group",
+      "domain_family": "marketing",
+      "top_specialization": "consumer_insights",
+      "total_score": 69.8,
+      "bucket": "Good Match",
+      "breakdown": {
+        "specialization_fit": 35.8,
+        "capability_match": 22,
+        "evidence_strength": 12
+      }
+    },
+    {
+      "job_id": "job-04",
+      "job_title": "Product Analytics Manager",
+      "company": "Digital Product Co",
+      "domain_family": "marketing",
+      "top_specialization": "product_analytics",
+      "total_score": 68.8,
+      "bucket": "Good Match",
+      "breakdown": {
+        "specialization_fit": 35.6,
+        "capability_match": 21.5,
+        "evidence_strength": 11.7
+      }
+    },
+    {
+      "job_id": "job-05",
+      "job_title": "BI Transformation Program Lead",
+      "company": "Enterprise Co",
+      "domain_family": "marketing",
+      "top_specialization": "management_consulting",
+      "total_score": 46.2,
+      "bucket": "Partial Match",
+      "breakdown": {
+        "specialization_fit": 16.8,
+        "capability_match": 17.8,
+        "evidence_strength": 11.6
+      }
+    },
+    {
+      "job_id": "job-06",
+      "job_title": "Marketing Science Lead",
+      "company": "Agency Network",
+      "domain_family": "marketing",
+      "top_specialization": "product_analytics",
+      "total_score": 68.8,
+      "bucket": "Good Match",
+      "breakdown": {
+        "specialization_fit": 35.6,
+        "capability_match": 21.4,
+        "evidence_strength": 11.8
+      }
+    },
+    {
+      "job_id": "job-07",
+      "job_title": "Transformation Enablement Manager",
+      "company": "Ops Co",
+      "domain_family": "marketing",
+      "top_specialization": "consumer_insights",
+      "total_score": 60.7,
+      "bucket": "Good Match",
+      "breakdown": {
+        "specialization_fit": 28.6,
+        "capability_match": 20.4,
+        "evidence_strength": 11.7
+      }
+    },
+    {
+      "job_id": "job-08",
+      "job_title": "Revenue Strategy Manager",
+      "company": "SaaS Co",
+      "domain_family": "marketing",
+      "top_specialization": "product_analytics",
+      "total_score": 68.8,
+      "bucket": "Good Match",
+      "breakdown": {
+        "specialization_fit": 35.6,
+        "capability_match": 21.5,
+        "evidence_strength": 11.7
+      }
+    },
+    {
+      "job_id": "job-09",
+      "job_title": "Data & Insights Manager",
+      "company": "Media Group",
+      "domain_family": "data",
+      "top_specialization": "consumer_insights",
+      "total_score": 70.1,
+      "bucket": "Good Match",
+      "breakdown": {
+        "specialization_fit": 35.8,
+        "capability_match": 22,
+        "evidence_strength": 12.3
+      }
+    },
+    {
+      "job_id": "job-10",
+      "job_title": "Analytics Enablement Manager",
+      "company": "Enterprise Services",
+      "domain_family": "data",
+      "top_specialization": "analytics_engineering",
+      "total_score": 46.5,
+      "bucket": "Partial Match",
+      "breakdown": {
+        "specialization_fit": 13.1,
+        "capability_match": 21.2,
+        "evidence_strength": 12.2
+      }
+    },
+    {
+      "job_id": "job-11",
+      "job_title": "Commercial Strategy Director",
+      "company": "Consumer Goods Co",
+      "domain_family": "marketing",
+      "top_specialization": "product_analytics",
+      "total_score": 68.5,
+      "bucket": "Good Match",
+      "breakdown": {
+        "specialization_fit": 35.6,
+        "capability_match": 21.4,
+        "evidence_strength": 11.5
+      }
+    },
+    {
+      "job_id": "job-12",
+      "job_title": "Customer Analytics Consultant",
+      "company": "Consulting Firm",
+      "domain_family": "marketing",
+      "top_specialization": "product_analytics",
+      "total_score": 69.2,
+      "bucket": "Good Match",
+      "breakdown": {
+        "specialization_fit": 35.6,
+        "capability_match": 22,
+        "evidence_strength": 11.6
+      }
+    },
+    {
+      "job_id": "job-13",
+      "job_title": "Enterprise Sales Director",
+      "company": "B2B Co",
+      "domain_family": "marketing",
+      "top_specialization": "product_analytics",
+      "total_score": 67.3,
+      "bucket": "Good Match",
+      "breakdown": {
+        "specialization_fit": 35.6,
+        "capability_match": 20.2,
+        "evidence_strength": 11.5
+      }
+    },
+    {
+      "job_id": "job-14",
+      "job_title": "Clinical Research Coordinator",
+      "company": "Health Org",
+      "domain_family": "marketing",
+      "top_specialization": null,
+      "total_score": 21.6,
+      "bucket": "Weak Match",
+      "breakdown": {
+        "specialization_fit": 0,
+        "capability_match": 9.1,
+        "evidence_strength": 12.5
+      }
+    },
+    {
+      "job_id": "job-15",
+      "job_title": "Software Engineering Manager",
+      "company": "Tech Co",
+      "domain_family": "operations",
+      "top_specialization": "management_consulting",
+      "total_score": 42.1,
+      "bucket": "Weak Match",
+      "breakdown": {
+        "specialization_fit": 16.8,
+        "capability_match": 12.8,
+        "evidence_strength": 12.5
+      }
+    },
+    {
+      "job_id": "job-16",
+      "job_title": "SEO Manager",
+      "company": "Performance Agency",
+      "domain_family": "finance",
+      "top_specialization": "data_science",
+      "total_score": 59.7,
+      "bucket": "Partial Match",
+      "breakdown": {
+        "specialization_fit": 28.6,
+        "capability_match": 19.5,
+        "evidence_strength": 11.6
+      }
+    },
+    {
+      "job_id": "job-17",
+      "job_title": "Operations Excellence Manager",
+      "company": "Manufacturing Co",
+      "domain_family": "consulting",
+      "top_specialization": "management_consulting",
+      "total_score": 51.2,
+      "bucket": "Partial Match",
+      "breakdown": {
+        "specialization_fit": 16.8,
+        "capability_match": 22,
+        "evidence_strength": 12.4
+      }
+    },
+    {
+      "job_id": "job-18",
+      "job_title": "Media Insights Director",
+      "company": "Agency Network",
+      "domain_family": "marketing",
+      "top_specialization": "audience_analytics",
+      "total_score": 62.1,
+      "bucket": "Good Match",
+      "breakdown": {
+        "specialization_fit": 28.1,
+        "capability_match": 22,
+        "evidence_strength": 12
+      }
+    },
+    {
+      "job_id": "job-19",
+      "job_title": "Change Manager",
+      "company": "Transformation Office",
+      "domain_family": "marketing",
+      "top_specialization": "marketing_measurement",
+      "total_score": 46.7,
+      "bucket": "Partial Match",
+      "breakdown": {
+        "specialization_fit": 16.4,
+        "capability_match": 18.9,
+        "evidence_strength": 11.4
+      }
+    },
+    {
+      "job_id": "job-20",
+      "job_title": "Research Operations Coordinator",
+      "company": "University Lab",
+      "domain_family": "data",
+      "top_specialization": "consumer_insights",
+      "total_score": 57.6,
+      "bucket": "Partial Match",
+      "breakdown": {
+        "specialization_fit": 28.6,
+        "capability_match": 16.8,
+        "evidence_strength": 12.2
+      }
+    }
+  ]
+}

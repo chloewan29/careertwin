@@ -170,6 +170,36 @@ importScripts(
           sendResponse(result);
           return;
         }
+
+        if (message.type === Messages.SIDEPANEL_SUBMIT_CALIBRATION) {
+          const requestId = message && message.payload && typeof message.payload.requestId === "number"
+            ? message.payload.requestId
+            : ++sidepanelRequestCounter;
+          debugLog("SIDEPANEL_SUBMIT_CALIBRATION received", {
+            requestId,
+            tabId: sender && sender.tab ? sender.tab.id : null,
+            questionId: message && message.payload ? message.payload.questionId : null,
+            answer: message && message.payload ? message.payload.answer : null,
+            requestedTabId: message && message.payload ? message.payload.tabId : null,
+          });
+          const result = await withTimeout(
+            AnalysisService.handleSidepanelCalibrationRequest({
+              ...(message.payload || {}),
+              requestId,
+              requestStartedAt: Date.now(),
+            }),
+            ANALYSIS_E2E_TIMEOUT_MS,
+            () => ({
+              ok: false,
+              state: "error",
+              error: "Calibration update timed out.",
+              code: "calibration_timeout",
+              requestId,
+            }),
+          );
+          sendResponse(result);
+          return;
+        }
       } catch (error) {
         sendResponse({
           ok: false,

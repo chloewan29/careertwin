@@ -20,6 +20,7 @@
   const RETRYABLE_FAILURE_REASONS = new Set([
     "preview_not_ready_yet",
     "job_description_too_short",
+    "job_description_collapsed",
     "missing_job_description",
     "parser_selector_miss",
   ]);
@@ -221,6 +222,8 @@
     if (extraction.state !== "extracting_failed") return false;
 
     const payload = extraction.payload;
+    const sourceMetadata = payload.source_metadata || {};
+    if (sourceMetadata.preview_not_ready || sourceMetadata.jd_collapsed_likely) return false;
     const jdLength = (payload.job_description_text || "").length;
     return Boolean(payload.job_title) && Boolean(payload.company_name) && jdLength >= MIN_PARTIAL_JD_CHARS;
   }

@@ -74,6 +74,32 @@ function envEnabled(value: string | undefined, defaultValue: boolean): boolean {
     return normalized === "1" || normalized === "true" || normalized === "yes";
 }
 
+function dedupe(values: string[]): string[] {
+    return Array.from(new Set(values.map((value) => value.trim()).filter(Boolean)));
+}
+
+function mergeCalibrationIntoJobSignals(params: {
+    jobSignals: ResumeCopilotJobSignals;
+    confirmedStrengthAreas: string[];
+    positioningHints: string[];
+}): ResumeCopilotJobSignals {
+    if (params.confirmedStrengthAreas.length === 0 && params.positioningHints.length === 0) {
+        return params.jobSignals;
+    }
+    return {
+        ...params.jobSignals,
+        required_skills: dedupe([
+            ...params.jobSignals.required_skills,
+            ...params.confirmedStrengthAreas,
+        ]),
+        keywords: dedupe([
+            ...params.jobSignals.keywords,
+            ...params.confirmedStrengthAreas,
+            ...params.positioningHints,
+        ]),
+    };
+}
+
 function buildFallbackJobDescription(jobSignals: ResumeCopilotJobSignals): string {
     const lines = [
         jobSignals.target_title ?? "",
@@ -101,6 +127,7 @@ export async function generateResumeCopilot(params: ResumeCopilotServiceInput): 
         Math.max(1, params.options?.minBulletsPerExperience ?? 2),
     );
     const includeDebug = Boolean(params.options?.includeDebug);
+    const calibrationContext = params.options?.calibrationContext;
     const canonicalOnlyMode = envEnabled(process.env.ENABLE_RESUME_TAILORING_CANONICAL_ONLY, true);
     const legacyFallbackEnabled = !canonicalOnlyMode;
 
@@ -118,6 +145,12 @@ export async function generateResumeCopilot(params: ResumeCopilotServiceInput): 
         throw new Error(`Failed to load job description for jobId=${jobId}: ${jobRow.error.message}`);
     }
 
+    const effectiveJobSignals = mergeCalibrationIntoJobSignals({
+        jobSignals,
+        confirmedStrengthAreas: calibrationContext?.confirmed_strength_areas ?? [],
+        positioningHints: calibrationContext?.positioning_hints ?? [],
+    });
+
     if (!careerGraph.career) {
         const jobAnalysis = buildJobCopilotAnalysis({
             matchScore: 0,
@@ -127,8 +160,8 @@ export async function generateResumeCopilot(params: ResumeCopilotServiceInput): 
             matchedCapabilities: [],
             keyGaps: [],
             evidenceHighlights: [],
-            jdTitle: jobSignals.target_title,
-            jdRoleFamily: jobSignals.role_family,
+            jdTitle: effectiveJobSignals.target_title,
+            jdRoleFamily: effectiveJobSignals.role_family,
             candidateTitles: [],
         });
         return {
@@ -160,17 +193,17 @@ export async function generateResumeCopilot(params: ResumeCopilotServiceInput): 
                         dropped_for_validation: 0,
                         dropped_for_duplicate: 0,
                     },
-                    job_signals: jobSignals,
+                    job_signals: effectiveJobSignals,
                     experiences: [],
                 },
             } : {}),
         };
     }
 
-    const targetRole = jobSignals.target_title?.trim() || jobSignals.role_family?.trim() || null;
+    const targetRole = effectiveJobSignals.target_title?.trim() || effectiveJobSignals.role_family?.trim() || null;
     const jobDescription = typeof jobRow.data?.description === "string" && jobRow.data.description.trim().length >= 40
         ? jobRow.data.description.trim()
-        : buildFallbackJobDescription(jobSignals);
+        : buildFallbackJobDescription(effectiveJobSignals);
     const capabilityMatch = jobDescription.length >= 40
         ? await getCapabilityMatchV1({
             careerId: careerGraph.career.id,
@@ -203,20 +236,20 @@ export async function generateResumeCopilot(params: ResumeCopilotServiceInput): 
             roleFit,
         },
         evidencePool: evidencePool.entries,
-        jobSignals,
+        jobSignals: effectiveJobSignals,
         useLegacyScoring: legacyFallbackEnabled,
     });
 
     const selectedEvidence = selectCoverageAwareBullets({
         rankedEvidence,
-        jobSignals,
+        jobSignals: effectiveJobSignals,
         maxBulletsPerExperience,
         minBulletsPerExperience,
     });
 
     const summary = buildGroundedResumeSummary({
         selectedEvidence,
-        jobSignals,
+        jobSignals: effectiveJobSignals,
         capabilityMatch,
     });
 
@@ -248,15 +281,15 @@ export async function generateResumeCopilot(params: ResumeCopilotServiceInput): 
             label: entry.matchedSignals[0] ?? entry.evidence.raw_text,
             score: entry.score.total_score,
         })),
-        jdTitle: jobSignals.target_title,
-        jdRoleFamily: jobSignals.role_family,
+        jdTitle: effectiveJobSignals.target_title,
+        jdRoleFamily: effectiveJobSignals.role_family,
         candidateTitles: careerGraph.experiences.map((experience) => experience.title),
     });
 
     const output = buildResumeCopilotOutput({
         profileId,
         careerId: careerGraph.career.id,
-        jobSignals,
+        jobSignals: effectiveJobSignals,
         selectedEvidence,
         summary: summary.summary,
         matchedCapabilitiesInSummary: summary.matchedCapabilities,
@@ -296,13 +329,13 @@ export async function generateResumeCopilot(params: ResumeCopilotServiceInput): 
         evidencePoolFallbackUsed: evidencePool.fallbackUsed,
         emptyReason,
         jobSignalsStats: {
-            target_title: jobSignals.target_title,
-            role_family: jobSignals.role_family,
-            required_skills: jobSignals.required_skills.length,
-            preferred_skills: jobSignals.preferred_skills.length,
-            responsibilities: jobSignals.responsibilities.length,
-            keywords: jobSignals.keywords.length,
-            domains: jobSignals.domains.length,
+            target_title: effectiveJobSignals.target_title,
+            role_family: effectiveJobSignals.role_family,
+            required_skills: effectiveJobSignals.required_skills.length,
+            preferred_skills: effectiveJobSignals.preferred_skills.length,
+            responsibilities: effectiveJobSignals.responsibilities.length,
+            keywords: effectiveJobSignals.keywords.length,
+            domains: effectiveJobSignals.domains.length,
         },
     });
 

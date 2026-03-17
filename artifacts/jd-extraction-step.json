@@ -1,0 +1,6 @@
+{
+  "command": "cmd /c /d /s /c npx tsx scripts/verify-jd-extraction.ts --summaryOut C:\\Users\\chloe\\SandboxProjects\\careertwin\\artifacts\\jd-extraction-summary.json --detailsOut C:\\Users\\chloe\\SandboxProjects\\careertwin\\artifacts\\jd-extraction-details.json",
+  "exit_code": 0,
+  "stdout": "{\n  \"total_cases\": 1,\n  \"pass_count\": 1,\n  \"fail_count\": 0,\n  \"pass_rate\": 1,\n  \"summary_out\": \"C:\\\\Users\\\\chloe\\\\SandboxProjects\\\\careertwin\\\\artifacts\\\\jd-extraction-summary.json\",\n  \"details_out\": \"C:\\\\Users\\\\chloe\\\\SandboxProjects\\\\careertwin\\\\artifacts\\\\jd-extraction-details.json\"\n}\n",
+  "stderr": ""
+}

@@ -1,0 +1,18 @@
+{
+  "step_name": "core_path_ts_debt_phase_progress",
+  "phase_scope": "phase3_core_path_cleanup",
+  "before": {
+    "core_careertwin_path": 35,
+    "legacy_or_debt_path": 82
+  },
+  "after": {
+    "core_careertwin_path": 0,
+    "legacy_or_debt_path": 82
+  },
+  "delta": {
+    "core_careertwin_path": -35,
+    "legacy_or_debt_path": 0
+  },
+  "legacy_or_debt_status": "unchanged",
+  "notes": "before values are from the TypeScript debt artifact at the start of this phase; after values are from the latest verify run."
+}

@@ -1,0 +1,223 @@
+{
+  "mode": "heuristic_plus_llm_enriched_mocked",
+  "count": 10,
+  "results": [
+    {
+      "id": "job-01-analytics-strategy-manager",
+      "title": "Senior Manager, Analytics Strategy and Automation",
+      "critical_capabilities": [
+        "analytics automation",
+        "strategic planning",
+        "bi / data platform transformation",
+        "commercial analytics"
+      ],
+      "important_capabilities": [
+        "cross-functional stakeholder leadership",
+        "market & opportunity assessment",
+        "people leadership"
+      ],
+      "supporting_capabilities": [],
+      "role_family": "strategy & planning",
+      "seniority_level": "senior manager",
+      "transformation_scope": false,
+      "tooling": [
+        "SQL",
+        "Python",
+        "Tableau",
+        "Power BI",
+        "BI platform"
+      ],
+      "llm_enriched": true,
+      "extraction_mode": "llm_augmented",
+      "llm_error": null
+    },
+    {
+      "id": "job-02-commercial-insights-lead",
+      "title": "Commercial Insights Lead",
+      "critical_capabilities": [
+        "market & opportunity assessment",
+        "commercial analytics"
+      ],
+      "important_capabilities": [
+        "cross-functional stakeholder leadership",
+        "strategic planning",
+        "executive influence & business cases"
+      ],
+      "supporting_capabilities": [],
+      "role_family": "analytics & insights",
+      "seniority_level": "lead",
+      "transformation_scope": false,
+      "tooling": [],
+      "llm_enriched": true,
+      "extraction_mode": "llm_augmented",
+      "llm_error": null
+    },
+    {
+      "id": "job-03-bi-transformation-program-lead",
+      "title": "BI Transformation Program Lead",
+      "critical_capabilities": [
+        "bi / data platform transformation",
+        "capability uplift & enablement",
+        "change management & adoption",
+        "cross-functional stakeholder leadership",
+        "transformation delivery leadership"
+      ],
+      "important_capabilities": [],
+      "supporting_capabilities": [],
+      "role_family": "transformation program management",
+      "seniority_level": "lead",
+      "transformation_scope": true,
+      "tooling": [
+        "BI platform"
+      ],
+      "llm_enriched": true,
+      "extraction_mode": "llm_augmented",
+      "llm_error": null
+    },
+    {
+      "id": "job-04-ops-automation-manager",
+      "title": "Operational Automation Manager",
+      "critical_capabilities": [
+        "analytics automation",
+        "operational performance optimization"
+      ],
+      "important_capabilities": [
+        "cross-functional stakeholder leadership",
+        "transformation delivery leadership"
+      ],
+      "supporting_capabilities": [],
+      "role_family": "operations management",
+      "seniority_level": "manager",
+      "transformation_scope": false,
+      "tooling": [
+        "SQL",
+        "Python",
+        "BI platform"
+      ],
+      "llm_enriched": true,
+      "extraction_mode": "llm_augmented",
+      "llm_error": null
+    },
+    {
+      "id": "job-05-enterprise-sales-director",
+      "title": "Enterprise Sales Director",
+      "critical_capabilities": [
+        "cross-functional stakeholder leadership",
+        "commercial analytics",
+        "executive influence & business cases"
+      ],
+      "important_capabilities": [
+        "people leadership"
+      ],
+      "supporting_capabilities": [],
+      "role_family": "commercial leadership",
+      "seniority_level": "director",
+      "transformation_scope": false,
+      "tooling": [],
+      "llm_enriched": true,
+      "extraction_mode": "llm_augmented",
+      "llm_error": null
+    },
+    {
+      "id": "job-06-product-analytics-manager",
+      "title": "Product Analytics Manager",
+      "critical_capabilities": [
+        "strategic planning",
+        "people leadership",
+        "commercial analytics"
+      ],
+      "important_capabilities": [
+        "cross-functional stakeholder leadership"
+      ],
+      "supporting_capabilities": [],
+      "role_family": "product management",
+      "seniority_level": "manager",
+      "transformation_scope": false,
+      "tooling": [],
+      "llm_enriched": true,
+      "extraction_mode": "llm_augmented",
+      "llm_error": null
+    },
+    {
+      "id": "job-07-commercial-growth-director",
+      "title": "Commercial Growth Director",
+      "critical_capabilities": [
+        "strategic planning",
+        "market & opportunity assessment"
+      ],
+      "important_capabilities": [
+        "cross-functional stakeholder leadership",
+        "commercial analytics",
+        "executive influence & business cases"
+      ],
+      "supporting_capabilities": [],
+      "role_family": "commercial leadership",
+      "seniority_level": "director",
+      "transformation_scope": false,
+      "tooling": [],
+      "llm_enriched": true,
+      "extraction_mode": "llm_augmented",
+      "llm_error": null
+    },
+    {
+      "id": "job-08-enterprise-account-sales-lead",
+      "title": "Enterprise Account Sales Lead",
+      "critical_capabilities": [
+        "cross-functional stakeholder leadership",
+        "people leadership"
+      ],
+      "important_capabilities": [
+        "strategic planning",
+        "commercial analytics",
+        "executive influence & business cases"
+      ],
+      "supporting_capabilities": [],
+      "role_family": "commercial leadership",
+      "seniority_level": "lead",
+      "transformation_scope": false,
+      "tooling": [],
+      "llm_enriched": true,
+      "extraction_mode": "llm_augmented",
+      "llm_error": null
+    },
+    {
+      "id": "job-09-transformation-operating-model-lead",
+      "title": "Transformation Operating Model Lead",
+      "critical_capabilities": [
+        "transformation delivery leadership",
+        "change management & adoption"
+      ],
+      "important_capabilities": [
+        "capability uplift & enablement",
+        "cross-functional stakeholder leadership",
+        "operational performance optimization"
+      ],
+      "supporting_capabilities": [],
+      "role_family": "transformation program management",
+      "seniority_level": "lead",
+      "transformation_scope": true,
+      "tooling": [],
+      "llm_enriched": true,
+      "extraction_mode": "llm_augmented",
+      "llm_error": null
+    },
+    {
+      "id": "job-10-clinical-research-coordinator",
+      "title": "Clinical Research Coordinator",
+      "critical_capabilities": [
+        "cross-functional stakeholder leadership"
+      ],
+      "important_capabilities": [
+        "change management & adoption"
+      ],
+      "supporting_capabilities": [],
+      "role_family": "business leadership",
+      "seniority_level": "coordinator",
+      "transformation_scope": false,
+      "tooling": [],
+      "llm_enriched": true,
+      "extraction_mode": "llm_augmented",
+      "llm_error": null
+    }
+  ]
+}

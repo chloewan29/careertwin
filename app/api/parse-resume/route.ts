@@ -585,16 +585,52 @@ export async function POST(request: NextRequest) {
                 if (evidenceInsertError) {
                     throw new Error(`evidence_pieces insert failed: ${evidenceInsertError.message}`);
                 } else {
-                    insertedEvidenceRows = (evidenceRows ?? []) as Array<{
-                        id: string;
-                        raw_text: string;
-                        company: string;
-                        role: string;
-                        date_range: string;
-                        source_type: string;
-                        business_context?: string | null;
-                        inferred_scale: Record<string, unknown> | null;
-                    }>;
+                    insertedEvidenceRows = Array.isArray(evidenceRows)
+                        ? evidenceRows.flatMap((row) => {
+                            const candidate = row as unknown as Record<string, unknown>;
+                            const id = candidate.id;
+                            const rawText = candidate.raw_text;
+                            const company = candidate.company;
+                            const role = candidate.role;
+                            const dateRange = candidate.date_range;
+                            const sourceType = candidate.source_type;
+                            if (
+                                typeof id !== "string"
+                                || typeof rawText !== "string"
+                                || typeof company !== "string"
+                                || typeof role !== "string"
+                                || typeof dateRange !== "string"
+                                || typeof sourceType !== "string"
+                            ) {
+                                return [];
+                            }
+
+                            const businessContext = candidate.business_context;
+                            const inferredScale = candidate.inferred_scale;
+                            const normalizedInferredScale = (() => {
+                                if (!inferredScale || typeof inferredScale !== "object" || Array.isArray(inferredScale)) {
+                                    return null;
+                                }
+                                const record: Record<string, unknown> = {};
+                                for (const [key, value] of Object.entries(inferredScale)) {
+                                    record[key] = value;
+                                }
+                                return record;
+                            })();
+                            return [{
+                                id,
+                                raw_text: rawText,
+                                company,
+                                role,
+                                date_range: dateRange,
+                                source_type: sourceType,
+                                business_context: typeof businessContext === "string" || businessContext === null
+                                    ? businessContext
+                                    : null,
+                                inferred_scale: normalizedInferredScale,
+                            }];
+                        })
+                        : [];
                     console.log("[Materialize][evidence_pieces.insert.count]", insertedEvidenceRows.length);
                     recordDebug("evidence_pieces.insert.count", { count: insertedEvidenceRows.length }, null);
                 }

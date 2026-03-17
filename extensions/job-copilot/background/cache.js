@@ -3,6 +3,7 @@
   const byAnalysisKey = new Map();
   const byTabId = new Map();
   const tabAnalysisKey = new Map();
+  const calibrationByAnalysisKey = new Map();
 
   function now() {
     return Date.now();
@@ -35,6 +36,7 @@
   function deleteAnalysis(analysisKey) {
     if (!analysisKey) return;
     byAnalysisKey.delete(analysisKey);
+    calibrationByAnalysisKey.delete(analysisKey);
   }
 
   function setTabAnalysisKey(tabId, analysisKey) {
@@ -60,8 +62,24 @@
     const key = getTabAnalysisKey(tabId);
     if (key) {
       byAnalysisKey.delete(key);
+      calibrationByAnalysisKey.delete(key);
     }
     tabAnalysisKey.delete(tabId);
+  }
+
+  function setCalibrationAnswers(analysisKey, answers) {
+    if (!analysisKey) return;
+    calibrationByAnalysisKey.set(analysisKey, {
+      answers: Array.isArray(answers) ? answers : [],
+      updated_at: now(),
+    });
+  }
+
+  function getCalibrationAnswers(analysisKey) {
+    if (!analysisKey) return [];
+    const value = calibrationByAnalysisKey.get(analysisKey);
+    if (!value || !Array.isArray(value.answers)) return [];
+    return value.answers;
   }
 
   function prune(maxAgeMs) {
@@ -69,6 +87,10 @@
 
     for (const [key, value] of byAnalysisKey.entries()) {
       if ((value.cached_at || 0) < cutoff) byAnalysisKey.delete(key);
+    }
+
+    for (const [key, value] of calibrationByAnalysisKey.entries()) {
+      if ((value.updated_at || 0) < cutoff) calibrationByAnalysisKey.delete(key);
     }
 
     for (const [key, value] of byTabId.entries()) {
@@ -91,6 +113,8 @@
     setAnalysis,
     getAnalysis,
     deleteAnalysis,
+    setCalibrationAnswers,
+    getCalibrationAnswers,
     setTabAnalysisKey,
     getTabAnalysisKey,
     clearAnalysisForTab,

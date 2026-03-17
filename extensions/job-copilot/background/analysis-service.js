@@ -30,6 +30,26 @@
     console.debug(`[CareerTwin][analysis][req=${requestId}] ${message}`, details);
   }
 
+  function getPayloadCurrentJobId(payload) {
+    return payload
+      && payload.source_metadata
+      && typeof payload.source_metadata.current_job_id === "string"
+      ? payload.source_metadata.current_job_id
+      : "";
+  }
+
+  function withAnalysisContext(params) {
+    const extraction = params && params.extraction && typeof params.extraction === "object"
+      ? params.extraction
+      : {};
+    return {
+      ...extraction,
+      tab_id: typeof params.tabId === "number" ? params.tabId : null,
+      analysis_key: typeof params.analysisKey === "string" ? params.analysisKey : null,
+      current_job_id: getPayloadCurrentJobId(params.payload) || null,
+    };
+  }
+
   function finalizeResponse(requestId, response, requestStartedAt) {
     const state = response && response.state ? response.state : "error";
     if (typeof requestStartedAt === "number") {
@@ -48,6 +68,14 @@
 
   function normalizeJobAnalysis(rawJobAnalysis) {
     if (!rawJobAnalysis) return null;
+    const normalizeText = (value) => (typeof value === "string" ? value.trim() : "");
+    const normalizeStringList = (value, limit) => {
+      if (!Array.isArray(value)) return [];
+      return value
+        .map((entry) => (typeof entry === "string" ? entry.trim() : ""))
+        .filter((entry, index, all) => entry && all.indexOf(entry) === index)
+        .slice(0, limit);
+    };
 
     const normalizeCapabilityList = (value) => {
       if (!Array.isArray(value)) return [];
@@ -62,6 +90,65 @@
           return null;
         })
         .filter(Boolean);
+    };
+
+    const normalizeApplyRecommendation = (value) => {
+      if (!value || typeof value !== "object") return null;
+      const scoreRaw = typeof value.score === "number" ? value.score : Number(value.score);
+      const band = normalizeText(value.band);
+      if (!Number.isFinite(scoreRaw)) return null;
+      if (band !== "strong" && band !== "consider" && band !== "weak") return null;
+      return {
+        score: Math.max(0, Math.min(100, Math.round(scoreRaw))),
+        band,
+      };
+    };
+
+    const normalizeCalibration = (value) => {
+      if (!value || typeof value !== "object") return null;
+      const normalizeAnswer = (answerValue) => (answerValue === "yes" || answerValue === "no" ? answerValue : null);
+      const questions = Array.isArray(value.questions)
+        ? value.questions
+          .map((entry) => {
+            if (!entry || typeof entry !== "object") return null;
+            const id = normalizeText(entry.id);
+            const question = normalizeText(entry.question);
+            const targetArea = normalizeText(entry.target_area);
+            const importance = normalizeText(entry.importance);
+            if (!id || !question || !targetArea) return null;
+            return {
+              id,
+              question,
+              target_area: targetArea,
+              importance: importance || "important",
+              answer: normalizeAnswer(entry.answer),
+            };
+          })
+          .filter(Boolean)
+          .slice(0, 3)
+        : [];
+      const answers = Array.isArray(value.answers)
+        ? value.answers
+          .map((entry) => {
+            if (!entry || typeof entry !== "object") return null;
+            const questionId = normalizeText(entry.question_id);
+            const answer = normalizeAnswer(entry.answer);
+            if (!questionId || !answer) return null;
+            return { question_id: questionId, answer };
+          })
+          .filter(Boolean)
+        : [];
+      return {
+        required: Boolean(value.required),
+        questions,
+        answers,
+        answered_count: typeof value.answered_count === "number" ? value.answered_count : answers.length,
+        total_questions: typeof value.total_questions === "number" ? value.total_questions : questions.length,
+        recalibrated: Boolean(value.recalibrated),
+        score_delta: typeof value.score_delta === "number" ? value.score_delta : 0,
+        confirmed_strength_areas: normalizeStringList(value.confirmed_strength_areas, 4),
+        confirmed_risk_areas: normalizeStringList(value.confirmed_risk_areas, 4),
+      };
     };
 
     const normalizeGapList = (value) => {
@@ -132,6 +219,12 @@
       fit_level: rawJobAnalysis.fit_level || rawJobAnalysis.match_level || null,
       score_confidence: rawJobAnalysis.score_confidence || rawJobAnalysis.confidence || null,
       interpretation_note: rawJobAnalysis.interpretation_note || rawJobAnalysis.summary || "",
+      apply_recommendation: normalizeApplyRecommendation(rawJobAnalysis.apply_recommendation),
+      career_insight: normalizeText(rawJobAnalysis.career_insight || rawJobAnalysis.careerInsight),
+      why_fit: normalizeStringList(rawJobAnalysis.why_fit || rawJobAnalysis.whyFit, 4),
+      potential_risks: normalizeStringList(rawJobAnalysis.potential_risks || rawJobAnalysis.risks, 4),
+      positioning_hints: normalizeStringList(rawJobAnalysis.positioning_hints || rawJobAnalysis.positioningHints, 4),
+      calibration: normalizeCalibration(rawJobAnalysis.calibration),
       top_matched_capabilities: normalizeCapabilityList(rawJobAnalysis.top_matched_capabilities),
       key_gaps: normalizeGapList(rawJobAnalysis.key_gaps),
       ats_risks: normalizeAtsRisks(rawJobAnalysis.ats_risks),
@@ -162,6 +255,27 @@
     const matchScore = responseNode && typeof responseNode.matchScore === "number"
       ? responseNode.matchScore
       : null;
+    const applyRecommendation = (responseNode && responseNode.applyRecommendation)
+      || (rawData && rawData.applyRecommendation)
+      || null;
+    const calibrationQuestions = (responseNode && Array.isArray(responseNode.calibrationQuestions) && responseNode.calibrationQuestions)
+      || (rawData && Array.isArray(rawData.calibrationQuestions) && rawData.calibrationQuestions)
+      || [];
+    const calibrationState = (responseNode && responseNode.calibrationState)
+      || (rawData && rawData.calibrationState)
+      || null;
+    const careerInsight = (responseNode && typeof responseNode.careerInsight === "string" && responseNode.careerInsight)
+      || (rawData && typeof rawData.careerInsight === "string" && rawData.careerInsight)
+      || "";
+    const whyFit = (responseNode && Array.isArray(responseNode.whyFit) && responseNode.whyFit)
+      || (rawData && Array.isArray(rawData.whyFit) && rawData.whyFit)
+      || [];
+    const risks = (responseNode && Array.isArray(responseNode.risks) && responseNode.risks)
+      || (rawData && Array.isArray(rawData.risks) && rawData.risks)
+      || [];
+    const positioningHints = (responseNode && Array.isArray(responseNode.positioningHints) && responseNode.positioningHints)
+      || (rawData && Array.isArray(rawData.positioningHints) && rawData.positioningHints)
+      || [];
 
     return {
       job_analysis: normalizeJobAnalysis(jobAnalysisSource),
@@ -169,6 +283,13 @@
       job: job || undefined,
       verdict: verdict || undefined,
       matchScore: typeof matchScore === "number" ? matchScore : undefined,
+      applyRecommendation: applyRecommendation || undefined,
+      careerInsight: careerInsight || undefined,
+      whyFit: whyFit.length > 0 ? whyFit : undefined,
+      risks: risks.length > 0 ? risks : undefined,
+      positioningHints: positioningHints.length > 0 ? positioningHints : undefined,
+      calibrationQuestions: calibrationQuestions.length > 0 ? calibrationQuestions : undefined,
+      calibrationState: calibrationState || undefined,
     };
   }
 
@@ -232,6 +353,8 @@
         return "We couldn't find the job description in this preview.";
       case "job_description_too_short":
         return "The visible job description is too short right now. Open About the job > more, then retry.";
+      case "job_description_collapsed":
+        return "The job description looks collapsed. Expand About the job and retry.";
       case "parser_selector_miss":
         return "We couldn't locate the job description section on this page layout.";
       case "preview_not_ready_yet":
@@ -360,6 +483,32 @@
     }
   }
 
+  function normalizeCalibrationAnswerEntries(entries) {
+    if (!Array.isArray(entries)) return [];
+    const byQuestionId = new Map();
+    for (const entry of entries) {
+      if (!entry || typeof entry !== "object") continue;
+      const questionId = typeof entry.questionId === "string"
+        ? entry.questionId.trim()
+        : (typeof entry.question_id === "string" ? entry.question_id.trim() : "");
+      const answer = entry.answer === "yes" || entry.answer === "no" ? entry.answer : null;
+      if (!questionId || !answer) continue;
+      byQuestionId.set(questionId, answer);
+    }
+    return Array.from(byQuestionId.entries()).map(([questionId, answer]) => ({ questionId, answer }));
+  }
+
+  function upsertCalibrationAnswer(existingAnswers, nextEntry) {
+    const normalizedExisting = normalizeCalibrationAnswerEntries(existingAnswers);
+    const normalizedNext = normalizeCalibrationAnswerEntries([nextEntry]);
+    if (normalizedNext.length === 0) return normalizedExisting;
+    const byQuestionId = new Map(normalizedExisting.map((item) => [item.questionId, item.answer]));
+    for (const item of normalizedNext) {
+      byQuestionId.set(item.questionId, item.answer);
+    }
+    return Array.from(byQuestionId.entries()).map(([questionId, answer]) => ({ questionId, answer }));
+  }
+
   async function handleSidepanelAnalysisRequest(options) {
     Cache.prune(CACHE_MAX_AGE_MS);
     const requestId = options && typeof options.requestId === "number"
@@ -471,7 +620,12 @@
         ok: true,
         state: cachedState,
         data: normalizedCachedData,
-        context: extraction,
+        context: withAnalysisContext({
+          extraction,
+          tabId: tab.id,
+          analysisKey,
+          payload,
+        }),
         cached: true,
       }, requestStartedAt);
     }
@@ -577,12 +731,171 @@
       state,
       error: state === "error" ? "No job analysis returned from backend." : undefined,
       data: normalizedData,
-      context: extraction,
+      context: withAnalysisContext({
+        extraction,
+        tabId: tab.id,
+        analysisKey,
+        payload,
+      }),
+      cached: false,
+    }, requestStartedAt);
+  }
+
+  async function handleSidepanelCalibrationRequest(options) {
+    Cache.prune(CACHE_MAX_AGE_MS);
+    const requestId = options && typeof options.requestId === "number"
+      ? options.requestId
+      : null;
+    const requestStartedAt = options && typeof options.requestStartedAt === "number"
+      ? options.requestStartedAt
+      : Date.now();
+    const requestedTabId = options && typeof options.tabId === "number" ? options.tabId : null;
+    const tab = await getTabById(requestedTabId) || await getActiveTab();
+    if (!tab || typeof tab.id !== "number") {
+      return finalizeResponse(requestId, { ok: false, state: "error", error: "No active tab found." }, requestStartedAt);
+    }
+
+    const questionId = options && typeof options.questionId === "string" ? options.questionId.trim() : "";
+    const answer = options && (options.answer === "yes" || options.answer === "no") ? options.answer : null;
+    const expectedAnalysisKey = options && typeof options.analysisKey === "string"
+      ? options.analysisKey.trim()
+      : "";
+    const expectedCurrentJobId = options && typeof options.currentJobId === "string"
+      ? options.currentJobId.trim()
+      : "";
+    if (!questionId || !answer) {
+      return finalizeResponse(requestId, {
+        ok: false,
+        state: "error",
+        error: "Calibration answer is invalid.",
+        code: "invalid_calibration_answer",
+      }, requestStartedAt);
+    }
+
+    const analysisKey = Cache.getTabAnalysisKey(tab.id);
+    if (!analysisKey) {
+      return finalizeResponse(requestId, {
+        ok: false,
+        state: "error",
+        error: "Run analysis before calibration.",
+        code: "analysis_missing",
+      }, requestStartedAt);
+    }
+    if (expectedAnalysisKey && expectedAnalysisKey !== analysisKey) {
+      traceRequest(requestId, "calibration_context_mismatch", {
+        tabId: tab.id,
+        expectedAnalysisKey,
+        actualAnalysisKey: analysisKey,
+      });
+      return finalizeResponse(requestId, {
+        ok: false,
+        state: "error",
+        error: "Job context changed. Please wait for panel refresh and retry.",
+        code: "stale_analysis_context",
+      }, requestStartedAt);
+    }
+
+    const cached = Cache.getAnalysis(analysisKey);
+    if (!cached || !cached.payload) {
+      return finalizeResponse(requestId, {
+        ok: false,
+        state: "error",
+        error: "Run analysis before calibration.",
+        code: "analysis_missing",
+      }, requestStartedAt);
+    }
+    const cachedCurrentJobId = getPayloadCurrentJobId(cached.payload);
+    if (expectedCurrentJobId && cachedCurrentJobId && expectedCurrentJobId !== cachedCurrentJobId) {
+      traceRequest(requestId, "calibration_job_id_mismatch", {
+        tabId: tab.id,
+        expectedCurrentJobId,
+        cachedCurrentJobId,
+      });
+      return finalizeResponse(requestId, {
+        ok: false,
+        state: "error",
+        error: "Job changed before calibration was applied. Please retry.",
+        code: "stale_job_context",
+      }, requestStartedAt);
+    }
+
+    const existingAnswers = Cache.getCalibrationAnswers(analysisKey);
+    const existingAnswer = existingAnswers.find((entry) => entry && entry.questionId === questionId);
+    const nextAnswers = upsertCalibrationAnswer(existingAnswers, { questionId, answer });
+    Cache.setCalibrationAnswers(analysisKey, nextAnswers);
+    traceRequest(requestId, "calibration_request_start", {
+      tabId: tab.id,
+      analysisKey,
+      currentJobId: cachedCurrentJobId || null,
+      questionId,
+      answer,
+      answerCount: nextAnswers.length,
+      replacedExistingAnswer: Boolean(existingAnswer),
+      answerChanged: !existingAnswer || existingAnswer.answer !== answer,
+    });
+    traceRequest(requestId, "calibration_request_sent", {
+      tabId: tab.id,
+      analysisKey,
+      questionId,
+      answer,
+    });
+
+    const recalibrationResult = await ApiClient.recalculateJobPayload({
+      payload: cached.payload,
+      calibrationAnswers: nextAnswers,
+    });
+    traceRequest(requestId, "calibration_response_received", {
+      ok: Boolean(recalibrationResult && recalibrationResult.ok),
+      status: recalibrationResult && recalibrationResult.status ? recalibrationResult.status : null,
+      code: recalibrationResult && recalibrationResult.code ? recalibrationResult.code : null,
+    });
+    if (!recalibrationResult.ok) {
+      return finalizeResponse(requestId, {
+        ok: true,
+        state: recalibrationResult.code === "missing_profile_id" ? "auth_required" : "error",
+        error: recalibrationResult.error || "Calibration update failed.",
+        code: recalibrationResult.code || "recalibration_failed",
+      }, requestStartedAt);
+    }
+
+    const normalizedData = normalizeAnalyzeData(recalibrationResult.data);
+    const currentContext = Cache.getContextForTab(tab.id);
+    const extraction = currentContext && currentContext.extraction
+      ? currentContext.extraction
+      : { ok: true, payload: cached.payload };
+    const state = toFinalState(normalizedData, extraction);
+
+    const responseAnswers = normalizedData
+      && normalizedData.job_analysis
+      && normalizedData.job_analysis.calibration
+      && Array.isArray(normalizedData.job_analysis.calibration.answers)
+      ? normalizedData.job_analysis.calibration.answers
+      : nextAnswers;
+    Cache.setCalibrationAnswers(analysisKey, responseAnswers);
+    Cache.setAnalysis(analysisKey, {
+      state,
+      response: normalizedData,
+      payload: cached.payload,
+      tabId: tab.id,
+    });
+    Cache.setTabAnalysisKey(tab.id, analysisKey);
+
+    return finalizeResponse(requestId, {
+      ok: true,
+      state,
+      data: normalizedData,
+      context: withAnalysisContext({
+        extraction,
+        tabId: tab.id,
+        analysisKey,
+        payload: cached.payload,
+      }),
       cached: false,
     }, requestStartedAt);
   }
 
   globalThis.CareerTwinAnalysisService = {
     handleSidepanelAnalysisRequest,
+    handleSidepanelCalibrationRequest,
   };
 })();

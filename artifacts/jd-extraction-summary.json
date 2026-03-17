@@ -1,0 +1,20 @@
+{
+  "step_name": "jd_extraction",
+  "fixture_version": "verify_jd_extraction_v1",
+  "total_cases": 1,
+  "pass_count": 1,
+  "fail_count": 0,
+  "pass_rate": 1,
+  "average_requirements_count": 3,
+  "average_critical_requirements_count": 3,
+  "average_quality_score": 1,
+  "weak_field_case_count": 0,
+  "warning_case_count": 0,
+  "missing_or_weak_field_counts": {},
+  "thresholds": {
+    "min_total_cases": 1,
+    "required_pass_rate": 1,
+    "min_average_quality_score": 0.75
+  },
+  "deterministic_mode_enforced": true
+}

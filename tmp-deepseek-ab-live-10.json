@@ -1,0 +1,313 @@
+{
+  "mode": "heuristic_plus_live_deepseek",
+  "count": 10,
+  "key_detected": true,
+  "key_prefix_redacted": "sk-***",
+  "total_fetch_calls": 10,
+  "results": [
+    {
+      "id": "job-01-analytics-strategy-manager",
+      "title": "Senior Manager, Analytics Strategy and Automation",
+      "critical_capabilities": [
+        "analytics automation",
+        "cross-functional stakeholder leadership",
+        "strategic planning",
+        "market & opportunity assessment",
+        "bi / data platform transformation",
+        "sql",
+        "python",
+        "bi tools (power bi/tableau)",
+        "commercial growth analytics",
+        "owning measurable revenue outcomes"
+      ],
+      "important_capabilities": [
+        "people leadership",
+        "business case development"
+      ],
+      "supporting_capabilities": [],
+      "role_family": "Analytics/Data Science",
+      "seniority_level": "Senior Manager",
+      "transformation_scope": true,
+      "tooling": [
+        "SQL",
+        "Python",
+        "Power BI",
+        "Tableau"
+      ],
+      "llm_enriched": true,
+      "extraction_mode": "llm_augmented",
+      "llm_error": null,
+      "fetch_calls_for_job": 1
+    },
+    {
+      "id": "job-02-commercial-insights-lead",
+      "title": "Commercial Insights Lead",
+      "critical_capabilities": [
+        "market & opportunity assessment",
+        "commercial analytics",
+        "pricing/revenue analysis",
+        "opportunity sizing across customer segments",
+        "build strategic plans",
+        "influence senior leadership with evidence-backed business cases"
+      ],
+      "important_capabilities": [
+        "cross-functional stakeholder leadership",
+        "partner with go-to-market teams",
+        "prioritize growth opportunities"
+      ],
+      "supporting_capabilities": [],
+      "role_family": "Business Strategy/Analytics",
+      "seniority_level": "Lead",
+      "transformation_scope": false,
+      "tooling": [],
+      "llm_enriched": true,
+      "extraction_mode": "llm_augmented",
+      "llm_error": null,
+      "fetch_calls_for_job": 1
+    },
+    {
+      "id": "job-03-bi-transformation-program-lead",
+      "title": "BI Transformation Program Lead",
+      "critical_capabilities": [
+        "capability uplift & enablement",
+        "bi / data platform transformation",
+        "change management & adoption",
+        "cross-functional stakeholder leadership",
+        "transformation delivery leadership",
+        "lead enterprise bi modernization program",
+        "migrate reporting platforms"
+      ],
+      "important_capabilities": [
+        "design adoption plans",
+        "training enablement",
+        "governance standards"
+      ],
+      "supporting_capabilities": [],
+      "role_family": "Program Management/Leadership",
+      "seniority_level": "Lead/Senior",
+      "transformation_scope": true,
+      "tooling": [],
+      "llm_enriched": true,
+      "extraction_mode": "llm_augmented",
+      "llm_error": null,
+      "fetch_calls_for_job": 1
+    },
+    {
+      "id": "job-04-ops-automation-manager",
+      "title": "Operational Automation Manager",
+      "critical_capabilities": [
+        "analytics automation",
+        "identify operational bottlenecks",
+        "optimize process performance",
+        "deploy automation workflows",
+        "sql proficiency",
+        "python proficiency",
+        "bi tooling proficiency"
+      ],
+      "important_capabilities": [
+        "cross-functional stakeholder leadership",
+        "operational performance optimization",
+        "initiative delivery ownership"
+      ],
+      "supporting_capabilities": [
+        "process analysis",
+        "workflow implementation"
+      ],
+      "role_family": "Operations/Process Improvement",
+      "seniority_level": "Manager",
+      "transformation_scope": true,
+      "tooling": [
+        "SQL",
+        "Python",
+        "BI tooling"
+      ],
+      "llm_enriched": true,
+      "extraction_mode": "llm_augmented",
+      "llm_error": null,
+      "fetch_calls_for_job": 1
+    },
+    {
+      "id": "job-05-enterprise-sales-director",
+      "title": "Enterprise Sales Director",
+      "critical_capabilities": [
+        "commercial analytics",
+        "executive influence & business cases",
+        "quota ownership",
+        "enterprise deal negotiation",
+        "account planning",
+        "pipeline conversion",
+        "sales execution",
+        "client acquisition"
+      ],
+      "important_capabilities": [
+        "cross-functional stakeholder leadership",
+        "people leadership",
+        "lead regional sales teams",
+        "partner with marketing for demand generation"
+      ],
+      "supporting_capabilities": [
+        "analytics exposure"
+      ],
+      "role_family": "Sales",
+      "seniority_level": "Director",
+      "transformation_scope": false,
+      "tooling": [],
+      "llm_enriched": true,
+      "extraction_mode": "llm_augmented",
+      "llm_error": null,
+      "fetch_calls_for_job": 1
+    },
+    {
+      "id": "job-06-product-analytics-manager",
+      "title": "Product Analytics Manager",
+      "critical_capabilities": [
+        "strategic planning",
+        "cross-functional stakeholder leadership",
+        "commercial analytics",
+        "experimentation insights",
+        "roadmap prioritization"
+      ],
+      "important_capabilities": [
+        "people leadership",
+        "strategic recommendations",
+        "partnering with product and engineering teams"
+      ],
+      "supporting_capabilities": [
+        "lead analysts",
+        "supporting product growth decisions"
+      ],
+      "role_family": "Analytics/Data Science",
+      "seniority_level": "Manager",
+      "transformation_scope": false,
+      "tooling": [],
+      "llm_enriched": true,
+      "extraction_mode": "llm_augmented",
+      "llm_error": null,
+      "fetch_calls_for_job": 1
+    },
+    {
+      "id": "job-07-commercial-growth-director",
+      "title": "Commercial Growth Director",
+      "critical_capabilities": [
+        "commercial strategy development",
+        "market expansion planning",
+        "executive leadership",
+        "strategic business decision-making"
+      ],
+      "important_capabilities": [
+        "cross-functional stakeholder leadership",
+        "strategic planning",
+        "market & opportunity assessment",
+        "commercial analytics",
+        "executive influence & business cases",
+        "operational cadence definition",
+        "commercial performance tracking"
+      ],
+      "supporting_capabilities": [
+        "opportunity prioritization",
+        "performance monitoring"
+      ],
+      "role_family": "commercial/growth leadership",
+      "seniority_level": "director",
+      "transformation_scope": true,
+      "tooling": [],
+      "llm_enriched": true,
+      "extraction_mode": "llm_augmented",
+      "llm_error": null,
+      "fetch_calls_for_job": 1
+    },
+    {
+      "id": "job-08-enterprise-account-sales-lead",
+      "title": "Enterprise Account Sales Lead",
+      "critical_capabilities": [
+        "enterprise pipeline management",
+        "quota attainment",
+        "strategic account growth",
+        "deal strategy coaching",
+        "cross-functional stakeholder leadership"
+      ],
+      "important_capabilities": [
+        "strategic planning",
+        "commercial analytics",
+        "account manager leadership",
+        "coordination of pre-sales motions",
+        "target achievement driving"
+      ],
+      "supporting_capabilities": [
+        "cross-functional collaboration with product marketing",
+        "cross-functional collaboration with customer success",
+        "executive influence & business cases",
+        "people leadership"
+      ],
+      "role_family": "Sales Leadership",
+      "seniority_level": "Lead/Manager",
+      "transformation_scope": false,
+      "tooling": [],
+      "llm_enriched": true,
+      "extraction_mode": "llm_augmented",
+      "llm_error": null,
+      "fetch_calls_for_job": 1
+    },
+    {
+      "id": "job-09-transformation-operating-model-lead",
+      "title": "Transformation Operating Model Lead",
+      "critical_capabilities": [
+        "enterprise business transformation",
+        "process redesign",
+        "implementation governance",
+        "change adoption strategy",
+        "stakeholder partnership with line leaders"
+      ],
+      "important_capabilities": [
+        "capability uplift & enablement",
+        "cross-functional stakeholder leadership",
+        "transformation delivery leadership",
+        "steering committee management",
+        "mobilisation planning",
+        "continuous improvement implementation"
+      ],
+      "supporting_capabilities": [
+        "operational cadence establishment",
+        "playbook development"
+      ],
+      "role_family": "Transformation/Change Management",
+      "seniority_level": "Lead/Senior",
+      "transformation_scope": true,
+      "tooling": [],
+      "llm_enriched": true,
+      "extraction_mode": "llm_augmented",
+      "llm_error": null,
+      "fetch_calls_for_job": 1
+    },
+    {
+      "id": "job-10-clinical-research-coordinator",
+      "title": "Clinical Research Coordinator",
+      "critical_capabilities": [
+        "clinical trial coordination",
+        "participant recruitment",
+        "protocol compliance",
+        "ethics submissions",
+        "investigator communications",
+        "healthcare regulatory compliance"
+      ],
+      "important_capabilities": [
+        "change management & adoption",
+        "site scheduling",
+        "trial logistics",
+        "data entry quality checks",
+        "audit readiness"
+      ],
+      "supporting_capabilities": [
+        "documentation maintenance"
+      ],
+      "role_family": "Clinical Research",
+      "seniority_level": "Coordinator",
+      "transformation_scope": false,
+      "tooling": [],
+      "llm_enriched": true,
+      "extraction_mode": "llm_augmented",
+      "llm_error": null,
+      "fetch_calls_for_job": 1
+    }
+  ]
+}

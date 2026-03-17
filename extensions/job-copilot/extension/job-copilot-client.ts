@@ -1,5 +1,11 @@
 import type { ExtractedJobDetail } from "./job-detail-extractor";
 
+type ExtensionChromeRuntime = {
+    runtime?: {
+        sendMessage: (message: unknown) => Promise<unknown>;
+    };
+};
+
 export type JobCopilotAnalyzeResponse = {
     success: true;
     job: {
@@ -19,6 +25,28 @@ export type JobCopilotAnalyzeResponse = {
         verdict: "strong_fit" | "possible_fit" | "stretch" | "low_fit";
         matchScore: number;
         verdictText: string;
+        applyRecommendation?: {
+            score: number;
+            band: "strong" | "consider" | "weak";
+        };
+        careerInsight?: string;
+        whyFit?: string[];
+        risks?: string[];
+        positioningHints?: string[];
+        calibrationQuestions?: Array<{
+            id: string;
+            question: string;
+            targetArea: string;
+            importance: "critical" | "important" | "supporting";
+            answer?: "yes" | "no" | null;
+        }>;
+        calibrationState?: {
+            required: boolean;
+            answeredCount: number;
+            totalQuestions: number;
+            recalibrated: boolean;
+            scoreDelta: number;
+        };
         matchedCapabilities: string[];
         keyGaps: string[];
         topEvidence: Array<{
@@ -79,7 +107,12 @@ export type JobCopilotDownloadResponse = {
 export async function analyzeJobViaExtensionBackground(
     job: ExtractedJobDetail,
 ): Promise<JobCopilotAnalyzeResponse> {
-    const response = await chrome.runtime.sendMessage({
+    const runtime = (globalThis as typeof globalThis & { chrome?: ExtensionChromeRuntime }).chrome?.runtime;
+    if (!runtime?.sendMessage) {
+        throw new Error("Extension runtime unavailable.");
+    }
+
+    const response = await runtime.sendMessage({
         type: "JOB_COPILOT_ANALYZE",
         payload: job,
     }) as { ok?: boolean; data?: JobCopilotAnalyzeResponse; error?: string };
@@ -103,13 +136,38 @@ export async function downloadResumeViaExtensionBackground(params: {
     verdict: "strong_fit" | "possible_fit" | "stretch" | "low_fit";
     selectedEvidenceIds: string[];
 }): Promise<JobCopilotDownloadResponse> {
-    const response = await chrome.runtime.sendMessage({
+    const runtime = (globalThis as typeof globalThis & { chrome?: ExtensionChromeRuntime }).chrome?.runtime;
+    if (!runtime?.sendMessage) {
+        throw new Error("Extension runtime unavailable.");
+    }
+
+    const response = await runtime.sendMessage({
         type: "JOB_COPILOT_DOWNLOAD_RESUME",
         payload: params,
     }) as { ok?: boolean; data?: JobCopilotDownloadResponse; error?: string };
 
     if (!response?.ok || !response.data) {
         throw new Error(response?.error ?? "Resume download failed.");
+    }
+    return response.data;
+}
+
+export async function recalibrateJobViaExtensionBackground(params: {
+    questionId: string;
+    answer: "yes" | "no";
+}): Promise<JobCopilotAnalyzeResponse> {
+    const runtime = (globalThis as typeof globalThis & { chrome?: ExtensionChromeRuntime }).chrome?.runtime;
+    if (!runtime?.sendMessage) {
+        throw new Error("Extension runtime unavailable.");
+    }
+
+    const response = await runtime.sendMessage({
+        type: "JOB_COPILOT_RECALIBRATE",
+        payload: params,
+    }) as { ok?: boolean; data?: JobCopilotAnalyzeResponse; error?: string };
+
+    if (!response?.ok || !response.data) {
+        throw new Error(response?.error ?? "Recalibration request failed.");
     }
     return response.data;
 }
