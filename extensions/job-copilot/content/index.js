@@ -19,6 +19,7 @@
   const MORE_CLICK_RETRY_DELAYS_MS = [0, 90, 190, 320];
   const RETRYABLE_FAILURE_REASONS = new Set([
     "preview_not_ready_yet",
+    "linkedin_description_incomplete",
     "job_description_too_short",
     "job_description_collapsed",
     "missing_job_description",
@@ -133,13 +134,13 @@
     });
   }
 
-  function safeExtract(reasonLabel) {
+  async function safeExtract(reasonLabel) {
     if (extensionInvalidated) {
       return buildContextInvalidatedResult(CONTEXT_INVALIDATED_REASON);
     }
 
     try {
-      return extractJobPagePayload();
+      return await extractJobPagePayload();
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error || "extract_exception");
       if (maybeInvalidateFromError(message)) {
@@ -223,7 +224,12 @@
 
     const payload = extraction.payload;
     const sourceMetadata = payload.source_metadata || {};
-    if (sourceMetadata.preview_not_ready || sourceMetadata.jd_collapsed_likely) return false;
+    if (
+      sourceMetadata.preview_not_ready
+      || sourceMetadata.jd_collapsed_likely
+      || sourceMetadata.description_incomplete
+      || extraction.reason === "linkedin_description_incomplete"
+    ) return false;
     const jdLength = (payload.job_description_text || "").length;
     return Boolean(payload.job_title) && Boolean(payload.company_name) && jdLength >= MIN_PARTIAL_JD_CHARS;
   }
@@ -256,7 +262,10 @@
 
   function shouldRetryExtraction(extraction) {
     if (!extraction || extraction.ok) return false;
-    if (!isLinkedInExtraction(extraction)) return false;
+    const platform = extraction && extraction.payload && extraction.payload.platform
+      ? extraction.payload.platform
+      : extraction.platform;
+    if (platform !== "linkedin" && platform !== "seek") return false;
     if (!extraction.reason) return false;
     return RETRYABLE_FAILURE_REASONS.has(extraction.reason);
   }
@@ -283,7 +292,7 @@
         return buildContextInvalidatedResult(CONTEXT_INVALIDATED_REASON);
       }
 
-      latest = safeExtract(reasonLabel);
+      latest = await safeExtract(reasonLabel);
       if (latest.state === "context_invalidated") {
         return latest;
       }
@@ -400,7 +409,7 @@
       });
     }
 
-    return finalizeExtractionForReturn((latest || safeExtract(reasonLabel)), retryAttempts, "retry_fallthrough");
+    return finalizeExtractionForReturn((latest || await safeExtract(reasonLabel)), retryAttempts, "retry_fallthrough");
   }
 
   function buildContextFromExtraction(extraction) {
@@ -672,7 +681,7 @@
   };
   document.addEventListener("click", clickHandler, true);
 
-  urlCheckIntervalId = setInterval(() => {
+  urlCheckIntervalId = setInterval(async () => {
     if (extensionInvalidated) return;
 
     if (location.href !== lastKnownUrl) {
@@ -683,7 +692,7 @@
       return;
     }
 
-    const extraction = safeExtract("url_check");
+    const extraction = await safeExtract("url_check");
     if (!extraction || extraction.state === "context_invalidated") {
       stopActivity((extraction && extraction.reason) || CONTEXT_INVALIDATED_REASON);
       return;
@@ -695,10 +704,10 @@
     }
   }, URL_CHECK_INTERVAL_MS);
 
-  heartbeatIntervalId = setInterval(() => {
+  heartbeatIntervalId = setInterval(async () => {
     if (extensionInvalidated) return;
 
-    const extraction = safeExtract("signature_heartbeat");
+    const extraction = await safeExtract("signature_heartbeat");
     if (!extraction || extraction.state === "context_invalidated") {
       stopActivity((extraction && extraction.reason) || CONTEXT_INVALIDATED_REASON);
       return;

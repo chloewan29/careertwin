@@ -40,6 +40,16 @@
     "easy apply",
     "save job",
   ];
+  const TEASER_TEXT_MARKERS = [
+    "be an early applicant",
+    "posted on",
+    "hours ago",
+    "days ago",
+    "company alumni work here",
+    "people clicked apply",
+    "easy apply",
+    "reposted",
+  ];
   const RESPONSIBILITIES_PATTERNS = [
     /\bresponsibilit(y|ies)\b/i,
     /\bwhat you('ll| will) do\b/i,
@@ -137,11 +147,32 @@
 
   function pageTypeFromPath() {
     const path = String(location.pathname || "").toLowerCase();
+    const hasCurrentJobId = Boolean(parseLinkedInJobIdFromString(location.href));
     if (/^\/jobs\/view\/\d+/.test(path)) return "job_view";
-    if (path.startsWith("/jobs/search") || path.startsWith("/jobs/search-results")) {
+    if (
+      path.startsWith("/jobs/search")
+      || path.startsWith("/jobs/search-results")
+      || path.startsWith("/jobs/collections")
+      || ((path === "/jobs" || path.startsWith("/jobs/")) && hasCurrentJobId)
+    ) {
       return "search_results_preview";
     }
     return "unknown";
+  }
+
+  function toLinkedInRouteKind(pageType, currentJobId) {
+    if (pageType === "job_view") return "jobs_view";
+    if (pageType === "search_results_preview" && currentJobId) {
+      const path = String(location.pathname || "").toLowerCase();
+      if (path.startsWith("/jobs/collections")) return "jobs_collections_current_job";
+      if (path.startsWith("/jobs/search") || path.startsWith("/jobs/search-results")) return "jobs_search_current_job";
+      return "jobs_shell_current_job";
+    }
+    if (pageType === "search_results_preview") {
+      const path = String(location.pathname || "").toLowerCase();
+      if (path.startsWith("/jobs/collections")) return "jobs_collections_no_current_job";
+    }
+    return "unsupported";
   }
 
   function hasNoiseClassHint(value) {
@@ -209,6 +240,63 @@
       requirements_like: matchesAnyPattern(sample, REQUIREMENTS_PATTERNS),
       preferred_like: matchesAnyPattern(sample, PREFERRED_PATTERNS),
       benefits_or_about_like: matchesAnyPattern(sample, BENEFITS_PATTERNS),
+    };
+  }
+
+  function countBulletLines(normalizedDescriptionText) {
+    if (!normalizedDescriptionText) return 0;
+    return normalizedDescriptionText
+      .split(/\n+/)
+      .map((line) => line.trim())
+      .filter((line) => /^(?:[-*•]|\d+[.)])\s+/.test(line))
+      .length;
+  }
+
+  function countTeaserMarkerHits(normalizedDescriptionText) {
+    const sample = String(normalizedDescriptionText || "").toLowerCase();
+    if (!sample) return 0;
+    return TEASER_TEXT_MARKERS.reduce((count, marker) => (
+      sample.includes(marker) ? count + 1 : count
+    ), 0);
+  }
+
+  function detectDescriptionCompleteness(params) {
+    const normalizedDescriptionText = String(params.normalizedDescriptionText || "");
+    const resolvedTitle = normalizeWhitespace(params.resolvedTitle || "").toLowerCase();
+    const resolvedCompany = normalizeWhitespace(params.resolvedCompany || "").toLowerCase();
+    const descriptionLower = normalizedDescriptionText.toLowerCase();
+    const sections = detectSectionFlags(normalizedDescriptionText);
+    const sectionHitCount = Object.values(sections).filter(Boolean).length;
+    const paragraphCount = normalizedDescriptionText
+      ? normalizedDescriptionText.split(/\n+/).map((line) => line.trim()).filter(Boolean).length
+      : 0;
+    const bulletLineCount = countBulletLines(normalizedDescriptionText);
+    const teaserMarkerHits = countTeaserMarkerHits(normalizedDescriptionText);
+    const extractionQuality = classifyExtractionQuality({
+      normalizedLength: normalizedDescriptionText.length,
+      sectionHitCount,
+    });
+    const shallowStructure = sectionHitCount === 0 && bulletLineCount === 0 && paragraphCount <= 3;
+    const titleEcho = resolvedTitle
+      ? descriptionLower.startsWith(resolvedTitle) || descriptionLower.includes(resolvedTitle)
+      : false;
+    const companyEcho = resolvedCompany ? descriptionLower.includes(resolvedCompany) : false;
+    const headlineEchoLikely = titleEcho && companyEcho && normalizedDescriptionText.length <= 900;
+    const teaserLikely = normalizedDescriptionText.length <= 700
+      && (
+        teaserMarkerHits >= 2
+        || (teaserMarkerHits >= 1 && shallowStructure)
+        || (headlineEchoLikely && shallowStructure)
+      );
+
+    return {
+      sectionFlags: sections,
+      sectionHitCount,
+      paragraphCount,
+      bulletLineCount,
+      teaserMarkerHits,
+      extractionQuality,
+      teaserLikely,
     };
   }
 
@@ -851,7 +939,7 @@
     });
 
     const canonicalJobUrl = currentJobId
-      ? `https://www.linkedin.com/jobs/view/${currentJobId}`
+      ? `https://www.linkedin.com/jobs/view/${currentJobId}/`
       : location.href;
 
     const titleFromDoc = normalizeWhitespace(document.title.replace(/\s*\|\s*LinkedIn.*$/i, ""));
@@ -860,6 +948,11 @@
       || normalizeWhitespace((document.querySelector("a[href*='/company/']") || {}).textContent || "");
     const resolvedLocation = locationField.text
       || normalizeWhitespace((document.querySelector(".topcard__flavor--bullet") || {}).textContent || "");
+    const completeness = detectDescriptionCompleteness({
+      normalizedDescriptionText: descriptionText,
+      resolvedTitle,
+      resolvedCompany,
+    });
 
     const hasLoadingIndicators = Boolean(
       panelRoot.querySelector("[aria-busy='true'], .artdeco-loader, .jobs-search-two-pane__loading"),
@@ -869,7 +962,8 @@
     const previewCompletenessRisk = hasLoadingIndicators
       || !panelRootResult.found
       || parserSelectorMiss
-      || autoExpandAttempt.clicked;
+      || autoExpandAttempt.clicked
+      || completeness.teaserLikely;
     const previewNotReady = pageType === "search_results_preview"
       && Boolean(resolvedTitle)
       && previewCompletenessRisk
@@ -878,6 +972,7 @@
     const jdCollapsedLikely = expandControls.present
       && expandControls.expanded === false
       && descriptionText.length < JD_COLLAPSED_LIKELY_MAX_CHARS;
+    const descriptionIncomplete = pageType === "search_results_preview" && completeness.teaserLikely;
 
     const previewSignature = buildPreviewSignature({
       currentJobId,
@@ -885,6 +980,10 @@
       company: resolvedCompany,
       description: descriptionText,
     });
+    const routeKind = toLinkedInRouteKind(pageType, currentJobId);
+    const collectionsPanelDomReady = routeKind === "jobs_collections_current_job" || routeKind === "jobs_collections_no_current_job"
+      ? (Boolean(resolvedTitle) && descriptionText.length >= DESCRIPTION_MIN_CHARS)
+      : null;
 
     const fieldSelectors = [title.selector, company.selector, locationField.selector].filter(Boolean);
     const descriptionSelectors = descriptionResult.selectors || [];
@@ -919,6 +1018,9 @@
       description_strategy: descriptionResult.strategy || "none",
       description_length: descriptionText.length,
       preview_not_ready: previewNotReady,
+      description_incomplete: descriptionIncomplete,
+      description_quality: completeness.extractionQuality,
+      teaser_marker_hits: completeness.teaserMarkerHits,
       more_expand_clicked_by_flow: autoExpandAttempt.clicked,
       more_expand_click_count: autoExpandAttempt.clickCount,
       parser_selector_miss: parserSelectorMiss,
@@ -931,7 +1033,11 @@
       see_more_clicked: autoExpandAttempt.clicked,
       preview_not_ready_triggered: previewNotReady,
       job_description_collapsed_detected: jdCollapsedLikely,
-      ready_for_analysis_candidate: !previewNotReady && !jdCollapsedLikely && descriptionText.length >= DESCRIPTION_MIN_CHARS,
+      description_incomplete: descriptionIncomplete,
+      ready_for_analysis_candidate: !previewNotReady
+        && !jdCollapsedLikely
+        && !descriptionIncomplete
+        && descriptionText.length >= DESCRIPTION_MIN_CHARS,
       jd_preview_200: previewSnippet(descriptionText, 200),
     });
     if (jdAuditRecord && jdAuditRecord.audit_mode_enabled) {
@@ -947,11 +1053,16 @@
       job_description_text: descriptionText,
       source_metadata: {
         extraction_method: extractionMethod,
+        adapter_name: "linkedin",
+        linkedin_route_kind: routeKind,
         linkedin_surface: pageType === "search_results_preview" ? "search_results_preview" : "job_view",
         page_type: pageType,
         panel_root_found: panelRootResult.found,
         panel_root_selector: panelRootResult.selector || null,
         current_job_id: currentJobId || null,
+        current_job_id_present: Boolean(currentJobId),
+        canonical_job_url: canonicalJobUrl,
+        collections_panel_dom_ready: collectionsPanelDomReady,
         preview_signature: previewSignature,
         description_strategy: descriptionResult.strategy || null,
         description_strategy_attempts: descriptionResult.attempts || [],
@@ -962,6 +1073,13 @@
         parser_selector_miss: parserSelectorMiss,
         preview_not_ready: previewNotReady,
         jd_collapsed_likely: jdCollapsedLikely,
+        description_incomplete: descriptionIncomplete,
+        description_quality: completeness.extractionQuality,
+        description_section_flags: completeness.sectionFlags,
+        description_section_hit_count: completeness.sectionHitCount,
+        description_paragraph_count: completeness.paragraphCount,
+        description_bullet_line_count: completeness.bulletLineCount,
+        teaser_marker_hits: completeness.teaserMarkerHits,
         expand_control_present: expandControls.present,
         expand_control_expanded: expandControls.expanded,
         more_expand_detected: expandControls.present,

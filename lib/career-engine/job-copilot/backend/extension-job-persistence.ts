@@ -26,7 +26,22 @@ function deriveExtractionQuality(params: {
     company: string | null;
     normalizedDescription: string;
 }): "strong" | "weak" {
-    const descriptionWeak = params.normalizedDescription.length < 180;
+    const normalizedLower = params.normalizedDescription.toLowerCase();
+    const teaserMarkers = [
+        "be an early applicant",
+        "posted on",
+        "hours ago",
+        "days ago",
+        "company alumni work here",
+        "people clicked apply",
+        "easy apply",
+        "reposted",
+    ];
+    const teaserMarkerHits = teaserMarkers.reduce((count, marker) => (
+        normalizedLower.includes(marker) ? count + 1 : count
+    ), 0);
+    const descriptionWeak = params.normalizedDescription.length < 200
+        || (params.normalizedDescription.length < 420 && teaserMarkerHits > 0);
     const titleAndCompanyMissing = !params.jobTitle && !params.company;
     return descriptionWeak || titleAndCompanyMissing ? "weak" : "strong";
 }

@@ -59,6 +59,8 @@
       page_type: sourceMetadata.page_type || sourceMetadata.linkedin_surface || "unknown",
       raw_jd_length: rawLength,
       normalized_jd_length: (payload.job_description_text || "").length,
+      extraction_quality: sourceMetadata.description_quality || null,
+      description_incomplete: Boolean(sourceMetadata.description_incomplete),
       see_more_clicked: Boolean(sourceMetadata.more_expand_clicked_by_flow),
       preview_not_ready_triggered: reason === "preview_not_ready_yet" || Boolean(sourceMetadata.preview_not_ready),
       job_description_collapsed_detected: reason === "job_description_collapsed" || Boolean(sourceMetadata.jd_collapsed_likely),
@@ -109,14 +111,28 @@
     const hasTitle = Boolean(payload.job_title);
     const hasCompany = Boolean(payload.company_name);
     const linkedInPreview = isLinkedInPreview(payload);
+    const requiresCompany = payload.platform === "linkedin";
     const jdCollapsedLikely = Boolean(sourceMetadata.jd_collapsed_likely);
     const previewNotReady = Boolean(sourceMetadata.preview_not_ready);
+    const linkedInRouteKind = String(sourceMetadata.linkedin_route_kind || "");
+
+    if (payload.platform === "linkedin" && sourceMetadata.loading_reason === "linkedin_login_redirect_pending") {
+      return "preview_not_ready_yet";
+    }
+
+    if (payload.platform === "linkedin" && linkedInRouteKind === "jobs_collections_no_current_job") {
+      return "preview_not_ready_yet";
+    }
+
+    if (linkedInPreview && previewNotReady) {
+      return "preview_not_ready_yet";
+    }
 
     if (!hasTitle) {
       return "missing_job_title";
     }
 
-    if (!hasCompany) {
+    if (requiresCompany && !hasCompany) {
       return "missing_company_name";
     }
 
@@ -131,7 +147,11 @@
       return "job_description_collapsed";
     }
 
-    if (linkedInPreview && previewNotReady && jdLength < PREVIEW_NOT_READY_MAX_CHARS) {
+    if (payload.platform === "linkedin" && sourceMetadata.description_incomplete) {
+      return "linkedin_description_incomplete";
+    }
+
+    if (previewNotReady && jdLength < PREVIEW_NOT_READY_MAX_CHARS) {
       return "preview_not_ready_yet";
     }
 
@@ -148,6 +168,65 @@
     return "unknown_extract_failure";
   }
 
+  function buildPayloadFromExtracted(extracted, fallbackPlatform) {
+    return {
+      url: typeof extracted.url === "string" && extracted.url.trim().length > 0 ? extracted.url.trim() : location.href,
+      platform: extracted.platform || fallbackPlatform,
+      job_title: cleanField(extracted.job_title),
+      company_name: cleanField(extracted.company_name),
+      location: cleanField(extracted.location),
+      job_description_text: cleanDescription(extracted.job_description_text),
+      source_metadata: {
+        extraction_method: "fallback_text",
+        detected_selectors: [],
+        ...(extracted.source_metadata || {}),
+      },
+    };
+  }
+
+  function buildPayloadFromNormalizedJob(params) {
+    const normalized = params.normalizedJob;
+    const stableJobKey = params.stableJobKey;
+    const adapterReady = params.adapterReady;
+    const sourceMetadata = normalized && normalized.sourceMetadata && typeof normalized.sourceMetadata === "object"
+      ? normalized.sourceMetadata
+      : {};
+    const externalJobId = typeof normalized.externalJobId === "string"
+      ? normalized.externalJobId.trim() || null
+      : null;
+
+    return {
+      url: typeof normalized.url === "string" && normalized.url.trim().length > 0 ? normalized.url.trim() : location.href,
+      platform: normalized.source || "unknown",
+      job_title: cleanField(normalized.title),
+      company_name: cleanField(normalized.company || ""),
+      location: cleanField(normalized.location || ""),
+      job_description_text: cleanDescription(normalized.description),
+      source_metadata: {
+        extraction_method: "surface_adapter",
+        detected_selectors: [],
+        ...sourceMetadata,
+        adapter_source: normalized.source || "unknown",
+        stable_job_key: stableJobKey || null,
+        external_job_id: externalJobId || (sourceMetadata.external_job_id || null),
+        current_job_id: sourceMetadata.current_job_id
+          || (normalized.source === "seek" || normalized.source === "linkedin" ? externalJobId : null),
+        employment_type: typeof normalized.employmentType === "string" ? normalized.employmentType : null,
+        salary: typeof normalized.salary === "string" ? normalized.salary : null,
+        posted_at: typeof normalized.postedAt === "string" ? normalized.postedAt : null,
+        adapter_ready: adapterReady,
+      },
+    };
+  }
+
+  function getAdapterFromDetection(detection) {
+    const adapterRegistry = globalThis.CareerTwinJobSurfaceAdapterRegistry;
+    if (!adapterRegistry || typeof adapterRegistry.getBySource !== "function") return null;
+    const source = detection && detection.adapter_source ? detection.adapter_source : detection.platform;
+    if (!source || source === "unknown") return null;
+    return adapterRegistry.getBySource(source);
+  }
+
   function buildFailureResult(payload, reason) {
     debugLog("extract_failure", {
       reason,
@@ -159,6 +238,8 @@
         ? payload.source_metadata.detected_selectors
         : [],
       jd_collapsed_likely: payload.source_metadata ? Boolean(payload.source_metadata.jd_collapsed_likely) : false,
+      description_incomplete: payload.source_metadata ? Boolean(payload.source_metadata.description_incomplete) : false,
+      description_quality: payload.source_metadata ? payload.source_metadata.description_quality || null : null,
       more_expand_clicked_by_flow: payload.source_metadata ? Boolean(payload.source_metadata.more_expand_clicked_by_flow) : false,
       expand_control_present: payload.source_metadata ? Boolean(payload.source_metadata.expand_control_present) : false,
       expand_control_expanded: payload.source_metadata
@@ -182,7 +263,7 @@
     };
   }
 
-  function extractJobPagePayload() {
+  async function extractJobPagePayload() {
     const detector = globalThis.CareerTwinDetectJobPage;
     const registry = globalThis.CareerTwinParserRegistry;
     const parsers = registry ? registry.getAll() : (globalThis.CareerTwinPlatformParsers || {});
@@ -197,33 +278,76 @@
         state: "unsupported_page",
         reason: detection.reason,
         platform: detection.platform,
+        route_kind: detection.linkedin_route_kind || "unsupported",
+        current_job_id: detection.current_job_id || null,
+        current_job_id_present: Boolean(detection.current_job_id_present),
+        canonical_job_url: detection.canonical_job_url || null,
+        collections_panel_dom_ready: typeof detection.collections_panel_dom_ready === "boolean"
+          ? detection.collections_panel_dom_ready
+          : null,
+        unsupported_reason: detection.unsupported_reason || detection.reason || "not_supported",
       };
     }
 
-    const parser = (registry && registry.get(detection.platform)) || parsers[detection.platform] || parsers.generic;
-    if (!parser) {
-      return {
-        ok: false,
-        state: "extracting_failed",
-        reason: "parser_selector_miss",
-        platform: detection.platform,
-      };
-    }
+    const adapter = getAdapterFromDetection(detection);
+    let payload = null;
 
-    const extracted = parser();
-    const payload = {
-      url: typeof extracted.url === "string" && extracted.url.trim().length > 0 ? extracted.url.trim() : location.href,
-      platform: extracted.platform || detection.platform,
-      job_title: cleanField(extracted.job_title),
-      company_name: cleanField(extracted.company_name),
-      location: cleanField(extracted.location),
-      job_description_text: cleanDescription(extracted.job_description_text),
-      source_metadata: {
-        extraction_method: "fallback_text",
-        detected_selectors: [],
-        ...(extracted.source_metadata || {}),
-      },
-    };
+    if (adapter) {
+      let adapterReady = true;
+      try {
+        adapterReady = Boolean(adapter.isReady());
+      } catch {
+        adapterReady = true;
+      }
+
+      let normalizedJob = null;
+      try {
+        normalizedJob = await adapter.extractJob();
+      } catch {
+        normalizedJob = null;
+      }
+
+      if (!normalizedJob) {
+        return {
+          ok: false,
+          state: "extracting_failed",
+          reason: "parser_selector_miss",
+          platform: detection.platform,
+        };
+      }
+
+      let stableJobKey = null;
+      try {
+        stableJobKey = adapter.getStableJobKey(normalizedJob);
+      } catch {
+        stableJobKey = null;
+      }
+
+      payload = buildPayloadFromNormalizedJob({
+        normalizedJob,
+        stableJobKey,
+        adapterReady,
+      });
+      if (!adapterReady && payload.job_description_text.length < PREVIEW_NOT_READY_MAX_CHARS) {
+        payload.source_metadata = {
+          ...(payload.source_metadata || {}),
+          preview_not_ready: true,
+        };
+      }
+    } else {
+      const parser = (registry && registry.get(detection.platform)) || parsers[detection.platform] || parsers.generic;
+      if (!parser) {
+        return {
+          ok: false,
+          state: "extracting_failed",
+          reason: "parser_selector_miss",
+          platform: detection.platform,
+        };
+      }
+
+      const extracted = parser();
+      payload = buildPayloadFromExtracted(extracted, detection.platform);
+    }
 
     debugLog("extract_summary", {
       platform: payload.platform,
@@ -233,6 +357,11 @@
       jd_length: payload.job_description_text.length,
       selectors_used: payload.source_metadata.detected_selectors || [],
       jd_collapsed_likely: Boolean(payload.source_metadata.jd_collapsed_likely),
+      description_incomplete: Boolean(payload.source_metadata.description_incomplete),
+      description_quality: payload.source_metadata.description_quality || null,
+      section_hit_count: typeof payload.source_metadata.description_section_hit_count === "number"
+        ? payload.source_metadata.description_section_hit_count
+        : null,
       expand_control_present: Boolean(payload.source_metadata.expand_control_present),
       expand_control_expanded: payload.source_metadata.expand_control_expanded,
     });
@@ -261,7 +390,7 @@
         };
       }
 
-      if (reason === "missing_job_title" || reason === "missing_job_description" || reason === "parser_selector_miss" || reason === "preview_not_ready_yet" || reason === "job_description_too_short" || reason === "job_description_collapsed") {
+      if (reason === "missing_job_title" || reason === "missing_job_description" || reason === "parser_selector_miss" || reason === "preview_not_ready_yet" || reason === "job_description_too_short" || reason === "job_description_collapsed" || reason === "linkedin_description_incomplete") {
         return buildFailureResult(payload, reason);
       }
 

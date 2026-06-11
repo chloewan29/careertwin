@@ -23,6 +23,7 @@ export async function writeAppliedPipelineAction(params: {
         throw new Error("Profile not found");
     }
 
+    // user_job_actions is compatibility-only and can lag newer optional telemetry columns.
     const { error: actionError } = await supabase
         .from("user_job_actions")
         .insert({
@@ -31,13 +32,6 @@ export async function writeAppliedPipelineAction(params: {
             job_url: params.jobUrl,
             job_title: params.jobTitle,
             company: params.company,
-            source_platform: params.sourcePlatform,
-            location: params.location,
-            job_description_snapshot: params.jobDescriptionSnapshot,
-            match_score: params.matchScore,
-            verdict: params.verdict,
-            selected_evidence_ids: params.selectedEvidenceIds,
-            applied_at: new Date().toISOString(),
             action: "applied",
         });
 

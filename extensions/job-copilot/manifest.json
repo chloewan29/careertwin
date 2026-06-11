@@ -12,6 +12,9 @@
   "host_permissions": [
     "https://www.linkedin.com/*",
     "https://www.seek.com.au/*",
+    "https://www.seek.co.nz/*",
+    "https://www.seek.com/*",
+    "https://au.seek.com/*",
     "https://boards.greenhouse.io/*",
     "https://*.greenhouse.io/*",
     "https://jobs.lever.co/*",
@@ -33,6 +36,9 @@
       "matches": [
         "https://www.linkedin.com/*",
         "https://www.seek.com.au/*",
+        "https://www.seek.co.nz/*",
+        "https://www.seek.com/*",
+        "https://au.seek.com/*",
         "https://boards.greenhouse.io/*",
         "https://*.greenhouse.io/*",
         "https://jobs.lever.co/*"
@@ -47,6 +53,9 @@
       "content/platform-parsers/greenhouse.js",
       "content/platform-parsers/lever.js",
       "content/platform-parsers/generic.js",
+      "content/job-surface-adapters/adapter-registry.js",
+      "content/job-surface-adapters/linkedin-adapter.js",
+      "content/job-surface-adapters/seek-adapter.js",
       "content/detect-job-page.js",
       "content/extract-job-page.js",
       "content/index.js"
@@ -63,6 +72,9 @@
       "matches": [
         "https://www.linkedin.com/*",
         "https://www.seek.com.au/*",
+        "https://www.seek.co.nz/*",
+        "https://www.seek.com/*",
+        "https://au.seek.com/*",
         "https://boards.greenhouse.io/*",
         "https://*.greenhouse.io/*",
         "https://jobs.lever.co/*"

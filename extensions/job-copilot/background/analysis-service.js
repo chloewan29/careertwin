@@ -10,6 +10,7 @@
   const CACHE_MAX_AGE_MS = Constants.CACHE_MAX_AGE_MS || 15 * 60 * 1000;
   const ACTIVE_TAB_RETRY_DELAY_MS = 150;
   const EXTRACTION_TIMEOUT_MS = 7000;
+  const EXTRACTION_RECEIVER_RETRY_BACKOFF_MS = [200, 650, 1200];
   const inFlightAnalysisByKey = new Map();
 
   function debugLog(label, value) {
@@ -355,6 +356,8 @@
         return "The visible job description is too short right now. Open About the job > more, then retry.";
       case "job_description_collapsed":
         return "The job description looks collapsed. Expand About the job and retry.";
+      case "linkedin_description_incomplete":
+        return "We only captured a preview snippet of this LinkedIn job. Open the full description (About the job > more) and retry.";
       case "parser_selector_miss":
         return "We couldn't locate the job description section on this page layout.";
       case "preview_not_ready_yet":
@@ -364,12 +367,47 @@
     }
   }
 
+  function mapAnalyzeFailureMessage(analyzeResult) {
+    const code = analyzeResult && typeof analyzeResult.code === "string"
+      ? analyzeResult.code
+      : "";
+    if (code === "backend_unreachable") {
+      return "CareerTwin local server is not reachable. Start the dev server and retry.";
+    }
+    return analyzeResult && typeof analyzeResult.error === "string" && analyzeResult.error.trim()
+      ? analyzeResult.error.trim()
+      : "Analysis failed.";
+  }
+
   function isContextInvalidationMessage(message) {
     const text = String(message || "").toLowerCase();
     return text.includes("extension context invalidated")
       || text.includes("context invalidated")
       || text.includes("receiving end does not exist")
       || text.includes("message port closed");
+  }
+
+  function isTransientReceiverUnavailableMessage(message) {
+    const text = String(message || "").toLowerCase();
+    return text.includes("receiving end does not exist")
+      || text.includes("could not establish connection")
+      || text.includes("message port closed before a response was received");
+  }
+
+  function isSupportedReceiverRetryUrl(tabUrl) {
+    const urlText = typeof tabUrl === "string" ? tabUrl.trim() : "";
+    if (!urlText) return false;
+    try {
+      const parsed = new URL(urlText);
+      const host = parsed.hostname.toLowerCase();
+      if (host === "www.linkedin.com" || host === "linkedin.com") return true;
+      return host === "www.seek.com.au"
+        || host === "www.seek.co.nz"
+        || host === "www.seek.com"
+        || host === "au.seek.com";
+    } catch {
+      return false;
+    }
   }
 
   function wait(ms) {
@@ -404,7 +442,7 @@
     return tabs && tabs[0] ? tabs[0] : null;
   }
 
-  async function requestExtractionFromTab(tabId) {
+  async function requestExtractionAttempt(tabId, attemptNumber) {
     return new Promise((resolve) => {
       let settled = false;
       const timeoutHandle = setTimeout(() => {
@@ -414,6 +452,7 @@
           ok: false,
           state: "error",
           reason: "content_extract_timeout",
+          requestExtractionFromTab_attempt: attemptNumber,
         });
       }, EXTRACTION_TIMEOUT_MS);
 
@@ -429,6 +468,7 @@
                 ok: false,
                 state: "context_invalidated",
                 reason: errorMessage,
+                requestExtractionFromTab_attempt: attemptNumber,
               });
               return;
             }
@@ -436,10 +476,16 @@
               ok: false,
               state: "error",
               reason: errorMessage,
+              requestExtractionFromTab_attempt: attemptNumber,
             });
             return;
           }
-          resolve(response || { ok: false, state: "error", reason: "no_content_response" });
+          resolve(response || {
+            ok: false,
+            state: "error",
+            reason: "no_content_response",
+            requestExtractionFromTab_attempt: attemptNumber,
+          });
         });
       } catch (error) {
         if (settled) return;
@@ -450,8 +496,119 @@
           ok: false,
           state: isContextInvalidationMessage(errorMessage) ? "context_invalidated" : "error",
           reason: errorMessage,
+          requestExtractionFromTab_attempt: attemptNumber,
         });
       }
+    });
+  }
+
+  function withReceiverRetryDiagnostics(result, diagnostics) {
+    const source = result && typeof result === "object"
+      ? result
+      : { ok: false, state: "error", reason: "invalid_extraction_result" };
+    const attempts = Number.isFinite(diagnostics && diagnostics.attempts)
+      ? diagnostics.attempts
+      : 1;
+    const firstError = diagnostics && typeof diagnostics.firstError === "string"
+      ? diagnostics.firstError
+      : null;
+    const finalError = diagnostics && typeof diagnostics.finalError === "string"
+      ? diagnostics.finalError
+      : (typeof source.reason === "string" ? source.reason : null);
+    const startedAt = Number.isFinite(diagnostics && diagnostics.startedAt)
+      ? diagnostics.startedAt
+      : Date.now();
+    const elapsedMs = Math.max(0, Date.now() - startedAt);
+    return {
+      ...source,
+      extraction_receiver_ready: source.ok === true,
+      receiver_retry_attempts: Math.max(0, attempts - 1),
+      receiver_retry_recovered: source.ok === true && attempts > 1,
+      receiver_retry_first_error: firstError,
+      receiver_retry_final_error: source.ok === true ? null : finalError,
+      receiver_retry_total_ms: elapsedMs,
+      requestExtractionFromTab_attempt: attempts,
+      retry_attempts: Math.max(0, attempts - 1),
+    };
+  }
+
+  async function requestExtractionFromTab(tabId) {
+    const startedAt = Date.now();
+    let firstError = null;
+    let attempts = 0;
+
+    for (let attemptIndex = 0; attemptIndex <= EXTRACTION_RECEIVER_RETRY_BACKOFF_MS.length; attemptIndex += 1) {
+      if (attemptIndex > 0) {
+        const backoffMs = EXTRACTION_RECEIVER_RETRY_BACKOFF_MS[attemptIndex - 1] || 0;
+        if (backoffMs > 0) {
+          await wait(backoffMs);
+        }
+        const latestTab = await getTabById(tabId);
+        if (!latestTab || typeof latestTab.id !== "number") {
+          return withReceiverRetryDiagnostics({
+            ok: false,
+            state: "error",
+            reason: "tab_not_found_before_retry",
+          }, {
+            attempts,
+            firstError,
+            finalError: "tab_not_found_before_retry",
+            startedAt,
+          });
+        }
+        if (!isSupportedReceiverRetryUrl(latestTab.url)) {
+          return withReceiverRetryDiagnostics({
+            ok: false,
+            state: "unsupported_page",
+            reason: "unsupported_tab_url_before_retry",
+            url: latestTab.url || null,
+          }, {
+            attempts,
+            firstError,
+            finalError: "unsupported_tab_url_before_retry",
+            startedAt,
+          });
+        }
+      }
+
+      attempts = attemptIndex + 1;
+      const attemptResult = await requestExtractionAttempt(tabId, attempts);
+      if (attemptResult && attemptResult.ok) {
+        return withReceiverRetryDiagnostics(attemptResult, {
+          attempts,
+          firstError,
+          startedAt,
+        });
+      }
+
+      const errorMessage = attemptResult && typeof attemptResult.reason === "string"
+        ? attemptResult.reason
+        : "";
+      if (!firstError && errorMessage) {
+        firstError = errorMessage;
+      }
+
+      const transientReceiverUnavailable = isTransientReceiverUnavailableMessage(errorMessage);
+      const canRetry = transientReceiverUnavailable && attemptIndex < EXTRACTION_RECEIVER_RETRY_BACKOFF_MS.length;
+      if (!canRetry) {
+        return withReceiverRetryDiagnostics(attemptResult, {
+          attempts,
+          firstError,
+          finalError: errorMessage || null,
+          startedAt,
+        });
+      }
+    }
+
+    return withReceiverRetryDiagnostics({
+      ok: false,
+      state: "error",
+      reason: "receiver_retry_exhausted",
+    }, {
+      attempts,
+      firstError,
+      finalError: "receiver_retry_exhausted",
+      startedAt,
     });
   }
 
@@ -653,8 +810,11 @@
       return finalizeResponse(requestId, {
         ok: true,
         state: analyzeResult.code === "missing_profile_id" ? "auth_required" : "error",
-        error: analyzeResult.error || "Analysis failed.",
+        error: mapAnalyzeFailureMessage(analyzeResult),
         code: analyzeResult.code || "analyze_failed",
+        diagnostics: analyzeResult && analyzeResult.diagnostics && typeof analyzeResult.diagnostics === "object"
+          ? analyzeResult.diagnostics
+          : null,
         context: extraction,
       }, requestStartedAt);
     }

@@ -34,6 +34,13 @@ class HttpError extends Error {
     }
 }
 
+function legacyRouteEnabled(): boolean {
+    const raw = process.env.ENABLE_LEGACY_RESUME_COPILOT_ROUTE;
+    if (!raw) return false;
+    const normalized = raw.trim().toLowerCase();
+    return normalized === "1" || normalized === "true" || normalized === "yes";
+}
+
 function isValidTailoredResumeShape(value: unknown): value is TailoredResume {
     if (!value || typeof value !== "object") return false;
     const candidate = value as TailoredResume;
@@ -97,6 +104,15 @@ async function resolveCareerId(params: {
 
 export async function POST(request: NextRequest) {
     try {
+        if (!legacyRouteEnabled()) {
+            return NextResponse.json(
+                {
+                    error: "Legacy /api/resume-copilot route is compatibility-only and disabled. Use /api/job-copilot/extension/* canonical flow.",
+                    code: "legacy_route_disabled",
+                },
+                { status: 410 },
+            );
+        }
         const body = (await request.json()) as RequestBody;
         const jobId = body.jobId?.trim() ?? body.job_id?.trim();
         const supabase = createServerSupabaseClient();

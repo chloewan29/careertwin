@@ -4,7 +4,11 @@
   const DEFAULT_API_BASE_URL = Constants.DEFAULT_API_BASE_URL || "http://localhost:3000";
   const DEFAULT_PROFILE_ID = Constants.DEFAULT_PROFILE_ID || "";
   const DEFAULT_TOP_EVIDENCE_LIMIT = Constants.DEFAULT_TOP_EVIDENCE_LIMIT || 4;
-  const HTTP_TIMEOUT_MS = 30000;
+  const DEFAULT_HTTP_TIMEOUT_MS = 30000;
+  const ANALYZE_HTTP_TIMEOUT_MS = Constants.ANALYZE_API_TIMEOUT_MS || (95 * 1000);
+  function isoNow() {
+    return new Date().toISOString();
+  }
 
   function debugLog(label, value) {
     try {
@@ -61,10 +65,33 @@
     }
   }
 
-  async function sendJson(url, payload) {
+  function isLocalBackendUrl(urlValue) {
+    try {
+      const parsed = new URL(String(urlValue || ""));
+      const host = String(parsed.hostname || "").toLowerCase();
+      return host === "localhost" || host === "127.0.0.1" || host === "::1" || host === "[::1]";
+    } catch {
+      return false;
+    }
+  }
+
+  function isLikelyFetchNetworkFailure(error) {
+    const message = String(error && error.message ? error.message : error || "").toLowerCase();
+    if (!message) return false;
+    return message.includes("failed to fetch")
+      || message.includes("err_connection_refused")
+      || message.includes("err_failed")
+      || message.includes("networkerror")
+      || message.includes("load failed");
+  }
+
+  async function sendJson(url, payload, timeoutMs) {
+    const resolvedTimeoutMs = Number.isFinite(timeoutMs) && timeoutMs > 0
+      ? timeoutMs
+      : DEFAULT_HTTP_TIMEOUT_MS;
     const controller = typeof AbortController === "function" ? new AbortController() : null;
     const timeoutHandle = controller
-      ? setTimeout(() => controller.abort(), HTTP_TIMEOUT_MS)
+      ? setTimeout(() => controller.abort(), resolvedTimeoutMs)
       : null;
 
     try {
@@ -136,8 +163,9 @@
       topEvidenceLimit: DEFAULT_TOP_EVIDENCE_LIMIT,
     };
     const endpointCandidates = [
-      `${apiBaseUrl}/api/job-copilot/extension/run`,
+      // Canonical analyze route first; keep legacy run route as compatibility fallback.
       `${apiBaseUrl}/api/job-copilot/extension/analyze`,
+      `${apiBaseUrl}/api/job-copilot/extension/run`,
     ];
 
     let lastFailure = null;
