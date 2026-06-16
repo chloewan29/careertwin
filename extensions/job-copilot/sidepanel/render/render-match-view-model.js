@@ -1,6 +1,7 @@
 (function initSidepanelRenderMatchViewModel() {
   // Adapts raw analysis payload into compact, presentation-focused sidepanel sections.
   const Utils = globalThis.CareerTwinSharedUtils || {};
+  const QuickCheckCtaState = globalThis.CareerTwinQuickCheckCtaState || {};
 
   function asArray(value) {
     return Utils.asArray ? Utils.asArray(value) : (Array.isArray(value) ? value : []);
@@ -374,32 +375,73 @@
     const fromData = data && Array.isArray(data.calibrationQuestions)
       ? data.calibrationQuestions
       : [];
-    const source = fromAnalysis.length > 0 ? fromAnalysis : fromData;
-
-    const items = source
+    const source = (fromAnalysis.length > 0 ? fromAnalysis : fromData)
       .map((item) => {
         if (!item || typeof item !== "object") return null;
-        const id = toString(item.id);
+        const id = toString(item.id || item.question_id || item.questionId);
         const question = toString(item.question);
         if (!id || !question) return null;
-        const answerRaw = toString(item.answer).toLowerCase();
-        const answer = answerRaw === "yes" || answerRaw === "no" ? answerRaw : null;
         return {
+          ...item,
           id,
           question,
-          answer,
         };
       })
-      .filter(Boolean)
-      .slice(0, 3);
+      .filter(Boolean);
 
     const calibration = analysis && analysis.calibration ? analysis.calibration : {};
+    const calibrationAnswers = Array.isArray(calibration.answers) ? calibration.answers : [];
+    const normalizedQuickCheckState = QuickCheckCtaState && typeof QuickCheckCtaState.normalizeQuickCheckState === "function"
+      ? QuickCheckCtaState.normalizeQuickCheckState({
+        source,
+        calibrationAnswers,
+        calibrationRequired: typeof calibration.required === "boolean" ? calibration.required : null,
+      })
+      : null;
+    const items = (
+      normalizedQuickCheckState
+      && Array.isArray(normalizedQuickCheckState.items)
+      && normalizedQuickCheckState.items.length > 0
+        ? normalizedQuickCheckState.items
+        : source.map((item) => {
+          const answerRaw = toString(item && item.answer).toLowerCase();
+          const answer = answerRaw === "yes" || answerRaw === "no" ? answerRaw : null;
+          return {
+            id: toString(item && item.id),
+            question: toString(item && item.question),
+            answer,
+            quickCheckKind: toString(item && (item.quick_check_kind || item.quickCheckKind)),
+            quickCheckBlocksCta: item && (item.quick_check_blocks_cta === false || item.quickCheckBlocksCta === false)
+              ? false
+              : true,
+            quickCheckGapType: toString(item && (item.quick_check_gap_type || item.quickCheckGapType)),
+            targetArea: toString(item && (item.target_area || item.targetArea)),
+            requirementCluster: toString(item && (item.requirement_cluster || item.requirementCluster)),
+          };
+        })
+    ).slice(0, 3);
     const answeredCount = typeof calibration.answered_count === "number"
       ? calibration.answered_count
       : items.filter((item) => item.answer === "yes" || item.answer === "no").length;
     const totalQuestions = typeof calibration.total_questions === "number"
       ? calibration.total_questions
       : items.length;
+    const required = normalizedQuickCheckState && typeof normalizedQuickCheckState.required === "boolean"
+      ? normalizedQuickCheckState.required
+      : totalQuestions > 0;
+    const unresolvedCount = normalizedQuickCheckState && typeof normalizedQuickCheckState.unresolvedCount === "number"
+      ? normalizedQuickCheckState.unresolvedCount
+      : items.filter((item) => item.answer !== "yes" && item.answer !== "no").length;
+    const runtimeState = normalizedQuickCheckState && hasText(normalizedQuickCheckState.runtimeState)
+      ? normalizedQuickCheckState.runtimeState
+      : (required && unresolvedCount > 0 ? "quick_check_pending" : (required ? "quick_check_available" : "quick_check_not_required"));
+    const optionalEnrichment = Boolean(
+      normalizedQuickCheckState
+      && (
+        normalizedQuickCheckState.optionalEnrichment === true
+        || normalizedQuickCheckState.hasOptionalEnrichment === true
+      ),
+    );
     const scoreDelta = typeof calibration.score_delta === "number"
       ? calibration.score_delta
       : 0;
@@ -411,12 +453,84 @@
     const statusText = totalQuestions > 0
       ? `${answeredCount}/${totalQuestions} answered. ${deltaText}`.trim()
       : "";
-
-    return {
+    const firstUnresolvedItem = items.find((item) => item.answer !== "yes" && item.answer !== "no") || items[0] || null;
+    const seededSection = {
       sectionTitle: "A few quick checks",
       items,
+      required,
+      questionCount: totalQuestions,
+      unresolvedCount,
+      runtimeState,
+      optionalEnrichment,
+      topQuickCheckGap: toString(firstUnresolvedItem && (firstUnresolvedItem.targetArea || firstUnresolvedItem.requirementCluster)),
+      quickCheckGapType: toString(firstUnresolvedItem && firstUnresolvedItem.quickCheckGapType),
+      topQuestion: toString(firstUnresolvedItem && firstUnresolvedItem.question),
       statusText,
     };
+    const quickCheckDisplayState = QuickCheckCtaState && typeof QuickCheckCtaState.deriveQuickCheckCtaState === "function"
+      ? QuickCheckCtaState.deriveQuickCheckCtaState({
+        quickChecksSeededForDisplay: seededSection,
+        authoritativeRecommendationState: required && unresolvedCount > 0 ? "confirm_first" : "ready_apply",
+        contractRecommendationCtaState: required && unresolvedCount > 0 ? "calibrate" : "apply",
+      })
+      : null;
+    const quickChecksForDisplay = quickCheckDisplayState && quickCheckDisplayState.quickChecksForDisplay
+      ? quickCheckDisplayState.quickChecksForDisplay
+      : seededSection;
+    if (QuickCheckCtaState && typeof QuickCheckCtaState.buildQuickCheckViewModel === "function") {
+      return QuickCheckCtaState.buildQuickCheckViewModel({
+        quickChecksForDisplay,
+        focusLine: "",
+        interviewFocus: [],
+        likelyChallengeAreas: [],
+        uncertaintyFlags: [],
+        primaryAxisLabel: "",
+        primaryAxisKey: "",
+        supportingAxisLabel: "",
+        supportingAxisKey: "",
+        specificAnchorLabel: "",
+        specificAnchorKey: "",
+        roleFrameAnchorLabel: "",
+        roleFrameAnchorKey: "",
+        primaryGapLabel: seededSection.topQuickCheckGap || "",
+        primaryGapType: seededSection.quickCheckGapType || "",
+        readonlyReason: quickCheckDisplayState && quickCheckDisplayState.quickCheckReadOnlyReason
+          ? quickCheckDisplayState.quickCheckReadOnlyReason
+          : "",
+        lowPriorityAuthoritative: Boolean(
+          quickCheckDisplayState && quickCheckDisplayState.quickCheckLowPriorityAuthoritative === true,
+        ),
+        ctaRequiresCalibration: Boolean(
+          quickCheckDisplayState && quickCheckDisplayState.quickCheckCtaRequiresCalibration === true,
+        ),
+        copyVariant: quickCheckDisplayState && quickCheckDisplayState.quickCheckCopyVariant
+          ? quickCheckDisplayState.quickCheckCopyVariant
+          : "",
+        ctaQuickCheckConsistencyStatus: quickCheckDisplayState && quickCheckDisplayState.quickCheckConsistencyStatus
+          ? quickCheckDisplayState.quickCheckConsistencyStatus
+          : "",
+        hasOptionalQuickCheckNonBlocking: Boolean(
+          (quickCheckDisplayState && quickCheckDisplayState.hasOptionalQuickCheckNonBlocking === true)
+          || optionalEnrichment,
+        ),
+        hasRequiredBlockingQuickCheck: Boolean(
+          (quickCheckDisplayState && quickCheckDisplayState.hasRequiredBlockingQuickCheck === true)
+          || (!optionalEnrichment && items.some((item) => item && item.quickCheckBlocksCta !== false)),
+        ),
+        ctaStateBeforeOptionalConsistencyGate: quickCheckDisplayState
+          && quickCheckDisplayState.resolvedAuthoritativeCtaStateBeforeOptionalConsistencyGate
+          ? quickCheckDisplayState.resolvedAuthoritativeCtaStateBeforeOptionalConsistencyGate
+          : (required && unresolvedCount > 0 ? "confirm_first" : "ready_apply"),
+        ctaStateAfterOptionalConsistencyGate: quickCheckDisplayState
+          && quickCheckDisplayState.resolvedAuthoritativeCtaState
+          ? quickCheckDisplayState.resolvedAuthoritativeCtaState
+          : (required && unresolvedCount > 0 ? "confirm_first" : "ready_apply"),
+        ctaOptionalConsistencyGateApplied: Boolean(
+          quickCheckDisplayState && quickCheckDisplayState.shouldApplyOptionalConsistencyGate === true,
+        ),
+      });
+    }
+    return seededSection;
   }
 
   function normalizePositioningHints(data, analysis) {

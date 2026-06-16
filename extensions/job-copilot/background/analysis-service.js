@@ -5,6 +5,7 @@
   const ApiClient = globalThis.CareerTwinApiClient;
   const Constants = globalThis.CareerTwinConstants || {};
   const PayloadHelpers = globalThis.CareerTwinJobPayload || {};
+  const QuickCheckAnswerPersistence = globalThis.CareerTwinQuickCheckAnswerPersistence || {};
   const UiContract = globalThis.CareerTwinUiContract || {};
 
   const CACHE_MAX_AGE_MS = Constants.CACHE_MAX_AGE_MS || 15 * 60 * 1000;
@@ -641,6 +642,9 @@
   }
 
   function normalizeCalibrationAnswerEntries(entries) {
+    if (QuickCheckAnswerPersistence && typeof QuickCheckAnswerPersistence.normalizeCalibrationAnswerEntries === "function") {
+      return QuickCheckAnswerPersistence.normalizeCalibrationAnswerEntries(entries);
+    }
     if (!Array.isArray(entries)) return [];
     const byQuestionId = new Map();
     for (const entry of entries) {
@@ -656,6 +660,9 @@
   }
 
   function upsertCalibrationAnswer(existingAnswers, nextEntry) {
+    if (QuickCheckAnswerPersistence && typeof QuickCheckAnswerPersistence.upsertCalibrationAnswer === "function") {
+      return QuickCheckAnswerPersistence.upsertCalibrationAnswer(existingAnswers, nextEntry);
+    }
     const normalizedExisting = normalizeCalibrationAnswerEntries(existingAnswers);
     const normalizedNext = normalizeCalibrationAnswerEntries([nextEntry]);
     if (normalizedNext.length === 0) return normalizedExisting;
@@ -664,6 +671,39 @@
       byQuestionId.set(item.questionId, item.answer);
     }
     return Array.from(byQuestionId.entries()).map(([questionId, answer]) => ({ questionId, answer }));
+  }
+
+  function mergeCalibrationAnswersIntoAnalyzeResultData(resultData, answerEntries) {
+    if (QuickCheckAnswerPersistence && typeof QuickCheckAnswerPersistence.mergeCalibrationAnswersIntoAnalyzeResultData === "function") {
+      return QuickCheckAnswerPersistence.mergeCalibrationAnswersIntoAnalyzeResultData(
+        resultData,
+        answerEntries,
+        normalizeAnalyzeData,
+      );
+    }
+    return normalizeAnalyzeData(resultData);
+  }
+
+  function resolveCalibrationAnswerUpdate(existingAnswers, options) {
+    if (QuickCheckAnswerPersistence && typeof QuickCheckAnswerPersistence.resolveCalibrationAnswerUpdate === "function") {
+      return QuickCheckAnswerPersistence.resolveCalibrationAnswerUpdate(existingAnswers, options);
+    }
+    const stagedAnswers = normalizeCalibrationAnswerEntries(options && options.stagedAnswers);
+    const questionId = typeof (options && options.questionId) === "string" ? options.questionId.trim() : "";
+    const answer = options && (options.answer === "yes" || options.answer === "no") ? options.answer : null;
+    const nextAnswers = stagedAnswers.length > 0
+      ? stagedAnswers.reduce((acc, entry) => upsertCalibrationAnswer(acc, entry), existingAnswers)
+      : upsertCalibrationAnswer(existingAnswers, { questionId, answer });
+    const triggerAnswer = questionId && answer
+      ? { questionId, answer }
+      : (stagedAnswers[stagedAnswers.length - 1] || null);
+    return {
+      stagedAnswers,
+      nextAnswers,
+      triggerAnswer,
+      triggerQuestionId: triggerAnswer && triggerAnswer.questionId ? triggerAnswer.questionId : "",
+      triggerAnswerValue: triggerAnswer && triggerAnswer.answer ? triggerAnswer.answer : null,
+    };
   }
 
   async function handleSidepanelAnalysisRequest(options) {
@@ -760,7 +800,11 @@
 
     const cached = Cache.getAnalysis(analysisKey);
     if (cached && cached.response) {
-      const normalizedCachedData = normalizeAnalyzeData(cached.response);
+      const cachedCalibrationAnswers = Cache.getCalibrationAnswers(analysisKey);
+      const normalizedCachedData = mergeCalibrationAnswersIntoAnalyzeResultData(
+        cached.response,
+        cachedCalibrationAnswers,
+      );
       const cachedState = toFinalState(normalizedCachedData, extraction);
       const cachedBridge = deriveDownstreamBridge(cached.response, normalizedCachedData);
       emitLinkedInExtractionAudit({
@@ -846,7 +890,11 @@
       }
     }
 
-    const normalizedData = normalizeAnalyzeData(analyzeResult.data);
+    const cachedCalibrationAnswers = Cache.getCalibrationAnswers(analysisKey);
+    const normalizedData = mergeCalibrationAnswersIntoAnalyzeResultData(
+      analyzeResult.data,
+      cachedCalibrationAnswers,
+    );
     const jobAnalysis = normalizedData.job_analysis;
     const state = toFinalState(normalizedData, extraction);
     const downstreamBridge = deriveDownstreamBridge(analyzeResult.data, normalizedData);
@@ -923,15 +971,6 @@
     const expectedCurrentJobId = options && typeof options.currentJobId === "string"
       ? options.currentJobId.trim()
       : "";
-    if (!questionId || !answer) {
-      return finalizeResponse(requestId, {
-        ok: false,
-        state: "error",
-        error: "Calibration answer is invalid.",
-        code: "invalid_calibration_answer",
-      }, requestStartedAt);
-    }
-
     const analysisKey = Cache.getTabAnalysisKey(tab.id);
     if (!analysisKey) {
       return finalizeResponse(requestId, {
@@ -979,25 +1018,50 @@
       }, requestStartedAt);
     }
 
-    const existingAnswers = Cache.getCalibrationAnswers(analysisKey);
-    const existingAnswer = existingAnswers.find((entry) => entry && entry.questionId === questionId);
-    const nextAnswers = upsertCalibrationAnswer(existingAnswers, { questionId, answer });
+    const existingAnswers = normalizeCalibrationAnswerEntries(Cache.getCalibrationAnswers(analysisKey));
+    const answerUpdate = resolveCalibrationAnswerUpdate(existingAnswers, {
+      stagedAnswers: options && options.calibrationAnswers,
+      questionId,
+      answer,
+    });
+    const stagedAnswers = Array.isArray(answerUpdate && answerUpdate.stagedAnswers)
+      ? answerUpdate.stagedAnswers
+      : [];
+    if (stagedAnswers.length === 0 && (!questionId || !answer)) {
+      return finalizeResponse(requestId, {
+        ok: false,
+        state: "error",
+        error: "Calibration answer is invalid.",
+        code: "invalid_calibration_answer",
+      }, requestStartedAt);
+    }
+    const triggerQuestionId = answerUpdate && answerUpdate.triggerQuestionId
+      ? answerUpdate.triggerQuestionId
+      : questionId;
+    const triggerAnswerValue = answerUpdate && answerUpdate.triggerAnswerValue
+      ? answerUpdate.triggerAnswerValue
+      : answer;
+    const existingAnswer = existingAnswers.find((entry) => entry && entry.questionId === triggerQuestionId);
+    const nextAnswers = Array.isArray(answerUpdate && answerUpdate.nextAnswers)
+      ? answerUpdate.nextAnswers
+      : existingAnswers;
     Cache.setCalibrationAnswers(analysisKey, nextAnswers);
     traceRequest(requestId, "calibration_request_start", {
       tabId: tab.id,
       analysisKey,
       currentJobId: cachedCurrentJobId || null,
-      questionId,
-      answer,
+      questionId: triggerQuestionId || null,
+      answer: triggerAnswerValue,
       answerCount: nextAnswers.length,
       replacedExistingAnswer: Boolean(existingAnswer),
-      answerChanged: !existingAnswer || existingAnswer.answer !== answer,
+      answerChanged: !existingAnswer || existingAnswer.answer !== triggerAnswerValue,
+      stagedAnswerCount: stagedAnswers.length,
     });
     traceRequest(requestId, "calibration_request_sent", {
       tabId: tab.id,
       analysisKey,
-      questionId,
-      answer,
+      questionId: triggerQuestionId || null,
+      answer: triggerAnswerValue,
     });
 
     const recalibrationResult = await ApiClient.recalculateJobPayload({
@@ -1018,7 +1082,10 @@
       }, requestStartedAt);
     }
 
-    const normalizedData = normalizeAnalyzeData(recalibrationResult.data);
+    const normalizedData = mergeCalibrationAnswersIntoAnalyzeResultData(
+      recalibrationResult.data,
+      nextAnswers,
+    );
     const currentContext = Cache.getContextForTab(tab.id);
     const extraction = currentContext && currentContext.extraction
       ? currentContext.extraction
@@ -1029,7 +1096,7 @@
       && normalizedData.job_analysis
       && normalizedData.job_analysis.calibration
       && Array.isArray(normalizedData.job_analysis.calibration.answers)
-      ? normalizedData.job_analysis.calibration.answers
+      ? normalizeCalibrationAnswerEntries(normalizedData.job_analysis.calibration.answers)
       : nextAnswers;
     Cache.setCalibrationAnswers(analysisKey, responseAnswers);
     Cache.setAnalysis(analysisKey, {
