@@ -32,6 +32,7 @@
   let lastKnownTabId = null;
   let lastResponseContext = null;
   let lastResponseData = null;
+  const dismissedMemoryPromptKeys = new Set();
 
   function quickCheckLog(label, details) {
     if (typeof details === "undefined") {
@@ -39,6 +40,19 @@
       return;
     }
     console.debug(`${QUICK_CHECK_DEBUG_PREFIX} ${label}`, details);
+  }
+
+  function toText(value) {
+    return typeof value === "string" ? value.trim() : "";
+  }
+
+  function escapeHtml(value) {
+    return String(value || "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/\"/g, "&quot;")
+      .replace(/'/g, "&#39;");
   }
 
   function renderError(message) {
@@ -151,6 +165,12 @@
     };
   }
 
+  function memoryPromptDismissKey(context, questionId) {
+    const analysisKey = context && context.analysisKey ? context.analysisKey : "";
+    const normalizedQuestionId = questionId ? String(questionId).trim() : "";
+    return `${analysisKey}::${normalizedQuestionId}`;
+  }
+
   async function handleCalibrationAnswerClick(button, feedback, payload) {
     const questionId = payload && payload.questionId ? String(payload.questionId) : "";
     const answer = payload && payload.answer ? String(payload.answer) : "";
@@ -231,6 +251,120 @@
     });
   }
 
+  async function handleSaveQuickCheckMemoryClick(promptNode, prompt) {
+    const questionId = toText(prompt && (prompt.question_id || prompt.questionId));
+    if (!questionId || typeof PanelActions.requestQuickCheckMemorySave !== "function") return;
+
+    const saveButton = promptNode.querySelector('[data-ctsp-action="quick-check-save-memory"]');
+    const dismissButton = promptNode.querySelector('[data-ctsp-action="quick-check-dismiss-memory"]');
+    const feedback = promptNode.querySelector('[data-ctsp-action="memory-capture-feedback"]');
+    if (saveButton) saveButton.disabled = true;
+    if (dismissButton) dismissButton.disabled = true;
+    if (feedback) feedback.textContent = "Saving to your career asset...";
+
+    const currentDebugContext = getCurrentAnalysisDebugContext();
+    const result = await PanelActions.requestQuickCheckMemorySave({
+      requestId: ++requestCounter,
+      questionId,
+      tabId: currentDebugContext.tabId,
+      analysisKey: currentDebugContext.analysisKey || undefined,
+      currentJobId: currentDebugContext.currentJobId || undefined,
+      memoryCapturePrompt: prompt,
+    });
+
+    if (result && result.ok) {
+      const dismissKey = memoryPromptDismissKey(currentDebugContext, questionId);
+      dismissedMemoryPromptKeys.add(dismissKey);
+      const memorySave = result.memorySave && typeof result.memorySave === "object"
+        ? result.memorySave
+        : null;
+      const feedbackMessage = memorySave && toText(memorySave.message)
+        ? toText(memorySave.message).replace(/career memory/gi, "career asset")
+        : "Saved to your career asset. We'll use this in future role matching and tailored CVs.";
+      if (feedback) feedback.textContent = feedbackMessage;
+      if (saveButton) {
+        saveButton.textContent = "Saved";
+        saveButton.disabled = true;
+      }
+      if (dismissButton) dismissButton.remove();
+      promptNode.setAttribute("data-ctsp-memory-saved", "true");
+      return;
+    }
+
+    const errorMessage = result && result.error
+      ? result.error
+      : "Unable to save to your career asset right now.";
+    if (feedback) feedback.textContent = errorMessage;
+    if (saveButton) saveButton.disabled = false;
+    if (dismissButton) dismissButton.disabled = false;
+  }
+
+  function injectQuickCheckMemoryPrompt(data) {
+    const calibration = data && data.job_analysis && data.job_analysis.calibration
+      ? data.job_analysis.calibration
+      : null;
+    const prompt = calibration && calibration.memory_capture_prompt && typeof calibration.memory_capture_prompt === "object"
+      ? calibration.memory_capture_prompt
+      : null;
+    const questionId = toText(prompt && (prompt.question_id || prompt.questionId));
+    if (!prompt || !questionId || typeof PanelActions.requestQuickCheckMemorySave !== "function") return;
+
+    const currentDebugContext = getCurrentAnalysisDebugContext();
+    const dismissKey = memoryPromptDismissKey(currentDebugContext, questionId);
+    if (dismissedMemoryPromptKeys.has(dismissKey)) return;
+
+    const quickCheckSection = root.querySelector("[data-ctsp-quick-check]");
+    if (!quickCheckSection || quickCheckSection.querySelector("[data-ctsp-memory-prompt]")) return;
+
+    const title = toText(prompt.title) || "Save this quick check to your career asset?";
+    const description = toText(prompt.description)
+      || "This answer can help CareerTwin reuse the proof later.";
+
+    const promptNode = document.createElement("div");
+    promptNode.className = "ctsp-memory-prompt";
+    promptNode.setAttribute("data-ctsp-memory-prompt", "true");
+    promptNode.innerHTML = `
+      <p class="ctsp-item-label">${escapeHtml(title)}</p>
+      <p class="ctsp-note">${escapeHtml(description)}</p>
+      <div class="ctsp-memory-prompt-actions">
+        <button
+          type="button"
+          class="ctsp-secondary-btn ctsp-memory-prompt-save"
+          data-ctsp-action="quick-check-save-memory"
+          data-question-id="${escapeHtml(questionId)}"
+        >Save to career asset</button>
+        <button
+          type="button"
+          class="ctsp-memory-prompt-dismiss"
+          data-ctsp-action="quick-check-dismiss-memory"
+        >Not now</button>
+      </div>
+      <p class="ctsp-cta-feedback" data-ctsp-action="memory-capture-feedback"></p>
+    `;
+
+    quickCheckSection.appendChild(promptNode);
+
+    const saveButton = promptNode.querySelector('[data-ctsp-action="quick-check-save-memory"]');
+    const dismissButton = promptNode.querySelector('[data-ctsp-action="quick-check-dismiss-memory"]');
+    if (saveButton) {
+      saveButton.addEventListener("click", () => {
+        if (saveButton.disabled) return;
+        handleSaveQuickCheckMemoryClick(promptNode, prompt).catch(() => {
+          const feedback = promptNode.querySelector('[data-ctsp-action="memory-capture-feedback"]');
+          if (feedback) feedback.textContent = "Unable to save to your career asset right now.";
+          saveButton.disabled = false;
+          if (dismissButton) dismissButton.disabled = false;
+        });
+      });
+    }
+    if (dismissButton) {
+      dismissButton.addEventListener("click", () => {
+        dismissedMemoryPromptKeys.add(dismissKey);
+        promptNode.remove();
+      });
+    }
+  }
+
   function renderReady(data) {
     const viewModel = MatchViewModel.toMatchPanelViewModel
       ? MatchViewModel.toMatchPanelViewModel(data || {})
@@ -248,6 +382,7 @@
 
     root.innerHTML = RootRenderer.renderRoot ? RootRenderer.renderRoot(content) : content;
     bindCalibrationActions(viewModel);
+    injectQuickCheckMemoryPrompt(data || {});
     bindApplyTailoredCvAction(viewModel);
   }
 

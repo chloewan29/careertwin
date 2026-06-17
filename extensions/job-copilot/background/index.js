@@ -15,10 +15,15 @@ importScripts(
   const Messages = globalThis.CareerTwinMessages || {};
   const Cache = globalThis.CareerTwinBackgroundCache;
   const AnalysisService = globalThis.CareerTwinAnalysisService;
+  const ApiClient = globalThis.CareerTwinApiClient;
   const DownloadService = globalThis.CareerTwinDownloadService;
   const Constants = globalThis.CareerTwinConstants || {};
   const ANALYSIS_E2E_TIMEOUT_MS = 35000;
   let sidepanelRequestCounter = 0;
+
+  function toText(value) {
+    return typeof value === "string" ? value.trim() : "";
+  }
 
   function debugLog(label, value) {
     try {
@@ -198,6 +203,114 @@ importScripts(
             }),
           );
           sendResponse(result);
+          return;
+        }
+
+        if (message.type === Messages.SIDEPANEL_SAVE_QUICK_CHECK_MEMORY) {
+          const requestId = message && message.payload && typeof message.payload.requestId === "number"
+            ? message.payload.requestId
+            : ++sidepanelRequestCounter;
+          const requestedTabId = message && message.payload && Number.isFinite(Number(message.payload.tabId))
+            ? Number(message.payload.tabId)
+            : null;
+          const tabId = requestedTabId !== null
+            ? requestedTabId
+            : (sender && sender.tab && typeof sender.tab.id === "number" ? sender.tab.id : null);
+          const analysisKey = toText(message && message.payload && message.payload.analysisKey)
+            || (typeof tabId === "number" ? Cache.getTabAnalysisKey(tabId) : "");
+          const cached = analysisKey ? Cache.getAnalysis(analysisKey) : null;
+          const extractedJobPayload = cached && cached.payload ? cached.payload : null;
+          const memoryCapturePrompt = message && message.payload && message.payload.memoryCapturePrompt
+            && typeof message.payload.memoryCapturePrompt === "object"
+            ? message.payload.memoryCapturePrompt
+            : null;
+          const requestedQuestionId = toText(message && message.payload && message.payload.questionId);
+          const promptQuestionId = toText(
+            memoryCapturePrompt && (memoryCapturePrompt.question_id || memoryCapturePrompt.questionId),
+          );
+
+          if (!extractedJobPayload) {
+            sendResponse({
+              ok: false,
+              state: "error",
+              error: "No cached job payload is available for this quick check.",
+              code: "missing_cached_job_payload",
+              requestId,
+            });
+            return;
+          }
+
+          if (!memoryCapturePrompt) {
+            sendResponse({
+              ok: false,
+              state: "error",
+              error: "No memory capture prompt is available for this quick check.",
+              code: "missing_memory_capture_prompt",
+              requestId,
+            });
+            return;
+          }
+
+          if (requestedQuestionId && promptQuestionId && requestedQuestionId !== promptQuestionId) {
+            sendResponse({
+              ok: false,
+              state: "error",
+              error: "The quick check prompt is no longer current.",
+              code: "memory_prompt_question_mismatch",
+              requestId,
+            });
+            return;
+          }
+
+          if (!ApiClient || typeof ApiClient.saveQuickCheckMemoryPayload !== "function") {
+            sendResponse({
+              ok: false,
+              state: "error",
+              error: "Save to memory is not available in this build.",
+              code: "save_memory_not_available",
+              requestId,
+            });
+            return;
+          }
+
+          const result = await withTimeout(
+            ApiClient.saveQuickCheckMemoryPayload({
+              payload: extractedJobPayload,
+              memoryCapturePrompt,
+            }),
+            ANALYSIS_E2E_TIMEOUT_MS,
+            () => ({
+              ok: false,
+              state: "error",
+              error: "Save to memory timed out.",
+              code: "save_memory_timeout",
+              requestId,
+            }),
+          );
+
+          if (!result || !result.ok || !result.data || result.data.success !== true) {
+            sendResponse({
+              ok: false,
+              state: "error",
+              error: result && result.error ? result.error : "Unable to save to your career asset right now.",
+              code: result && result.code ? result.code : "save_memory_failed",
+              requestId,
+            });
+            return;
+          }
+
+          sendResponse({
+            ok: true,
+            state: "ready",
+            requestId,
+            memorySave: {
+              evidencePieceId: result.data.evidencePieceId,
+              duplicateFound: Boolean(result.data.duplicateFound),
+              actionTaken: result.data.actionTaken,
+              message: result.data.message,
+              metadataUpdated: Boolean(result.data.metadataUpdated),
+            },
+          });
           return;
         }
       } catch (error) {

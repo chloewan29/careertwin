@@ -6,6 +6,7 @@ import type {
     JobCalibrationQuestion,
     JobCalibrationState,
 } from "@/lib/career-engine/job-copilot/job-analysis";
+import type { JobCopilotQuickCheckMemoryCapturePrompt } from "@/lib/career-engine/job-copilot/backend/job-copilot-types";
 import {
     computeDomainAnchorRelevance,
     detectInterpretationLayerForText,
@@ -68,6 +69,19 @@ type CalibrationQuestionDraft = {
     displayReason: string;
 };
 
+type CalibrationQuestionWithMemoryMetadata = JobCalibrationQuestion & {
+    source_requirement_id?: string | null;
+    requirement_cluster?: string | null;
+    capability_tags?: string[];
+    high_value_signal?: boolean;
+    question_purpose?: "evidence_confirmation";
+    memory_target?: "evidence";
+};
+
+type JobCalibrationStateWithMemoryCapturePrompt = JobCalibrationState & {
+    memory_capture_prompt: JobCopilotQuickCheckMemoryCapturePrompt | null;
+};
+
 export type ExplanationConsistencyContext = {
     excludedConsistencyKeys?: string[];
     preferredUncertaintyKey?: string | null;
@@ -96,6 +110,16 @@ export type CalibrationQuestionSelectionAuditCandidate = {
 
 const JOB_COPILOT_DEBUG = process.env.CAREERTWIN_JOB_COPILOT_DEBUG === "1";
 const DEBUG_PREFIX = "[CareerTwin][job-copilot-debug]";
+const HIGH_VALUE_REQUIREMENT_CLUSTERS = new Set([
+    "marketing_science_measurement",
+    "product_analytics_experimentation",
+    "commercial_analytics",
+    "commercial_strategy_planning",
+    "insight_generation_reporting",
+    "analytics_translation_storytelling",
+    "stakeholder_embedding",
+    "customer_cx_insights",
+]);
 
 function clamp(value: number, min = 0, max = 1): number {
     return Math.max(min, Math.min(max, value));
@@ -107,6 +131,137 @@ function normalizeText(input: string): string {
         .replace(/[^a-z0-9\s]+/g, " ")
         .replace(/\s+/g, " ")
         .trim();
+}
+
+function deriveQuestionCapabilityTags(params: {
+    text: string;
+    requirementCluster: string | null;
+    targetArea: string;
+}): string[] {
+    const tags = new Set<string>();
+    const normalizedText = normalizeText(params.text);
+    const requirementCluster = normalizeText(params.requirementCluster ?? "");
+    const normalizedTargetArea = normalizeText(params.targetArea);
+    if (!normalizedText && !requirementCluster && !normalizedTargetArea) return [];
+
+    if (/\battribution\b/.test(normalizedText) || requirementCluster.includes("marketing_science_measurement")) {
+        tags.add("attribution");
+        tags.add("marketing measurement");
+    }
+    if (/\bmmm\b|\bmarketing mix\b/.test(normalizedText) || requirementCluster.includes("marketing_science_measurement")) {
+        tags.add("mmm");
+    }
+    if (/\bexperiment\b|\bincrementality\b|\btest\b/.test(normalizedText) || requirementCluster.includes("product_analytics_experimentation")) {
+        tags.add("experimentation");
+    }
+    if (/\bbudget\b|\bchannel strategy\b|\bstrategy decisions?\b/.test(normalizedText)
+        || requirementCluster.includes("commercial_strategy_planning")
+        || requirementCluster.includes("commercial_analytics")) {
+        tags.add("decision impact");
+    }
+    if (/\breporting\b|\binsight\b|\brecommendation\b/.test(normalizedText)
+        || requirementCluster.includes("insight_generation_reporting")
+        || requirementCluster.includes("analytics_translation_storytelling")) {
+        tags.add("stakeholder recommendation");
+        tags.add("reporting ownership");
+    }
+    if (/\bmethod\b|\bmeasurement design\b|\bmeasurement\b/.test(normalizedText)
+        || requirementCluster.includes("marketing_science_measurement")) {
+        tags.add("measurement design");
+    }
+    if (tags.size === 0 && normalizedTargetArea) {
+        tags.add(normalizedTargetArea);
+    }
+    return Array.from(tags);
+}
+
+function deriveQuestionMemoryCaptureMetadata(params: {
+    question: string;
+    targetArea: string;
+    sourceRequirementId?: string | null;
+    importance: JobCalibrationQuestion["importance"];
+}): {
+    sourceRequirementId: string | null;
+    requirementCluster: string | null;
+    capabilityTags: string[];
+    highValueSignal: boolean;
+} {
+    const sourceRequirementId = params.sourceRequirementId?.trim() ?? null;
+    if (sourceRequirementId?.startsWith("specialization:")) {
+        return {
+            sourceRequirementId,
+            requirementCluster: null,
+            capabilityTags: [],
+            highValueSignal: false,
+        };
+    }
+    const requirementCluster = sourceRequirementId
+        || normalizeText(params.targetArea || params.question).replace(/\s+/g, "_")
+        || null;
+    const capabilityTags = deriveQuestionCapabilityTags({
+        text: `${params.targetArea} ${params.question}`,
+        requirementCluster,
+        targetArea: params.targetArea,
+    });
+    const highValueByCluster = requirementCluster
+        ? HIGH_VALUE_REQUIREMENT_CLUSTERS.has(requirementCluster)
+        : false;
+    return {
+        sourceRequirementId,
+        requirementCluster,
+        capabilityTags,
+        highValueSignal: params.importance !== "supporting" && (highValueByCluster || capabilityTags.length > 0),
+    };
+}
+
+function toQuickCheckMemoryPromptStrength(importance: JobCalibrationQuestion["importance"]): number {
+    if (importance === "critical") return 0.72;
+    if (importance === "important") return 0.66;
+    return 0.6;
+}
+
+function buildQuickCheckMemoryCapturePrompt(
+    question: CalibrationQuestionWithMemoryMetadata | null | undefined,
+): JobCopilotQuickCheckMemoryCapturePrompt | null {
+    if (!question || question.answer !== "yes" || question.high_value_signal !== true) return null;
+    const requirementCluster = question.requirement_cluster?.trim() ?? "";
+    const capabilityTags = Array.isArray(question.capability_tags)
+        ? question.capability_tags.map((tag) => tag.trim()).filter(Boolean)
+        : [];
+    if (!requirementCluster || capabilityTags.length === 0) return null;
+    const targetArea = question.target_area.trim();
+    return {
+        question_id: question.id,
+        question: question.question,
+        target_area: targetArea,
+        requirement_cluster: requirementCluster,
+        title: `Confirmed ${targetArea} experience`,
+        description: `You confirmed this quick check for ${targetArea}. Save it so CareerTwin can reuse this proof in future matching and tailored CVs.`,
+        capability_tags: capabilityTags,
+        source: "quick_check_confirmation",
+        confidence: "self_declared",
+        strength: toQuickCheckMemoryPromptStrength(question.importance),
+        question_purpose: "evidence_confirmation",
+        memory_target: "evidence",
+        job_context: {
+            domain: null,
+            requirement_cluster: requirementCluster,
+        },
+    };
+}
+
+function selectLatestQuickCheckMemoryCapturePrompt(params: {
+    questions: CalibrationQuestionWithMemoryMetadata[];
+    answers: JobCalibrationAnswer[];
+}): JobCopilotQuickCheckMemoryCapturePrompt | null {
+    for (let index = params.answers.length - 1; index >= 0; index -= 1) {
+        const answer = params.answers[index];
+        if (answer?.answer !== "yes") continue;
+        const question = params.questions.find((item) => item.id === answer.question_id);
+        const prompt = buildQuickCheckMemoryCapturePrompt(question);
+        if (prompt) return prompt;
+    }
+    return null;
 }
 
 function toQuestionId(name: string, angle?: QuestionAngle): string {
@@ -815,13 +970,25 @@ export function buildCalibrationQuestions(params: {
         rankedThemeKeys,
     });
     const questions = selectedDrafts.map((draft) => {
+        const memoryCaptureMetadata = deriveQuestionMemoryCaptureMetadata({
+            question: draft.question,
+            targetArea: draft.targetArea,
+            sourceRequirementId: draft.sourceRequirementId,
+            importance: draft.importance,
+        });
         return {
             id: draft.questionId,
             question: draft.question,
             target_area: draft.targetArea,
             importance: draft.importance,
             answer: answerById.get(draft.questionId) ?? null,
-        };
+            source_requirement_id: memoryCaptureMetadata.sourceRequirementId,
+            requirement_cluster: memoryCaptureMetadata.requirementCluster,
+            capability_tags: memoryCaptureMetadata.capabilityTags,
+            high_value_signal: memoryCaptureMetadata.highValueSignal,
+            question_purpose: "evidence_confirmation",
+            memory_target: "evidence",
+        } satisfies CalibrationQuestionWithMemoryMetadata;
     });
 
     logJobCopilotDebug(
@@ -960,13 +1127,26 @@ function buildSpecializationCalibrationQuestions(params: {
     const importanceByIndex: JobCalibrationQuestion["importance"][] = ["critical", "important", "important"];
     return selectedQuestions.map((question, index) => {
         const id = `cal_spec_${resolvedSpecialization}_${index + 1}`;
+        const importance = importanceByIndex[index] ?? "important";
+        const memoryCaptureMetadata = deriveQuestionMemoryCaptureMetadata({
+            question,
+            targetArea,
+            sourceRequirementId: `specialization:${resolvedSpecialization}`,
+            importance,
+        });
         return {
             id,
             question,
             target_area: targetArea,
-            importance: importanceByIndex[index] ?? "important",
+            importance,
             answer: params.answerById.get(id) ?? null,
-        };
+            source_requirement_id: memoryCaptureMetadata.sourceRequirementId,
+            requirement_cluster: memoryCaptureMetadata.requirementCluster,
+            capability_tags: memoryCaptureMetadata.capabilityTags,
+            high_value_signal: memoryCaptureMetadata.highValueSignal,
+            question_purpose: "evidence_confirmation",
+            memory_target: "evidence",
+        } satisfies CalibrationQuestionWithMemoryMetadata;
     });
 }
 
@@ -1021,7 +1201,7 @@ export function applyCalibrationAnswers(params: {
 } {
     const normalizedAnswers = normalizeAnswers(params.answers);
     const answerById = new Map(normalizedAnswers.map((item) => [item.question_id, item.answer]));
-    const questions = params.questions.map((question) => ({
+    const questions: CalibrationQuestionWithMemoryMetadata[] = params.questions.map((question) => ({
         ...question,
         answer: answerById.get(question.id) ?? null,
     }));
@@ -1044,18 +1224,24 @@ export function applyCalibrationAnswers(params: {
 
     const calibratedScore = clamp(params.baseScore + scoreDelta, 0, 100);
     const answeredCount = normalizedAnswers.length;
+    const memoryCapturePrompt = selectLatestQuickCheckMemoryCapturePrompt({
+        questions,
+        answers: normalizedAnswers,
+    });
+    const calibrationState: JobCalibrationStateWithMemoryCapturePrompt = {
+        required: questions.length > 0,
+        questions,
+        answers: normalizedAnswers,
+        answered_count: answeredCount,
+        total_questions: questions.length,
+        recalibrated: answeredCount > 0,
+        score_delta: Number(scoreDelta.toFixed(2)),
+        confirmed_strength_areas: Array.from(new Set(confirmedStrengthAreas)),
+        confirmed_risk_areas: Array.from(new Set(confirmedRiskAreas)),
+        memory_capture_prompt: memoryCapturePrompt,
+    };
     return {
         applyRecommendation: buildApplyRecommendation(calibratedScore),
-        calibration: {
-            required: questions.length > 0,
-            questions,
-            answers: normalizedAnswers,
-            answered_count: answeredCount,
-            total_questions: questions.length,
-            recalibrated: answeredCount > 0,
-            score_delta: Number(scoreDelta.toFixed(2)),
-            confirmed_strength_areas: Array.from(new Set(confirmedStrengthAreas)),
-            confirmed_risk_areas: Array.from(new Set(confirmedRiskAreas)),
-        },
+        calibration: calibrationState,
     };
 }

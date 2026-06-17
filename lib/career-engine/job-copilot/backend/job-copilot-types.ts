@@ -140,3 +140,55 @@ export type JobCopilotDownloadOutput = {
     applied_recorded: true;
     match_score: number;
 };
+
+export type JobCopilotQuickCheckGoalSignal = {
+    label?: string | null;
+    description?: string | null;
+    signal_type?: "target_path" | "avoid_path" | "priority" | "constraint" | "preference";
+    strength?: "low" | "medium" | "high";
+    confidence?: "explicit" | "inferred" | "weak_inferred";
+    source?: "quick_check" | "user_answer" | "saved_role" | "cv_angle_selected" | "manual_profile";
+    status?: "active" | "stale" | "rejected";
+    source_ref_id?: string | null;
+};
+
+export type JobCopilotQuickCheckMemoryCapturePrompt = {
+    question_id: string;
+    question: string;
+    target_area: string;
+    requirement_cluster: string;
+    title: string;
+    description: string;
+    capability_tags: string[];
+    source: "quick_check_confirmation" | "quick_check_goal_signal";
+    confidence: "self_declared" | "explicit" | "inferred" | "weak_inferred";
+    strength: number;
+    question_purpose?: "evidence_confirmation" | "goal_direction_confirmation";
+    memory_target?: "evidence" | "goal_signal";
+    job_context: {
+        domain: string | null;
+        role_family?: string | null;
+        requirement_cluster?: string | null;
+    };
+    goal_signal?: JobCopilotQuickCheckGoalSignal | null;
+};
+
+export type JobCopilotSaveQuickCheckMemoryInput = {
+    profileId: string;
+    source: JobCopilotSource;
+    jobTitle: string;
+    company: string | null;
+    location: string | null;
+    jobUrl: string | null;
+    jobDescription: string;
+    memoryCapturePrompt: JobCopilotQuickCheckMemoryCapturePrompt;
+};
+
+export type JobCopilotSaveQuickCheckMemoryOutput = {
+    success: true;
+    evidencePieceId: string;
+    duplicateFound: boolean;
+    actionTaken: "saved_new" | "skipped_existing";
+    message: string;
+    metadataUpdated: boolean;
+};

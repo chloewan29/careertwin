@@ -377,6 +377,38 @@
   color: #1d4ed8;
 }
 
+.ctsp-memory-prompt {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.ctsp-memory-prompt-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.ctsp-memory-prompt-save {
+  margin-top: 0;
+}
+
+.ctsp-memory-prompt-dismiss {
+  border: none;
+  background: transparent;
+  color: #475569;
+  font-size: 12px;
+  cursor: pointer;
+  padding: 0;
+}
+
+.ctsp-memory-prompt[data-ctsp-memory-saved="true"] .ctsp-memory-prompt-save {
+  background: #dcfce7;
+  border-color: #86efac;
+  color: #166534;
+}
+
 .ctsp-action-card h3 {
   margin: 0;
   font-size: 13px;

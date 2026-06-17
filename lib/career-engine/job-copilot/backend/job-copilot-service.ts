@@ -14,6 +14,8 @@ import type {
     JobCopilotDownloadInput,
     JobCopilotDownloadOutput,
     JobCopilotRecalibrateInput,
+    JobCopilotSaveQuickCheckMemoryInput,
+    JobCopilotSaveQuickCheckMemoryOutput,
 } from "./job-copilot-types";
 import { buildJobSignalsFromRawJd } from "./job-signals-from-raw-jd";
 import {
@@ -45,6 +47,7 @@ import { buildDomainOntologySpecializationAudit } from "@/lib/career-engine/job-
 import { buildJobFitScoreV1 } from "@/lib/career-engine/job-copilot/job-fit-score-v1";
 import { writeAppliedPipelineAction } from "./pipeline-write-integration";
 import { markInteractionApplied, persistExtensionViewedJob } from "./extension-job-persistence";
+import { saveQuickCheckMemoryEvidence } from "./quick-check-memory-save";
 
 async function ensureExtensionJob(params: {
     profileId: string;
@@ -512,6 +515,20 @@ export async function recalculateFitAfterCalibration(input: JobCopilotRecalibrat
         input: input,
         calibrationAnswers: toCalibrationAnswers(input.calibrationAnswers),
     });
+}
+
+export async function saveQuickCheckConfirmationToMemory(
+    input: JobCopilotSaveQuickCheckMemoryInput,
+): Promise<JobCopilotSaveQuickCheckMemoryOutput> {
+    const saveResult = await saveQuickCheckMemoryEvidence(input);
+    return {
+        success: true,
+        evidencePieceId: saveResult.evidencePieceId,
+        duplicateFound: saveResult.duplicateFound,
+        actionTaken: saveResult.actionTaken,
+        message: saveResult.message,
+        metadataUpdated: saveResult.metadataUpdated,
+    };
 }
 
 export async function downloadTailoredResumeAndMarkApplied(input: JobCopilotDownloadInput): Promise<JobCopilotDownloadOutput> {

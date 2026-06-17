@@ -157,9 +157,59 @@
     });
   }
 
+  async function requestQuickCheckMemorySave(payload) {
+    return new Promise((resolve) => {
+      let settled = false;
+      const timeoutHandle = setTimeout(() => {
+        if (settled) return;
+        settled = true;
+        resolve({
+          ok: false,
+          state: "error",
+          error: "Save to memory timed out. Please retry.",
+          code: "sidepanel_save_memory_timeout",
+        });
+      }, REQUEST_TIMEOUT_MS);
+
+      try {
+        chrome.runtime.sendMessage(
+          { type: Messages.SIDEPANEL_SAVE_QUICK_CHECK_MEMORY, payload: payload || {} },
+          (response) => {
+            if (settled) return;
+            settled = true;
+            clearTimeout(timeoutHandle);
+            if (chrome.runtime.lastError) {
+              resolve({
+                ok: false,
+                state: "error",
+                error: chrome.runtime.lastError.message || "Runtime error",
+              });
+              return;
+            }
+            resolve(response || {
+              ok: false,
+              state: "error",
+              error: "No response received from background.",
+            });
+          },
+        );
+      } catch (error) {
+        if (settled) return;
+        settled = true;
+        clearTimeout(timeoutHandle);
+        resolve({
+          ok: false,
+          state: "error",
+          error: error instanceof Error ? error.message : "Runtime send failed",
+        });
+      }
+    });
+  }
+
   globalThis.CareerTwinPanelActions = {
     requestAnalysis,
     requestResumeDownload,
     requestCalibrationUpdate,
+    requestQuickCheckMemorySave,
   };
 })();

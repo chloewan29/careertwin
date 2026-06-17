@@ -332,6 +332,73 @@
     return { ok: true, data, status: response.status };
   }
 
+  async function saveQuickCheckMemoryPayload(params) {
+    const payload = params && params.payload ? params.payload : null;
+    const memoryCapturePrompt = params && params.memoryCapturePrompt
+      ? params.memoryCapturePrompt
+      : null;
+    if (!payload || !memoryCapturePrompt) {
+      return {
+        ok: false,
+        error: "Missing memory capture payload.",
+        code: "missing_memory_capture_payload",
+      };
+    }
+
+    const settings = await getSettings();
+    const profileId = settings.profileId ? String(settings.profileId).trim() : "";
+    const apiBaseUrlResult = normalizeApiBaseUrl(settings.apiBaseUrl || DEFAULT_API_BASE_URL);
+    const apiBaseUrl = apiBaseUrlResult.baseUrl;
+    if (apiBaseUrlResult.usedFallback) {
+      maybeRepairStoredApiBaseUrl(apiBaseUrlResult);
+    }
+
+    if (!profileId) {
+      return {
+        ok: false,
+        error: "Profile ID missing. Configure it in extension settings.",
+        code: "missing_profile_id",
+      };
+    }
+
+    const backendSource = mapPlatformForBackend(payload.platform);
+    let response;
+    try {
+      response = await sendJson(`${apiBaseUrl}/api/job-copilot/extension/save-quick-check-memory`, {
+        profileId,
+        extractedJob: {
+          sourcePlatform: backendSource,
+          jobUrl: payload.url,
+          jobTitle: payload.job_title,
+          company: payload.company_name || null,
+          location: payload.location || null,
+          jobDescription: payload.job_description_text,
+        },
+        memoryCapturePrompt,
+      });
+    } catch (error) {
+      const timeout = error && (error.name === "AbortError" || error.message === "The operation was aborted.");
+      return {
+        ok: false,
+        error: timeout ? "Saving to memory timed out." : "Saving to memory failed.",
+        code: timeout ? "save_memory_timeout" : "save_memory_failed",
+        status: 0,
+      };
+    }
+
+    const data = await safeReadJson(response);
+    if (!response.ok) {
+      return {
+        ok: false,
+        error: data && data.error ? data.error : "Saving to memory failed.",
+        code: data && data.code ? data.code : "save_memory_failed",
+        status: response.status,
+      };
+    }
+
+    return { ok: true, data, status: response.status };
+  }
+
   async function downloadResume(payload) {
     const settings = await getSettings();
     const profileId = settings.profileId ? String(settings.profileId).trim() : "";
@@ -389,6 +456,7 @@
   globalThis.CareerTwinApiClient = {
     analyzeJobPayload,
     recalculateJobPayload,
+    saveQuickCheckMemoryPayload,
     downloadResume,
   };
 })();
