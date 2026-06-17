@@ -4,9 +4,22 @@
   const byTabId = new Map();
   const tabAnalysisKey = new Map();
   const calibrationByAnalysisKey = new Map();
+  const proofConfirmationByRoleKey = new Map();
 
   function now() {
     return Date.now();
+  }
+
+  function proofCacheTrace(stage, details) {
+    try {
+      console.debug("[CareerTwin][proof-cache-trace]", {
+        stage,
+        timestamp: new Date().toISOString(),
+        ...(details && typeof details === "object" ? details : {}),
+      });
+    } catch {
+      // no-op
+    }
   }
 
   function setContextForTab(tabId, contextPayload) {
@@ -57,13 +70,44 @@
     return value ? value.analysisKey : null;
   }
 
-  function clearAnalysisForTab(tabId) {
+  function clearRoleScopedProofConfirmationsForTab(tabId) {
     if (typeof tabId !== "number") return;
+    const tabPrefix = `tab:${tabId}|`;
+    for (const roleKey of proofConfirmationByRoleKey.keys()) {
+      if (typeof roleKey === "string" && roleKey.startsWith(tabPrefix)) {
+        proofConfirmationByRoleKey.delete(roleKey);
+      }
+    }
+  }
+
+  function clearAnalysisForTab(tabId, options) {
+    if (typeof tabId !== "number") return;
+    const clearRoleProof = Boolean(options && options.clearRoleProof === true);
+    const reason = options && typeof options.reason === "string"
+      ? options.reason
+      : "unspecified";
+    const tabPrefix = `tab:${tabId}|`;
+    const roleKeysBefore = Array.from(proofConfirmationByRoleKey.keys())
+      .filter((roleKey) => typeof roleKey === "string" && roleKey.startsWith(tabPrefix));
     const key = getTabAnalysisKey(tabId);
     if (key) {
       byAnalysisKey.delete(key);
       calibrationByAnalysisKey.delete(key);
     }
+    if (clearRoleProof) {
+      clearRoleScopedProofConfirmationsForTab(tabId);
+    }
+    const roleKeysAfter = Array.from(proofConfirmationByRoleKey.keys())
+      .filter((roleKey) => typeof roleKey === "string" && roleKey.startsWith(tabPrefix));
+    proofCacheTrace("clearAnalysisForTab", {
+      tabId,
+      reason,
+      clearRoleProof,
+      role_confirmation_count_before: roleKeysBefore.length,
+      role_confirmation_count_after: roleKeysAfter.length,
+      preserved_keys: roleKeysAfter,
+      cleared_keys: clearRoleProof ? roleKeysBefore.filter((item) => !roleKeysAfter.includes(item)) : [],
+    });
     tabAnalysisKey.delete(tabId);
   }
 
@@ -82,6 +126,19 @@
     return value.answers;
   }
 
+  function setRoleScopedProofConfirmation(roleKey, value) {
+    if (!roleKey || !value || typeof value !== "object") return;
+    proofConfirmationByRoleKey.set(roleKey, {
+      ...value,
+      updated_at: now(),
+    });
+  }
+
+  function getRoleScopedProofConfirmation(roleKey) {
+    if (!roleKey) return null;
+    return proofConfirmationByRoleKey.get(roleKey) || null;
+  }
+
   function prune(maxAgeMs) {
     const cutoff = now() - maxAgeMs;
 
@@ -91,6 +148,10 @@
 
     for (const [key, value] of calibrationByAnalysisKey.entries()) {
       if ((value.updated_at || 0) < cutoff) calibrationByAnalysisKey.delete(key);
+    }
+
+    for (const [key, value] of proofConfirmationByRoleKey.entries()) {
+      if ((value.updated_at || 0) < cutoff) proofConfirmationByRoleKey.delete(key);
     }
 
     for (const [key, value] of byTabId.entries()) {
@@ -115,6 +176,9 @@
     deleteAnalysis,
     setCalibrationAnswers,
     getCalibrationAnswers,
+    setRoleScopedProofConfirmation,
+    getRoleScopedProofConfirmation,
+    clearRoleScopedProofConfirmationsForTab,
     setTabAnalysisKey,
     getTabAnalysisKey,
     clearAnalysisForTab,
