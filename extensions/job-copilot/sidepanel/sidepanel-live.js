@@ -4,6 +4,7 @@
   const Loading = globalThis.CareerTwinRenderLoading || {};
   const ErrorRenderer = globalThis.CareerTwinRenderError || {};
   const RootRenderer = globalThis.CareerTwinRenderRoot || {};
+  const Notices = globalThis.CareerTwinRenderNotices || {};
   const MatchViewModel = globalThis.CareerTwinRenderMatchViewModel || {};
   const MatchSummary = globalThis.CareerTwinRenderMatchSummary || {};
   const CareerInsight = globalThis.CareerTwinRenderCareerInsight || {};
@@ -369,8 +370,21 @@
     const viewModel = MatchViewModel.toMatchPanelViewModel
       ? MatchViewModel.toMatchPanelViewModel(data || {})
       : null;
+    const analysis = data && data.job_analysis && typeof data.job_analysis === "object"
+      ? data.job_analysis
+      : {};
+    const releaseGate = data && typeof data === "object"
+      ? (
+        (data.releaseGate && typeof data.releaseGate === "object" && data.releaseGate)
+        || (data.release_gate && typeof data.release_gate === "object" && data.release_gate)
+        || (analysis.releaseGate && typeof analysis.releaseGate === "object" && analysis.releaseGate)
+        || (analysis.release_gate && typeof analysis.release_gate === "object" && analysis.release_gate)
+        || null
+      )
+      : null;
 
     const content = [
+      Notices.renderNotices ? Notices.renderNotices({ analysis, releaseGate }) : "",
       MatchSummary.renderMatchSummary ? MatchSummary.renderMatchSummary(viewModel) : "",
       CareerInsight.renderCareerInsight ? CareerInsight.renderCareerInsight(viewModel) : "",
       Capabilities.renderCapabilities ? Capabilities.renderCapabilities(viewModel) : "",
