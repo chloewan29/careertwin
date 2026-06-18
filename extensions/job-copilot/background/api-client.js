@@ -417,6 +417,7 @@
       response = await sendJson(`${apiBaseUrl}/api/job-copilot/extension/download-resume`, {
         profileId,
         jobId: payload.jobId,
+        export_format: payload.export_format,
         jobSnapshotId: payload.jobSnapshotId,
         sourcePlatform: payload.sourcePlatform,
         jobTitle: payload.jobTitle,

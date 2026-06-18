@@ -4,7 +4,7 @@ import type { JobCopilotDownloadInput } from "@/lib/career-engine/job-copilot/ba
 
 export async function POST(request: NextRequest) {
     try {
-        const body = (await request.json()) as Partial<JobCopilotDownloadInput>;
+        const body = (await request.json()) as Partial<JobCopilotDownloadInput> & { exportFormat?: "txt" | "docx" };
         if (!body.profileId?.trim()) {
             return NextResponse.json({ error: "profileId is required", code: "missing_profile_id" }, { status: 400 });
         }
@@ -15,6 +15,7 @@ export async function POST(request: NextRequest) {
         const result = await downloadTailoredResumeAndMarkApplied({
             profileId: body.profileId.trim(),
             jobId: body.jobId.trim(),
+            export_format: body.export_format === "docx" || body.exportFormat === "docx" ? "docx" : "txt",
             jobSnapshotId: body.jobSnapshotId ?? null,
             jobTitle: body.jobTitle?.trim() ?? null,
             company: body.company?.trim() ?? null,
@@ -49,6 +50,8 @@ export async function POST(request: NextRequest) {
             ? "low_fit_no_resume"
             : lower.includes("profile not found")
                 ? "profile_not_found"
+                : lower.includes("docx_export_failed") || lower.includes("docx_content_equivalence_failed")
+                    ? "docx_export_failed"
                 : lower.includes("run analyze before downloading resume")
                     ? "job_match_not_found"
                     : lower.includes("no career memory found")
@@ -63,6 +66,12 @@ export async function POST(request: NextRequest) {
                     : 500;
 
         console.error("job-copilot extension download error:", error);
-        return NextResponse.json({ error: message, code }, { status });
+        const diagnostics = error && typeof error === "object" && "diagnostics" in error
+            ? (error as { diagnostics?: unknown }).diagnostics
+            : undefined;
+        return NextResponse.json(
+            diagnostics ? { error: message, code, diagnostics } : { error: message, code },
+            { status },
+        );
     }
 }

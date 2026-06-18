@@ -95,14 +95,27 @@ export type JobCopilotAnalyzeResponse = {
     };
 };
 
-export type JobCopilotDownloadResponse = {
-    success: true;
-    file_name: string;
-    mime_type: "text/plain";
-    resume_text: string;
-    applied_recorded: true;
-    match_score: number;
-};
+export type JobCopilotDownloadResponse =
+    | {
+        success: true;
+        export_format: "txt";
+        file_name: string;
+        mime_type: "text/plain";
+        resume_text: string;
+        applied_recorded: true;
+        match_score: number;
+        diagnostics?: Record<string, unknown>;
+    }
+    | {
+        success: true;
+        export_format: "docx";
+        file_name: string;
+        mime_type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+        file_base64: string;
+        applied_recorded: true;
+        match_score: number;
+        diagnostics: Record<string, unknown>;
+    };
 
 export async function analyzeJobViaExtensionBackground(
     job: ExtractedJobDetail,
@@ -126,6 +139,7 @@ export async function analyzeJobViaExtensionBackground(
 export async function downloadResumeViaExtensionBackground(params: {
     jobId: string;
     jobSnapshotId: number;
+    export_format?: "txt" | "docx";
     sourcePlatform: "linkedin" | "seek";
     jobTitle: string;
     company: string | null;

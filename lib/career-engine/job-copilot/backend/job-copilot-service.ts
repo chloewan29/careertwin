@@ -48,6 +48,7 @@ import { buildJobFitScoreV1 } from "@/lib/career-engine/job-copilot/job-fit-scor
 import { writeAppliedPipelineAction } from "./pipeline-write-integration";
 import { markInteractionApplied, persistExtensionViewedJob } from "./extension-job-persistence";
 import { saveQuickCheckMemoryEvidence } from "./quick-check-memory-save";
+import { buildTailoredResumeDocxExport, DOCX_EXPORT_MIME_TYPE } from "./job-copilot-docx-export";
 
 async function ensureExtensionJob(params: {
     profileId: string;
@@ -598,6 +599,9 @@ export async function downloadTailoredResumeAndMarkApplied(input: JobCopilotDown
         company,
         resume: resumeResult.resume,
     });
+    const exportFormat = input.export_format === "docx" ? "docx" : "txt";
+    const txtFileName = `${toSafeFilename(company)}-${toSafeFilename(jobTitle)}-tailored-resume.txt`;
+    const docxFileName = `${toSafeFilename(company)}-${toSafeFilename(jobTitle)}-tailored-resume.docx`;
 
     await writeAppliedPipelineAction({
         profileId,
@@ -628,9 +632,28 @@ export async function downloadTailoredResumeAndMarkApplied(input: JobCopilotDown
         .eq("career_id", careerId)
         .eq("job_id", jobId);
 
+    if (exportFormat === "docx") {
+        const docxExport = await buildTailoredResumeDocxExport({
+            sourceText: resumeText,
+            fileName: docxFileName,
+            sourceSafeToDownload: tailoringDecision.allowed,
+        });
+        return {
+            success: true,
+            export_format: "docx",
+            file_name: docxExport.fileName,
+            mime_type: DOCX_EXPORT_MIME_TYPE,
+            file_base64: docxExport.fileBase64,
+            applied_recorded: true,
+            match_score: effectiveMatchScore,
+            diagnostics: docxExport.diagnostics,
+        };
+    }
+
     return {
         success: true,
-        file_name: `${toSafeFilename(company)}-${toSafeFilename(jobTitle)}-tailored-resume.txt`,
+        export_format: "txt",
+        file_name: txtFileName,
         mime_type: "text/plain",
         resume_text: resumeText,
         applied_recorded: true,

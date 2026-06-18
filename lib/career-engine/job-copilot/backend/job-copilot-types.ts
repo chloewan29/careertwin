@@ -117,6 +117,7 @@ export type JobCopilotAnalyzeOutput = {
 export type JobCopilotDownloadInput = {
     profileId: string;
     jobId: string;
+    export_format?: "txt" | "docx";
     jobSnapshotId?: number | null;
     jobTitle?: string | null;
     company?: string | null;
@@ -132,14 +133,45 @@ export type JobCopilotDownloadInput = {
     positioningHints?: string[];
 };
 
-export type JobCopilotDownloadOutput = {
-    success: true;
-    file_name: string;
-    mime_type: "text/plain";
-    resume_text: string;
-    applied_recorded: true;
-    match_score: number;
+export type JobCopilotDownloadDiagnostics = {
+    docx_export_requested: boolean;
+    docx_export_enabled: boolean;
+    docx_export_generated: boolean;
+    docx_export_failed: boolean;
+    docx_export_failure_reason: string | null;
+    docx_export_mime_type: string | null;
+    docx_export_file_name: string | null;
+    docx_export_source_safe_to_download: boolean;
+    docx_export_source_section_count: number;
+    docx_export_source_role_count: number;
+    docx_content_equivalence_checked: boolean;
+    docx_content_equivalence_passed: boolean;
+    docx_content_equivalence_failures: string[];
+    docx_text_extraction_method: string | null;
+    txt_export_unchanged: boolean;
 };
+
+export type JobCopilotDownloadOutput =
+    | {
+        success: true;
+        export_format: "txt";
+        file_name: string;
+        mime_type: "text/plain";
+        resume_text: string;
+        applied_recorded: true;
+        match_score: number;
+        diagnostics?: JobCopilotDownloadDiagnostics;
+    }
+    | {
+        success: true;
+        export_format: "docx";
+        file_name: string;
+        mime_type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+        file_base64: string;
+        applied_recorded: true;
+        match_score: number;
+        diagnostics: JobCopilotDownloadDiagnostics;
+    };
 
 export type JobCopilotQuickCheckGoalSignal = {
     label?: string | null;
