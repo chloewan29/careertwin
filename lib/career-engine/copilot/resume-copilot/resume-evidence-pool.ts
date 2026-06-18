@@ -1,5 +1,8 @@
 import { getEvidenceForCapability, getTopCapabilitiesForCareer } from "@/lib/career-engine/capability/capability-graph";
-import type { ResumeCopilotIntelligenceContext, ResumeEvidencePoolEntry } from "./resume-copilot-types";
+import type {
+    ResumeCopilotIntelligenceContext,
+    ResumeEvidencePoolEntry,
+} from "./resume-tailoring-evidence-foundation-types";
 
 function dedupePoolEntries(entries: ResumeEvidencePoolEntry[]): ResumeEvidencePoolEntry[] {
     const byId = new Map<string, ResumeEvidencePoolEntry>();
@@ -22,6 +25,7 @@ export function buildResumeEvidencePool(params: {
     intelligence: ResumeCopilotIntelligenceContext;
     topCapabilitiesLimit?: number;
     includeLegacyFallback?: boolean;
+    preselectedEvidenceIds?: string[];
 }): {
     entries: ResumeEvidencePoolEntry[];
     poolSourceCounts: Record<string, number>;
@@ -33,6 +37,26 @@ export function buildResumeEvidencePool(params: {
     const evidenceById = new Map(
         params.intelligence.careerGraph.evidencePieces.map((evidence) => [evidence.id, evidence]),
     );
+
+    if (Array.isArray(params.preselectedEvidenceIds) && params.preselectedEvidenceIds.length > 0) {
+        const prioritizedEntries: ResumeEvidencePoolEntry[] = [];
+        for (const evidenceId of params.preselectedEvidenceIds) {
+            const evidence = evidenceById.get(evidenceId);
+            if (!evidence) continue;
+            prioritizedEntries.push({
+                evidence,
+                poolSources: ["tailoring_plan.selected_evidence"],
+            });
+        }
+        const dedupedPrioritized = dedupePoolEntries(prioritizedEntries);
+        return {
+            entries: dedupedPrioritized,
+            poolSourceCounts: {
+                "tailoring_plan.selected_evidence": dedupedPrioritized.length,
+            },
+            fallbackUsed: false,
+        };
+    }
 
     const capabilityMatch = params.intelligence.capabilityMatch;
     if (capabilityMatch) {

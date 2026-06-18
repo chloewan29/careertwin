@@ -4,7 +4,7 @@ import type {
     ResumeCopilotIntelligenceContext,
     ResumeCopilotJobSignals,
     ResumeScoreBreakdown,
-} from "./resume-copilot-types";
+} from "./resume-tailoring-evidence-foundation-types";
 
 const STOPWORDS = new Set([
     "a", "an", "and", "the", "or", "for", "to", "of", "in", "on", "with", "by", "at", "from",
@@ -131,6 +131,24 @@ function hasAny(text: string, phrases: string[]): boolean {
     return phrases.some((phrase) => text.includes(phrase));
 }
 
+function clamp(value: number, min = 0, max = 1): number {
+    return Math.max(min, Math.min(max, value));
+}
+
+function evidenceStrengthScore(evidence: RankedResumeEvidence["evidence"]): number {
+    const confidence = typeof evidence.confidence === "number" && Number.isFinite(evidence.confidence)
+        ? evidence.confidence
+        : 0.45;
+    return Number(clamp(confidence, 0.2, 0.9).toFixed(4));
+}
+
+function ownershipSignalBonus(evidence: RankedResumeEvidence["evidence"]): number {
+    const rawText = normalizeText(evidence.raw_text || "");
+    const ownershipTerms = /\b(owned|ownership|end to end|e2e|led|drove)\b/;
+    if (ownershipTerms.test(rawText)) return 0.35;
+    return 0;
+}
+
 function weakJdBoosts(params: {
     evidenceText: string;
     roleText: string;
@@ -181,8 +199,38 @@ export function rankResumeEvidence(params: {
     evidencePool: ResumeEvidencePoolEntry[];
     jobSignals: ResumeCopilotJobSignals;
     useLegacyScoring?: boolean;
+    enableCompatibilityScoring?: boolean;
 }): RankedResumeEvidence[] {
     const { intelligence, jobSignals } = params;
+    const enableCompatibilityScoring = params.enableCompatibilityScoring ?? true;
+    if (!enableCompatibilityScoring) {
+        return params.evidencePool.map((poolEntry, index) => ({
+            evidence: poolEntry.evidence,
+            poolSources: poolEntry.poolSources,
+            score: {
+                keyword_overlap: 0,
+                required_skill_overlap: 0,
+                preferred_skill_overlap: 0,
+                responsibility_overlap: 0,
+                role_family_overlap: 0,
+                domain_overlap: 0,
+                capability_alignment_bonus: 0,
+                role_fit_evidence_bonus: 0,
+                career_signal_highlight_bonus: 0,
+                coverage_novelty_bonus: 0,
+                total_score: Math.max(0, params.evidencePool.length - index),
+                matched_required_skills: [],
+                matched_preferred_skills: [],
+                matched_responsibilities: [],
+                matched_keywords: [],
+                matched_domains: [],
+                matched_role_family_terms: [],
+                matched_capabilities: [],
+            },
+            matchedSignals: [],
+            experienceOrder: index,
+        }));
+    }
     const useLegacyScoring = params.useLegacyScoring ?? false;
     const isWeakJd = weakJdMode({ intelligence, jobSignals });
     const experienceOrder = new Map<string, number>();
@@ -271,6 +319,8 @@ export function rankResumeEvidence(params: {
             const capabilityStrengthScore = matchedCapabilityDetails.reduce((sum, item) => {
                 return sum + (item.candidate_strength_score * matchWeight(item.match_status));
             }, 0);
+            const evidenceStrength = evidenceStrengthScore(evidence);
+            const ownershipBonus = ownershipSignalBonus(evidence);
             const signalQualityScore = signalsForEvidence.reduce((sum, signal) => {
                 const ownershipWeight = signal.ownership_level === "lead" || signal.ownership_level === "owner"
                     ? 1
@@ -334,6 +384,8 @@ export function rankResumeEvidence(params: {
                 capability_importance_score: capabilityImportanceScore,
                 capability_strength_score: capabilityStrengthScore,
                 signal_quality_score: signalQualityScore,
+                evidence_strength_score: evidenceStrength,
+                ownership_signal_bonus: ownershipBonus,
                 weak_jd_recency_boost: weakBoosts.weak_jd_recency_boost,
                 weak_jd_seniority_boost: weakBoosts.weak_jd_seniority_boost,
                 weak_jd_impact_boost: weakBoosts.weak_jd_impact_boost,
@@ -358,6 +410,8 @@ export function rankResumeEvidence(params: {
                 (breakdown.weak_jd_impact_boost ?? 0) +
                 (breakdown.weak_jd_ownership_boost ?? 0) +
                 (breakdown.weak_jd_specificity_boost ?? 0) +
+                (evidenceStrength * 4) +
+                ownershipBonus +
                 breakdown.role_fit_evidence_bonus +
                 breakdown.career_signal_highlight_bonus;
 
