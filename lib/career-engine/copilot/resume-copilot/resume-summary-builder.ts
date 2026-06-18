@@ -1,5 +1,6 @@
-import type { RankedResumeEvidence, ResumeSummaryDebug } from "./resume-copilot-types";
 import type { CapabilityMatchResult } from "@/lib/career-engine/matching/capability-match-v1";
+import type { RankedResumeEvidence } from "./resume-tailoring-evidence-foundation-types";
+import type { ResumeSummaryDebug } from "./resume-summary-builder-types";
 
 export type ResumeSummaryEvidenceItem = {
     evidence_piece_id: string;

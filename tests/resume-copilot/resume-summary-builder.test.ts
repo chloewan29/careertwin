@@ -6,7 +6,7 @@ import type {
     ResumeCopilotIntelligenceContext,
     ResumeCopilotJobSignals,
     ResumeEvidencePoolEntry,
-} from "@/lib/career-engine/copilot/resume-copilot/resume-copilot-types";
+} from "@/lib/career-engine/copilot/resume-copilot/resume-tailoring-evidence-foundation-types";
 import type { Capability, CareerGraph, EvidencePiece, Experience } from "@/lib/career-engine/memory/career-graph-loader";
 
 function makeEvidence(input: {
