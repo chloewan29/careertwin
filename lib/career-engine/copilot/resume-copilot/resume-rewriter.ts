@@ -1,5 +1,13 @@
-export const MAX_BULLET_CHAR_LENGTH = 240;
-export const MAX_BULLET_WORD_COUNT = 40;
+import {
+    compactToBulletLength,
+    normalizeWhitespace,
+    REWRITER_HELPER_MAX_BULLET_CHAR_LENGTH,
+    REWRITER_HELPER_MAX_BULLET_WORD_COUNT,
+    sentenceCase,
+} from "./resume-rewriter-helpers";
+
+export const MAX_BULLET_CHAR_LENGTH = REWRITER_HELPER_MAX_BULLET_CHAR_LENGTH;
+export const MAX_BULLET_WORD_COUNT = REWRITER_HELPER_MAX_BULLET_WORD_COUNT;
 
 type BulletRewriteContext = {
     targetJobCapabilities?: string[];
@@ -7,12 +15,6 @@ type BulletRewriteContext = {
     supportingSignalActions?: string[];
     highlightPriorities?: string[];
 };
-
-function normalizeWhitespace(value: string): string {
-    return value
-        .replace(/\s+/g, " ")
-        .trim();
-}
 
 function stripLeadingLabel(value: string): string {
     const withoutBulletMarkers = value.replace(/^[\u2022\-*]+\s*/, "");
@@ -77,25 +79,6 @@ function selectBestSegment(segments: string[], context?: BulletRewriteContext): 
     return best;
 }
 
-function trimToLimits(value: string): string {
-    const words = value.split(" ").filter(Boolean);
-    let limitedWords = words.slice(0, MAX_BULLET_WORD_COUNT).join(" ");
-    if (limitedWords.length > MAX_BULLET_CHAR_LENGTH) {
-        limitedWords = limitedWords.slice(0, MAX_BULLET_CHAR_LENGTH);
-        const lastSpace = limitedWords.lastIndexOf(" ");
-        if (lastSpace > 0) limitedWords = limitedWords.slice(0, lastSpace);
-    }
-    let cleaned = limitedWords.replace(/[.;:,]+$/, "").trim();
-    cleaned = cleaned.replace(/\b(through|by|using|including|via|with|across|for|to|in|on|into|from)\s*$/i, "").trim();
-    return cleaned;
-}
-
-function sentenceCase(value: string): string {
-    if (!value) return value;
-    const normalized = value.charAt(0).toUpperCase() + value.slice(1);
-    return normalized.endsWith(".") ? normalized : `${normalized}.`;
-}
-
 function enforceActionLedPhrasing(value: string): string {
     const replacements: Array<{ pattern: RegExp; replacement: string }> = [
         { pattern: /^responsible for\s+/i, replacement: "Managed " },
@@ -121,19 +104,6 @@ function enforceActionLedPhrasing(value: string): string {
     rewritten = rewritten.replace(/\s+\(.*?note.*?\)\s*$/i, "");
 
     return rewritten.trim();
-}
-
-function compactToBulletLength(value: string): string {
-    const normalized = normalizeWhitespace(value);
-    if (!normalized) return "";
-
-    const withinWordLimit = normalized.split(" ").filter(Boolean).length <= MAX_BULLET_WORD_COUNT;
-    if (normalized.length <= MAX_BULLET_CHAR_LENGTH && withinWordLimit) {
-        return normalized.replace(/[.;:,]+$/, "").trim();
-    }
-
-    // Keep context/value/platform clauses whenever possible; trim by length instead of amputating trailing detail.
-    return trimToLimits(normalized);
 }
 
 export function isParagraphLikeEvidence(rawBullet: string): boolean {
