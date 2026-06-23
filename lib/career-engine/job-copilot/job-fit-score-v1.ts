@@ -9,6 +9,38 @@ export type JobFitScoreBucket =
     | "Partial Match"
     | "Weak Match";
 
+export type JobFitScoreStrongMatchLayer =
+    | "none"
+    | "pre_strong"
+    | "user_confirmation_boost"
+    | "auto_strong";
+
+export type JobFitScoreStrongMatchSignal = {
+    layer: JobFitScoreStrongMatchLayer;
+    score_boost: number;
+    base_total_score: number;
+    base_bucket: JobFitScoreBucket;
+    ui_signal: string | null;
+    explanation: string | null;
+    conditions: {
+        specialization_strong_band: boolean;
+        capability_threshold_met: boolean;
+        evidence_threshold_met: boolean;
+        fallback_used: boolean;
+        requirement_overlap_met: boolean;
+        matched_signal_count_met: boolean;
+        specialization_relevant_confirmation: boolean;
+        effective_capability_score?: number;
+        effective_evidence_score?: number;
+        effective_requirement_overlap_count?: number;
+        effective_matched_signal_count?: number;
+        confirmation_bridge_applied?: boolean;
+        confirmation_resolved_cluster_count?: number;
+        confirmation_resolved_critical_count?: number;
+        confirmation_driven_prestrong_eligible?: boolean;
+    };
+};
+
 export type JobFitScore = {
     total_score: number;
     bucket: JobFitScoreBucket;
@@ -17,6 +49,7 @@ export type JobFitScore = {
         capability_match: number;
         evidence_strength: number;
     };
+    strong_match?: JobFitScoreStrongMatchSignal;
 };
 
 export type JobFitScoreDebug = {
@@ -97,6 +130,8 @@ const STRONG_SPECIALIZATION_MIN_OVERLAP_REQUIREMENTS = 2;
 const STRONG_SPECIALIZATION_MIN_RATIO = 0.52;
 const STRONG_SPECIALIZATION_CAPABILITY_FLOOR = 21;
 const STRONG_SPECIALIZATION_EVIDENCE_FLOOR = 11.5;
+const ADJACENT_NEAR_STRONG_RATIO_FLOOR = 0.46;
+const ADJACENT_NEAR_STRONG_SPECIALIZATION_BONUS = 3;
 
 function clamp(value: number, min = 0, max = 1): number {
     return Math.max(min, Math.min(max, value));
@@ -194,9 +229,20 @@ function calibrateSpecializationFitScore(params: {
         const ratioStrength = clamp((ratio - 0.32) / 0.4);
         const evidenceDensity = clamp((signalCount + relevantCount) / 6);
         const moderateScore = roundScore(22 + ((ratioStrength * 0.75) + (evidenceDensity * 0.25)) * 11);
+        const nearStrongAdjacencyOnlyRatioMiss = !params.fallbackUsed
+            && strongGuardrailFailures.length === 1
+            && strongGuardrailFailures[0] === "insufficient_specialization_alignment_ratio"
+            && signalCount >= STRONG_SPECIALIZATION_MIN_SIGNALS
+            && relevantCount >= STRONG_SPECIALIZATION_MIN_OVERLAP_REQUIREMENTS
+            && ratio >= ADJACENT_NEAR_STRONG_RATIO_FLOOR
+            && capabilityScore >= STRONG_SPECIALIZATION_CAPABILITY_FLOOR
+            && evidenceScore >= STRONG_SPECIALIZATION_EVIDENCE_FLOOR;
         const moderateMax = failedCapabilityOrEvidenceFloor ? 28 : 33;
+        const nearStrongBonus = nearStrongAdjacencyOnlyRatioMiss
+            ? ADJACENT_NEAR_STRONG_SPECIALIZATION_BONUS
+            : 0;
         return {
-            score: clamp(moderateScore, 22, moderateMax),
+            score: clamp(moderateScore + nearStrongBonus, 22, moderateMax),
             band: "moderate",
             strongBandGuardrails: strongGuardrails,
         };
