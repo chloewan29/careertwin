@@ -1,4 +1,5 @@
 export type JobSignalWeights = {
+  // compatibility-only legacy engine; canonical runtime uses Job Copilot TailoringPlan.
   keyword_overlap: number;
   required_skill_overlap: number;
   preferred_skill_overlap: number;
