@@ -1,3 +1,6 @@
+import fs from "node:fs";
+import path from "node:path";
+
 export type LlmJobSignalExtraction = {
     critical_capabilities: string[];
     important_capabilities: string[];
@@ -22,6 +25,9 @@ export type LlmJobSignalExtractionResult = {
 
 const llmSignalPromiseCache = new Map<string, Promise<LlmJobSignalExtractionResult>>();
 const llmSignalValueCache = new Map<string, LlmJobSignalExtractionResult>();
+const persistentSignalCache = new Map<string, LlmJobSignalExtractionResult>();
+let persistentSignalCacheLoaded = false;
+let persistentSignalCacheFilePath: string | null = null;
 const DEFAULT_DEEPSEEK_BASE_URL = "https://api.deepseek.com";
 const DEFAULT_DEEPSEEK_MODEL = "deepseek-chat";
 const DEFAULT_DEEPSEEK_TIMEOUT_MS = 20000;
@@ -121,6 +127,68 @@ function isUsableSignalPayload(signals: LlmJobSignalExtraction): boolean {
 
 function toCacheKey(params: { rawJobText: string; jobTitleHint?: string | null }): string {
     return normalizeText(params.rawJobText);
+}
+
+function isDeterministicCalibrationMode(): boolean {
+    return process.env.CAREERTWIN_DETERMINISTIC_JD_ENRICHMENT === "1";
+}
+
+function isPersistentCacheEnabled(): boolean {
+    return process.env.CAREERTWIN_JD_ENRICHMENT_CACHE_ENABLED === "1";
+}
+
+function resolvePersistentCacheFilePath(): string | null {
+    if (!isPersistentCacheEnabled()) return null;
+    const configured = normalizeString(process.env.CAREERTWIN_JD_ENRICHMENT_CACHE_FILE);
+    const cachePath = configured || "artifacts/jd-enrichment-cache.json";
+    return path.isAbsolute(cachePath)
+        ? cachePath
+        : path.join(process.cwd(), cachePath);
+}
+
+function loadPersistentSignalCache(): void {
+    if (persistentSignalCacheLoaded) return;
+    persistentSignalCacheLoaded = true;
+    persistentSignalCacheFilePath = resolvePersistentCacheFilePath();
+    if (!persistentSignalCacheFilePath || !fs.existsSync(persistentSignalCacheFilePath)) return;
+    try {
+        const parsed = JSON.parse(fs.readFileSync(persistentSignalCacheFilePath, "utf8")) as Record<string, LlmJobSignalExtractionResult>;
+        for (const [key, value] of Object.entries(parsed ?? {})) {
+            if (!value || typeof value !== "object") continue;
+            if (!value.enriched || !value.signals) continue;
+            persistentSignalCache.set(key, {
+                attempted: Boolean(value.attempted),
+                available: Boolean(value.available),
+                error: typeof value.error === "string" ? value.error : null,
+                enriched: true,
+                signals: normalizeSignals(value.signals as unknown as Record<string, unknown>),
+            });
+        }
+    } catch {
+        // Cache parse failures should not block matcher execution.
+    }
+}
+
+function readPersistentCachedResult(key: string): LlmJobSignalExtractionResult | null {
+    loadPersistentSignalCache();
+    return persistentSignalCache.get(key) ?? null;
+}
+
+function writePersistentCachedResult(key: string, result: LlmJobSignalExtractionResult): void {
+    loadPersistentSignalCache();
+    if (!persistentSignalCacheFilePath) return;
+    if (!result.enriched || !result.signals) return;
+    persistentSignalCache.set(key, result);
+    try {
+        fs.mkdirSync(path.dirname(persistentSignalCacheFilePath), { recursive: true });
+        fs.writeFileSync(
+            persistentSignalCacheFilePath,
+            `${JSON.stringify(Object.fromEntries(persistentSignalCache.entries()), null, 2)}\n`,
+            "utf8",
+        );
+    } catch {
+        // Cache persistence is best-effort for calibration determinism.
+    }
 }
 
 function buildPrompt(rawJobText: string): string {
@@ -320,10 +388,29 @@ export async function getLlmJobSignalExtraction(params: {
     jobTitleHint?: string | null;
 }): Promise<LlmJobSignalExtractionResult> {
     const key = toCacheKey(params);
+    const existingValue = llmSignalValueCache.get(key);
+    if (existingValue) return existingValue;
+    const persistentCached = readPersistentCachedResult(key);
+    if (persistentCached) {
+        llmSignalValueCache.set(key, persistentCached);
+        return persistentCached;
+    }
+    if (isDeterministicCalibrationMode()) {
+        const deterministicFallback: LlmJobSignalExtractionResult = {
+            signals: null,
+            attempted: false,
+            available: Boolean(process.env.DEEPSEEK_API_KEY),
+            error: "deterministic_cache_miss",
+            enriched: false,
+        };
+        llmSignalValueCache.set(key, deterministicFallback);
+        return deterministicFallback;
+    }
     const existing = llmSignalPromiseCache.get(key);
     if (existing) return existing;
     const promise = runExtraction(params).then((result) => {
         llmSignalValueCache.set(key, result);
+        writePersistentCachedResult(key, result);
         return result;
     });
     llmSignalPromiseCache.set(key, promise);
