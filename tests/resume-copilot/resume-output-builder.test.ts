@@ -1,16 +1,21 @@
 import { strict as assert } from "node:assert";
 import { buildResumeCopilotOutput } from "@/lib/career-engine/copilot/resume-copilot/resume-output-builder";
-import type { RankedResumeEvidence, ResumeCopilotJobSignals } from "@/lib/career-engine/copilot/resume-copilot/resume-copilot-types";
+import type { RankedResumeEvidence, ResumeCopilotJobSignals } from "@/lib/career-engine/copilot/resume-copilot/resume-tailoring-evidence-foundation-types";
+import type { ResumeCopilotPublicHeader } from "@/lib/career-engine/copilot/resume-copilot/resume-output-builder-types";
 import type { EvidencePiece } from "@/lib/career-engine/memory/career-graph-loader";
 
-function makeEvidence(id: string, rawText: string): EvidencePiece {
+function makeEvidence(
+    id: string,
+    rawText: string,
+    overrides: Partial<Pick<EvidencePiece, "company" | "role" | "date_range" | "experience_id">> = {},
+): EvidencePiece {
     return {
         id,
         career_id: "career-1",
-        experience_id: "exp-1",
-        company: "Acme",
-        role: "Program Manager",
-        date_range: "2022 - Present",
+        experience_id: overrides.experience_id ?? "exp-1",
+        company: overrides.company ?? "Acme",
+        role: overrides.role ?? "Program Manager",
+        date_range: overrides.date_range ?? "2022 - Present",
         raw_text: rawText,
         source_type: "resume_bullet",
         sort_order: 0,
@@ -19,9 +24,14 @@ function makeEvidence(id: string, rawText: string): EvidencePiece {
     };
 }
 
-function makeRanked(id: string, rawText: string, totalScore: number): RankedResumeEvidence {
+function makeRanked(
+    id: string,
+    rawText: string,
+    totalScore: number,
+    overrides: Partial<Pick<EvidencePiece, "company" | "role" | "date_range" | "experience_id">> = {},
+): RankedResumeEvidence {
     return {
-        evidence: makeEvidence(id, rawText),
+        evidence: makeEvidence(id, rawText, overrides),
         poolSources: ["role_fit.supportingEvidence"],
         matchedSignals: ["sql"],
         experienceOrder: 0,
@@ -49,8 +59,24 @@ function makeRanked(id: string, rawText: string, totalScore: number): RankedResu
 }
 
 const selectedEvidence = [
-    makeRanked("ev-1", "led sql roadmap delivery", 12),
-    makeRanked("ev-2", "managed stakeholder governance", 10),
+    makeRanked("ev-1", "led sql roadmap delivery", 12, {
+        company: "Acme",
+        role: "Program Manager",
+        date_range: "2022 - Present",
+        experience_id: "exp-1",
+    }),
+    makeRanked("ev-2", "managed stakeholder governance", 10, {
+        company: "Bravo",
+        role: "Program Lead",
+        date_range: "2020 - 2022",
+        experience_id: "exp-2",
+    }),
+    makeRanked("ev-3", "led sql roadmap delivery", 11, {
+        company: "Acme",
+        role: "Program Manager",
+        date_range: "2022 - Present",
+        experience_id: "exp-1",
+    }),
 ];
 
 const jobSignals: ResumeCopilotJobSignals = {
@@ -64,20 +90,30 @@ const jobSignals: ResumeCopilotJobSignals = {
     keywords: [],
 };
 
+const profileHeader: ResumeCopilotPublicHeader = {
+    full_name: "Fangfang Wan",
+    email: "fangfang@example.com",
+    phone: "0400 000 000",
+    location: "Sydney, NSW",
+    linkedin_url: "https://linkedin.com/in/fangfangwan",
+};
+
 const result = buildResumeCopilotOutput({
     profileId: "profile-1",
     careerId: "career-1",
     jobSignals,
     selectedEvidence,
+    profileHeader,
+    educationEntries: ["Bachelor of Commerce — University of Example", "Diploma — Example Institute"],
     summary: "Grounded summary",
-    matchedCapabilitiesInSummary: ["Program Leadership"],
+    matchedCapabilitiesInSummary: ["Program Leadership", "Stakeholder Management"],
     summaryDebug: {
         weak_jd_mode: false,
-        source_evidence_ids: ["ev-1", "ev-2"],
-        source_companies: ["Acme"],
-        source_roles: ["Program Manager"],
+        source_evidence_ids: ["ev-1", "ev-2", "ev-3"],
+        source_companies: ["Acme", "Bravo"],
+        source_roles: ["Program Manager", "Program Lead"],
         source_themes: ["analytics automation"],
-        source_matched_capabilities: ["Program Leadership"],
+        source_matched_capabilities: ["Program Leadership", "Stakeholder Management"],
         target_title_used: "Program Manager",
         role_family_used: "program",
         ranked_experience_order: [
@@ -86,6 +122,12 @@ const result = buildResumeCopilotOutput({
                 role: "Program Manager",
                 score: 12,
                 recency_rank: 1,
+            },
+            {
+                company: "Bravo",
+                role: "Program Lead",
+                score: 10,
+                recency_rank: 2,
             },
         ],
     },
@@ -111,15 +153,26 @@ const result = buildResumeCopilotOutput({
 });
 
 assert.equal(result.resume.summary, "Grounded summary");
-assert.equal(result.resume.experience.length, 1);
-assert.equal(result.resume.experience[0].bullets.length, 2);
+assert.equal(result.resume.header?.full_name, "Fangfang Wan");
+assert.deepEqual(result.resume.core_skills, ["Program Leadership", "Stakeholder Management"]);
+assert.deepEqual(result.resume.education, ["Bachelor of Commerce — University of Example", "Diploma — Example Institute"]);
+assert.equal(result.resume.experience.length, 2);
+assert.equal(result.resume.experience[0].company, "Acme");
+assert.equal(result.resume.experience[1].company, "Bravo");
+assert.equal(result.resume.experience[0].bullets.length, 1);
+assert.equal(result.resume.experience[1].bullets.length, 1);
 assert.ok(result.resume.experience[0].bullets[0].endsWith("."));
 
 assert.ok(result.debug);
 assert.equal(result.debug?.metadata.total_evidence_in_pool, 5);
 assert.equal(result.debug?.metadata.dropped_for_length, 0);
 assert.equal(result.debug?.metadata.dropped_for_validation, 0);
-assert.equal(result.debug?.metadata.dropped_for_duplicate, 0);
+assert.equal(result.debug?.metadata.dropped_for_duplicate, 1);
+assert.equal(result.debug?.metadata.tailored_cv_format_contract_applied, true);
+assert.equal(result.debug?.metadata.summary_style_contract_applied, true);
+assert.equal(result.debug?.metadata.core_skills_style_contract_applied, true);
+assert.equal(result.debug?.metadata.education_section_included, true);
+assert.equal(result.debug?.metadata.selected_evidence_ids_unchanged, true);
 assert.equal(result.debug?.experiences[0].bullets[0].evidence_piece_id, "ev-1");
 assert.equal(result.debug?.experiences[0].bullets[0].rewritten_bullet.endsWith("."), true);
 assert.equal(typeof result.debug?.experiences[0].bullets[0].original_length, "number");

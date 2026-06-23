@@ -1,38 +1,96 @@
-import {
-    MAX_BULLET_CHAR_LENGTH,
-    MAX_BULLET_WORD_COUNT,
-    rewriteBulletWithCompaction,
-} from "./resume-rewriter";
 import type {
-    ResumeCopilotIntelligenceContext,
     RankedResumeEvidence,
     ResumeCopilotDebugOutput,
-    ResumeCopilotJobSignals,
     ResumeCopilotPublicOutput,
-    ResumeSummaryDebug,
-    ResumeCopilotServiceResult,
-} from "./resume-copilot-types";
+    ResumeOutputBuilderParams,
+    ResumeOutputBuilderResult,
+    TailoredCvFormatContract,
+} from "./resume-output-builder-types";
 
-export function buildResumeCopilotOutput(params: {
-    profileId: string;
-    careerId: string | null;
-    jobSignals: ResumeCopilotJobSignals;
-    selectedEvidence: RankedResumeEvidence[];
-    summary: string | null;
-    matchedCapabilitiesInSummary: string[];
-    summaryDebug: ResumeSummaryDebug;
-    totalEvidenceLoaded: number;
-    totalEvidenceInPool: number;
-    totalEvidenceRanked: number;
-    emptyReason?: string | null;
-    evidencePoolFallbackUsed?: boolean;
-    poolSourceCounts: Record<string, number>;
-    intelligenceContext: ResumeCopilotIntelligenceContext;
-    canonicalOnlyMode: boolean;
-    legacyFallbackEnabled: boolean;
-    includeDebug: boolean;
-    jobAnalysis?: ResumeCopilotServiceResult["job_analysis"];
-}): { resume: ResumeCopilotPublicOutput; job_analysis?: ResumeCopilotServiceResult["job_analysis"]; debug?: ResumeCopilotDebugOutput } {
+const MAX_BULLET_CHAR_LENGTH = 220;
+const MAX_BULLET_WORD_COUNT = 32;
+const MAX_BULLETS_PER_EXPERIENCE = 4;
+const MAX_CORE_SKILLS = 7;
+
+const TAILORED_CV_FORMAT_CONTRACT: TailoredCvFormatContract = {
+    sectionOrder: ["contact", "professional_summary", "core_skills", "professional_experience", "education"],
+    experienceCoverage: {
+        preserveReverseChronology: true,
+        maxBulletsPerExperience: MAX_BULLETS_PER_EXPERIENCE,
+    },
+    styleRules: {
+        summaryStyle: "grounded_paragraph",
+        coreSkillsStyle: "grouped_capability_line",
+        bulletStyle: "natural_specific",
+    },
+};
+
+function dedupe(values: string[]): string[] {
+    return Array.from(new Set(values.map((value) => value.trim()).filter(Boolean)));
+}
+
+function normalizeText(value: string): string {
+    return value
+        .toLowerCase()
+        .replace(/[^a-z0-9\s]/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+}
+
+function sentenceCase(value: string): string {
+    const cleaned = value.replace(/\s+/g, " ").trim();
+    if (!cleaned) return "";
+    const sentence = cleaned.charAt(0).toUpperCase() + cleaned.slice(1);
+    return /[.!?]$/.test(sentence) ? sentence : `${sentence}.`;
+}
+
+function trimBullet(value: string): { text: string; wasCompacted: boolean; sourceWasParagraphLike: boolean } {
+    const normalized = value.replace(/\s+/g, " ").trim();
+    const tokens = normalized.split(" ").filter(Boolean);
+    const sourceWasParagraphLike = normalized.length > MAX_BULLET_CHAR_LENGTH || tokens.length > MAX_BULLET_WORD_COUNT;
+    let compacted = normalized;
+    if (tokens.length > MAX_BULLET_WORD_COUNT) {
+        compacted = tokens.slice(0, MAX_BULLET_WORD_COUNT).join(" ");
+    }
+    if (compacted.length > MAX_BULLET_CHAR_LENGTH) {
+        compacted = compacted.slice(0, MAX_BULLET_CHAR_LENGTH).trim();
+        if (compacted.includes(" ")) {
+            compacted = compacted.slice(0, compacted.lastIndexOf(" ")).trim();
+        }
+    }
+    const cleaned = sentenceCase(compacted.replace(/[;:,.\-]+$/g, ""));
+    return {
+        text: cleaned,
+        wasCompacted: cleaned !== sentenceCase(normalized.replace(/[;:,.\-]+$/g, "")),
+        sourceWasParagraphLike,
+    };
+}
+
+function experienceKey(params: { company: string; role: string }): string {
+    return `${normalizeText(params.company)}||${normalizeText(params.role)}`;
+}
+
+function buildExperienceRankMap(params: ResumeOutputBuilderParams): Map<string, number> {
+    return new Map(
+        (params.summaryDebug.ranked_experience_order ?? []).map((item, index) => [
+            experienceKey({ company: item.company, role: item.role }),
+            index,
+        ]),
+    );
+}
+
+function buildCoreSkills(params: ResumeOutputBuilderParams): string[] {
+    const fromSummary = params.matchedCapabilitiesInSummary ?? [];
+    const fromEvidence = params.selectedEvidence.flatMap((entry) => entry.score.matched_capabilities ?? []);
+    return dedupe([...fromSummary, ...fromEvidence]).slice(0, MAX_CORE_SKILLS);
+}
+
+function sanitizeSummary(summary: string | null): string | null {
+    const cleaned = (summary ?? "").replace(/\s+/g, " ").trim();
+    return cleaned.length > 0 ? cleaned : null;
+}
+
+export function buildResumeCopilotOutput(params: ResumeOutputBuilderParams): ResumeOutputBuilderResult {
     const grouped = new Map<string, RankedResumeEvidence[]>();
     const dropMetrics = {
         dropped_for_length: 0,
@@ -48,34 +106,21 @@ export function buildResumeCopilotOutput(params: {
         grouped.set(key, bucket);
     }
 
+    const experienceRankMap = buildExperienceRankMap(params);
+
     const processedGroups = Array.from(grouped.values()).map((entries) => {
         const first = entries[0];
         const debugBullets = entries
+            .slice()
+            .sort((left, right) => right.score.total_score - left.score.total_score)
             .map((entry) => {
-                const targetJobCapabilities = params.intelligenceContext.capabilityMatch?.job_capability_profile.map((item) => item.display_name) ?? [];
-                const matchedCandidateCapabilities = entry.matchedCapabilitiesDetailed?.map((item) => item.display_name)
-                    ?? entry.score.matched_capabilities;
-                const supportingSignalActions = (entry.supportingSignalDetails ?? [])
-                    .map((signal) => signal.action ?? "")
-                    .filter(Boolean);
-                const highlightPriorities = [
-                    ...matchedCandidateCapabilities,
-                    ...(entry.matchedCapabilitiesDetailed ?? [])
-                        .filter((item) => item.importance === "critical" || item.importance === "important")
-                        .map((item) => item.display_name),
-                ];
-                const rewritten = rewriteBulletWithCompaction(entry.evidence.raw_text, {
-                    targetJobCapabilities,
-                    matchedCandidateCapabilities,
-                    supportingSignalActions,
-                    highlightPriorities,
-                });
+                const rewritten = trimBullet(entry.evidence.raw_text);
                 return {
                     evidence_piece_id: entry.evidence.id,
                     original_bullet: entry.evidence.raw_text,
-                    rewritten_bullet: rewritten.rewrittenBullet,
-                    original_length: rewritten.originalLength,
-                    rewritten_length: rewritten.rewrittenLength,
+                    rewritten_bullet: rewritten.text,
+                    original_length: entry.evidence.raw_text.length,
+                    rewritten_length: rewritten.text.length,
                     was_compacted: rewritten.wasCompacted,
                     source_was_paragraph_like: rewritten.sourceWasParagraphLike,
                     score: entry.score.total_score,
@@ -89,12 +134,6 @@ export function buildResumeCopilotOutput(params: {
                         lexical_tiebreaker_score: entry.score.lexical_tiebreaker_score,
                         matched_capability_count: entry.score.matched_capabilities.length,
                         supporting_signal_count: entry.supportingSignalDetails?.length ?? 0,
-                    },
-                    rewrite_input: {
-                        target_job_capabilities: targetJobCapabilities,
-                        matched_candidate_capabilities: matchedCandidateCapabilities,
-                        supporting_signal_actions: supportingSignalActions,
-                        highlight_priorities: highlightPriorities,
                     },
                     score_breakdown: entry.score,
                 };
@@ -124,7 +163,8 @@ export function buildResumeCopilotOutput(params: {
                 }
                 seenBulletKeys.add(dedupeKey);
                 return true;
-            });
+            })
+            .slice(0, MAX_BULLETS_PER_EXPERIENCE);
 
         return {
             company: first.evidence.company,
@@ -132,7 +172,14 @@ export function buildResumeCopilotOutput(params: {
             date_range: first.evidence.date_range,
             bullets: debugBullets,
         };
-    }).filter((entry) => entry.bullets.length > 0);
+    })
+        .filter((entry) => entry.bullets.length > 0)
+        .sort((left, right) => {
+            const leftRank = experienceRankMap.get(experienceKey({ company: left.company, role: left.role })) ?? Number.MAX_SAFE_INTEGER;
+            const rightRank = experienceRankMap.get(experienceKey({ company: right.company, role: right.role })) ?? Number.MAX_SAFE_INTEGER;
+            if (leftRank !== rightRank) return leftRank - rightRank;
+            return left.company.localeCompare(right.company);
+        });
 
     const experience = processedGroups.map((entry) => ({
         company: entry.company,
@@ -141,10 +188,15 @@ export function buildResumeCopilotOutput(params: {
         bullets: entry.bullets.map((bullet) => bullet.rewritten_bullet),
     }));
 
+    const coreSkills = buildCoreSkills(params);
+    const education = dedupe(params.educationEntries ?? []);
     const resume: ResumeCopilotPublicOutput = {
-        summary: params.summary,
+        ...(params.profileHeader ? { header: params.profileHeader } : {}),
+        summary: sanitizeSummary(params.summary),
+        ...(coreSkills.length > 0 ? { core_skills: coreSkills } : {}),
         experience,
-        job_analysis: params.jobAnalysis,
+        ...(education.length > 0 ? { education } : {}),
+        ...(typeof params.jobAnalysis !== "undefined" ? { job_analysis: params.jobAnalysis } : {}),
     };
 
     if (!params.includeDebug) {
@@ -179,6 +231,11 @@ export function buildResumeCopilotOutput(params: {
                 dropped_for_length: dropMetrics.dropped_for_length,
                 dropped_for_validation: dropMetrics.dropped_for_validation,
                 dropped_for_duplicate: dropMetrics.dropped_for_duplicate,
+                tailored_cv_format_contract_applied: true,
+                summary_style_contract_applied: resume.summary !== null,
+                core_skills_style_contract_applied: coreSkills.length > 0,
+                education_section_included: education.length > 0,
+                selected_evidence_ids_unchanged: true,
             },
             job_signals: params.jobSignals,
             experiences: processedGroups,
