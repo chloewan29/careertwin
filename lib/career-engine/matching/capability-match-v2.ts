@@ -250,6 +250,10 @@ type RawScoreBreakdown = {
     positive_bonus: number;
     blocking_gap_penalty: number;
     stretch_gap_penalty: number;
+    broad_inflation_penalty: number;
+    critical_gap_count: number;
+    critical_gap_score_cap: number;
+    critical_gap_cap_delta: number;
     title_prior_penalty: number;
     domain_prior_penalty: number;
     ats_penalty_injection: number;
@@ -406,6 +410,11 @@ const ROLE_SIGNAL_GROUP_PHRASES: Record<string, string[]> = {
     measurement: ["measurement", "media measurement", "attribution", "incrementality", "lift", "effectiveness", "marketing mix model", "mmm"],
     experimentation: ["experimentation", "experiment", "a b testing", "ab testing", "test and learn", "hypothesis"],
     product_decision: ["product analytics", "roadmap", "feature performance", "product decision", "user behavior", "retention", "activation", "funnel", "cohort"],
+    product_management: ["product management", "roadmap prioritization", "backlog prioritization", "feature direction", "product discovery", "problem framing", "platform strategy"],
+    business_analysis: ["business analysis", "requirements gathering", "process mapping", "workshop facilitation", "acceptance criteria", "solution design", "business requirements"],
+    implementation_delivery: ["implementation", "deployment", "rollout", "integration", "cutover", "go live", "adoption", "system migration", "enterprise rollout"],
+    program_governance: ["program management", "program governance", "dependency management", "multi-stream delivery", "workstream orchestration", "portfolio execution", "cross-stream coordination"],
+    consulting_advisory: ["strategy consulting", "strategy consultant", "client advisory", "executive recommendations", "structured problem solving", "engagement delivery", "decision support advisory"],
     customer_insight: ["customer insights", "cx analytics", "customer journey", "voice of customer", "audience insights", "segmentation", "persona", "behavioral insights"],
     commercial_performance: ["commercial performance", "business performance", "revenue performance", "revenue strategy", "profitability", "pricing", "margin", "forecasting", "growth strategy"],
     reporting_delivery: ["reporting", "reporting cadence", "dashboard", "kpi", "insight delivery", "insight generation", "performance reporting"],
@@ -415,6 +424,11 @@ const ROLE_SIGNAL_GROUP_PHRASES: Record<string, string[]> = {
 const CLUSTER_SIGNAL_GROUPS = new Map<string, string[]>([
     ["marketing_science_measurement", ["measurement", "experimentation"]],
     ["product_analytics_experimentation", ["product_decision", "experimentation"]],
+    ["product_management_roadmap_discovery", ["product_management", "product_decision"]],
+    ["strategy_consulting_advisory", ["consulting_advisory", "commercial_performance"]],
+    ["program_management_governance", ["program_governance"]],
+    ["business_analysis_requirements_process", ["business_analysis"]],
+    ["it_implementation_rollout_delivery", ["implementation_delivery"]],
     ["commercial_strategy_planning", ["commercial_performance"]],
     ["insight_generation_reporting", ["reporting_delivery", "stakeholder_translation"]],
     ["customer_cx_insights", ["customer_insight", "measurement"]],
@@ -568,6 +582,146 @@ const CLUSTER_DEFINITIONS: RequirementClusterDefinition[] = [
         domain_terms: ["product", "engineering", "roadmap"],
         title_terms: ["product analytics", "product analyst", "product insights"],
         preferred_role_families: ["product", "analytics"],
+        genericity: "specific",
+        default_optionality: "optional",
+        default_importance: "important",
+    },
+    {
+        id: "product_management_roadmap_discovery",
+        display_name: "Product Management / Roadmap & Discovery",
+        layer: "core_capability",
+        direct_capabilities: ["strategic planning", "market & opportunity assessment", "cross-functional stakeholder leadership"],
+        transfer_capabilities: ["commercial analytics", "executive influence & business cases"],
+        transfer_pattern_ids: ["analytics_to_decision_translation", "strategic_problem_solving_with_analytics"],
+        activation_mode: "explicit_signal",
+        seed_terms: [
+            "product management",
+            "product roadmap",
+            "roadmap prioritization",
+            "backlog prioritization",
+            "feature direction",
+            "product discovery",
+            "problem framing",
+            "platform strategy",
+            "user problem",
+        ],
+        method_terms: ["discovery", "prioritization", "roadmap", "backlog", "trade offs", "tradeoffs"],
+        domain_terms: ["product", "platform", "roadmap", "feature"],
+        title_terms: ["product manager", "product lead", "head of product"],
+        preferred_role_families: ["product", "strategy"],
+        genericity: "specific",
+        default_optionality: "optional",
+        default_importance: "important",
+    },
+    {
+        id: "business_analysis_requirements_process",
+        display_name: "Business Analysis / Requirements & Process",
+        layer: "core_capability",
+        direct_capabilities: ["strategic planning", "cross-functional stakeholder leadership"],
+        transfer_capabilities: ["market & opportunity assessment", "executive influence & business cases"],
+        transfer_pattern_ids: ["analytics_to_decision_translation", "cross_functional_analytics_leadership"],
+        activation_mode: "explicit_signal",
+        seed_terms: [
+            "business analysis",
+            "business analyst",
+            "requirements gathering",
+            "requirements definition",
+            "process mapping",
+            "workshop facilitation",
+            "acceptance criteria",
+            "solution design",
+            "user stories",
+            "requirement traceability",
+        ],
+        method_terms: ["requirements", "process mapping", "workshops", "acceptance criteria", "solution shaping"],
+        domain_terms: ["business", "process", "requirements", "analysis"],
+        title_terms: ["business analyst", "senior business analyst", "lead business analyst"],
+        preferred_role_families: ["strategy", "transformation", "product"],
+        genericity: "specific",
+        default_optionality: "optional",
+        default_importance: "important",
+    },
+    {
+        id: "strategy_consulting_advisory",
+        display_name: "Strategy Consulting / Advisory Delivery",
+        layer: "core_capability",
+        direct_capabilities: ["strategic planning", "executive influence & business cases", "market & opportunity assessment"],
+        transfer_capabilities: ["commercial analytics", "cross-functional stakeholder leadership"],
+        transfer_pattern_ids: ["analytics_to_decision_translation", "strategic_problem_solving_with_analytics"],
+        activation_mode: "explicit_signal",
+        seed_terms: [
+            "strategy consulting",
+            "strategy consultant",
+            "client advisory",
+            "advisory engagement",
+            "executive recommendations",
+            "structured problem solving",
+            "decision support advisory",
+            "engagement delivery",
+        ],
+        method_terms: ["problem structuring", "recommendations", "decision support", "executive communication"],
+        domain_terms: ["consulting", "advisory", "strategy", "client"],
+        title_terms: ["consultant", "strategy consultant", "advisory manager"],
+        preferred_role_families: ["strategy", "commercial", "analytics"],
+        genericity: "specific",
+        default_optionality: "optional",
+        default_importance: "important",
+    },
+    {
+        id: "program_management_governance",
+        display_name: "Program Management / Governance & Orchestration",
+        layer: "core_capability",
+        direct_capabilities: ["transformation delivery leadership", "cross-functional stakeholder leadership"],
+        transfer_capabilities: ["strategic planning", "change management & adoption"],
+        transfer_pattern_ids: ["cross_functional_analytics_leadership", "transformation_through_data"],
+        activation_mode: "explicit_signal",
+        seed_terms: [
+            "program management",
+            "program manager",
+            "program governance",
+            "dependency management",
+            "multi-stream delivery",
+            "workstream orchestration",
+            "cross-stream coordination",
+            "portfolio execution",
+        ],
+        method_terms: ["governance", "dependency management", "orchestration", "program execution"],
+        domain_terms: ["program", "governance", "delivery", "transformation"],
+        title_terms: ["program manager", "program lead", "portfolio manager"],
+        preferred_role_families: ["transformation", "operations", "strategy"],
+        genericity: "specific",
+        default_optionality: "optional",
+        default_importance: "important",
+    },
+    {
+        id: "it_implementation_rollout_delivery",
+        display_name: "IT Implementation / Rollout Delivery",
+        layer: "core_capability",
+        direct_capabilities: [
+            "transformation delivery leadership",
+            "change management & adoption",
+            "bi / data platform transformation",
+        ],
+        transfer_capabilities: ["cross-functional stakeholder leadership", "strategic planning"],
+        transfer_pattern_ids: ["transformation_through_data", "analytics_enablement_adoption", "cross_functional_analytics_leadership"],
+        activation_mode: "explicit_signal",
+        seed_terms: [
+            "implementation",
+            "enterprise implementation",
+            "systems rollout",
+            "deployment",
+            "integration",
+            "cutover",
+            "go live",
+            "go-live",
+            "adoption",
+            "system migration",
+            "enterprise rollout",
+        ],
+        method_terms: ["rollout", "deployment", "integration", "cutover", "stabilization", "go live"],
+        domain_terms: ["implementation", "technology", "systems", "enterprise"],
+        title_terms: ["implementation lead", "implementation manager", "delivery lead"],
+        preferred_role_families: ["transformation", "operations", "engineering"],
         genericity: "specific",
         default_optionality: "optional",
         default_importance: "important",
@@ -1580,8 +1734,50 @@ const BROAD_FAMILY_CLUSTER_IDS = new Set([
     "stakeholder_embedding",
 ]);
 
+const CRITICAL_GAP_MEDIUM_CAP = 0.69;
+const CRITICAL_GAP_LOW_CAP = 0.46;
+const CRITICAL_GAP_VERY_WEAK_SCORE = 0.42;
+const CRITICAL_GAP_PARTIAL_DIRECT_MAX = 0.48;
+const CRITICAL_GAP_PARTIAL_FINAL_MAX = 0.76;
+const CRITICAL_GAP_TRANSFER_DOMINANCE_MARGIN = 0.12;
+const CRITICAL_GAP_UNDERSUPPORTED_FINAL_MAX = 0.74;
+const CRITICAL_GAP_UNDERSUPPORTED_DIRECT_MAX = 0.54;
+const CRITICAL_GAP_UNDERSUPPORTED_EVIDENCE_MAX = 0.45;
+const CRITICAL_GAP_UNDERSUPPORTED_OWNERSHIP_MAX = 0.45;
+const CRITICAL_GAP_IMPORTANT_LOWFIT_TRIGGER_MAX = 0.55;
+const CRITICAL_GAP_GATE_EXCLUDED_CLUSTER_IDS = new Set([
+    ...BROAD_FAMILY_CLUSTER_IDS,
+    "transformation_enablement",
+    "people_leadership",
+    "analytics_translation_storytelling",
+]);
+
 function isBroadFamily(cluster: JobRequirementCluster): boolean {
     return cluster.genericity === "broad" || BROAD_FAMILY_CLUSTER_IDS.has(cluster.cluster_id);
+}
+
+function isRoleSpecificCriticalCoreBreakdown(breakdown: RequirementMatchBreakdown): boolean {
+    return breakdown.optionality === "core"
+        && breakdown.importance === "critical"
+        && breakdown.layer !== "domain_context"
+        && !CRITICAL_GAP_GATE_EXCLUDED_CLUSTER_IDS.has(breakdown.cluster_id);
+}
+
+function isCriticalGapBreakdown(breakdown: RequirementMatchBreakdown): boolean {
+    if (breakdown.match_status === "missing" || breakdown.match_status === "weak") return true;
+    // Treat transfer-dominant partials as unresolved when direct support is still weak.
+    const transferDominantPartial = breakdown.match_status === "partial"
+        && breakdown.direct_score <= CRITICAL_GAP_PARTIAL_DIRECT_MAX
+        && breakdown.final_cluster_score <= CRITICAL_GAP_PARTIAL_FINAL_MAX
+        && breakdown.transfer_score >= (breakdown.direct_score + CRITICAL_GAP_TRANSFER_DOMINANCE_MARGIN);
+    const underSupportedPartial = breakdown.match_status === "partial"
+        && breakdown.final_cluster_score <= CRITICAL_GAP_UNDERSUPPORTED_FINAL_MAX
+        && (
+            breakdown.direct_score <= CRITICAL_GAP_UNDERSUPPORTED_DIRECT_MAX
+            || breakdown.evidence_score <= CRITICAL_GAP_UNDERSUPPORTED_EVIDENCE_MAX
+            || breakdown.ownership_scope_score <= CRITICAL_GAP_UNDERSUPPORTED_OWNERSHIP_MAX
+        );
+    return transferDominantPartial || underSupportedPartial;
 }
 
 function clusterDistinctivenessScore(params: {
@@ -2024,11 +2220,19 @@ function buildTailorReasoning(params: {
 function buildBucketReasoning(params: {
     fitBucket: HumanAlignmentBucket;
     breakdowns: RequirementMatchBreakdown[];
+    rawScoreBreakdown: RawScoreBreakdown;
     titlePriorEffect: PriorEffect;
     domainPriorEffect: PriorEffect;
 }): string {
     const strongClusters = params.breakdowns.filter((item) => item.match_status === "strong" || item.match_status === "partial");
     const blocking = params.breakdowns.filter((item) => item.gap_classification === "blocking_gap");
+    const criticalGaps = params.breakdowns.filter((breakdown) =>
+        isRoleSpecificCriticalCoreBreakdown(breakdown) && isCriticalGapBreakdown(breakdown));
+    if (params.rawScoreBreakdown.critical_gap_cap_delta > 0 && criticalGaps.length > 0) {
+        const gapLabels = criticalGaps.slice(0, 2).map((item) => item.display_name).join(", ");
+        const reasonSuffix = criticalGaps.length > 2 ? " and other critical requirements" : "";
+        return `Fit is capped by unresolved role-critical gaps (${gapLabels}${reasonSuffix}), with priors at ${params.titlePriorEffect.match_level}/${params.domainPriorEffect.match_level}.`;
+    }
     if (params.fitBucket === "high_fit") {
         return `High-fit classification is driven by ${strongClusters.slice(0, 3).map((item) => item.display_name).join(", ")} with priors remaining weak.`;
     }
@@ -2384,6 +2588,39 @@ function compareBreakdowns(
     injectAtsPenalty: boolean,
     transferPatternAggregationEnabled: boolean,
 ): RawScoreBreakdown {
+    const computeBroadInflationPenalty = (): number => {
+        const criticalRoleSpecific = breakdowns.filter((breakdown) =>
+            breakdown.optionality === "core"
+            && breakdown.importance === "critical"
+            && breakdown.layer !== "domain_context"
+            && !BROAD_FAMILY_CLUSTER_IDS.has(breakdown.cluster_id),
+        );
+        const unresolvedCritical = criticalRoleSpecific.filter((breakdown) =>
+            breakdown.match_status === "missing"
+            || breakdown.match_status === "weak"
+            || breakdown.final_cluster_score < 0.62,
+        );
+        const broadTransferHeavy = breakdowns.filter((breakdown) =>
+            BROAD_FAMILY_CLUSTER_IDS.has(breakdown.cluster_id)
+            && breakdown.final_cluster_score >= 0.7,
+        );
+        if (criticalRoleSpecific.length < 1 || unresolvedCritical.length < 1 || broadTransferHeavy.length < 1) {
+            return 0;
+        }
+        const broadContribution = broadTransferHeavy.reduce((sum, breakdown) => sum + Math.max(0, breakdown.weighted_contribution), 0);
+        const unresolvedCriticalContribution = unresolvedCritical.reduce((sum, breakdown) => sum + Math.max(0, breakdown.weighted_contribution), 0);
+        const totalContribution = breakdowns.reduce((sum, breakdown) => sum + Math.max(0, breakdown.weighted_contribution), 0);
+        const broadShare = totalContribution > 0 ? broadContribution / totalContribution : 0;
+        if (broadShare < 0.28) return 0;
+        if (broadContribution <= (unresolvedCriticalContribution * 1.1)) return 0;
+        return round(Math.min(
+            0.06,
+            0.016
+                + ((broadShare - 0.28) * 0.11)
+                + (Math.min(3, unresolvedCritical.length) * 0.006),
+        ), 4);
+    };
+
     const totalWeight = breakdowns.reduce((sum, breakdown) => sum + breakdown.weight, 0);
     const weightedRequirementScore = totalWeight > 0
         ? clamp(breakdowns.reduce((sum, breakdown) => sum + (breakdown.final_cluster_score * breakdown.weight), 0) / totalWeight)
@@ -2434,15 +2671,41 @@ function compareBreakdowns(
     const atsPenalty = injectAtsPenalty && titlePriorEffect.match_level === "mismatch" && weightedRequirementScore < 0.62
         ? 0.015
         : 0;
-    const finalScore = clamp(
+    const broadInflationPenalty = computeBroadInflationPenalty();
+    const preCapFinalScore = clamp(
         weightedRequirementScore
         + positiveBonus
         - blockingGapPenalty
         - stretchGapPenalty
+        - broadInflationPenalty
         - titlePriorEffect.penalty
         - domainPriorEffect.penalty
         - atsPenalty,
     );
+    const unresolvedCriticalRoleSpecific = breakdowns.filter((breakdown) =>
+        isRoleSpecificCriticalCoreBreakdown(breakdown) && isCriticalGapBreakdown(breakdown));
+    const unresolvedImportantRoleSpecificMissingWeak = breakdowns.filter((breakdown) =>
+        breakdown.optionality === "core"
+        && breakdown.importance === "important"
+        && breakdown.layer !== "domain_context"
+        && !CRITICAL_GAP_GATE_EXCLUDED_CLUSTER_IDS.has(breakdown.cluster_id)
+        && (breakdown.match_status === "missing" || breakdown.match_status === "weak"),
+    );
+    const veryWeakCriticalCount = unresolvedCriticalRoleSpecific.filter((breakdown) =>
+        breakdown.match_status === "missing"
+        || breakdown.final_cluster_score <= CRITICAL_GAP_VERY_WEAK_SCORE).length;
+    const importantLowFitGate = unresolvedCriticalRoleSpecific.length === 0
+        && preCapFinalScore <= CRITICAL_GAP_IMPORTANT_LOWFIT_TRIGGER_MAX
+        && unresolvedImportantRoleSpecificMissingWeak.length >= 1;
+    const criticalGapCap = unresolvedCriticalRoleSpecific.length >= 2 || veryWeakCriticalCount >= 2
+        ? CRITICAL_GAP_LOW_CAP
+        : unresolvedCriticalRoleSpecific.length >= 1
+            ? CRITICAL_GAP_MEDIUM_CAP
+            : importantLowFitGate
+                ? CRITICAL_GAP_LOW_CAP
+                : 1;
+    const finalScore = clamp(Math.min(preCapFinalScore, criticalGapCap));
+    const criticalGapCapDelta = round(Math.max(0, preCapFinalScore - finalScore), 4);
 
     return {
         base_requirement_score: round(weightedRequirementScore, 4),
@@ -2460,6 +2723,10 @@ function compareBreakdowns(
         positive_bonus: round(positiveBonus, 4),
         blocking_gap_penalty: round(blockingGapPenalty, 4),
         stretch_gap_penalty: round(stretchGapPenalty, 4),
+        broad_inflation_penalty: round(broadInflationPenalty, 4),
+        critical_gap_count: unresolvedCriticalRoleSpecific.length,
+        critical_gap_score_cap: round(criticalGapCap, 4),
+        critical_gap_cap_delta: criticalGapCapDelta,
         title_prior_penalty: round(titlePriorEffect.penalty, 4),
         domain_prior_penalty: round(domainPriorEffect.penalty, 4),
         ats_penalty_injection: round(atsPenalty, 4),
@@ -2707,6 +2974,7 @@ export async function getCapabilityMatchV2FromContext(params: {
     const bucketReasoning = buildBucketReasoning({
         fitBucket,
         breakdowns,
+        rawScoreBreakdown,
         titlePriorEffect,
         domainPriorEffect,
     });
@@ -2749,6 +3017,16 @@ export async function getCapabilityMatchV2FromContext(params: {
     const penalties = [
         { label: "Blocking gap penalty", contribution: rawScoreBreakdown.blocking_gap_penalty, reason: "Core requirements with missing support." },
         { label: "Stretch gap penalty", contribution: rawScoreBreakdown.stretch_gap_penalty, reason: "Partial-but-fragile requirements." },
+        {
+            label: "Broad transfer inflation penalty",
+            contribution: rawScoreBreakdown.broad_inflation_penalty,
+            reason: "Applied only when role-specific critical requirements are unresolved and broad transferable clusters dominate contribution.",
+        },
+        {
+            label: "Critical capability score cap",
+            contribution: rawScoreBreakdown.critical_gap_cap_delta,
+            reason: "Caps final score when role-specific critical capabilities are missing or very weak.",
+        },
         { label: "Title prior penalty", contribution: rawScoreBreakdown.title_prior_penalty, reason: titlePriorEffect.reason },
         { label: "Domain prior penalty", contribution: rawScoreBreakdown.domain_prior_penalty, reason: domainPriorEffect.reason },
         { label: "ATS penalty injection", contribution: rawScoreBreakdown.ats_penalty_injection, reason: "Tiny narrative-sensitivity penalty only when title alignment is weak." },
