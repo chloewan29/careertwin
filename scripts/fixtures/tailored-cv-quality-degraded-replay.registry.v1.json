@@ -1,0 +1,41 @@
+{
+  "version": "tailored_cv_quality_degraded_replay_registry_v1",
+  "fixtures": [
+    {
+      "fixture_id": "deg-generic-rewrite-v1",
+      "target_failure_mode": "generic_rewrite",
+      "description": "Degraded replay where adjacent pair wording collapses into near-identical rewrite profile.",
+      "replay_fixture_path": "scripts/fixtures/tailored-cv-quality-degraded-generic-rewrite.v1.json"
+    },
+    {
+      "fixture_id": "deg-fake-tailoring-v1",
+      "target_failure_mode": "fake_tailoring",
+      "description": "Degraded replay where adjacent pair wording remains high-similarity with negligible delta.",
+      "replay_fixture_path": "scripts/fixtures/tailored-cv-quality-degraded-fake-tailoring.v1.json"
+    },
+    {
+      "fixture_id": "deg-weak-differentiation-v1",
+      "target_failure_mode": "weak_differentiation",
+      "description": "Degraded replay where adjacent pair differentiation score falls below acceptance floor.",
+      "replay_fixture_path": "scripts/fixtures/tailored-cv-quality-degraded-weak-differentiation.v1.json"
+    },
+    {
+      "fixture_id": "deg-weak-job-alignment-v1",
+      "target_failure_mode": "weak_job_alignment",
+      "description": "Degraded replay where a high-alignment case collapses relevance score to weak alignment.",
+      "replay_fixture_path": "scripts/fixtures/tailored-cv-quality-degraded-weak-job-alignment.v1.json"
+    },
+    {
+      "fixture_id": "deg-ownership-inflation-v1",
+      "target_failure_mode": "ownership_inflation",
+      "description": "Degraded replay with ownership violation pattern preserved in replay artifact.",
+      "replay_fixture_path": "scripts/fixtures/tailored-cv-quality-degraded-ownership-inflation.v1.json"
+    },
+    {
+      "fixture_id": "deg-evidence-mismatch-v1",
+      "target_failure_mode": "evidence_mismatch",
+      "description": "Degraded replay with one typed evidence mismatch event to validate provenance-bound mismatch detection.",
+      "replay_fixture_path": "scripts/fixtures/tailored-cv-quality-degraded-evidence-mismatch.v1.json"
+    }
+  ]
+}

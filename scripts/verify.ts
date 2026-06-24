@@ -9,6 +9,7 @@ type VerifyStepName =
     | "tests"
     | "jd_extraction"
     | "matcher"
+    | "tailored_cv_quality"
     | "extension_lifecycle";
 
 type VerifyStepResult = {
@@ -27,6 +28,7 @@ type VerifySummary = {
     first_failing_step: VerifyStepName | null;
     core_path_ts_debt_count: number | null;
     matcher_regression_status: "passed" | "failed" | "unknown";
+    tailored_cv_quality_status: "passed" | "failed" | "unknown";
     extension_lifecycle_regression_status: "passed" | "failed" | "unknown";
     recommended_next_action: string;
     started_at: string;
@@ -46,6 +48,18 @@ type TypecheckDebtSummaryArtifact = {
 
 type MatcherRegressionDiffArtifact = {
     pass: boolean;
+};
+
+type TailoredCvQualityArtifact = {
+    deterministic_check?: {
+        stable?: boolean;
+    };
+    aggregate?: {
+        verdict?: string;
+        overall_score?: number;
+        success_criteria?: Record<string, boolean>;
+        patterns?: string[];
+    };
 };
 
 type ExtensionLifecycleSummaryArtifact = {
@@ -145,6 +159,7 @@ function buildRecommendedNextAction(params: {
     firstFailingStep: VerifyStepName | null;
     coreDebtCount: number | null;
     matcherStatus: "passed" | "failed" | "unknown";
+    tailoredCvQualityStatus: "passed" | "failed" | "unknown";
     extensionStatus: "passed" | "failed" | "unknown";
     typecheckDebtArtifact: TypecheckDebtSummaryArtifact | null;
 }): string {
@@ -156,6 +171,9 @@ function buildRecommendedNextAction(params: {
     }
     if (params.matcherStatus === "failed") {
         return "Investigate matcher regression failure and rerun npm run verify without changing matcher baseline.";
+    }
+    if (params.tailoredCvQualityStatus === "failed") {
+        return "Investigate tailored CV quality regression (grounding/ownership/differentiation) and rerun npm run verify.";
     }
     if (params.extensionStatus === "failed") {
         return "Investigate extension lifecycle terminal-state regression and rerun npm run verify.";
@@ -177,15 +195,27 @@ function finalizeSummary(input: {
     steps: VerifyStepResult[];
     typecheckDebtSummaryPath: string;
     matcherDiffPath: string;
+    tailoredCvQualityPath: string;
     extensionSummaryPath: string;
 }): VerifySummary {
     const firstFailingStep = input.steps.find((step) => step.status === "failed")?.name ?? null;
     const typecheckDebtArtifact = readJson<TypecheckDebtSummaryArtifact>(input.typecheckDebtSummaryPath);
     const matcherDiffArtifact = readJson<MatcherRegressionDiffArtifact>(input.matcherDiffPath);
+    const tailoredCvQualityArtifact = readJson<TailoredCvQualityArtifact>(input.tailoredCvQualityPath);
     const extensionSummaryArtifact = readJson<ExtensionLifecycleSummaryArtifact>(input.extensionSummaryPath);
 
     const matcherRegressionStatus: "passed" | "failed" | "unknown" = matcherDiffArtifact
         ? (matcherDiffArtifact.pass ? "passed" : "failed")
+        : "unknown";
+    const tailoredCvQualityStatus: "passed" | "failed" | "unknown" = tailoredCvQualityArtifact
+        ? (() => {
+            const deterministicStable = tailoredCvQualityArtifact.deterministic_check?.stable === true;
+            const successCriteria = tailoredCvQualityArtifact.aggregate?.success_criteria;
+            const criteriaPass = successCriteria
+                ? Object.values(successCriteria).every((value) => value === true)
+                : false;
+            return deterministicStable && criteriaPass ? "passed" : "failed";
+        })()
         : "unknown";
     const extensionLifecycleRegressionStatus: "passed" | "failed" | "unknown" = extensionSummaryArtifact
         ? (extensionSummaryArtifact.failed_tests === 0 ? "passed" : "failed")
@@ -198,12 +228,14 @@ function finalizeSummary(input: {
         first_failing_step: firstFailingStep,
         core_path_ts_debt_count: coreDebtCount,
         matcher_regression_status: matcherRegressionStatus,
+        tailored_cv_quality_status: tailoredCvQualityStatus,
         extension_lifecycle_regression_status: extensionLifecycleRegressionStatus,
         recommended_next_action: buildRecommendedNextAction({
             status: input.status,
             firstFailingStep,
             coreDebtCount,
             matcherStatus: matcherRegressionStatus,
+            tailoredCvQualityStatus,
             extensionStatus: extensionLifecycleRegressionStatus,
             typecheckDebtArtifact,
         }),
@@ -264,6 +296,8 @@ async function runVerify(): Promise<VerifySummary> {
     const matcherDetailsPath = path.join(ARTIFACTS_DIR, "matcher-details.json");
     const matcherDiffPath = path.join(ARTIFACTS_DIR, "matcher-regression-diff.json");
     const matcherStepPath = path.join(ARTIFACTS_DIR, "matcher-step.json");
+    const tailoredCvQualityPath = path.join(ARTIFACTS_DIR, "tailored-cv-bullet-rewrite-audit-v1.verify.json");
+    const tailoredCvStepPath = path.join(ARTIFACTS_DIR, "tailored-cv-quality-step.json");
     const extensionSummaryPath = path.join(ARTIFACTS_DIR, "extension-lifecycle-summary.json");
     const extensionDetailsPath = path.join(ARTIFACTS_DIR, "extension-lifecycle-details.json");
     const extensionStepPath = path.join(ARTIFACTS_DIR, "extension-lifecycle-step.json");
@@ -283,6 +317,7 @@ async function runVerify(): Promise<VerifySummary> {
             steps,
             typecheckDebtSummaryPath,
             matcherDiffPath,
+            tailoredCvQualityPath,
             extensionSummaryPath,
         });
     }
@@ -306,6 +341,7 @@ async function runVerify(): Promise<VerifySummary> {
             steps,
             typecheckDebtSummaryPath,
             matcherDiffPath,
+            tailoredCvQualityPath,
             extensionSummaryPath,
         });
     }
@@ -329,6 +365,7 @@ async function runVerify(): Promise<VerifySummary> {
             steps,
             typecheckDebtSummaryPath,
             matcherDiffPath,
+            tailoredCvQualityPath,
             extensionSummaryPath,
         });
     }
@@ -352,6 +389,7 @@ async function runVerify(): Promise<VerifySummary> {
             steps,
             typecheckDebtSummaryPath,
             matcherDiffPath,
+            tailoredCvQualityPath,
             extensionSummaryPath,
         });
     }
@@ -375,6 +413,39 @@ async function runVerify(): Promise<VerifySummary> {
             steps,
             typecheckDebtSummaryPath,
             matcherDiffPath,
+            tailoredCvQualityPath,
+            extensionSummaryPath,
+        });
+    }
+
+    const tailoredCvQualityResult = await runStep(
+        "tailored_cv_quality",
+        () => runTsxScriptStep(
+            "scripts/run-tailored-cv-bullet-rewrite-audit.ts",
+            [
+                "--out",
+                tailoredCvQualityPath,
+                "--mode",
+                "replay",
+                "--replayFixture",
+                "scripts/fixtures/tailored-cv-quality-replay.seed.json",
+                "--enforce",
+            ],
+            tailoredCvStepPath,
+        ),
+        tailoredCvStepPath,
+    );
+    steps.push(tailoredCvQualityResult);
+    if (tailoredCvQualityResult.status === "failed") {
+        return finalizeSummary({
+            status: "failed",
+            startedAt: summaryStart,
+            finishedAt: nowIso(),
+            durationMs: elapsedMs(verifyStart),
+            steps,
+            typecheckDebtSummaryPath,
+            matcherDiffPath,
+            tailoredCvQualityPath,
             extensionSummaryPath,
         });
     }
@@ -398,6 +469,7 @@ async function runVerify(): Promise<VerifySummary> {
         steps,
         typecheckDebtSummaryPath,
         matcherDiffPath,
+        tailoredCvQualityPath,
         extensionSummaryPath,
     });
 }
@@ -423,6 +495,7 @@ const isMainModule = process.argv[1]
                 first_failing_step: null,
                 core_path_ts_debt_count: null,
                 matcher_regression_status: "unknown",
+                tailored_cv_quality_status: "unknown",
                 extension_lifecycle_regression_status: "unknown",
                 recommended_next_action: "Investigate verify runner failure and rerun npm run verify.",
                 started_at: nowIso(),

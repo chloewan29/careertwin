@@ -1,0 +1,423 @@
+{
+    "version":  "tailored_cv_quality_degraded_replay_evidence_mismatch_v1",
+    "fixture_version":  "human_alignment_benchmark_v1_seed",
+    "source_artifact":  "degraded_replay_fixture_v1",
+    "cases":  [
+                  {
+                      "id":  "job-01",
+                      "type":  "adjacent",
+                      "requirement_profile":  "analytics_translation_stakeholder_storytelling",
+                      "expected_alignment":  "high"
+                  },
+                  {
+                      "id":  "job-04",
+                      "type":  "adjacent",
+                      "requirement_profile":  "product_analytics_experimentation_and_roadmap",
+                      "expected_alignment":  "high"
+                  },
+                  {
+                      "id":  "job-06",
+                      "type":  "adjacent",
+                      "requirement_profile":  "marketing_science_media_measurement",
+                      "expected_alignment":  "high"
+                  },
+                  {
+                      "id":  "job-05",
+                      "type":  "different",
+                      "requirement_profile":  "bi_platform_transformation_program_delivery",
+                      "expected_alignment":  "medium"
+                  },
+                  {
+                      "id":  "job-13",
+                      "type":  "different",
+                      "requirement_profile":  "enterprise_sales_execution_and_people_leadership",
+                      "expected_alignment":  "medium"
+                  },
+                  {
+                      "id":  "job-14",
+                      "type":  "different",
+                      "requirement_profile":  "clinical_research_operations",
+                      "expected_alignment":  "low"
+                  }
+              ],
+    "jobs":  [
+                 {
+                     "case_id":  "job-01",
+                     "case_type":  "adjacent",
+                     "requirement_profile":  "analytics_translation_stakeholder_storytelling",
+                     "expected_alignment":  "high",
+                     "title":  "Analytics Manager",
+                     "company":  "Publicis Groupe ANZ",
+                     "scores":  {
+                                    "relevance":  2,
+                                    "readability":  1,
+                                    "ats":  2,
+                                    "ownership":  2,
+                                    "integrity":  2,
+                                    "differentiation":  2
+                                },
+                     "score_reasons":  {
+                                           "relevance":  "after_coverage_improved (0.125 -\u003e 0.2222)",
+                                           "readability":  "avg_structure_score=2.00",
+                                           "ats":  "coverage=0.2667, matched_tokens=16, stuffing_ratio=0.0577",
+                                           "ownership":  "ownership_alignment_clean",
+                                           "integrity":  "integrity_clean",
+                                           "differentiation":  "job-04:pair_score=2,after_similarity=0.8583,delta=0.1417 | job-06:pair_score=1,after_similarity=0.95,delta=0.05 | job-05:pair_score=1,after_similarity=0.9143,delta=0.0857 | job-13:pair_score=2,after_similarity=0.7217,delta=0.2783 | job-14:pair_score=2,after_similarity=0.7965,delta=0.2035"
+                                       },
+                     "total":  11,
+                     "quality_judgment":  "strong",
+                     "failed_dimensions":  [
+
+                                           ]
+                 },
+                 {
+                     "case_id":  "job-04",
+                     "case_type":  "adjacent",
+                     "requirement_profile":  "product_analytics_experimentation_and_roadmap",
+                     "expected_alignment":  "high",
+                     "title":  "Product Analytics Manager",
+                     "company":  "Digital Product Co",
+                     "scores":  {
+                                    "relevance":  1,
+                                    "readability":  1,
+                                    "ats":  2,
+                                    "ownership":  2,
+                                    "integrity":  2,
+                                    "differentiation":  2
+                                },
+                     "score_reasons":  {
+                                           "relevance":  "after_coverage_stable (0.1944 -\u003e 0.2639)",
+                                           "readability":  "avg_structure_score=2.00",
+                                           "ats":  "coverage=0.2667, matched_tokens=16, stuffing_ratio=0.0561",
+                                           "ownership":  "ownership_alignment_clean",
+                                           "integrity":  "integrity_clean",
+                                           "differentiation":  "job-01:pair_score=2,after_similarity=0.8583,delta=0.1417 | job-06:pair_score=2,after_similarity=0.816,delta=0.184 | job-05:pair_score=2,after_similarity=0.7963,delta=0.2037 | job-13:pair_score=1,after_similarity=0.9048,delta=0.0952 | job-14:pair_score=2,after_similarity=0.8028,delta=0.1972"
+                                       },
+                     "total":  10,
+                     "quality_judgment":  "watch",
+                     "failed_dimensions":  [
+
+                                           ]
+                 },
+                 {
+                     "case_id":  "job-06",
+                     "case_type":  "adjacent",
+                     "requirement_profile":  "marketing_science_media_measurement",
+                     "expected_alignment":  "high",
+                     "title":  "Marketing Science Lead",
+                     "company":  "Agency Network",
+                     "scores":  {
+                                    "relevance":  1,
+                                    "readability":  1,
+                                    "ats":  2,
+                                    "ownership":  2,
+                                    "integrity":  2,
+                                    "differentiation":  2
+                                },
+                     "score_reasons":  {
+                                           "relevance":  "after_coverage_stable (0.1944 -\u003e 0.2222)",
+                                           "readability":  "avg_structure_score=2.00",
+                                           "ats":  "coverage=0.25, matched_tokens=15, stuffing_ratio=0.0762",
+                                           "ownership":  "ownership_alignment_clean",
+                                           "integrity":  "integrity_clean",
+                                           "differentiation":  "job-01:pair_score=1,after_similarity=0.95,delta=0.05 | job-04:pair_score=2,after_similarity=0.816,delta=0.184 | job-05:pair_score=1,after_similarity=0.8843,delta=0.1157 | job-13:pair_score=2,after_similarity=0.7048,delta=0.2952 | job-14:pair_score=2,after_similarity=0.7873,delta=0.2127"
+                                       },
+                     "total":  10,
+                     "quality_judgment":  "watch",
+                     "failed_dimensions":  [
+
+                                           ]
+                 },
+                 {
+                     "case_id":  "job-05",
+                     "case_type":  "different",
+                     "requirement_profile":  "bi_platform_transformation_program_delivery",
+                     "expected_alignment":  "medium",
+                     "title":  "BI Transformation Program Lead",
+                     "company":  "Enterprise Co",
+                     "scores":  {
+                                    "relevance":  2,
+                                    "readability":  1,
+                                    "ats":  2,
+                                    "ownership":  2,
+                                    "integrity":  2,
+                                    "differentiation":  2
+                                },
+                     "score_reasons":  {
+                                           "relevance":  "after_coverage_improved (0.2222 -\u003e 0.2917)",
+                                           "readability":  "avg_structure_score=2.00",
+                                           "ats":  "coverage=0.3167, matched_tokens=19, stuffing_ratio=0.0551",
+                                           "ownership":  "ownership_alignment_clean",
+                                           "integrity":  "integrity_clean",
+                                           "differentiation":  "job-01:pair_score=1,after_similarity=0.9143,delta=0.0857 | job-04:pair_score=2,after_similarity=0.7963,delta=0.2037 | job-06:pair_score=1,after_similarity=0.8843,delta=0.1157 | job-13:pair_score=2,after_similarity=0.7214,delta=0.2786 | job-14:pair_score=2,after_similarity=0.8055,delta=0.1945"
+                                       },
+                     "total":  11,
+                     "quality_judgment":  "strong",
+                     "failed_dimensions":  [
+
+                                           ]
+                 },
+                 {
+                     "case_id":  "job-13",
+                     "case_type":  "different",
+                     "requirement_profile":  "enterprise_sales_execution_and_people_leadership",
+                     "expected_alignment":  "medium",
+                     "title":  "Enterprise Sales Director",
+                     "company":  "B2B Co",
+                     "scores":  {
+                                    "relevance":  2,
+                                    "readability":  1,
+                                    "ats":  2,
+                                    "ownership":  2,
+                                    "integrity":  2,
+                                    "differentiation":  2
+                                },
+                     "score_reasons":  {
+                                           "relevance":  "after_coverage_improved (0.1111 -\u003e 0.25)",
+                                           "readability":  "avg_structure_score=2.00",
+                                           "ats":  "coverage=0.25, matched_tokens=15, stuffing_ratio=0.0472",
+                                           "ownership":  "ownership_alignment_clean",
+                                           "integrity":  "integrity_clean",
+                                           "differentiation":  "job-01:pair_score=2,after_similarity=0.7217,delta=0.2783 | job-04:pair_score=1,after_similarity=0.9048,delta=0.0952 | job-06:pair_score=2,after_similarity=0.7048,delta=0.2952 | job-05:pair_score=2,after_similarity=0.7214,delta=0.2786 | job-14:pair_score=2,after_similarity=0.7382,delta=0.2618"
+                                       },
+                     "total":  11,
+                     "quality_judgment":  "strong",
+                     "failed_dimensions":  [
+
+                                           ]
+                 },
+                 {
+                     "case_id":  "job-14",
+                     "case_type":  "different",
+                     "requirement_profile":  "clinical_research_operations",
+                     "expected_alignment":  "low",
+                     "title":  "Clinical Research Coordinator",
+                     "company":  "Health Org",
+                     "scores":  {
+                                    "relevance":  1,
+                                    "readability":  1,
+                                    "ats":  2,
+                                    "ownership":  2,
+                                    "integrity":  2,
+                                    "differentiation":  2
+                                },
+                     "score_reasons":  {
+                                           "relevance":  "after_coverage_stable (0.1064 -\u003e 0.1702)",
+                                           "readability":  "avg_structure_score=2.00",
+                                           "ats":  "coverage=0.1702, matched_tokens=8, stuffing_ratio=0.0734",
+                                           "ownership":  "ownership_alignment_clean",
+                                           "integrity":  "integrity_clean",
+                                           "differentiation":  "job-01:pair_score=2,after_similarity=0.7965,delta=0.2035 | job-04:pair_score=2,after_similarity=0.8028,delta=0.1972 | job-06:pair_score=2,after_similarity=0.7873,delta=0.2127 | job-05:pair_score=2,after_similarity=0.8055,delta=0.1945 | job-13:pair_score=2,after_similarity=0.7382,delta=0.2618"
+                                       },
+                     "total":  10,
+                     "quality_judgment":  "watch",
+                     "failed_dimensions":  [
+
+                                           ]
+                 }
+             ],
+    "pair_diagnostics":  [
+                             {
+                                 "job_a":  "job-01",
+                                 "job_b":  "job-04",
+                                 "pair_type":  "adjacent",
+                                 "shared_evidence_count":  4,
+                                 "overlap_ratio":  0.8,
+                                 "before_similarity":  1,
+                                 "after_similarity":  0.8583,
+                                 "similarity_delta":  0.1417,
+                                 "pair_score":  2
+                             },
+                             {
+                                 "job_a":  "job-01",
+                                 "job_b":  "job-06",
+                                 "pair_type":  "adjacent",
+                                 "shared_evidence_count":  4,
+                                 "overlap_ratio":  0.8,
+                                 "before_similarity":  1,
+                                 "after_similarity":  0.95,
+                                 "similarity_delta":  0.05,
+                                 "pair_score":  1
+                             },
+                             {
+                                 "job_a":  "job-01",
+                                 "job_b":  "job-05",
+                                 "pair_type":  "mixed",
+                                 "shared_evidence_count":  4,
+                                 "overlap_ratio":  0.8,
+                                 "before_similarity":  1,
+                                 "after_similarity":  0.9143,
+                                 "similarity_delta":  0.0857,
+                                 "pair_score":  1
+                             },
+                             {
+                                 "job_a":  "job-01",
+                                 "job_b":  "job-13",
+                                 "pair_type":  "mixed",
+                                 "shared_evidence_count":  4,
+                                 "overlap_ratio":  0.8,
+                                 "before_similarity":  1,
+                                 "after_similarity":  0.7217,
+                                 "similarity_delta":  0.2783,
+                                 "pair_score":  2
+                             },
+                             {
+                                 "job_a":  "job-01",
+                                 "job_b":  "job-14",
+                                 "pair_type":  "mixed",
+                                 "shared_evidence_count":  3,
+                                 "overlap_ratio":  0.6,
+                                 "before_similarity":  1,
+                                 "after_similarity":  0.7965,
+                                 "similarity_delta":  0.2035,
+                                 "pair_score":  2
+                             },
+                             {
+                                 "job_a":  "job-04",
+                                 "job_b":  "job-06",
+                                 "pair_type":  "adjacent",
+                                 "shared_evidence_count":  5,
+                                 "overlap_ratio":  1,
+                                 "before_similarity":  1,
+                                 "after_similarity":  0.816,
+                                 "similarity_delta":  0.184,
+                                 "pair_score":  2
+                             },
+                             {
+                                 "job_a":  "job-04",
+                                 "job_b":  "job-05",
+                                 "pair_type":  "mixed",
+                                 "shared_evidence_count":  4,
+                                 "overlap_ratio":  0.8,
+                                 "before_similarity":  1,
+                                 "after_similarity":  0.7963,
+                                 "similarity_delta":  0.2037,
+                                 "pair_score":  2
+                             },
+                             {
+                                 "job_a":  "job-04",
+                                 "job_b":  "job-13",
+                                 "pair_type":  "mixed",
+                                 "shared_evidence_count":  3,
+                                 "overlap_ratio":  0.6,
+                                 "before_similarity":  1,
+                                 "after_similarity":  0.9048,
+                                 "similarity_delta":  0.0952,
+                                 "pair_score":  1
+                             },
+                             {
+                                 "job_a":  "job-04",
+                                 "job_b":  "job-14",
+                                 "pair_type":  "mixed",
+                                 "shared_evidence_count":  3,
+                                 "overlap_ratio":  0.6,
+                                 "before_similarity":  1,
+                                 "after_similarity":  0.8028,
+                                 "similarity_delta":  0.1972,
+                                 "pair_score":  2
+                             },
+                             {
+                                 "job_a":  "job-06",
+                                 "job_b":  "job-05",
+                                 "pair_type":  "mixed",
+                                 "shared_evidence_count":  4,
+                                 "overlap_ratio":  0.8,
+                                 "before_similarity":  1,
+                                 "after_similarity":  0.8843,
+                                 "similarity_delta":  0.1157,
+                                 "pair_score":  1
+                             },
+                             {
+                                 "job_a":  "job-06",
+                                 "job_b":  "job-13",
+                                 "pair_type":  "mixed",
+                                 "shared_evidence_count":  3,
+                                 "overlap_ratio":  0.6,
+                                 "before_similarity":  1,
+                                 "after_similarity":  0.7048,
+                                 "similarity_delta":  0.2952,
+                                 "pair_score":  2
+                             },
+                             {
+                                 "job_a":  "job-06",
+                                 "job_b":  "job-14",
+                                 "pair_type":  "mixed",
+                                 "shared_evidence_count":  3,
+                                 "overlap_ratio":  0.6,
+                                 "before_similarity":  1,
+                                 "after_similarity":  0.7873,
+                                 "similarity_delta":  0.2127,
+                                 "pair_score":  2
+                             },
+                             {
+                                 "job_a":  "job-05",
+                                 "job_b":  "job-13",
+                                 "pair_type":  "mixed",
+                                 "shared_evidence_count":  3,
+                                 "overlap_ratio":  0.6,
+                                 "before_similarity":  1,
+                                 "after_similarity":  0.7214,
+                                 "similarity_delta":  0.2786,
+                                 "pair_score":  2
+                             },
+                             {
+                                 "job_a":  "job-05",
+                                 "job_b":  "job-14",
+                                 "pair_type":  "mixed",
+                                 "shared_evidence_count":  5,
+                                 "overlap_ratio":  1,
+                                 "before_similarity":  1,
+                                 "after_similarity":  0.8055,
+                                 "similarity_delta":  0.1945,
+                                 "pair_score":  2
+                             },
+                             {
+                                 "job_a":  "job-13",
+                                 "job_b":  "job-14",
+                                 "pair_type":  "mixed",
+                                 "shared_evidence_count":  2,
+                                 "overlap_ratio":  0.4,
+                                 "before_similarity":  1,
+                                 "after_similarity":  0.7382,
+                                 "similarity_delta":  0.2618,
+                                 "pair_score":  2
+                             }
+                         ],
+    "patterns":  [
+                     "generic_rewrite_detected_between_job-01_and_job-06",
+                     "generic_rewrite_detected_between_job-01_and_job-05",
+                     "generic_rewrite_detected_between_job-04_and_job-13"
+                 ],
+    "pattern_details":  [
+                            {
+                                "pattern":  "generic_rewrite",
+                                "pair":  "job-01_job-06",
+                                "after_similarity":  0.95
+                            },
+                            {
+                                "pattern":  "generic_rewrite",
+                                "pair":  "job-01_job-05",
+                                "after_similarity":  0.9143
+                            },
+                            {
+                                "pattern":  "generic_rewrite",
+                                "pair":  "job-04_job-13",
+                                "after_similarity":  0.9048
+                            }
+                        ],
+    "evidence_mismatch_events":  [
+                                     {
+                                         "case_id":  "job-01",
+                                         "evidence_id":  "ev-001",
+                                         "mismatch_type":  "meaning_drift",
+                                         "before_text":  "Built reporting workflows that supported weekly commercial reviews.",
+                                         "after_text":  "Produced generic narrative framing that was disconnected from the supporting evidence.",
+                                         "detector_payload":  {
+                                                                  "token_overlap":  0.12
+                                                              },
+                                         "event_id":  "evt-evidence-mismatch-001",
+                                         "source_fixture_id":  "deg-evidence-mismatch-v1",
+                                         "notes":  "minimal degraded mismatch fixture for typed replay-event contract"
+                                     }
+                                 ]
+}
