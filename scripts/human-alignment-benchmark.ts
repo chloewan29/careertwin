@@ -126,6 +126,18 @@ export function loadEnvLocal(): void {
     }
 }
 
+function configureCalibrationSafeEnrichmentCache(): void {
+    if (!process.env.CAREERTWIN_JD_ENRICHMENT_CACHE_ENABLED) {
+        process.env.CAREERTWIN_JD_ENRICHMENT_CACHE_ENABLED = "1";
+    }
+    const cacheFile = process.env.CAREERTWIN_JD_ENRICHMENT_CACHE_FILE
+        || path.join(process.cwd(), "artifacts", "jd-enrichment-cache.json");
+    process.env.CAREERTWIN_JD_ENRICHMENT_CACHE_FILE = cacheFile;
+    if (!process.env.CAREERTWIN_DETERMINISTIC_JD_ENRICHMENT) {
+        process.env.CAREERTWIN_DETERMINISTIC_JD_ENRICHMENT = fs.existsSync(cacheFile) ? "1" : "0";
+    }
+}
+
 function parseArgs(): {
     profileId: string | null;
     careerId: string | null;
@@ -420,6 +432,7 @@ export async function runHumanAlignmentBenchmark(args: {
     outFile?: string | null;
 } = {}): Promise<HumanAlignmentBenchmarkOutput> {
     loadEnvLocal();
+    configureCalibrationSafeEnrichmentCache();
     const fixturePath = args.fixturePath ?? "scripts/fixtures/human-alignment-benchmark.seed.json";
     const outFile = args.outFile ?? null;
     const { profileId, careerId } = await resolveProfileAndCareer(args.profileId ?? null, args.careerId ?? null);

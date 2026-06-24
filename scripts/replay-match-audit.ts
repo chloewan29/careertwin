@@ -55,6 +55,18 @@ function loadEnvLocal(): void {
     }
 }
 
+function configureCalibrationSafeEnrichmentCache(): void {
+    if (!process.env.CAREERTWIN_JD_ENRICHMENT_CACHE_ENABLED) {
+        process.env.CAREERTWIN_JD_ENRICHMENT_CACHE_ENABLED = "1";
+    }
+    const cacheFile = process.env.CAREERTWIN_JD_ENRICHMENT_CACHE_FILE
+        || path.join(process.cwd(), "artifacts", "jd-enrichment-cache.json");
+    process.env.CAREERTWIN_JD_ENRICHMENT_CACHE_FILE = cacheFile;
+    if (!process.env.CAREERTWIN_DETERMINISTIC_JD_ENRICHMENT) {
+        process.env.CAREERTWIN_DETERMINISTIC_JD_ENRICHMENT = fs.existsSync(cacheFile) ? "1" : "0";
+    }
+}
+
 function parseArgs(): ReplayArgs {
     const args = process.argv.slice(2);
     const readArg = (name: string): string | null => {
@@ -257,6 +269,7 @@ function summarizeVariant(variantName: MatchVariantName, result: Awaited<ReturnT
 
 async function run(): Promise<void> {
     loadEnvLocal();
+    configureCalibrationSafeEnrichmentCache();
     const args = parseArgs();
     const resolvedCase = await resolveCase(args);
     if (!resolvedCase.jobDescription || resolvedCase.jobDescription.trim().length < 40) {
