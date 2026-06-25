@@ -32,7 +32,7 @@ export type EvidencePiece = {
     role: string;
     date_range: string;
     raw_text: string;
-    source_type: "resume_bullet" | "linkedin" | "manual" | "interview" | "resume" | "imported_doc" | null;
+    source_type: "resume_bullet" | "linkedin" | "manual" | "interview" | "resume" | "imported_doc" | "quick_check" | null;
     summary?: string | null;
     action?: string | null;
     impact?: string | null;
@@ -50,6 +50,8 @@ export type EvidencePiece = {
     inferred_scope?: Record<string, unknown> | null;
     confidence?: number | null;
     missing_fields?: string[] | null;
+    memory_status?: "candidate" | "confirmed" | "promoted" | "deprecated" | null;
+    evidence_authority_scope?: "single_job" | "role_family" | "global_user" | null;
     sort_order: number | null;
     created_at: string;
     updated_at: string;
@@ -63,7 +65,7 @@ type EvidencePieceRow = {
     role: string | null;
     date_range: string | null;
     raw_text: string;
-    source_type: "resume_bullet" | "linkedin" | "manual" | "interview" | "resume" | "imported_doc" | null;
+    source_type: "resume_bullet" | "linkedin" | "manual" | "interview" | "resume" | "imported_doc" | "quick_check" | null;
     summary: string | null;
     action: string | null;
     impact: string | null;
@@ -81,6 +83,8 @@ type EvidencePieceRow = {
     inferred_scope: Record<string, unknown> | null;
     confidence: number | null;
     missing_fields: string[] | null;
+    memory_status: "candidate" | "confirmed" | "promoted" | "deprecated" | null;
+    evidence_authority_scope: "single_job" | "role_family" | "global_user" | null;
 };
 
 export type EvidenceSignal = {
@@ -160,6 +164,36 @@ export type CapabilitySignalLink = {
     created_at: string;
 };
 
+export type CareerGoalSignal = {
+    id: string;
+    profile_id: string;
+    signal_type: "target_path" | "avoid_path" | "priority" | "constraint" | "preference";
+    label: string;
+    description: string | null;
+    strength: "low" | "medium" | "high";
+    confidence: "explicit" | "inferred" | "weak_inferred";
+    source: "quick_check" | "user_answer" | "saved_role" | "cv_angle_selected" | "manual_profile";
+    source_ref_id: string | null;
+    status: "active" | "stale" | "rejected";
+    created_at: string;
+    updated_at: string;
+};
+
+type CareerGoalSignalRow = {
+    id: string;
+    profile_id: string;
+    signal_type: string;
+    label: string | null;
+    description: string | null;
+    strength: string | null;
+    confidence: string | null;
+    source: string | null;
+    source_ref_id: string | null;
+    status: string | null;
+    created_at: string;
+    updated_at: string;
+};
+
 export type CareerGraph = {
     career: Career | null;
     experiences: Experience[];
@@ -168,6 +202,7 @@ export type CareerGraph = {
     capabilities: Capability[];
     capabilityEvidenceLinks: CapabilityEvidenceLink[];
     capabilitySignalLinks?: CapabilitySignalLink[];
+    careerGoalSignals?: CareerGoalSignal[];
     evidenceByExperience: Record<string, EvidencePiece[]>;
     signalsByEvidencePiece?: Record<string, EvidenceSignal[]>;
     signalsByCapability?: Record<string, EvidenceSignal[]>;
@@ -207,12 +242,14 @@ export async function loadCareerGraph(profileId: string): Promise<CareerGraph> {
         "summary", "action", "impact", "stakeholders", "tools_methods", "business_context",
         "org_scope", "stakeholder_scope", "leadership_scope", "delivery_level", "impact_scale", "impact_type",
         "confidence_level", "inferred_scale", "inferred_scope", "confidence", "missing_fields",
+        "memory_status", "evidence_authority_scope",
     ].join(", ");
     const evidenceSelectExpandedNoBusinessContext = [
         "id", "experience_id", "career_id", "company", "role", "date_range", "raw_text", "source_type",
         "summary", "action", "impact", "stakeholders", "tools_methods",
         "org_scope", "stakeholder_scope", "leadership_scope", "delivery_level", "impact_scale", "impact_type",
         "confidence_level", "inferred_scale", "inferred_scope", "confidence", "missing_fields",
+        "memory_status", "evidence_authority_scope",
     ].join(", ");
     const evidenceSelectLegacy = "id, experience_id, career_id, raw_text, source_type";
 
@@ -256,6 +293,7 @@ export async function loadCareerGraph(profileId: string): Promise<CareerGraph> {
             capabilities: [],
             capabilityEvidenceLinks: [],
             capabilitySignalLinks: [],
+            careerGoalSignals: [],
             evidenceByExperience: {},
             signalsByEvidencePiece: {},
             signalsByCapability: {},
@@ -266,7 +304,7 @@ export async function loadCareerGraph(profileId: string): Promise<CareerGraph> {
         };
     }
 
-    const [experiencesResult, capabilitiesExpandedResult, evidenceExpandedResult, evidenceSignalsResult] = await Promise.all([
+    const [experiencesResult, capabilitiesExpandedResult, evidenceExpandedResult, evidenceSignalsResult, careerGoalSignalsResult] = await Promise.all([
         supabase
             .from("experiences")
             .select("id, career_id, company, title, date_range, location, summary, source_type, sort_order, created_at, updated_at")
@@ -287,6 +325,11 @@ export async function loadCareerGraph(profileId: string): Promise<CareerGraph> {
             .select("id, career_id, evidence_piece_id, action, domain, initiative_type, scope_level, ownership_level, stakeholder_scope, tool_signals, capability_hints, team_signal, impact_signal, confidence_score, created_at, updated_at")
             .eq("career_id", career.id)
             .order("created_at", { ascending: true }),
+        supabase
+            .from("career_goal_signals")
+            .select("id, profile_id, signal_type, label, description, strength, confidence, source, source_ref_id, status, created_at, updated_at")
+            .eq("profile_id", profile.id)
+            .order("updated_at", { ascending: false }),
     ]);
 
     if (experiencesResult.error) {
@@ -336,7 +379,7 @@ export async function loadCareerGraph(profileId: string): Promise<CareerGraph> {
                 experience_id: string;
                 career_id: string;
                 raw_text: string;
-                source_type: "resume_bullet" | "linkedin" | "manual" | "interview" | "resume" | "imported_doc" | null;
+                source_type: "resume_bullet" | "linkedin" | "manual" | "interview" | "resume" | "imported_doc" | "quick_check" | null;
             }>).map((row) => ({
                 ...row,
                 company: null,
@@ -359,6 +402,8 @@ export async function loadCareerGraph(profileId: string): Promise<CareerGraph> {
                 inferred_scope: null,
                 confidence: null,
                 missing_fields: null,
+                memory_status: null,
+                evidence_authority_scope: null,
             }));
         }
     } else {
@@ -370,6 +415,13 @@ export async function loadCareerGraph(profileId: string): Promise<CareerGraph> {
         evidenceSignalRows = (evidenceSignalsResult.data ?? []) as EvidenceSignalRow[];
     } else if (!isMissingRelationError(evidenceSignalsResult.error)) {
         throw new Error(`Failed to load evidence_signals for career graph: ${evidenceSignalsResult.error.message}`);
+    }
+
+    let careerGoalSignalRows: CareerGoalSignalRow[] = [];
+    if (!careerGoalSignalsResult.error) {
+        careerGoalSignalRows = (careerGoalSignalsResult.data ?? []) as CareerGoalSignalRow[];
+    } else if (!isMissingRelationError(careerGoalSignalsResult.error)) {
+        throw new Error(`Failed to load career_goal_signals for career graph: ${careerGoalSignalsResult.error.message}`);
     }
 
     const capabilityIds = capabilitiesData.map((capability) => capability.id);
@@ -407,6 +459,15 @@ export async function loadCareerGraph(profileId: string): Promise<CareerGraph> {
     const resolvedExperiences = (experiencesResult.data ?? []) as Experience[];
     const experiencesById = new Map<string, Experience>(resolvedExperiences.map((experience) => [experience.id, experience]));
 
+    const resolveMemoryStatus = (value: EvidencePieceRow["memory_status"]): EvidencePiece["memory_status"] => {
+        if (value === "candidate" || value === "confirmed" || value === "promoted" || value === "deprecated") return value;
+        return null;
+    };
+    const resolveEvidenceAuthorityScope = (value: EvidencePieceRow["evidence_authority_scope"]): EvidencePiece["evidence_authority_scope"] => {
+        if (value === "single_job" || value === "role_family" || value === "global_user") return value;
+        return null;
+    };
+
     const resolvedEvidencePieces: EvidencePiece[] = evidenceRows.map((row, index) => {
         const experience = experiencesById.get(row.experience_id);
         return {
@@ -435,6 +496,8 @@ export async function loadCareerGraph(profileId: string): Promise<CareerGraph> {
             inferred_scope: row.inferred_scope ?? null,
             confidence: row.confidence ?? null,
             missing_fields: row.missing_fields ?? null,
+            memory_status: resolveMemoryStatus(row.memory_status),
+            evidence_authority_scope: resolveEvidenceAuthorityScope(row.evidence_authority_scope),
             sort_order: index,
             created_at: career.created_at,
             updated_at: career.updated_at,
@@ -457,8 +520,53 @@ export async function loadCareerGraph(profileId: string): Promise<CareerGraph> {
         impact_signal: row.impact_signal,
         confidence_score: row.confidence_score,
         created_at: row.created_at,
-        updated_at: row.updated_at,
+            updated_at: row.updated_at,
     }));
+
+    const resolveGoalSignalType = (value: string): CareerGoalSignal["signal_type"] => {
+        if (value === "target_path" || value === "avoid_path" || value === "priority" || value === "constraint" || value === "preference") {
+            return value;
+        }
+        return "priority";
+    };
+    const resolveGoalSignalStrength = (value: string | null): CareerGoalSignal["strength"] => {
+        if (value === "low" || value === "medium" || value === "high") return value;
+        return "medium";
+    };
+    const resolveGoalSignalConfidence = (value: string | null): CareerGoalSignal["confidence"] => {
+        if (value === "explicit" || value === "inferred" || value === "weak_inferred") return value;
+        return "inferred";
+    };
+    const resolveGoalSignalSource = (value: string | null): CareerGoalSignal["source"] => {
+        if (value === "quick_check" || value === "user_answer" || value === "saved_role" || value === "cv_angle_selected" || value === "manual_profile") {
+            return value;
+        }
+        return "manual_profile";
+    };
+    const resolveGoalSignalStatus = (value: string | null): CareerGoalSignal["status"] => {
+        if (value === "active" || value === "stale" || value === "rejected") return value;
+        return "active";
+    };
+    const resolvedCareerGoalSignals: CareerGoalSignal[] = careerGoalSignalRows
+        .map((row) => {
+            const label = row.label?.trim() ?? "";
+            if (!label) return null;
+            return {
+                id: row.id,
+                profile_id: row.profile_id,
+                signal_type: resolveGoalSignalType(row.signal_type),
+                label,
+                description: row.description,
+                strength: resolveGoalSignalStrength(row.strength),
+                confidence: resolveGoalSignalConfidence(row.confidence),
+                source: resolveGoalSignalSource(row.source),
+                source_ref_id: row.source_ref_id,
+                status: resolveGoalSignalStatus(row.status),
+                created_at: row.created_at,
+                updated_at: row.updated_at,
+            } satisfies CareerGoalSignal;
+        })
+        .filter((row): row is CareerGoalSignal => row !== null);
 
     const resolvedCapabilities = capabilitiesData;
     const evidenceByExperience: Record<string, EvidencePiece[]> = {};
@@ -518,6 +626,7 @@ export async function loadCareerGraph(profileId: string): Promise<CareerGraph> {
         capabilities: resolvedCapabilities,
         capabilityEvidenceLinks: resolvedCapabilityEvidenceLinks,
         capabilitySignalLinks: resolvedCapabilitySignalLinks,
+        careerGoalSignals: resolvedCareerGoalSignals,
         evidenceByExperience,
         signalsByEvidencePiece,
         signalsByCapability,
