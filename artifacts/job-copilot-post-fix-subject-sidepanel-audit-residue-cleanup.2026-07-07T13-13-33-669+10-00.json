@@ -1,0 +1,80 @@
+﻿{
+    "decision_label":  "KEEP",
+    "mode":  "CLEANUP / JOB_COPILOT_POST_FIX_SUBJECT_SIDEPANEL_AUDIT_RESIDUE_ONLY",
+    "branch_head":  "master @ 0467769",
+    "task_type":  "cleanup",
+    "failing_layer":  "N/A - script surface cleanup only",
+    "first_drift_point":  "N/A - no product drift under repair",
+    "first_writable_fault":  "scripts/run-post-fix-subject-sidepanel-audit.ts as closed-chain active-surface residue",
+    "allowed_files":  [
+                          "scripts/run-post-fix-subject-sidepanel-audit.ts",
+                          "artifacts/tmp-post-fix-subject-sidepanel-audit-residue-cleanup-quarantine/run-post-fix-subject-sidepanel-audit.ts",
+                          "artifacts/job-copilot-post-fix-subject-sidepanel-audit-residue-cleanup.\u003ctimestamp\u003e.json"
+                      ],
+    "preconditions":  {
+                          "staged_changes":  "none",
+                          "package_manifests":  "clean",
+                          "committed_helpers":  "clean",
+                          "preserved_diagnostics":  "present and untouched before cleanup",
+                          "protected_deferred_files":  "present and untouched before cleanup",
+                          "preserved_layerc_compare":  "present and untouched before cleanup"
+                      },
+    "reference_check":  {
+                            "command":  "rg -n \"run-post-fix-subject-sidepanel-audit|post-fix-subject-sidepanel|post-fix subject sidepanel\" scripts lib app extensions package.json package-lock.json",
+                            "active_current_references_outside_target":  [
+
+                                                                         ],
+                            "self_reference_only":  true,
+                            "result":  "Only the target script referenced itself; no active current consumer outside the target script was found."
+                        },
+    "cleanup_action":  {
+                           "action":  "quarantine",
+                           "source_path":  "scripts/run-post-fix-subject-sidepanel-audit.ts",
+                           "quarantine_path":  "artifacts/tmp-post-fix-subject-sidepanel-audit-residue-cleanup-quarantine/run-post-fix-subject-sidepanel-audit.ts",
+                           "source_removed_from_active_surface":  true
+                       },
+    "preserved_status":  {
+                             "layerc_compare":  "scripts/run-layerc-deterministic-compare.ts present and untouched",
+                             "qca_probes":  [
+                                                "scripts/audit-job-copilot-qc-generic-probe.ts present and untouched",
+                                                "scripts/audit-job-copilot-quick-checks-owner-path.ts present and untouched"
+                                            ],
+                             "protected_deferred":  [
+                                                        "scripts/verify-role-frame-regression.ts present and untouched",
+                                                        "scripts/fixtures/role-frame-regression.seed.json present and untouched"
+                                                    ],
+                             "northstar_full_sidepanel":  [
+                                                              "scripts/audit-jobcopilot-northstar-rubric.ts present and untouched",
+                                                              "scripts/run-job-copilot-north-star-rubric-audit.ts present and untouched",
+                                                              "scripts/run-job-copilot-full-sidepanel-human-verdict-qa-audit.ts present and untouched"
+                                                          ],
+                             "jd_overlay":  [
+                                                "scripts/run-jd-role-structure-overlay-audit.ts present and untouched",
+                                                "scripts/fixtures/jd-role-structure-overlay-audit.seed.json present and untouched"
+                                            ],
+                             "layer1":  [
+                                            "scripts/run-layer1-primary-ownership-integrity-audit.ts present and untouched",
+                                            "scripts/run-layer1-role-reading-audit.ts present and untouched",
+                                            "scripts/run-broad-dominance-audit.ts present and untouched",
+                                            "scripts/run-true-broad-vs-fallback-audit.ts present and untouched",
+                                            "scripts/run-qc-role-subject-collapse-audit.ts present and untouched"
+                                        ]
+                         },
+    "out_of_scope_untouched":  [
+                                   "lib/career-engine/job-copilot/backend/insight-layer-role-context.ts clean",
+                                   "lib/career-engine/job-copilot/backend/role-context-profile.ts clean",
+                                   "package.json clean",
+                                   "package-lock.json clean",
+                                   "app/** untouched by this cleanup",
+                                   "extensions/job-copilot/** untouched by this cleanup",
+                                   "lib/career-engine/profile/resume-rewriter.ts untouched by this cleanup"
+                               ],
+    "post_cleanup":  {
+                         "target_active_path_exists":  false,
+                         "target_quarantine_path_exists":  true,
+                         "package_manifests":  "unchanged",
+                         "committed_helpers":  "still clean",
+                         "staged_changes":  "none"
+                     },
+    "recommended_next_action":  "Run a read-only audit on the next smallest remaining Job Copilot open boundary."
+}

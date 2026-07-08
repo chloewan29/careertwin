@@ -1,0 +1,26 @@
+﻿{
+    "generated_at":  "2026-07-07T15:06:18.9133571+10:00",
+    "decision_label":  "KEEP",
+    "mode":  "CLEANUP / JOB_COPILOT_QC_ANSWER_FAMILY_RESIDUE_ONLY",
+    "branch":  "master",
+    "head":  "0467769",
+    "current_task_type":  "cleanup",
+    "cleanup_action":  "quarantine",
+    "quarantine_path":  "artifacts/tmp-qc-answer-family-residue-cleanup-quarantine",
+    "files_quarantined":  [
+                              "scripts/audit-job-copilot-qc-answer-downstream-trace.ts",
+                              "scripts/audit-job-copilot-qc-answer-ingestion-consistency.ts",
+                              "scripts/audit-job-copilot-qc-answer-residual-impact.ts",
+                              "scripts/audit-job-copilot-qc-decision-impact-residual-routing.ts"
+                          ],
+    "reference_check_result":  "No active current lib/app/extension/package/runtime consumer found. Non-blocking hits were target-family self-references, backlog/history docs, benchmark fixture text, and the already-classified bridge relationship into the quarantined decision-update family.",
+    "qc_decision_update_family_cleanup_status":  "still quarantined under artifacts/tmp-qc-decision-update-family-residue-cleanup-quarantine/",
+    "phase2c_sql_clean":  true,
+    "dump_score_cleanup_status":  "still quarantined only",
+    "preserved_diagnostics_status":  "present and untouched",
+    "protected_deferred_files_status":  "present and untouched",
+    "package_manifest_status":  "clean",
+    "committed_helper_cleanliness":  "clean for inspected helper boundaries",
+    "index_status_after_cleanup":  "no staged changes",
+    "recommended_next_action":  "Run one read-only inventory audit to identify the next smallest remaining Job Copilot script boundary after QC-answer cleanup."
+}

@@ -1,0 +1,43 @@
+{
+    "decision_label":  "KEEP",
+    "mode":  "CLEANUP / JOB_COPILOT_POST_POLISH_SIDEPANEL_HARNESS_RESIDUE_ONLY",
+    "branch_head":  "master @ 0467769",
+    "preconditions":  {
+                          "no_staged_changes":  true,
+                          "package_manifests_clean":  true,
+                          "committed_helper_boundaries_clean":  true,
+                          "preserved_qca_probes_present":  true,
+                          "protected_deferred_files_present":  true
+                      },
+    "cleanup_action":  {
+                           "action":  "quarantine",
+                           "quarantine_path":  "artifacts/tmp-post-polish-sidepanel-harness-residue-cleanup-quarantine/",
+                           "files_quarantined":  [
+                                                     "scripts/run-job-copilot-post-polish-full-sidepanel-qa-smoke.ts",
+                                                     "scripts/run-job-copilot-quick-checks-role-adds-product-polish.ts"
+                                                 ]
+                       },
+    "preserved_files":  {
+                            "north_star_rubric_audit":  "scripts/run-job-copilot-north-star-rubric-audit.ts present and untouched",
+                            "full_sidepanel_human_verdict_qa":  "scripts/run-job-copilot-full-sidepanel-human-verdict-qa-audit.ts present and untouched",
+                            "offline_northstar_rubric":  "scripts/audit-jobcopilot-northstar-rubric.ts present and untouched",
+                            "qca_generic_probe":  "scripts/audit-job-copilot-qc-generic-probe.ts present and untouched",
+                            "qca_owner_path":  "scripts/audit-job-copilot-quick-checks-owner-path.ts present and untouched",
+                            "role_frame_regression_verifier":  "scripts/verify-role-frame-regression.ts present and untouched",
+                            "role_frame_regression_fixture":  "scripts/fixtures/role-frame-regression.seed.json present and untouched",
+                            "prior_frame_first_quarantine":  "artifacts/tmp-frame-first-integration-script-drop-quarantine/audit-frame-first-integration.ts present and untouched"
+                        },
+    "exclusions_honored":  true,
+    "package_manifest_status":  "package.json and package-lock.json unchanged",
+    "committed_helper_cleanliness":  {
+                                         "insight_layer_role_context":  "clean",
+                                         "role_context_profile":  "clean"
+                                     },
+    "post_cleanup_status":  {
+                                "cached_diff_clean":  true,
+                                "quarantine_folder_present":  true,
+                                "quarantined_files_present":  true,
+                                "active_script_surface_removed":  true
+                            },
+    "recommended_next_action":  "Run a read-only audit on the remaining north-star harness overlap, with scripts/audit-jobcopilot-northstar-rubric.ts as the likely next smallest ambiguity boundary."
+}
