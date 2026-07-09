@@ -131,7 +131,7 @@ function inferDomainTokens(jd: ParsedJobDescription): Set<string> {
     const corpus = [
         jd.raw_text,
         jd.target_title ?? "",
-        jd.normalized_title?.family ?? "",
+        jd.normalized_title?.function ?? "",
         jd.normalized_title?.function ?? "",
     ].join(" ");
 
@@ -146,10 +146,11 @@ function inferDomainTokens(jd: ParsedJobDescription): Set<string> {
 
 function extractJdSignals(jd: ParsedJobDescription): JdSignals {
     const targetTitleTokens = buildTokenSet([jd.target_title ?? ""]);
+    const expectedSeniority = jd.seniority_level ?? jd.normalized_title?.level ?? "";
     const roleFamilyTokens = buildTokenSet([
-        jd.normalized_title?.family ?? "",
         jd.normalized_title?.function ?? "",
-        jd.normalized_title?.seniority ?? "",
+        jd.normalized_title?.function ?? "",
+        expectedSeniority,
     ]);
     const requiredSkillTokens = buildTokenSet(jd.required_skills.map((s) => s.normalized));
     const preferredSkillTokens = buildTokenSet(jd.preferred_skills.map((s) => s.normalized));
@@ -248,13 +249,13 @@ function buildTailoredSummaryFromExperience(
     jd: ParsedJobDescription
 ): string {
     const yearsText = resume.years_experience != null ? `${resume.years_experience}+ years` : "several years";
-    const targetTitle = sanitizeLine(jd.target_title ?? "") || sanitizeLine(jd.normalized_title?.family ?? "");
+    const targetTitle = sanitizeLine(jd.target_title ?? "") || sanitizeLine(jd.normalized_title?.function ?? "");
     const profilePositioning = sanitizeLine(resume.current_title ?? "") || "Professional";
 
     const jdCorpus = [
         jd.raw_text ?? "",
         jd.target_title ?? "",
-        jd.normalized_title?.family ?? "",
+        jd.normalized_title?.function ?? "",
         jd.normalized_title?.function ?? "",
         ...(jd.responsibilities ?? []),
     ].join(" ").toLowerCase();
