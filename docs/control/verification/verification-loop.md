@@ -1,6 +1,10 @@
 # Verification Loop
 
-Canonical entrypoint:
+Document role: **detailed mechanics/reference** for the full baseline verify pipeline.
+This is not the default day-to-day operating policy.
+For current defaults and escalation rules, use `AGENTS.md` and `docs/verify-strategy.md`.
+
+Level 3 entrypoint (when escalation/full baseline verify is required):
 
 ```bash
 npm run verify
@@ -16,7 +20,8 @@ Current ordered steps:
 3. deterministic fixture test (`tests/test-matching-fixtures.ts`)
 4. JD extraction verification (`scripts/verify-jd-extraction.ts`)
 5. matcher verification + regression diff (`scripts/verify-matcher.ts`)
-6. extension lifecycle verification (`scripts/verify-extension-lifecycle.ts`)
+6. tailored CV quality verification (`scripts/run-tailored-cv-bullet-rewrite-audit.ts --mode replay --replayFixture scripts/fixtures/tailored-cv-quality-replay.seed.json --enforce`)
+7. extension lifecycle verification (`scripts/verify-extension-lifecycle.ts`)
 
 If a step fails, the run stops on that first failing step.
 
@@ -35,6 +40,28 @@ If a step fails, the run stops on that first failing step.
   - explicit high-fit suppression / low-fit inflation case flags
   - regression-style margin checks
   - founder-readable regression diff fields for severity/highlighted risks/worst score drops
+- tailored CV quality:
+  - canonical verify runs in replay mode by default for deterministic/offline-friendly execution:
+    - `--mode replay --replayFixture scripts/fixtures/tailored-cv-quality-replay.seed.json`
+  - deterministic multi-case replay over representative requirement profiles (adjacent + different roles)
+  - enforced quality gate for average quality score and case-mix coverage
+  - explicit failure-mode enforcement for:
+    - generic rewrite
+    - fake tailoring
+    - ownership inflation
+    - weak job alignment
+    - evidence mismatch (hallucination + meaning drift)
+    - weak differentiation on adjacent-role pairs
+  - deterministic adversarial fixtures that explicitly trigger each enforced failure mode and assert detection
+  - fixture-to-mode mapping and per-fixture detection results are emitted in artifact output
+  - enforce criteria include adversarial coverage, detection-completeness, and deterministic fixture evaluation
+  - artifact preflight includes resolved execution mode and replay fixture metadata for founder clarity
+  - founder-readable artifact section with weakest-case reasons and recommended actions
+  - deterministic hash-stability guard
+  - live mode (`--mode live`) now builds selection inputs through canonical selector path (`buildTailoringPlanForCv`)
+  - live mode applies deterministic rolling recent-selection context across representative cases to exercise reuse suppression
+  - pair differentiation scoring in live mode blends shared-evidence similarity with full-output similarity when overlap is moderate, reducing avoidable false generic/fake-tailoring flags
+  - mixed-pair differentiation scoring now avoids over-penalizing cross-role pairs that still show meaningful rewrite delta, reducing non-actionable telemetry noise
 - extension lifecycle:
   - bounded terminal timeout checks for analysis and resume download
   - stale-response and in-flight guard checks
@@ -49,7 +76,9 @@ If a step fails, the run stops on that first failing step.
 ## Not yet covered
 
 - Full-repo TypeScript compile gate (`npx tsc --noEmit`) is not the current verify compile step.
-- Live Supabase replay paths are not included in this deterministic baseline loop.
+- Live Supabase CV-generation replay is no longer part of default verify; run CV audit in `--mode live` when live-path sanity is needed.
+  - recommended command:
+    - `npx tsx scripts/run-tailored-cv-bullet-rewrite-audit.ts --mode live --out artifacts/tailored-cv-bullet-rewrite-audit-v1.live.json`
 - End-to-end browser automation for extension UI is not yet included.
 
 ## Fixtures
@@ -58,6 +87,8 @@ If a step fails, the run stops on that first failing step.
   - `scripts/fixtures/verify-jd-extraction.fixture.json`
 - matcher benchmark fixture:
   - `scripts/fixtures/human-alignment-benchmark.seed.json`
+- tailored CV replay fixture:
+  - `scripts/fixtures/tailored-cv-quality-replay.seed.json`
 
 ## Artifacts
 
@@ -76,6 +107,8 @@ Step artifacts include:
 - `artifacts/matcher-summary.json`
 - `artifacts/matcher-details.json`
 - `artifacts/matcher-regression-diff.json`
+- `artifacts/tailored-cv-bullet-rewrite-audit-v1.verify.json`
+- `artifacts/tailored-cv-quality-step.json`
 - `artifacts/extension-lifecycle-summary.json`
 - `artifacts/extension-lifecycle-details.json`
 
@@ -84,10 +117,13 @@ Top-level verify summary fields now include:
 - `first_failing_step`
 - `core_path_ts_debt_count`
 - `matcher_regression_status`
+- `tailored_cv_quality_status`
 - `extension_lifecycle_regression_status`
 - `recommended_next_action`
 
-## Agent usage during repair work
+## Agent usage during Level 3 repair work
+
+When Level 3 escalation is justified per `docs/verify-strategy.md`:
 
 1. Make the smallest viable change.
 2. Run `npm run verify`.

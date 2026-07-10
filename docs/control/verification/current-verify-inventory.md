@@ -1,0 +1,25 @@
+# Current Verify Inventory
+
+Document role: **inventory/reference** for verify-related commands and scripts.
+This doc is not the default daily operating policy.
+For current operating policy, use `AGENTS.md` and `docs/verify-strategy.md`.
+
+| Verify Item | Current Usage | Target Level / Role | Notes |
+|---|---|---|---|
+| `npm run verify` (`scripts/verify.ts`) | Canonical full-pipeline verification entrypoint; runs first-failure loop and writes `artifacts/verify-summary.json` plus step artifacts. | Level 3 = Full Baseline Verify | Includes compile, TS debt, fixture test, JD extraction, matcher, tailored CV replay quality, extension lifecycle. Not default for routine iteration. |
+| `scripts/verify-typecheck-debt.ts` | Executed inside `npm run verify` as `typescript_debt_audit`. | Level 2 = Layer Verify | Full `tsc --noEmit` debt audit with core vs legacy categorization; writes summary/details/delta artifacts. |
+| `tests/test-matching-fixtures.ts` | Default Level 1 entry via `npm run verify:daily`; also executed inside `npm run verify` as `tests`. | Level 1 = Local Verify | Deterministic fixture assertions for legacy matcher/scoring path. |
+| `scripts/verify-jd-extraction.ts` | Executed inside `npm run verify` as `jd_extraction`. | Level 2 = Layer Verify | Uses `scripts/fixtures/verify-jd-extraction.fixture.json`; writes JD extraction summary/details artifacts. |
+| `scripts/verify-matcher.ts` | Executed inside `npm run verify` as `matcher`. | Level 2 = Layer Verify | Uses `scripts/fixtures/human-alignment-benchmark.seed.json` and `scripts/fixtures/verify-matcher-baseline.json`; writes summary/details/regression diff. |
+| `scripts/run-tailored-cv-bullet-rewrite-audit.ts` (`--mode replay --enforce` in verify) | Executed inside `npm run verify` as tailored CV quality gate. | Level 2 = Layer Verify | Default verify path writes `artifacts/tailored-cv-bullet-rewrite-audit-v1.verify.json`. |
+| `scripts/verify-extension-lifecycle.ts` | Executed inside `npm run verify` as `extension_lifecycle`. | Level 2 = Layer Verify | VM harness for extension sidepanel terminal-state behavior; writes summary/details artifacts. |
+| `npm run verify:domain-ontology` (`scripts/verify-domain-ontology.ts`) | Available npm command; not in `npm run verify` chain. | Level 1 = Local Verify | Config integrity checks for domain ontology map/skeleton consistency. |
+| `npm run verify:role-frame-regression` (`scripts/verify-role-frame-regression.ts`) | Available npm command; not in `npm run verify` chain. | Level 2 = Layer Verify | Role-context arbitration smoke check against `scripts/fixtures/role-frame-regression.seed.json`; outputs `artifacts/role-frame-regression-smoke.json`. |
+| `scripts/human-alignment-benchmark.ts` (`npm run debug:human-alignment-benchmark`) | Manual benchmark command; not part of verify chain. | Level 3 = Full Baseline Verify | Uses `scripts/fixtures/human-alignment-benchmark.seed.json`; compares baseline v1/before v2/improved v2 metrics. |
+| `scripts/artifact-residue/tmp-run-career-verdict-fidelity-audit-20.ts` | Manual/ad hoc 20-case Layer 1 fidelity replay helper (not npm command). | Level 3 = Full Baseline Verify | Produces `artifacts/layer1-career-verdict-fidelity-audit-20case.2026-04-01.json`. |
+| Layer-1 audit scripts (`scripts/run-layer1-role-reading-audit.ts`, `run-layer1-primary-ownership-integrity-audit.ts`, `run-jd-role-structure-overlay-audit.ts`, `run-broad-dominance-audit.ts`, `run-true-broad-vs-fallback-audit.ts`, `run-qc-role-subject-collapse-audit.ts`) | Manual/ad hoc audits; not in canonical verify chain. | Level 2 = Layer Verify | These scripts default to writing `artifacts/*` JSON/MD outputs for Layer 1 diagnostics/comparisons. |
+| Benchmark/audit aggregators (`scripts/run-match-alignment-audit.ts`, `run-job-signal-quality-audit.ts`, `run-capability-differentiation-audit.ts`, `run-mvp-audits.ts`) | Manual/ad hoc benchmark runs; not in canonical verify chain. | Level 3 = Full Baseline Verify | Build benchmark summaries/details from human-alignment fixture and related audits. |
+| Summarize helpers (`scripts/artifact-residue/tmp-summarize-pre-center-scaffold-repro.js` and similar `scripts/artifact-residue/tmp-summarize-*.js`) | Manual/ad hoc summarization of prior audit artifacts. | Level 2 = Layer Verify | Usage frequency is Unknown; used to compute before/after deltas and regression counts from existing artifact files. |
+| `docs/control/verification/verification-loop.md` | Detailed mechanics/reference for the full baseline verify pipeline. | Mechanics reference (Level 3) | Documents command order, coverage, fixtures, and artifact outputs. |
+| `docs/verify-strategy.md` | Current strategy policy doc defining Level 1/2/3 intent and escalation. | Policy source (all levels) | Primary verification strategy source for default operating behavior. |
+
