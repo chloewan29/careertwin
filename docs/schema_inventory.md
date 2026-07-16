@@ -21,6 +21,7 @@ This inventory lists important persisted tables and core exported data types cur
 | `job_matches` | Persisted fit result between a career and a job. | `id`, `career_id`, `job_id`, `match_score`, `gap_summary`, `matched_capabilities`, `status` | Matching Engine | core |
 | `job_snapshots` | Raw extension job page snapshots and normalized JD text. | `job_snapshot_id`, `source_platform`, `job_url`, `job_description_raw`, `job_description_normalized`, `content_hash`, `job_signals_json` | Copilot Layer | core |
 | `user_job_interactions` | Source-of-truth pipeline events from extension job views/applications. | `interaction_id`, `profile_id`, `job_snapshot_id`, `pipeline_status`, `match_score`, `verdict`, `selected_evidence_ids` | Copilot Layer | core |
+| `resume_copilot_outcome_events` | Post-launch Resume Copilot event + feedback telemetry linked to profile/job/resume generation context. | `event_id`, `profile_id`, `event_name`, `job_id`, `job_snapshot_id`, `job_match_id`, `resume_generation_instance_id`, `feedback_credible`, `feedback_relevant`, `feedback_use_to_apply`, `payload` | Copilot Layer | core |
 
 ### Supporting/compatibility tables
 
@@ -94,4 +95,3 @@ This inventory lists important persisted tables and core exported data types cur
 
 - `career_data`, `job_descriptions`, `match_results` appear to be legacy MVP artifacts (not used in active runtime queries).
 - `tailored_resumes` is defined in SQL design scripts but is not currently used by active app code.
-
