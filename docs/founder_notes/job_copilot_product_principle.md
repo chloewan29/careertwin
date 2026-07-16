@@ -43,6 +43,9 @@ The system should help users:
 - see patterns in their career
 - tell a clearer story about themselves
 
+CareerTwin should help users discover the narrative of their career,
+not just describe past experiences.
+
 ## 5) Phase 1 principle
 
 Phase 1 should support the full job-seeking flow as much as practical:
