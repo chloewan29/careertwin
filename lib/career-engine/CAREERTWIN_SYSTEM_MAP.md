@@ -137,7 +137,7 @@ user outputs
 resume rewrite
 career strategy
 role recommendation
-CareerTwin 系统图（真实版本）
+CareerTwin system map (current implemented surfaces)
                       UI Layer
               (review workspace / jobs)
 
@@ -163,4 +163,67 @@ CareerTwin 系统图（真实版本）
 
                Career Memory
                  evidence
-                 
+
+Note:
+- The compact map above is the closest view of current implemented surfaces.
+- The expanded map below is a target / product-direction view.
+- It includes roadmap-oriented surfaces and should not be read as fully implemented today.
+
+CareerTwin target system map (conceptual north-star)
+
+
+                       ┌─────────────────────────────┐
+                    │        Career Copilot       │
+                    │  (User Scenarios Layer)    │
+                    │                             │
+                    │  Job Hunting                │
+                    │  Career Transition          │
+                    │  Promotion Strategy         │
+                    │  Onboarding Intelligence    │
+                    │  Capability Gap Detection   │
+                    └──────────────▲──────────────┘
+                                   │
+                                   │
+                    ┌──────────────┴──────────────┐
+                    │       Job Intelligence      │
+                    │                             │
+                    │  Job Fetch (Adzuna)         │
+                    │  Job Deduplication          │
+                    │  JD Parsing                 │
+                    │  Job Signals Extraction     │
+                    │                             │
+                    │  target_title               │
+                    │  role_family                │
+                    │  required_skills            │
+                    │  responsibilities           │
+                    │  domains                    │
+                    └──────────────▲──────────────┘
+                                   │
+                                   │
+                    ┌──────────────┴──────────────┐
+                    │       Capability Engine     │
+                    │                             │
+                    │  Evidence → Capability      │
+                    │  Capability Strength        │
+                    │  Capability Graph           │
+                    │                             │
+                    │  Program Leadership         │
+                    │  Analytics Strategy         │
+                    │  Stakeholder Management     │
+                    │  Data Product Thinking      │
+                    └──────────────▲──────────────┘
+                                   │
+                                   │
+                    ┌──────────────┴──────────────┐
+                    │     Career Memory Engine    │
+                    │                             │
+                    │  Career                    │
+                    │  Experiences               │
+                    │  EvidencePieces            │
+                    │                             │
+                    │  "Led Power BI transformation" 
+                    │  "Built analytics framework"
+                    │  "Delivered reporting strategy"
+                    │                             │
+                    │  (Career Replica)          │
+                    └─────────────────────────────┘              
