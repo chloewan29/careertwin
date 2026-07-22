@@ -1,0 +1,332 @@
+{
+    "version":  1,
+    "description":  "Human verdict gold benchmark for Job Copilot sidepanel quality.",
+    "cases":  [
+                  {
+                      "case_id":  "15454",
+                      "role_summary":  "Senior Advanced Analytics Analyst | Commonwealth Bank",
+                      "human_verdict":  {
+                                            "career_verdict":  {
+                                                                   "hiring_focus":  "Advanced analytics delivery in financial-crime operations: analytical scripting + data visualization + domain-context decision support.",
+                                                                   "for_you":  "Strong analytics execution signal, but role-fit credibility depends on proving financial-crime domain depth and regulated-context POC impact.",
+                                                                   "must_not_say":  [
+                                                                                        "Do not claim clear domain fit from generic leadership or stakeholder narrative alone.",
+                                                                                        "Do not frame team-leadership posture as the main proof for analytical scripting buying points."
+                                                                                    ]
+                                                               },
+                                            "why_you":  {
+                                                            "slot0":  {
+                                                                          "expected_evidence_id":  "e0a3422e-f08d-4c72-8e72-a35f09171f70",
+                                                                          "buying_point":  "bp_advanced_analytics_proficiency_analytical",
+                                                                          "human_reason":  "Adjudicated from frozen contract: this candidate carries direct + medium + coverage-eligible role-conditioned proof for bp_advanced_analytics_proficiency_analytical, while competing leadership/translation winners are adjacent + none + ineligible.",
+                                                                          "unacceptable_patterns":  [
+                                                                                                        "generic_leadership_evidence_promoted",
+                                                                                                        "adjacent_no_coverage_evidence_promoted",
+                                                                                                        "slot0_wrong_evidence"
+                                                                                                    ]
+                                                                      },
+                                                            "slot1":  {
+                                                                          "expected_evidence_id":  "TBD",
+                                                                          "expected_evidence_id_status":  "intentional_no_proof_gap",
+                                                                          "buying_point":  "bp_financial_crime_domain_knowledge",
+                                                                          "human_reason":  "Snippet adjudication confirms no defensible slot1 winner for bp_financial_crime_domain_knowledge: top candidates c6f86bd1..., 3acf0174..., and 58636254... are all adjacent + coverage none + low strength, with snippets focused on dashboards/team leadership/strategy budget rather than explicit financial-crime domain proof.",
+                                                                          "unacceptable_patterns":  [
+                                                                                                        "slot0_slot1_redundancy",
+                                                                                                        "generic_leadership_evidence_promoted",
+                                                                                                        "contextual_evidence_promoted"
+                                                                                                    ]
+                                                                      }
+                                                        },
+                                            "biggest_risk":  {
+                                                                 "expected_risk_type":  "weakly_proven",
+                                                                 "human_reason":  "Financial-crime domain expertise and regulated-context application are not strongly evidenced by the current winning cards."
+                                                             },
+                                            "quick_checks":  {
+                                                                 "expected_question_intent":  "Validate domain-depth proof: recent financial-crime use cases, decision impact, and regulated delivery constraints.",
+                                                                 "human_reason":  "Highest-information uncertainty is domain credibility, not generic analytics seniority."
+                                                             },
+                                            "what_this_role_adds":  {
+                                                                        "expected_angle":  "Regulated-domain analytics ownership at higher consequence and governance depth.",
+                                                                        "human_reason":  "Role adds domain-specialized career capital beyond broad analytics leadership narrative."
+                                                                    },
+                                            "cta":  {
+                                                        "expected_angle":  "Calibrate with domain-proof examples first, then tailor CV around scripting + financial-crime outcomes.",
+                                                        "human_reason":  "Without domain proof, confidence should remain calibrated and evidence-first."
+                                                    },
+                                            "cross_surface":  {
+                                                                  "expected_thesis":  "Strong analytics operator with incomplete financial-crime proof; advance only with domain-calibration evidence.",
+                                                                  "human_reason":  "All surfaces should converge on domain-proof gap rather than generic leadership strength."
+                                                              }
+                                        }
+                  },
+                  {
+                      "case_id":  "15089",
+                      "role_summary":  "Advanced Analytics Manager | Commonwealth Bank",
+                      "human_verdict":  {
+                                            "career_verdict":  {
+                                                                   "hiring_focus":  "AI-fluent analytics manager who can build workflow automation and turn insights into commercial decisions.",
+                                                                   "for_you":  "Good fit where AI-enabled analytics execution and strategy ownership are both valued.",
+                                                                   "must_not_say":  [
+                                                                                        "Do not downplay AI-workflow proof by promoting adjacent no-coverage leadership evidence above direct covered evidence."
+                                                                                    ]
+                                                               },
+                                            "why_you":  {
+                                                            "slot0":  {
+                                                                          "expected_evidence_id":  "35913a91-e2c2-4a5b-8e1f-3de65172b1c2",
+                                                                          "buying_point":  "bp_ai_workflow_building",
+                                                                          "human_reason":  "Direct, covered, and role-native proof for AI workflow building; should remain the slot-0 anchor.",
+                                                                          "unacceptable_patterns":  [
+                                                                                                        "adjacent_no_coverage_evidence_promoted"
+                                                                                                    ]
+                                                                      },
+                                                            "slot1":  {
+                                                                          "expected_evidence_id":  "58636254-7f9e-40af-aa1c-dee1ddb30bb1",
+                                                                          "buying_point":  "bp_analytics_strategy_ownership",
+                                                                          "human_reason":  "Strong complementary strategy-ownership proof that supports managerial scope.",
+                                                                          "unacceptable_patterns":  [
+                                                                                                        "slot0_slot1_redundancy"
+                                                                                                    ]
+                                                                      }
+                                                        },
+                                            "biggest_risk":  {
+                                                                 "expected_risk_type":  "weakly_proven",
+                                                                 "human_reason":  "Primary residual risk is depth in retention/In-Life domain specifics, not analytics leadership baseline."
+                                                             },
+                                            "quick_checks":  {
+                                                                 "expected_question_intent":  "Probe retention-domain depth and production AI workflow ownership details.",
+                                                                 "human_reason":  "Checks should reduce domain uncertainty while preserving strong overall fit."
+                                                             },
+                                            "what_this_role_adds":  {
+                                                                        "expected_angle":  "Scale AI-enabled analytics leadership in a commercial retention portfolio.",
+                                                                        "human_reason":  "Role adds portfolio-level operating scope and decision leverage."
+                                                                    },
+                                            "cta":  {
+                                                        "expected_angle":  "Apply confidently with tailored examples linking AI workflows to retention/commercial outcomes.",
+                                                        "human_reason":  "This is the current positive reference case and should remain user-safe."
+                                                    },
+                                            "cross_surface":  {
+                                                                  "expected_thesis":  "Credible AI-workflow and analytics-strategy leader with manageable domain-specific calibration risk.",
+                                                                  "human_reason":  "Verdict, why-you, risk, and CTA should stay coherently pro-apply with calibrated caveats."
+                                                              }
+                                        }
+                  },
+                  {
+                      "case_id":  "14609",
+                      "role_summary":  "Senior Manager, Data Management and Platform - ONRSR | Underwood Executive",
+                      "human_verdict":  {
+                                            "career_verdict":  {
+                                                                   "hiring_focus":  "Data-platform engineering ownership with governance discipline and stakeholder leadership in regulated-like environments.",
+                                                                   "for_you":  "Strong technical-leadership fit if you can evidence governance and regulated-context translation.",
+                                                                   "must_not_say":  [
+                                                                                        "Do not let off-lane covered/contextual signals displace stronger active-lane platform proof."
+                                                                                    ]
+                                                               },
+                                            "why_you":  {
+                                                            "slot0":  {
+                                                                          "expected_evidence_id":  "236a4923-ccb1-40af-a5a8-92206ad86414",
+                                                                          "buying_point":  "bp_data_platform_engineering",
+                                                                          "human_reason":  "Best control-safe explicit proof for platform/data-engineering ownership.",
+                                                                          "unacceptable_patterns":  [
+                                                                                                        "evidence_text_source_overtrusted",
+                                                                                                        "slot0_wrong_evidence"
+                                                                                                    ]
+                                                                      },
+                                                            "slot1":  {
+                                                                          "expected_evidence_id":  "4f8d05cd-418d-4737-8499-7044b7319f6f",
+                                                                          "buying_point":  "bp_reporting_commercial_intelligence",
+                                                                          "human_reason":  "Secondary lane should demonstrate reporting/commercial-intelligence support more explicitly than leadership-posture complements.",
+                                                                          "unacceptable_patterns":  [
+                                                                                                        "slot1_wrong_evidence",
+                                                                                                        "slot0_slot1_redundancy"
+                                                                                                    ]
+                                                                      }
+                                                        },
+                                            "biggest_risk":  {
+                                                                 "expected_risk_type":  "weakly_proven",
+                                                                 "human_reason":  "Residual risk is regulated/government transferability depth, not core platform capability."
+                                                             },
+                                            "quick_checks":  {
+                                                                 "expected_question_intent":  "Verify governance implementation details, regulatory context depth, and platform build-vs-run balance.",
+                                                                 "human_reason":  "These checks target the real adoption blocker in an otherwise credible profile."
+                                                             },
+                                            "what_this_role_adds":  {
+                                                                        "expected_angle":  "Regulatory-grade platform leadership and governance credibility.",
+                                                                        "human_reason":  "Role adds high-trust public-interest operating context and architecture ownership depth."
+                                                                    },
+                                            "cta":  {
+                                                        "expected_angle":  "Apply with calibrated confidence; emphasize platform delivery and governance evidence in regulated settings.",
+                                                        "human_reason":  "Case is usable but watchlist; preserve control behavior."
+                                                    },
+                                            "cross_surface":  {
+                                                                  "expected_thesis":  "Technically credible platform leader with manageable regulated-context calibration gap.",
+                                                                  "human_reason":  "Cross-surface story should remain coherent and non-generic."
+                                                              }
+                                        }
+                  },
+                  {
+                      "case_id":  "13260",
+                      "role_summary":  "Senior Marketing Data Analyst",
+                      "human_verdict":  {
+                                            "career_verdict":  {
+                                                                   "hiring_focus":  "Forward-looking marketing insight leadership: experimentation, uncertainty handling, and pre-launch decision guidance.",
+                                                                   "for_you":  "Potential fit if you can prove experimentation rigor and influence on direction before execution.",
+                                                                   "must_not_say":  [
+                                                                                        "Do not claim strong fit from generic leadership translation evidence.",
+                                                                                        "Do not treat broad analytics posture as sufficient proof of experimentation ownership."
+                                                                                    ]
+                                                               },
+                                            "why_you":  {
+                                                            "slot0":  {
+                                                                          "expected_evidence_id":  "TBD",
+                                                                          "expected_evidence_id_status":  "intentional_no_proof_gap",
+                                                                          "buying_point":  "bp_cro_experimentation_ownership",
+                                                                          "human_reason":  "Snippet adjudication confirms no defensible slot0 winner for bp_cro_experimentation_ownership: candidate set (3acf0174..., 58636254..., 236a4923..., 8c499b09...) is uniformly adjacent + coverage none + low strength; snippets show leadership/translation/reporting posture, not direct experimentation ownership proof.",
+                                                                          "unacceptable_patterns":  [
+                                                                                                        "generic_leadership_evidence_promoted",
+                                                                                                        "adjacent_no_coverage_evidence_promoted",
+                                                                                                        "slot0_wrong_evidence"
+                                                                                                    ]
+                                                                      },
+                                                            "slot1":  {
+                                                                          "expected_evidence_id":  "236a4923-ccb1-40af-a5a8-92206ad86414",
+                                                                          "buying_point":  "bp_reporting_commercial_intelligence",
+                                                                          "human_reason":  "Secondary proof should evidence concrete insight/reporting utility rather than repeating leadership translation posture.",
+                                                                          "unacceptable_patterns":  [
+                                                                                                        "slot1_wrong_evidence",
+                                                                                                        "slot0_slot1_redundancy",
+                                                                                                        "generic_leadership_evidence_promoted"
+                                                                                                    ]
+                                                                      }
+                                                        },
+                                            "biggest_risk":  {
+                                                                 "expected_risk_type":  "missing",
+                                                                 "human_reason":  "Strong, explicit experimentation-modelling ownership is still missing in selected evidence narrative."
+                                                             },
+                                            "quick_checks":  {
+                                                                 "expected_question_intent":  "Elicit concrete experimentation design examples, hypothesis framing, and decision-impact outcomes.",
+                                                                 "human_reason":  "This is the highest-information gap for hiring confidence."
+                                                             },
+                                            "what_this_role_adds":  {
+                                                                        "expected_angle":  "Move from reporting execution toward upstream strategy-shaping and experimentation ownership.",
+                                                                        "human_reason":  "Career capital comes from forward-looking influence, not generic leadership."
+                                                                    },
+                                            "cta":  {
+                                                        "expected_angle":  "Calibrate first; tailor CV to experimentation and uncertainty-to-decision stories before strong apply posture.",
+                                                        "human_reason":  "Current red status requires proof-gap closure before assertive positioning."
+                                                    },
+                                            "cross_surface":  {
+                                                                  "expected_thesis":  "Promising analytics strategist, but experimentation ownership proof must be strengthened to be hiring-side credible.",
+                                                                  "human_reason":  "All surfaces should converge on this proof gap."
+                                                              }
+                                        }
+                  },
+                  {
+                      "case_id":  "12941",
+                      "role_summary":  "Marketing Operations \u0026 Analytics Manager | Re-Leased",
+                      "human_verdict":  {
+                                            "career_verdict":  {
+                                                                   "hiring_focus":  "Own marketing ops systems and AI-enabled GTM workflows with measurable commercial impact.",
+                                                                   "for_you":  "Good direction if you can demonstrate production AI workflow ownership and platform-operating depth.",
+                                                                   "must_not_say":  [
+                                                                                        "Do not let generic leadership slot-1 evidence replace explicit marketing-ops systems proof."
+                                                                                    ]
+                                                               },
+                                            "why_you":  {
+                                                            "slot0":  {
+                                                                          "expected_evidence_id":  "35913a91-e2c2-4a5b-8e1f-3de65172b1c2",
+                                                                          "buying_point":  "bp_ai_workflow_building",
+                                                                          "human_reason":  "Slot-0 should stay anchored on direct AI workflow proof.",
+                                                                          "unacceptable_patterns":  [
+                                                                                                        "adjacent_no_coverage_evidence_promoted"
+                                                                                                    ]
+                                                                      },
+                                                            "slot1":  {
+                                                                          "expected_evidence_id":  "58636254-7f9e-40af-aa1c-dee1ddb30bb1",
+                                                                          "buying_point":  "bp_marketing_ops_systems_ownership",
+                                                                          "human_reason":  "Slot-1 should add systems/ownership proof and avoid generic leadership translation duplication.",
+                                                                          "unacceptable_patterns":  [
+                                                                                                        "generic_leadership_evidence_promoted",
+                                                                                                        "slot1_wrong_evidence",
+                                                                                                        "slot0_slot1_redundancy"
+                                                                                                    ]
+                                                                      }
+                                                        },
+                                            "biggest_risk":  {
+                                                                 "expected_risk_type":  "weakly_proven",
+                                                                 "human_reason":  "AI workflow depth and 0-to-1 builder evidence are plausible but not yet deeply proven."
+                                                             },
+                                            "quick_checks":  {
+                                                                 "expected_question_intent":  "Validate AI workflow toolchain depth (Claude/Clay/automation), HubSpot ownership depth, and build-from-scratch examples.",
+                                                                 "human_reason":  "These checks convert a yellow watchlist into a safe hiring decision."
+                                                             },
+                                            "what_this_role_adds":  {
+                                                                        "expected_angle":  "Operational ownership across GTM systems with AI-enabled execution leverage.",
+                                                                        "human_reason":  "Role adds builder-level operating cadence, not only analytics advisory posture."
+                                                                    },
+                                            "cta":  {
+                                                        "expected_angle":  "Apply with calibrated confidence and tailor to AI workflow delivery + marketing systems ownership outcomes.",
+                                                        "human_reason":  "Case is close to green but needs secondary-proof precision."
+                                                    },
+                                            "cross_surface":  {
+                                                                  "expected_thesis":  "AI-enabled ops/analytics owner with credible upside if systems-ownership proof is made explicit.",
+                                                                  "human_reason":  "Cross-surface narrative should avoid drifting into generic leadership only."
+                                                              }
+                                        }
+                  },
+                  {
+                      "case_id":  "12879",
+                      "role_summary":  "Marketing Operations \u0026 Analytics Manager | Re-Leased",
+                      "human_verdict":  {
+                                            "career_verdict":  {
+                                                                   "hiring_focus":  "Marketing operations and analytics manager with explicit systems ownership plus strategy execution accountability.",
+                                                                   "for_you":  "Potential fit if evidence demonstrates true operations ownership rather than strategy-posture-only proof.",
+                                                                   "must_not_say":  [
+                                                                                        "Do not present strategy posture as primary proof when operations ownership is the active buying point.",
+                                                                                        "Do not allow adjacent/no-coverage leadership evidence to dominate slot decisions."
+                                                                                    ]
+                                                               },
+                                            "why_you":  {
+                                                            "slot0":  {
+                                                                          "expected_evidence_id":  "58636254-7f9e-40af-aa1c-dee1ddb30bb1",
+                                                                          "buying_point":  "bp_marketing_ops_systems_ownership",
+                                                                          "human_reason":  "Among available selected evidence, this provides the strongest ownership narrative for operations/systems lane versus adjacent strategy-only options.",
+                                                                          "unacceptable_patterns":  [
+                                                                                                        "slot0_wrong_evidence",
+                                                                                                        "generic_leadership_evidence_promoted",
+                                                                                                        "adjacent_no_coverage_evidence_promoted"
+                                                                                                    ]
+                                                                      },
+                                                            "slot1":  {
+                                                                          "expected_evidence_id":  "8aa0f1f7-ea01-4572-b454-f267b6d1e391",
+                                                                          "buying_point":  "bp_analytics_strategy_ownership",
+                                                                          "human_reason":  "Slot-1 can carry complementary strategy prioritization proof once slot-0 is anchored to operations ownership.",
+                                                                          "unacceptable_patterns":  [
+                                                                                                        "slot0_slot1_redundancy",
+                                                                                                        "slot1_wrong_evidence"
+                                                                                                    ]
+                                                                      }
+                                                        },
+                                            "biggest_risk":  {
+                                                                 "expected_risk_type":  "weakly_proven",
+                                                                 "human_reason":  "Explicit depth of marketing-ops systems ownership remains weakly proven relative to strategic posture signals."
+                                                             },
+                                            "quick_checks":  {
+                                                                 "expected_question_intent":  "Test concrete systems ownership scope, operating-rhythm governance, and measurable process improvement outcomes.",
+                                                                 "human_reason":  "These checks separate strategic storytelling from true operations ownership."
+                                                             },
+                                            "what_this_role_adds":  {
+                                                                        "expected_angle":  "Broader cross-functional ownership of marketing systems plus analytics decision cadence.",
+                                                                        "human_reason":  "Role capital comes from operational ownership at manager scope."
+                                                                    },
+                                            "cta":  {
+                                                        "expected_angle":  "Calibrate then position around concrete systems ownership wins before asserting strong fit.",
+                                                        "human_reason":  "Current RED status requires proof tightening and claim calibration."
+                                                    },
+                                            "cross_surface":  {
+                                                                  "expected_thesis":  "Strategically capable candidate with unresolved operations-ownership proof gap.",
+                                                                  "human_reason":  "All surfaces should reflect this gap consistently and avoid overclaiming."
+                                                              }
+                                        }
+                  }
+              ]
+}
