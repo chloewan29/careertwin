@@ -124,6 +124,27 @@ export type AuthoritativeWhyYouSelection = {
     why_you_slot_diagnostics: AuthoritativeWhyYouSlotDiagnostics;
 };
 
+type RoleConditionedMatchBase =
+    | NonNullable<TailoringPlanSelectedEvidenceItem["role_conditioned_matches"]>[number]
+    | NonNullable<TailoringPlanSelectionDebugItem["role_conditioned_matches"]>[number];
+
+type RoleConditionedMatchRuntimeMetadata = {
+    match_tier?: "direct" | "adjacent" | "transferable";
+    coverage_strength?: "high" | "medium" | "low" | "none";
+    coverage_eligible?: boolean;
+};
+
+function readRoleConditionedMatchRuntimeMetadata(
+    match: RoleConditionedMatchBase,
+): RoleConditionedMatchRuntimeMetadata {
+    const candidate = match as RoleConditionedMatchRuntimeMetadata;
+    return {
+        match_tier: candidate.match_tier,
+        coverage_strength: candidate.coverage_strength,
+        coverage_eligible: candidate.coverage_eligible,
+    };
+}
+
 function normalizeText(value: string): string {
     return value
         .toLowerCase()
@@ -939,18 +960,20 @@ export function buildAuthoritativeWhyYouCards(params: {
                     match.buying_point_id ?? match.buying_point_label ?? "",
                 );
                 if (!targetKey) return [];
-                const matchTier = match.match_tier ?? "adjacent";
-                const coverageStrength = match.coverage_strength ?? "none";
+                const runtimeMetadata = readRoleConditionedMatchRuntimeMetadata(match);
+                const matchTier = runtimeMetadata.match_tier ?? "adjacent";
+                const isDirectMatchTier = matchTier === "direct";
+                const coverageStrength = runtimeMetadata.coverage_strength ?? "none";
                 const coverageEligible = (
-                    Boolean(match.coverage_eligible)
+                    Boolean(runtimeMetadata.coverage_eligible)
                     || coverageStrength === "high"
                     || coverageStrength === "medium"
-                    || matchTier === "direct"
+                    || isDirectMatchTier
                 );
                 const qualified = (
                     coverageEligible
                     || coverageStrength !== "none"
-                    || matchTier === "direct"
+                    || isDirectMatchTier
                 );
                 return qualified ? [targetKey] : [];
             }),
@@ -962,16 +985,18 @@ export function buildAuthoritativeWhyYouCards(params: {
                     match.buying_point_id ?? match.buying_point_label ?? "",
                 );
                 if (!targetKey) return [];
-                const matchTier = match.match_tier ?? "adjacent";
-                const coverageStrength = match.coverage_strength ?? "none";
+                const runtimeMetadata = readRoleConditionedMatchRuntimeMetadata(match);
+                const matchTier = runtimeMetadata.match_tier ?? "adjacent";
+                const isDirectMatchTier = matchTier === "direct";
+                const coverageStrength = runtimeMetadata.coverage_strength ?? "none";
                 const coverageEligible = (
-                    Boolean(match.coverage_eligible)
+                    Boolean(runtimeMetadata.coverage_eligible)
                     || coverageStrength === "high"
                     || coverageStrength === "medium"
-                    || matchTier === "direct"
+                    || isDirectMatchTier
                 );
                 const directOrStrong = (
-                    matchTier === "direct"
+                    isDirectMatchTier
                     || coverageStrength === "high"
                     || coverageStrength === "medium"
                 );

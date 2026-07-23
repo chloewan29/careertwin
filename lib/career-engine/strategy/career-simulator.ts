@@ -1,5 +1,5 @@
 import type { ProfileInput, RoleMatchResult } from "../matching/role-matcher";
-import type { ParsedJobDescription } from "./jd-parser";
+import type { ParsedJobDescription } from "../parsing/jd-parser";
 import type { GapReport, GapItem } from "../scoring/gap-prioritizer";
 import { matchRoles } from "../matching/role-matcher";
 import { prioritizeGaps } from "../scoring/gap-prioritizer";

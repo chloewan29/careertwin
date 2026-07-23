@@ -400,8 +400,9 @@ export async function generateJobRecommendations(
             }
         }
 
-        const useMock = !selectedProviderResult;
-        const jobs = useMock ? getMockJobsForRole(target.role) : selectedProviderResult.jobs;
+        const providerResult = selectedProviderResult;
+        const useMock = !providerResult;
+        const jobs = providerResult ? providerResult.jobs : getMockJobsForRole(target.role);
         const fallbackTriggerReason = useMock
             ? (allAttempts.length > 0
                 ? `providers_exhausted:${allAttempts.map((attempt) => `${attempt.provider}:${attempt.status}${attempt.responseStatus != null ? `(${attempt.responseStatus})` : ""}`).join("|")}`
@@ -414,10 +415,10 @@ export async function generateJobRecommendations(
             fit_category: target.fit_category,
             jobs,
             source: useMock ? "mock" : "live",
-            provider: selectedProviderResult?.provider ?? null,
-            provider_status: selectedProviderResult?.status ?? null,
-            provider_response_status: selectedProviderResult?.responseStatus ?? null,
-            provider_jobs_returned: selectedProviderResult?.jobs.length ?? 0,
+            provider: providerResult?.provider ?? null,
+            provider_status: providerResult?.status ?? null,
+            provider_response_status: providerResult?.responseStatus ?? null,
+            provider_jobs_returned: providerResult?.jobs.length ?? 0,
             provider_attempts: allAttempts,
             query_variants_tried: queryVariants,
             selected_query_variant: selectedVariant,

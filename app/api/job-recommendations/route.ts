@@ -78,12 +78,16 @@ export async function POST(request: NextRequest) {
             .select("skills(name)")
             .eq("user_id", profile.user_id);
 
-        type UserSkillRow = { skills: { name: string | null } | null };
-        const rawSkills: string[] = userSkills
-            ? (userSkills as UserSkillRow[])
-                .map((us) => us.skills?.name)
-                .filter((name): name is string => Boolean(name))
-            : [];
+        type UserSkillRelationCell = { name: string | null } | Array<{ name: string | null }> | null;
+        type UserSkillRelationRow = { skills: UserSkillRelationCell };
+        const rawSkills: string[] = (userSkills as UserSkillRelationRow[] | null ?? [])
+            .flatMap((row) => {
+                const skills = row.skills;
+                const skillCells = Array.isArray(skills) ? skills : skills ? [skills] : [];
+                return skillCells
+                    .map((skill) => skill.name)
+                    .filter((name): name is string => Boolean(name));
+            });
 
         const { data: latestResume } = await supabase
             .from("resumes")

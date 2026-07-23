@@ -2,6 +2,8 @@ import { getCareerSignals } from "@/lib/career-engine/strategy/career-signals-se
 import { loadCareerGraph } from "@/lib/career-engine/memory/career-graph-loader";
 import { createServerSupabaseClient } from "@/lib/db/supabase/server";
 
+export const dynamic = "force-dynamic";
+
 const TARGET_ROLES = [
     "Program Manager",
     "Data Product Manager",
@@ -119,4 +121,3 @@ export default async function CareerPage() {
         </main>
     );
 }
-

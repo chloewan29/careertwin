@@ -1,4 +1,4 @@
-import type { ProfileInput } from "./role-matcher";
+import type { ProfileInput } from "../matching/role-matcher";
 
 export interface RecommendedRole {
     role_name: string;

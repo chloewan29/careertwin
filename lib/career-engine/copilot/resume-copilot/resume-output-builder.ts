@@ -1,11 +1,11 @@
 import type {
-    RankedResumeEvidence,
     ResumeCopilotDebugOutput,
     ResumeCopilotPublicOutput,
     ResumeOutputBuilderParams,
     ResumeOutputBuilderResult,
     TailoredCvFormatContract,
 } from "./resume-output-builder-types";
+import type { RankedResumeEvidence } from "./resume-tailoring-evidence-foundation-types";
 
 const MAX_BULLET_CHAR_LENGTH = 220;
 const MAX_BULLET_WORD_COUNT = 32;

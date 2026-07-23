@@ -339,8 +339,14 @@ export async function generateResumeCopilot(params: ResumeCopilotServiceInput): 
         },
     });
 
+    const typedResume: ResumeCopilotServiceResult["resume"] = {
+        ...output.resume,
+        job_analysis: jobAnalysis,
+    };
+
     return {
         ...output,
+        resume: typedResume,
         job_analysis: jobAnalysis,
         tailoring_result: {
             job_analysis: jobAnalysis,

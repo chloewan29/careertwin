@@ -1,4 +1,4 @@
-import { MatchResult } from "./job-matcher";
+import { MatchResult } from "../matching/job-matcher";
 
 export interface GapAnalysis {
     meetsExperience: boolean;

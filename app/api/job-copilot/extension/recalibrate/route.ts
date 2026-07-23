@@ -2,6 +2,14 @@ import { NextRequest, NextResponse } from "next/server";
 import { recalculateFitAfterCalibration } from "@/lib/career-engine/job-copilot/backend/job-copilot-service";
 import type { JobCopilotRecalibrateInput } from "@/lib/career-engine/job-copilot/backend/job-copilot-types";
 
+type CalibrationWithMemoryCapturePrompt = {
+    memory_capture_prompt?: unknown;
+};
+
+function hasMemoryCapturePrompt(value: unknown): value is CalibrationWithMemoryCapturePrompt {
+    return typeof value === "object" && value !== null && "memory_capture_prompt" in value;
+}
+
 export async function POST(request: NextRequest) {
     const routeStartedAtMs = Date.now();
     try {
@@ -89,7 +97,9 @@ export async function POST(request: NextRequest) {
             && result.response.job_analysis.calibration
             ? result.response.job_analysis.calibration
             : null;
-        const memoryCapturePromptPresent = Boolean(calibration && calibration.memory_capture_prompt);
+        const memoryCapturePromptPresent = hasMemoryCapturePrompt(calibration)
+            ? Boolean(calibration.memory_capture_prompt)
+            : false;
         const durationMs = Math.max(0, Date.now() - routeStartedAtMs);
         console.debug("[CareerTwin][recalibrate-route] recalibration_end", {
             requestId,
