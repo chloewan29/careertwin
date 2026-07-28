@@ -70,6 +70,7 @@ export type ResumeEvidenceRecord = {
 
 export type EvidenceCapabilityRelationship = "direct_evidence" | "transferable_signal" | "possible";
 export type EvidenceCapabilityMappingMethod = "deterministic" | "model" | "user";
+export type ResumeEvidenceInterpretationProvenance = "user_provided" | "model_inferred" | "deterministically_derived" | "mock";
 
 /** Mappings are auditable relationships, not properties of source evidence. */
 export type EvidenceCapabilityMapping = {
@@ -92,7 +93,8 @@ export type ResumeEvidenceInterpretation = {
   evidenceId: string;
   kind: "transferability" | "context_inference" | "outcome_inference";
   text: string;
-  provenance: "model_inferred" | "deterministically_derived" | "mock";
+  /** User-provided text remains an interpretation; optional spans are contextual references, not verbatim provenance. */
+  provenance: ResumeEvidenceInterpretationProvenance;
   sourceSpanIds: string[];
   reviewStatus: EvidenceReviewStatus;
   method: EvidenceExtractionMethod;

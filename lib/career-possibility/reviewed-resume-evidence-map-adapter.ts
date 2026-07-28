@@ -4,6 +4,7 @@ import {
   type EvidenceReviewStatus,
   type ProvenancedField,
   type ResumeEvidenceBundle,
+  type ResumeEvidenceInterpretation,
   type ResumeEvidenceRecord,
 } from "./resume-evidence-contract";
 import {
@@ -57,6 +58,16 @@ export type AdaptReviewedResumeEvidenceResult =
 const reviewed = (status: EvidenceReviewStatus) => status === "confirmed" || status === "edited";
 const nonEmpty = (value: string | undefined) => Boolean(value?.trim());
 const unique = <T>(values: readonly T[]) => [...new Set(values)];
+
+/** Interpretation provenance is transported unchanged; user-authored text never becomes source evidence. */
+function interpretationProvenance(provenance: ResumeEvidenceInterpretation["provenance"]): CareerMapEvidenceInterpretation["provenance"] {
+  switch (provenance) {
+    case "user_provided": return "user_provided";
+    case "deterministically_derived": return "deterministically_derived";
+    case "model_inferred": return "model_inferred";
+    case "mock": return "mock";
+  }
+}
 
 function issue(code: string, path: string, message: string, severity: CareerCapabilityMapIssue["severity"]): CareerCapabilityMapIssue {
   return { code, path, message, severity };
@@ -202,7 +213,7 @@ export function adaptReviewedResumeEvidenceToCareerMap(
         evidenceId: item.evidenceId,
         kind: item.kind,
         text: item.text,
-        provenance: item.provenance,
+        provenance: interpretationProvenance(item.provenance),
         reviewStatus: item.reviewStatus,
         sourceSpanIds: [...item.sourceSpanIds],
         active: reviewed(item.reviewStatus) && activeEvidence(evidenceById.get(item.evidenceId)!),

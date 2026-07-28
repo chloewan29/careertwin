@@ -104,6 +104,8 @@ export type CareerMapCapabilitySignal = {
   sourceSpanIds: string[];
 };
 
+export type CareerMapEvidenceInterpretationProvenance = "user_provided" | "deterministically_derived" | "model_inferred" | "mock";
+
 export type CareerMapEvidenceCard = {
   id: string;
   employmentRecordId?: string;
@@ -125,7 +127,8 @@ export type CareerMapEvidenceInterpretation = {
   evidenceId: string;
   kind: "transferability" | "context_inference" | "outcome_inference";
   text: string;
-  provenance: "deterministically_derived" | "model_inferred" | "mock";
+  /** User-provided text remains an interpretation, not résumé source evidence. */
+  provenance: CareerMapEvidenceInterpretationProvenance;
   reviewStatus: EvidenceReviewStatus;
   sourceSpanIds: string[];
   active: boolean;
@@ -353,7 +356,8 @@ export function validateCareerCapabilityMapPresentation(
     if (!evidenceIds.has(interpretation.evidenceId)) add("unknown_evidence", `${path}.evidenceId`, `Unknown evidence ${interpretation.evidenceId}.`);
     if (!nonEmpty(interpretation.text)) add("empty_interpretation", `${path}.text`, "Interpretation text must be non-empty.");
     if (presentation.mode === "resume-derived" && interpretation.provenance === "mock") add("mock_provenance", `${path}.provenance`, "Mock provenance is forbidden in resume-derived mode.");
-    checkStrings(interpretation.sourceSpanIds, `${path}.sourceSpanIds`, true);
+    checkStrings(interpretation.sourceSpanIds, `${path}.sourceSpanIds`, interpretation.provenance !== "user_provided");
+    if (interpretation.provenance === "user_provided" && interpretation.active && !reviewed(interpretation.reviewStatus)) add("active_interpretation_requires_reviewed_status", `${path}.reviewStatus`, "Active user-provided interpretations require confirmed or edited review.");
     if (interpretation.active && interpretation.reviewStatus === "rejected") add("active_rejected_interpretation", `${path}.active`, "Rejected interpretations cannot be active.");
   });
 

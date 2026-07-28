@@ -69,6 +69,49 @@ assert.equal(exampleResumeDerivedCareerMapValidation.valid, true, JSON.stringify
   assert.ok(codes(value).includes("identity_interpretation_dependency"));
 }
 
+const addUserInterpretation = (value: CareerCapabilityMapPresentation, reviewStatus: "unreviewed" | "confirmed" | "edited" | "rejected", active: boolean, sourceSpanIds: string[] = []) => {
+  value.interpretations.push({ id: `user-interpretation-${reviewStatus}-${active}`, evidenceId: value.evidenceCards[0].id, kind: "transferability", text: "A user-authored interpretation.", provenance: "user_provided", reviewStatus, sourceSpanIds, active });
+};
+
+{
+  const value = cloneFixture();
+  addUserInterpretation(value, "unreviewed", false);
+  assert.equal(validateCareerCapabilityMapPresentation(value).valid, true, "Inactive user interpretations may remain drafts without source spans.");
+  assert.equal(value.featureAvailability.transferableIdentity.available, false);
+}
+
+for (const reviewStatus of ["edited", "confirmed"] as const) {
+  const value = cloneFixture();
+  addUserInterpretation(value, reviewStatus, true);
+  assert.equal(validateCareerCapabilityMapPresentation(value).valid, true, `Active ${reviewStatus} user interpretation should validate in résumé-derived mode.`);
+  assert.equal(value.featureAvailability.transferableIdentity.available, false, "Eligible interpretation data must not automatically enable a feature.");
+}
+
+{
+  const value = cloneFixture();
+  addUserInterpretation(value, "unreviewed", true, ["span-workshop"]);
+  assert.ok(codes(value).includes("active_interpretation_requires_reviewed_status"));
+}
+
+{
+  const value = cloneFixture();
+  addUserInterpretation(value, "rejected", true, ["span-workshop"]);
+  assert.ok(codes(value).includes("active_rejected_interpretation"));
+}
+
+{
+  const value = cloneFixture();
+  assert.equal(value.interpretations.some((item) => item.provenance === "model_inferred"), true);
+  value.interpretations.push({ id: "deterministic-interpretation", evidenceId: value.evidenceCards[0].id, kind: "context_inference", text: "A deterministic interpretation.", provenance: "deterministically_derived", reviewStatus: "confirmed", sourceSpanIds: ["span-workshop"], active: true });
+  assert.equal(validateCareerCapabilityMapPresentation(value).valid, true, "Existing model and deterministic interpretation behavior remains valid.");
+}
+
+{
+  const value = cloneFixture();
+  value.interpretations.push({ id: "mock-interpretation", evidenceId: value.evidenceCards[0].id, kind: "context_inference", text: "A mock interpretation.", provenance: "mock", reviewStatus: "confirmed", sourceSpanIds: ["span-workshop"], active: true });
+  assert.ok(codes(value).includes("mock_provenance"), "Mock interpretation provenance remains forbidden in résumé-derived mode.");
+}
+
 const directNode = exampleResumeDerivedCareerMap.capabilities[0];
 const transferableNode = exampleResumeDerivedCareerMap.capabilities[1];
 assert.equal(canDisplayCapabilityAsEvidenceBacked(directNode, exampleResumeDerivedCareerMap.evidenceCards), true);

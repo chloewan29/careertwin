@@ -1,6 +1,7 @@
 import { strict as assert } from "node:assert";
 import { validateCareerCapabilityMapPresentation } from "../../lib/career-possibility/career-capability-map-contract";
 import { exampleResumeEvidence } from "../../lib/career-possibility/fixtures/exampleResumeEvidence";
+import { validateResumeEvidenceBundle } from "../../lib/career-possibility/resume-evidence-contract";
 import {
   DEFAULT_REVIEWED_EVIDENCE_INCLUSION_POLICY,
   REVIEWED_RESUME_EVIDENCE_MAP_ADAPTER_VERSION,
@@ -201,5 +202,40 @@ const deterministicA = adapt();
 const deterministicB = adapt();
 assert.deepEqual(deterministicA, deterministicB);
 assert.deepEqual(JSON.parse(JSON.stringify(presentation)), presentation);
+
+{
+  const userAuthored = structuredClone(exampleResumeEvidence);
+  userAuthored.interpretations ??= [];
+  userAuthored.interpretations.push({
+    id: "interpretation-user-1",
+    evidenceId: "evidence-2",
+    kind: "transferability",
+    text: "I use this example to show how I align teams around shared operating practices.",
+    provenance: "user_provided",
+    sourceSpanIds: [],
+    reviewStatus: "edited",
+    method: "manual",
+  });
+  const before = JSON.stringify(userAuthored);
+  assert.equal(validateResumeEvidenceBundle(userAuthored).valid, true);
+  const first = adapt(userAuthored);
+  const second = adapt(userAuthored);
+  assert.equal(first.ok, true, first.ok ? undefined : JSON.stringify(first.issues));
+  assert.deepEqual(first, second);
+  assert.equal(JSON.stringify(userAuthored), before, "Adapter must not mutate user-authored interpretation input.");
+  if (first.ok) {
+    const interpretation = first.presentation.interpretations.find((item) => item.id === "interpretation-user-1");
+    assert.equal(interpretation?.provenance, "user_provided");
+    assert.equal(interpretation?.reviewStatus, "edited");
+    assert.equal(interpretation?.text, userAuthored.interpretations.at(-1)?.text);
+    assert.equal(interpretation?.evidenceId, "evidence-2");
+    assert.deepEqual(interpretation?.sourceSpanIds, []);
+    assert.equal(first.presentation.evidenceCards.find((item) => item.id === "evidence-2")?.sourceText, userAuthored.evidenceRecords[1].sourceText);
+    assert.equal(first.presentation.featureAvailability.transferableIdentity.available, false);
+    assert.equal(first.presentation.interpretations.find((item) => item.id === "interpretation-1")?.provenance, "model_inferred");
+    assert.equal(validateCareerCapabilityMapPresentation(first.presentation).valid, true);
+    assert.deepEqual(JSON.parse(JSON.stringify(first.presentation)), first.presentation);
+  }
+}
 
 console.log("reviewed-resume-evidence-map-adapter.test passed");
