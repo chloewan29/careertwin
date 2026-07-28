@@ -99,6 +99,8 @@ export type CareerMapCapabilitySignal = {
   type: CareerMapCapabilitySignalType;
   mappingMethod: "deterministic" | "model" | "user";
   reviewStatus: EvidenceReviewStatus;
+  /** Card activity and mapping activity are independent; inactive audit mappings may remain on active evidence. */
+  active: boolean;
   sourceSpanIds: string[];
 };
 
@@ -199,6 +201,7 @@ export type CareerCapabilityMapValidationResult = {
   issues: CareerCapabilityMapIssue[];
 };
 
+/** Edited is reviewed truth and must retain its review history rather than being rewritten as confirmed. */
 const reviewed = (status: EvidenceReviewStatus) => status === "confirmed" || status === "edited";
 const nonEmpty = (value: string | undefined) => Boolean(value?.trim());
 const truthTypes = new Set<CareerMapCapabilitySignalType>(["evidence_backed", "transferable"]);
@@ -207,7 +210,7 @@ export function isFeatureAvailable(feature: CareerMapFeatureState): boolean {
   return feature.available;
 }
 
-function hasConfirmedSignal(
+function hasReviewedActiveSignal(
   node: CareerMapCapabilityNode,
   evidenceCards: readonly CareerMapEvidenceCard[],
   type: "evidence_backed" | "transferable",
@@ -215,7 +218,11 @@ function hasConfirmedSignal(
   return evidenceCards.some((card) =>
     card.active &&
     card.capabilitySignals.some((signal) =>
-      signal.capabilityId === node.id && signal.type === type && signal.reviewStatus === "confirmed",
+      signal.active &&
+      signal.capabilityId === node.id &&
+      signal.proposedLabel === undefined &&
+      signal.type === type &&
+      reviewed(signal.reviewStatus),
     ),
   );
 }
@@ -224,14 +231,14 @@ export function canDisplayCapabilityAsEvidenceBacked(
   node: CareerMapCapabilityNode,
   evidenceCards: readonly CareerMapEvidenceCard[],
 ): boolean {
-  return node.reviewStatus !== "rejected" && hasConfirmedSignal(node, evidenceCards, "evidence_backed");
+  return node.reviewStatus !== "rejected" && hasReviewedActiveSignal(node, evidenceCards, "evidence_backed");
 }
 
 export function canDisplayCapabilityAsTransferable(
   node: CareerMapCapabilityNode,
   evidenceCards: readonly CareerMapEvidenceCard[],
 ): boolean {
-  return node.reviewStatus !== "rejected" && hasConfirmedSignal(node, evidenceCards, "transferable");
+  return node.reviewStatus !== "rejected" && hasReviewedActiveSignal(node, evidenceCards, "transferable");
 }
 
 export function validateCareerCapabilityMapPresentation(
@@ -323,16 +330,22 @@ export function validateCareerCapabilityMapPresentation(
     card.capabilitySignals.forEach((signal, signalIndex) => {
       const signalPath = `${path}.capabilitySignals[${signalIndex}]`;
       const hasCapability = nonEmpty(signal.capabilityId), hasProposal = nonEmpty(signal.proposedLabel);
+      if (typeof signal.active !== "boolean") add("explicit_signal_activity", `${signalPath}.active`, "Signal activity must be explicit.");
       if (hasCapability === hasProposal) add("signal_target", signalPath, "Exactly one canonical capability ID or proposed label is required.");
       if (signal.capabilityId && !capabilityIds.has(signal.capabilityId)) add("unknown_capability", `${signalPath}.capabilityId`, `Unknown capability ${signal.capabilityId}.`);
       checkStrings(signal.sourceSpanIds, `${signalPath}.sourceSpanIds`, true);
-      if (signal.reviewStatus === "unreviewed" && truthTypes.has(signal.type)) add("unreviewed_active_truth", `${signalPath}.type`, "Unreviewed signals cannot be evidence-backed or transferable.");
-      if (truthTypes.has(signal.type) && signal.reviewStatus !== "confirmed") add("unconfirmed_active_truth", `${signalPath}.reviewStatus`, "Active truth signals require confirmed review.");
+      if (signal.active && truthTypes.has(signal.type) && !reviewed(signal.reviewStatus)) add("active_signal_requires_reviewed_status", `${signalPath}.reviewStatus`, "Active truth signals require confirmed or edited review.");
+      if (signal.active && truthTypes.has(signal.type) && !card.active) add("active_signal_requires_active_evidence", `${signalPath}.active`, "An active signal requires active parent evidence.");
+      if (signal.active && truthTypes.has(signal.type) && !hasCapability) add("active_signal_requires_capability_id", `${signalPath}.capabilityId`, "An active truth signal requires a canonical capability ID.");
+      if (signal.active && signal.proposedLabel) add("proposed_signal_cannot_be_active", `${signalPath}.active`, "Proposed capability signals must remain inactive.");
       if (signal.proposedLabel && truthTypes.has(signal.type)) add("proposed_active_truth", `${signalPath}.type`, "Proposed labels cannot be evidence-backed or transferable.");
-      if (signal.reviewStatus === "rejected" && truthTypes.has(signal.type)) add("rejected_active_truth", `${signalPath}.type`, "Rejected signals cannot be active truth.");
+      if (signal.reviewStatus === "rejected" && signal.active) add("rejected_signal_must_be_inactive", `${signalPath}.active`, "Rejected signals must remain inactive.");
+      if (signal.type === "review_required" && signal.active) add("review_required_signal_must_be_inactive", `${signalPath}.active`, "Review-required signals must remain inactive.");
       if (signal.type === "review_required" && signal.reviewStatus !== "unreviewed") add("review_state_mismatch", `${signalPath}.reviewStatus`, "Review-required signals must remain unreviewed.");
+      if (signal.type === "possible" && signal.active) add("possible_signal_must_be_inactive", `${signalPath}.active`, "Possible signals must remain inactive.");
+      if (signal.type === "unmapped" && signal.active) add("unmapped_signal_must_be_inactive", `${signalPath}.active`, "Unmapped signals must remain inactive.");
+      if (signal.type === "unmapped" && !hasProposal) add("unmapped_signal_requires_proposed_label", `${signalPath}.proposedLabel`, "Unmapped signals require a proposed label.");
     });
-    if (card.active && card.capabilitySignals.some((signal) => signal.reviewStatus === "rejected")) add("active_rejected_evidence", `${path}.active`, "Evidence with rejected mappings cannot be active.");
   });
 
   presentation.interpretations.forEach((interpretation, index) => {

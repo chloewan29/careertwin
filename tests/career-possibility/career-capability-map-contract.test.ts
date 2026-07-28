@@ -42,13 +42,13 @@ assert.equal(exampleResumeDerivedCareerMapValidation.valid, true, JSON.stringify
 {
   const value = cloneFixture();
   value.evidenceCards[0].capabilitySignals[0].reviewStatus = "unreviewed";
-  assert.ok(codes(value).includes("unreviewed_active_truth"));
+  assert.ok(codes(value).includes("active_signal_requires_reviewed_status"));
 }
 
 {
   const value = cloneFixture();
-  value.evidenceCards[3].active = true;
-  assert.ok(codes(value).includes("active_rejected_evidence"));
+  value.evidenceCards[1].capabilitySignals[1].active = true;
+  assert.ok(codes(value).includes("rejected_signal_must_be_inactive"));
 }
 
 {
@@ -80,6 +80,69 @@ assert.equal(canDisplayCapabilityAsTransferable(transferableNode, exampleResumeD
   value.evidenceCards[0].capabilitySignals[0].reviewStatus = "unreviewed";
   value.evidenceCards[0].capabilitySignals[0].mappingMethod = "model";
   assert.equal(canDisplayCapabilityAsEvidenceBacked(value.capabilities[0], value.evidenceCards), false);
+}
+
+{
+  const value = cloneFixture();
+  assert.equal(validateCareerCapabilityMapPresentation(value).valid, true, "An active card may retain an inactive rejected signal.");
+  assert.equal(canDisplayCapabilityAsTransferable(value.capabilities[1], value.evidenceCards), true, "Rejected audit state must not contaminate valid truth.");
+}
+
+{
+  const value = cloneFixture();
+  value.capabilities[0].reviewStatus = "edited";
+  value.evidenceCards[0].capabilitySignals[0].reviewStatus = "edited";
+  assert.equal(validateCareerCapabilityMapPresentation(value).valid, true);
+  assert.equal(canDisplayCapabilityAsEvidenceBacked(value.capabilities[0], value.evidenceCards), true);
+}
+
+assert.equal(canDisplayCapabilityAsTransferable(transferableNode, exampleResumeDerivedCareerMap.evidenceCards), true, "Edited transferable truth remains active.");
+
+{
+  const value = cloneFixture();
+  value.capabilities[1].reviewStatus = "confirmed";
+  value.evidenceCards[1].capabilitySignals[0].reviewStatus = "confirmed";
+  assert.equal(validateCareerCapabilityMapPresentation(value).valid, true);
+  assert.equal(canDisplayCapabilityAsTransferable(value.capabilities[1], value.evidenceCards), true);
+}
+
+{
+  const value = cloneFixture();
+  value.evidenceCards[0].capabilitySignals[0].active = false;
+  assert.equal(canDisplayCapabilityAsEvidenceBacked(value.capabilities[0], value.evidenceCards), false);
+  assert.ok(codes(value).includes("missing_direct_signal"));
+}
+
+{
+  const value = cloneFixture();
+  value.evidenceCards[1].capabilitySignals[0].active = false;
+  assert.equal(canDisplayCapabilityAsTransferable(value.capabilities[1], value.evidenceCards), false);
+  assert.ok(codes(value).includes("missing_transferable_signal"));
+}
+
+{
+  const value = cloneFixture();
+  value.evidenceCards[2].capabilitySignals[0].active = true;
+  assert.ok(codes(value).includes("review_required_signal_must_be_inactive"));
+}
+
+{
+  const value = cloneFixture();
+  value.evidenceCards[1].capabilitySignals[1].reviewStatus = "confirmed";
+  value.evidenceCards[1].capabilitySignals[1].active = true;
+  assert.ok(codes(value).includes("possible_signal_must_be_inactive"));
+}
+
+{
+  const value = cloneFixture();
+  value.evidenceCards[2].capabilitySignals[1].active = true;
+  assert.ok(codes(value).includes("unmapped_signal_must_be_inactive"));
+}
+
+{
+  const value = cloneFixture();
+  value.evidenceCards[0].active = false;
+  assert.ok(codes(value).includes("active_signal_requires_active_evidence"));
 }
 
 {
