@@ -21,12 +21,26 @@ const pathPositions: Point[] = [
   { x: 86, y: 76 },
 ];
 
+const RAIL_START_X = 73;
+const PATH_CARD_LEFT_X = 75;
+const CONNECTOR_END_X = PATH_CARD_LEFT_X - 1;
+const CAPABILITY_RIGHT_EDGE_OFFSET_X = 8;
+const CONNECTOR_CORRIDOR_X = 70;
+const TOP_CONNECTOR_CORRIDOR_Y = 7;
+const BOTTOM_CONNECTOR_CORRIDOR_Y = 89;
+const GAP_COLUMN_X = 64;
+const GAP_VERTICAL_SPACING = 10;
+
 const toSvgPoint = ({ x, y }: Point) => ({ x: x * 10, y: y * 6.4 });
 
-function connectionPath(from: Point, to: Point) {
-  const start = toSvgPoint(from);
-  const end = toSvgPoint(to);
-  return `M ${start.x} ${start.y} C ${start.x + 70} ${start.y}, ${end.x - 70} ${end.y}, ${end.x} ${end.y}`;
+function connectionPath(from: Point, targetY: number) {
+  const start = toSvgPoint({ x: from.x + CAPABILITY_RIGHT_EDGE_OFFSET_X, y: from.y });
+  const end = toSvgPoint({ x: CONNECTOR_END_X, y: targetY });
+  const corridorY = from.x < 50
+    ? (from.y < corePosition.y ? TOP_CONNECTOR_CORRIDOR_Y : BOTTOM_CONNECTOR_CORRIDOR_Y)
+    : from.y;
+  const corridor = toSvgPoint({ x: CONNECTOR_CORRIDOR_X, y: corridorY });
+  return `M ${start.x} ${start.y} C ${start.x + 24} ${start.y}, ${start.x + 36} ${corridor.y}, ${corridor.x} ${corridor.y} Q ${end.x - 24} ${corridor.y}, ${end.x} ${end.y}`;
 }
 
 export function CapabilityExplorer({ result }: { result: CareerCapabilityExplorerResult }) {
@@ -96,19 +110,19 @@ export function CapabilityExplorer({ result }: { result: CareerCapabilityExplore
       </div>
 
       <div className="relative hidden h-[640px] overflow-hidden bg-[radial-gradient(circle_at_39%_48%,rgba(34,211,238,0.11),rgba(7,16,28,0.3)_30%,rgba(4,8,16,0.94)_76%)] md:block">
-        <div className="absolute bottom-0 right-0 top-0 w-[27%] border-l border-blue-200/[0.08] bg-blue-400/[0.025]" />
+        <div style={{ left: `${RAIL_START_X}%` }} className="absolute bottom-0 right-0 top-0 border-l border-blue-200/[0.08] bg-blue-400/[0.025]" />
         <div className="absolute right-[2.5%] top-5 z-20 w-[23%]">
           <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-blue-300">Future Paths</p>
           <p className="mt-1 text-xs text-slate-500">Ranked directions from demonstrated signals</p>
         </div>
-        <svg viewBox="0 0 1000 640" preserveAspectRatio="none" className="absolute inset-0 h-full w-full" aria-hidden="true">
+        <svg viewBox="0 0 1000 640" preserveAspectRatio="none" className="absolute inset-0 z-0 h-full w-full" aria-hidden="true">
           <defs>
             <marker id="line-arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 8 4 L 0 8 Z" fill="#67e8f9" fillOpacity=".75" /></marker>
           </defs>
           {selectedCapabilityPosition && relatedPaths.map((path) => {
             const pathIndex = orderedPaths.findIndex((candidate) => candidate.id === path.id);
             const pathPosition = pathIndex >= 0 ? pathPositions[pathIndex] : null;
-            return pathPosition ? <path key={path.id} d={connectionPath(selectedCapabilityPosition, pathPosition)} fill="none" stroke="#67e8f9" strokeOpacity=".55" strokeWidth="1.5" markerEnd="url(#line-arrow)" /> : null;
+            return pathPosition ? <path key={path.id} d={connectionPath(selectedCapabilityPosition, pathPosition.y)} fill="none" stroke="#67e8f9" strokeOpacity=".55" strokeWidth="1.5" markerEnd="url(#line-arrow)" /> : null;
           })}
           {selectedPath && selectedPathPosition && result.capabilities.map((capability, index) => {
             const position = capabilityPositions[index];
@@ -116,7 +130,7 @@ export function CapabilityExplorer({ result }: { result: CareerCapabilityExplore
             const backed = selectedPath.capabilityIds.includes(capability.id);
             const partial = selectedPath.partialCapabilityIds.includes(capability.id);
             if (!backed && !partial) return null;
-            return <path key={capability.id} d={connectionPath(position, selectedPathPosition)} fill="none" stroke={backed ? "#5eead4" : "#60a5fa"} strokeOpacity={backed ? ".58" : ".45"} strokeWidth={backed ? "1.6" : "1.25"} strokeDasharray={partial ? "4 6" : undefined} />;
+            return <path key={capability.id} d={connectionPath(position, selectedPathPosition.y)} fill="none" stroke={backed ? "#5eead4" : "#60a5fa"} strokeOpacity={backed ? ".58" : ".45"} strokeWidth={backed ? "1.6" : "1.25"} strokeDasharray={partial ? "4 6" : undefined} />;
           })}
         </svg>
 
@@ -133,7 +147,7 @@ export function CapabilityExplorer({ result }: { result: CareerCapabilityExplore
           const isPartial = Boolean(selectedPath?.partialCapabilityIds.includes(capability.id));
           const isInactive = Boolean(selectedCapability && !isSelected) || Boolean(selectedPath && !isBacked && !isPartial);
           const semanticLabel = isBacked ? "Evidence-backed" : isPartial ? "Transferable signal" : `${capability.strength}% example signal`;
-          return <button key={capability.id} type="button" onClick={() => selectCapability(capability.id)} aria-pressed={isSelected} aria-label={`${capability.label}, ${semanticLabel}`} style={{ left: `${position.x}%`, top: `${position.y}%` }} className={`absolute z-20 w-40 -translate-x-1/2 -translate-y-1/2 rounded-2xl border px-4 py-3 text-left transition-[border-color,background-color,box-shadow,opacity] duration-200 motion-reduce:transition-none ${isSelected ? "border-cyan-100/65 bg-cyan-300/[0.14] text-white shadow-[0_0_30px_rgba(34,211,238,0.25)]" : isBacked ? "border-teal-200/50 bg-teal-300/[0.12] text-white shadow-[0_0_25px_rgba(45,212,191,0.14)]" : isPartial ? "border-blue-300/45 bg-blue-400/[0.1] text-blue-50" : isInactive ? "border-white/[0.07] bg-[#0b1826]/65 text-slate-500 opacity-35" : "border-cyan-100/15 bg-[#0b1826]/90 text-slate-300 hover:border-cyan-200/30"}`}>
+          return <button key={capability.id} type="button" onClick={() => selectCapability(capability.id)} aria-pressed={isSelected} aria-label={`${capability.label}, ${semanticLabel}`} style={{ left: `${position.x}%`, top: `${position.y}%` }} className={`absolute z-20 w-40 -translate-x-1/2 -translate-y-1/2 rounded-2xl border px-4 py-3 text-left transition-[border-color,background-color,box-shadow,opacity] duration-200 motion-reduce:transition-none ${isSelected ? "border-cyan-100/65 bg-[#12313b] text-white shadow-[0_0_30px_rgba(34,211,238,0.25)]" : isBacked ? "border-teal-200/50 bg-[#12312f] text-white shadow-[0_0_25px_rgba(45,212,191,0.14)]" : isPartial ? "border-blue-300/45 bg-[#142943] text-blue-50" : isInactive ? "border-white/[0.07] bg-[#0b1826] text-slate-500 opacity-35" : "border-cyan-100/15 bg-[#0b1826] text-slate-300 hover:border-cyan-200/30"}`}>
             <span className="block text-xs font-semibold leading-4">{capability.label}</span>
             <span className={`mt-1.5 flex items-center gap-1.5 text-[9px] uppercase tracking-wider ${isBacked ? "text-teal-300" : isPartial ? "text-blue-300" : "text-cyan-200/70"}`}><span className={`h-1.5 w-1.5 rounded-full ${isBacked ? "bg-teal-300" : isPartial ? "bg-blue-300" : "bg-cyan-300/70"}`} />{semanticLabel}</span>
           </button>;
@@ -146,7 +160,7 @@ export function CapabilityExplorer({ result }: { result: CareerCapabilityExplore
           const related = Boolean(selectedCapability && path.capabilityIds.includes(selectedCapability.id));
           const dimmed = Boolean(selectedCapability && !related) || Boolean(selectedPath && !isSelected);
           const defaultOpacity = Math.max(.45, 1 - index * .16);
-          return <button key={path.id} type="button" onClick={() => selectPath(path.id)} aria-pressed={isSelected} style={{ left: `${position.x}%`, top: `${position.y}%`, opacity: selectedCapability || selectedPath ? undefined : defaultOpacity }} className={`absolute z-30 w-[22%] -translate-x-1/2 -translate-y-1/2 rounded-r-full rounded-l-xl border px-4 py-3 text-left transition-[border-color,background-color,box-shadow,opacity] duration-200 motion-reduce:transition-none ${isSelected || related ? "border-cyan-200/45 bg-cyan-300/[0.1] shadow-[0_0_24px_rgba(56,189,248,0.14)]" : dimmed ? "border-white/[0.06] bg-white/[0.02] opacity-25" : "border-blue-200/15 bg-blue-300/[0.04] hover:border-blue-200/30"}`}>
+          return <button key={path.id} type="button" onClick={() => selectPath(path.id)} aria-pressed={isSelected} style={{ left: `${position.x}%`, top: `${position.y}%`, opacity: selectedCapability || selectedPath ? undefined : defaultOpacity }} className={`absolute z-30 w-[22%] -translate-x-1/2 -translate-y-1/2 rounded-r-full rounded-l-xl border px-4 py-3 text-left transition-[border-color,background-color,box-shadow,opacity] duration-200 motion-reduce:transition-none ${isSelected || related ? "border-cyan-200/45 bg-[#102b37] shadow-[0_0_24px_rgba(56,189,248,0.14)]" : dimmed ? "border-white/[0.06] bg-[#09131f] opacity-25" : "border-blue-200/15 bg-[#0b1725] hover:border-blue-200/30"}`}>
             <span className="flex items-center justify-between gap-2"><span className="text-[9px] font-semibold uppercase tracking-wider text-blue-300">#{path.rank} · {path.fitLabel}</span><span aria-hidden="true" className="text-cyan-300">→</span></span>
             <span className="mt-1 block text-xs font-semibold leading-4 text-slate-100">{path.roleFamily}</span>
             {isSelected && <span className="mt-1 block text-[9px] leading-3 text-slate-400">Role Gap Lens active</span>}
@@ -159,8 +173,8 @@ export function CapabilityExplorer({ result }: { result: CareerCapabilityExplore
         </div>}
 
         {selectedPath && selectedPathPosition && visibleGrowthAreas.map((growthArea, index) => {
-          const y = selectedPathPosition.y + (index - (visibleGrowthAreas.length - 1) / 2) * 10;
-          return <div key={growthArea.id} style={{ left: "71%", top: `${y}%` }} className="absolute z-40 w-32 -translate-x-1/2 -translate-y-1/2 rounded-xl border border-amber-300/35 bg-[#2a2113]/95 px-2.5 py-2 shadow-[0_0_18px_rgba(251,191,36,0.08)]"><p className="text-[8px] font-semibold uppercase tracking-wider text-amber-300"><span aria-hidden="true">◆</span> Proof to build</p><p className="mt-1 text-[10px] leading-3 text-amber-50">{growthArea.label}</p></div>;
+          const y = selectedPathPosition.y + (index - (visibleGrowthAreas.length - 1) / 2) * GAP_VERTICAL_SPACING;
+          return <div key={growthArea.id} style={{ left: `${GAP_COLUMN_X}%`, top: `${y}%` }} className="absolute z-40 w-32 -translate-x-1/2 -translate-y-1/2 rounded-xl border border-amber-300/35 bg-[#2a2113] px-2.5 py-2 shadow-[0_0_18px_rgba(251,191,36,0.08)]"><p className="text-[8px] font-semibold uppercase tracking-wider text-amber-300"><span aria-hidden="true">◆</span> Proof to build</p><p className="mt-1 text-[10px] leading-3 text-amber-50">{growthArea.label}</p></div>;
         })}
       </div>
     </section>
