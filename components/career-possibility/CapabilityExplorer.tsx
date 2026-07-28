@@ -43,14 +43,28 @@ function connectionPath(from: Point, targetY: number) {
   return `M ${start.x} ${start.y} C ${start.x + 24} ${start.y}, ${start.x + 36} ${corridor.y}, ${corridor.x} ${corridor.y} Q ${end.x - 24} ${corridor.y}, ${end.x} ${end.y}`;
 }
 
+function intersectIds(left: string[], right: string[]) {
+  const rightIds = new Set(right);
+  return [...new Set(left)].filter((id) => rightIds.has(id));
+}
+
+function subtractIds(left: string[], right: string[]) {
+  const rightIds = new Set(right);
+  return [...new Set(left)].filter((id) => !rightIds.has(id));
+}
+
 export function CapabilityExplorer({ result }: { result: CareerCapabilityExplorerResult }) {
   const [selectedCapabilityId, setSelectedCapabilityId] = useState<string | null>(null);
   const [selectedPathId, setSelectedPathId] = useState<string | null>(null);
   const [expandedGrowthAreaId, setExpandedGrowthAreaId] = useState<string | null>(null);
   const [selectedEvidenceId, setSelectedEvidenceId] = useState<string | null>(null);
+  const [alternativePathId, setAlternativePathId] = useState<string | null>(null);
+  const [isChoosingAlternative, setIsChoosingAlternative] = useState(false);
   const orderedPaths = [...result.adjacentRoles].sort((a, b) => a.rank - b.rank || b.fitScore - a.fitScore);
   const selectedCapability = result.capabilities.find((capability) => capability.id === selectedCapabilityId) ?? null;
   const selectedPath = orderedPaths.find((path) => path.id === selectedPathId) ?? null;
+  const alternativePath = orderedPaths.find((path) => path.id === alternativePathId && path.id !== selectedPath?.id) ?? null;
+  const comparisonActive = Boolean(selectedPath && alternativePath);
   const selectedCapabilityIndex = selectedCapability
     ? result.capabilities.findIndex((capability) => capability.id === selectedCapability.id)
     : -1;
@@ -74,6 +88,11 @@ export function CapabilityExplorer({ result }: { result: CareerCapabilityExplore
     setSelectedEvidenceId(null);
   }
 
+  function clearComparison() {
+    setAlternativePathId(null);
+    setIsChoosingAlternative(false);
+  }
+
   function clearPathAndSecondary() {
     setSelectedPathId(null);
     clearSecondaryDisclosures();
@@ -82,27 +101,50 @@ export function CapabilityExplorer({ result }: { result: CareerCapabilityExplore
   function clearSelection() {
     setSelectedCapabilityId(null);
     clearPathAndSecondary();
+    clearComparison();
   }
 
   function selectCapability(capabilityId: string) {
     clearPathAndSecondary();
+    clearComparison();
     setSelectedCapabilityId((current) => current === capabilityId ? null : capabilityId);
   }
 
   function selectPath(pathId: string) {
+    if (isChoosingAlternative && selectedPath) {
+      if (pathId === selectedPath.id) return;
+      clearSecondaryDisclosures();
+      setAlternativePathId(pathId);
+      setIsChoosingAlternative(false);
+      return;
+    }
     setSelectedCapabilityId(null);
     clearSecondaryDisclosures();
+    clearComparison();
     setSelectedPathId((current) => current === pathId ? null : pathId);
   }
 
   function toggleGrowthArea(growthAreaId: string) {
+    if (comparisonActive) return;
     setSelectedEvidenceId(null);
     setExpandedGrowthAreaId((current) => current === growthAreaId ? null : growthAreaId);
   }
 
   function toggleEvidence(evidenceId: string) {
+    if (comparisonActive) return;
     setExpandedGrowthAreaId(null);
     setSelectedEvidenceId((current) => current === evidenceId ? null : evidenceId);
+  }
+
+  function beginComparison() {
+    if (!selectedPath) return;
+    clearSecondaryDisclosures();
+    setIsChoosingAlternative(true);
+  }
+
+  function stopComparing() {
+    clearSecondaryDisclosures();
+    clearComparison();
   }
 
   return (
@@ -116,6 +158,9 @@ export function CapabilityExplorer({ result }: { result: CareerCapabilityExplore
           <span className="text-teal-300"><span aria-hidden="true">●</span> Evidence-backed</span>
           <span className="text-blue-300"><span aria-hidden="true">●</span> Transferable</span>
           <span className="text-amber-300"><span aria-hidden="true">◆</span> Proof to build</span>
+          {selectedPath && !comparisonActive && !isChoosingAlternative && <button type="button" onClick={beginComparison} aria-label={`Compare ${selectedPath.roleFamily} with another path`} className="rounded-full border border-blue-300/20 px-3 py-1.5 text-blue-200 transition-colors hover:border-blue-200/40 hover:text-blue-100">Compare another path</button>}
+          {selectedPath && isChoosingAlternative && <><span className="text-blue-200" role="status">Choose an alternative path</span><button type="button" onClick={() => setIsChoosingAlternative(false)} className="rounded-full border border-white/10 px-3 py-1.5 text-slate-300 transition-colors hover:border-white/25">Cancel comparison</button></>}
+          {comparisonActive && !isChoosingAlternative && <><button type="button" onClick={beginComparison} className="rounded-full border border-blue-300/20 px-3 py-1.5 text-blue-200 transition-colors hover:border-blue-200/40">Replace alternative</button><button type="button" onClick={stopComparing} aria-label="Stop comparing career paths" className="rounded-full border border-white/10 px-3 py-1.5 text-slate-300 transition-colors hover:border-white/25">Stop comparing</button></>}
           {(selectedCapability || selectedPath) && <button type="button" onClick={clearSelection} className="rounded-full border border-white/10 px-3 py-1.5 text-slate-300 transition-colors hover:border-cyan-200/30 hover:text-cyan-100">Clear selection</button>}
         </div>
       </header>
@@ -132,11 +177,13 @@ export function CapabilityExplorer({ result }: { result: CareerCapabilityExplore
           <p className="text-[10px] font-semibold uppercase tracking-wider text-blue-300">Future Paths</p>
           <div className="mt-3 grid gap-2">{orderedPaths.map((path) => {
             const isSelected = path.id === selectedPath?.id;
+            const isAlternative = path.id === alternativePath?.id;
             const isRelated = Boolean(selectedCapability?.id && path.capabilityIds.includes(selectedCapability.id));
-            return <button key={path.id} type="button" onClick={() => selectPath(path.id)} aria-pressed={isSelected} className={`flex items-center justify-between rounded-xl border px-3 py-2.5 text-left transition-colors ${isSelected || isRelated ? "border-cyan-200/40 bg-cyan-300/[0.09]" : selectedCapability ? "border-white/[0.06] bg-white/[0.02] opacity-45" : "border-blue-200/15 bg-blue-300/[0.035]"}`}><span><span className="block text-[9px] uppercase tracking-wider text-blue-300">{path.fitLabel}</span><span className="mt-0.5 block text-xs font-medium text-slate-100">{path.roleFamily}</span></span><span className="text-xs text-cyan-200">#{path.rank}</span></button>;
+            const accessibleLabel = isChoosingAlternative && !isSelected ? `Use ${path.roleFamily} as alternative path` : `${isSelected ? "Primary path, " : isAlternative ? "Alternative path, " : ""}${path.roleFamily}`;
+            return <button key={path.id} type="button" onClick={() => selectPath(path.id)} disabled={isChoosingAlternative && isSelected} aria-pressed={isSelected || isAlternative} aria-label={accessibleLabel} className={`flex items-center justify-between rounded-xl border px-3 py-2.5 text-left transition-colors disabled:cursor-not-allowed ${isSelected || isAlternative || isRelated ? "border-cyan-200/40 bg-cyan-300/[0.09]" : selectedCapability ? "border-white/[0.06] bg-white/[0.02] opacity-45" : "border-blue-200/15 bg-blue-300/[0.035]"}`}><span><span className="block text-[9px] uppercase tracking-wider text-blue-300">{isSelected ? "Primary path" : isAlternative ? "Alternative path" : path.fitLabel}</span><span className="mt-0.5 block text-xs font-medium text-slate-100">{path.roleFamily}</span></span><span className="text-xs text-cyan-200">#{path.rank}</span></button>;
           })}</div>
         </div>
-        <MobileDetail result={result} selectedCapability={selectedCapability} selectedPath={selectedPath} evidence={relevantEvidence} growthAreas={visibleGrowthAreas} expandedGrowthAreaId={expandedGrowthAreaId} selectedEvidenceId={selectedEvidenceId} onToggleGrowthArea={toggleGrowthArea} onToggleEvidence={toggleEvidence} />
+        <MobileDetail result={result} selectedCapability={selectedCapability} selectedPath={selectedPath} alternativePath={alternativePath} evidence={relevantEvidence} growthAreas={visibleGrowthAreas} expandedGrowthAreaId={expandedGrowthAreaId} selectedEvidenceId={selectedEvidenceId} onToggleGrowthArea={toggleGrowthArea} onToggleEvidence={toggleEvidence} />
       </div>
 
       <div className="relative hidden h-[640px] overflow-hidden bg-[radial-gradient(circle_at_39%_48%,rgba(34,211,238,0.11),rgba(7,16,28,0.3)_30%,rgba(4,8,16,0.94)_76%)] md:block">
@@ -187,17 +234,19 @@ export function CapabilityExplorer({ result }: { result: CareerCapabilityExplore
           const position = pathPositions[index];
           if (!position) return null;
           const isSelected = path.id === selectedPath?.id;
+          const isAlternative = path.id === alternativePath?.id;
           const related = Boolean(selectedCapability && path.capabilityIds.includes(selectedCapability.id));
-          const dimmed = Boolean(selectedCapability && !related) || Boolean(selectedPath && !isSelected);
+          const dimmed = Boolean(selectedCapability && !related) || Boolean(selectedPath && !isSelected && !isAlternative && !isChoosingAlternative);
           const defaultOpacity = Math.max(.45, 1 - index * .16);
-          return <button key={path.id} type="button" onClick={() => selectPath(path.id)} aria-pressed={isSelected} style={{ left: `${position.x}%`, top: `${position.y}%`, opacity: selectedCapability || selectedPath ? undefined : defaultOpacity }} className={`absolute z-30 w-[22%] -translate-x-1/2 -translate-y-1/2 rounded-r-full rounded-l-xl border px-4 py-3 text-left transition-[border-color,background-color,box-shadow,opacity] duration-200 motion-reduce:transition-none ${isSelected || related ? "border-cyan-200/45 bg-[#102b37] shadow-[0_0_24px_rgba(56,189,248,0.14)]" : dimmed ? "border-white/[0.06] bg-[#09131f] opacity-25" : "border-blue-200/15 bg-[#0b1725] hover:border-blue-200/30"}`}>
-            <span className="flex items-center justify-between gap-2"><span className="text-[9px] font-semibold uppercase tracking-wider text-blue-300">#{path.rank} · {path.fitLabel}</span><span aria-hidden="true" className="text-cyan-300">→</span></span>
+          const accessibleLabel = isChoosingAlternative && !isSelected ? `Use ${path.roleFamily} as alternative path` : `${isSelected ? "Primary path, " : isAlternative ? "Alternative path, " : ""}${path.roleFamily}`;
+          return <button key={path.id} type="button" onClick={() => selectPath(path.id)} disabled={isChoosingAlternative && isSelected} aria-pressed={isSelected || isAlternative} aria-label={accessibleLabel} style={{ left: `${position.x}%`, top: `${position.y}%`, opacity: selectedCapability || selectedPath ? undefined : defaultOpacity }} className={`absolute z-30 w-[22%] -translate-x-1/2 -translate-y-1/2 rounded-r-full rounded-l-xl border px-4 py-3 text-left transition-[border-color,background-color,box-shadow,opacity] duration-200 disabled:cursor-not-allowed motion-reduce:transition-none ${isSelected || isAlternative || related ? "border-cyan-200/45 bg-[#102b37] shadow-[0_0_24px_rgba(56,189,248,0.14)]" : dimmed ? "border-white/[0.06] bg-[#09131f] opacity-25" : "border-blue-200/15 bg-[#0b1725] hover:border-blue-200/30"}`}>
+            <span className="flex items-center justify-between gap-2"><span className="text-[9px] font-semibold uppercase tracking-wider text-blue-300">#{path.rank} · {isSelected ? "Primary path" : isAlternative ? "Alternative path" : path.fitLabel}</span><span aria-hidden="true" className="text-cyan-300">→</span></span>
             <span className="mt-1 block text-xs font-semibold leading-4 text-slate-100">{path.roleFamily}</span>
             {isSelected && <span className="mt-1 block text-[9px] leading-3 text-slate-400">Role Gap Lens active</span>}
           </button>;
         })}
 
-        {(selectedCapability || selectedPath) && <div className="absolute bottom-5 left-[4%] z-30 w-[63%] rounded-2xl border border-violet-200/10 bg-[#07111e]/95 p-3 shadow-2xl backdrop-blur">
+        {(selectedCapability || selectedPath) && !comparisonActive && <div className="absolute bottom-5 left-[4%] z-30 w-[63%] rounded-2xl border border-violet-200/10 bg-[#07111e]/95 p-3 shadow-2xl backdrop-blur">
           <div className="flex items-center justify-between gap-3"><p className="text-[9px] font-semibold uppercase tracking-[0.18em] text-violet-300">Supporting evidence</p><p className="text-[9px] text-slate-500">Mock proof signals</p></div>
           <div className="mt-2 grid gap-2 sm:grid-cols-2">{relevantEvidence.map((experience) => {
             const isSelected = experience.id === selectedEvidence?.id;
@@ -206,23 +255,27 @@ export function CapabilityExplorer({ result }: { result: CareerCapabilityExplore
           })}</div>
         </div>}
 
-        {selectedPath && selectedPathPosition && visibleGrowthAreas.map((growthArea, index) => {
+        {selectedPath && selectedPathPosition && !comparisonActive && visibleGrowthAreas.map((growthArea, index) => {
           const y = selectedPathPosition.y + (index - (visibleGrowthAreas.length - 1) / 2) * GAP_VERTICAL_SPACING;
           const isExpanded = growthArea.id === expandedGrowthArea?.id;
           const contentId = `desktop-proof-action-${growthArea.id}`;
           return <button key={growthArea.id} type="button" onClick={() => toggleGrowthArea(growthArea.id)} aria-expanded={isExpanded} aria-controls={contentId} aria-label={`${isExpanded ? "Hide" : "Show"} example proof to build for ${growthArea.label}`} style={{ left: `${GAP_COLUMN_X}%`, top: `${y}%` }} className={`absolute z-40 w-32 -translate-x-1/2 -translate-y-1/2 rounded-xl border bg-[#2a2113] px-2.5 py-2 text-left shadow-[0_0_18px_rgba(251,191,36,0.08)] transition-[border-color,background-color] duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-200/80 motion-reduce:transition-none ${isExpanded ? "border-amber-200/70 bg-[#352817]" : "border-amber-300/35 hover:border-amber-200/60"}`}><span className="block text-[8px] font-semibold uppercase tracking-wider text-amber-300"><span aria-hidden="true">◆</span> Proof to build</span><span className="mt-1 block text-[10px] leading-3 text-amber-50">{growthArea.label}</span><span aria-hidden="true" className="mt-1 block text-[9px] text-amber-200/70">{isExpanded ? "Hide idea −" : "Show idea +"}</span></button>;
         })}
 
-        {expandedGrowthArea && <article id={`desktop-proof-action-${expandedGrowthArea.id}`} className="absolute left-[3%] top-[26%] z-30 max-h-40 w-[27%] overflow-y-auto rounded-2xl border border-amber-300/25 bg-[#17150f]/95 p-3.5 text-left shadow-[0_12px_32px_rgba(0,0,0,0.22)]">
+        {expandedGrowthArea && !comparisonActive && <article id={`desktop-proof-action-${expandedGrowthArea.id}`} className="absolute left-[3%] top-[26%] z-30 max-h-40 w-[27%] overflow-y-auto rounded-2xl border border-amber-300/25 bg-[#17150f]/95 p-3.5 text-left shadow-[0_12px_32px_rgba(0,0,0,0.22)]">
           <p className="text-[9px] font-semibold uppercase tracking-[0.16em] text-amber-300">Example proof to build</p>
           <p className="mt-2 text-xs leading-5 text-amber-50">{expandedGrowthArea.proofToBuild.trim() || "Example proof idea not available in this preview."}</p>
           {expandedGrowthArea.reason.trim() && <div className="mt-2 border-t border-amber-200/10 pt-2"><p className="text-[9px] font-semibold uppercase tracking-wider text-amber-200/70">Why it matters</p><p className="mt-1 text-[10px] leading-4 text-slate-400">{expandedGrowthArea.reason}</p></div>}
         </article>}
 
-        {selectedEvidence && <div id={`desktop-evidence-detail-${selectedEvidence.id}`} className="absolute left-[3%] top-[26%] z-30 max-h-40 w-[30%] overflow-y-auto rounded-2xl border border-violet-300/25 bg-[#13121d]/95 p-3.5 shadow-[0_12px_32px_rgba(0,0,0,0.22)]">
+        {selectedEvidence && !comparisonActive && <div id={`desktop-evidence-detail-${selectedEvidence.id}`} className="absolute left-[3%] top-[26%] z-30 max-h-40 w-[30%] overflow-y-auto rounded-2xl border border-violet-300/25 bg-[#13121d]/95 p-3.5 shadow-[0_12px_32px_rgba(0,0,0,0.22)]">
           <EvidenceDetail experience={selectedEvidence} result={result} />
         </div>}
+
       </div>
+      {selectedPath && alternativePath && <div className="hidden max-h-72 overflow-y-auto border-t border-blue-200/10 bg-[#08131f]/95 p-4 md:block">
+        <ComparisonSummary headingId="desktop-comparison-heading" primary={selectedPath} alternative={alternativePath} result={result} />
+      </div>}
     </section>
   );
 }
@@ -231,6 +284,7 @@ type MobileDetailProps = {
   result: CareerCapabilityExplorerResult;
   selectedCapability: CareerCapabilityExplorerResult["capabilities"][number] | null;
   selectedPath: CareerCapabilityExplorerResult["adjacentRoles"][number] | null;
+  alternativePath: CareerCapabilityExplorerResult["adjacentRoles"][number] | null;
   evidence: CareerCapabilityExplorerResult["experiences"];
   growthAreas: CareerCapabilityExplorerResult["adjacentRoles"][number]["growthAreas"];
   expandedGrowthAreaId: string | null;
@@ -239,8 +293,9 @@ type MobileDetailProps = {
   onToggleEvidence: (evidenceId: string) => void;
 };
 
-function MobileDetail({ result, selectedCapability, selectedPath, evidence, growthAreas, expandedGrowthAreaId, selectedEvidenceId, onToggleGrowthArea, onToggleEvidence }: MobileDetailProps) {
+function MobileDetail({ result, selectedCapability, selectedPath, alternativePath, evidence, growthAreas, expandedGrowthAreaId, selectedEvidenceId, onToggleGrowthArea, onToggleEvidence }: MobileDetailProps) {
   if (!selectedCapability && !selectedPath) return <div className="p-5 text-sm leading-6 text-slate-400">Select a capability to trace supported directions, or choose a Future Path to open its Role Gap Lens.</div>;
+  if (selectedPath && alternativePath) return <div className="p-4"><ComparisonSummary headingId="mobile-comparison-heading" primary={selectedPath} alternative={alternativePath} result={result} /></div>;
   return <div className="p-4">
     <p className="text-[10px] font-semibold uppercase tracking-wider text-cyan-300">{selectedPath ? "Role Gap Lens" : "Capability focus"}</p>
     <h3 className="mt-1 text-lg font-semibold text-slate-100">{selectedPath?.roleFamily ?? selectedCapability?.label}</h3>
@@ -259,6 +314,64 @@ function MobileDetail({ result, selectedCapability, selectedPath, evidence, grow
       return <div key={experience.id} className="min-w-0"><button type="button" onClick={() => onToggleEvidence(experience.id)} aria-expanded={isSelected} aria-controls={contentId} aria-label={`${isSelected ? "Hide" : "Show"} example evidence detail for ${experience.evidenceText}`} className={`w-full rounded-xl border p-3 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200/80 motion-reduce:transition-none ${isSelected ? "border-violet-200/40 bg-violet-300/[0.1]" : "border-violet-200/10 bg-violet-300/[0.035]"}`}><span className="block text-xs leading-5 text-slate-200">{experience.evidenceText}</span><span className="mt-1 flex items-center justify-between gap-2 text-[10px] text-slate-500"><span>{experience.company} · {experience.role}</span><span aria-hidden="true" className="shrink-0 text-violet-300/70">{isSelected ? "Hide −" : "Detail +"}</span></span></button>{isSelected && <div id={contentId} className="mt-1.5 rounded-xl border border-violet-200/15 bg-violet-300/[0.035] p-3"><EvidenceDetail experience={experience} result={result} /></div>}</div>;
     })}</div></div>
   </div>;
+}
+
+type FuturePath = CareerCapabilityExplorerResult["adjacentRoles"][number];
+
+function ComparisonSummary({ headingId, primary, alternative, result }: { headingId: string; primary: FuturePath; alternative: FuturePath; result: CareerCapabilityExplorerResult }) {
+  const capabilityLabelById = new Map(result.capabilities.map((capability) => [capability.id, capability.label]));
+  const labelsFor = (ids: string[]) => ids.map((id) => capabilityLabelById.get(id)).filter((label) => label !== undefined);
+  const sharedBacked = labelsFor(intersectIds(primary.capabilityIds, alternative.capabilityIds));
+  const primaryBacked = labelsFor(subtractIds(primary.capabilityIds, alternative.capabilityIds));
+  const alternativeBacked = labelsFor(subtractIds(alternative.capabilityIds, primary.capabilityIds));
+  const sharedPartial = labelsFor(intersectIds(primary.partialCapabilityIds, alternative.partialCapabilityIds));
+  const primaryPartial = labelsFor(subtractIds(primary.partialCapabilityIds, alternative.partialCapabilityIds));
+  const alternativePartial = labelsFor(subtractIds(alternative.partialCapabilityIds, primary.partialCapabilityIds));
+  const primaryGrowthLabels = [...new Set(primary.growthAreas.map((area) => area.label))];
+  const alternativeGrowthLabels = [...new Set(alternative.growthAreas.map((area) => area.label))];
+  const sharedGrowth = intersectIds(primaryGrowthLabels, alternativeGrowthLabels);
+  const primaryGrowth = subtractIds(primaryGrowthLabels, alternativeGrowthLabels);
+  const alternativeGrowth = subtractIds(alternativeGrowthLabels, primaryGrowthLabels);
+  const evidenceCount = (path: FuturePath) => result.experiences.filter((experience) => experience.roleIds.includes(path.id)).length;
+  return <section aria-labelledby={headingId} className="min-w-0 text-left">
+    <div className="flex flex-wrap items-start justify-between gap-2"><div><p className="text-[8px] font-semibold uppercase tracking-[0.18em] text-blue-300">Example path comparison</p><h3 id={headingId} className="mt-0.5 text-sm font-semibold text-slate-100">Compare directions</h3></div><p className="text-[8px] uppercase tracking-wider text-slate-500">Mock evidence coverage</p></div>
+    <div className="mt-2 grid gap-2 sm:grid-cols-2">
+      <PathComparisonHeader label="Primary path" path={primary} evidenceCount={evidenceCount(primary)} />
+      <PathComparisonHeader label="Alternative path" path={alternative} evidenceCount={evidenceCount(alternative)} />
+    </div>
+    <div className="mt-2 grid gap-2 sm:grid-cols-2">
+      <ComparisonGroup label="Shared evidence-backed capabilities" tone="teal" items={sharedBacked} empty="No shared mapped evidence-backed capabilities" />
+      <ComparisonGroup label="Shared transferable signals" tone="blue" items={sharedPartial} empty="No shared mapped transferable signals" />
+      <PathDifferenceGroup label="Primary path only" backed={primaryBacked} partial={primaryPartial} />
+      <PathDifferenceGroup label="Alternative path only" backed={alternativeBacked} partial={alternativePartial} />
+    </div>
+    <div className="mt-2 grid gap-2 sm:grid-cols-3">
+      <ComparisonGroup label="Shared proof-building focus" tone="amber" items={sharedGrowth} empty="No exact shared growth-area labels" />
+      <ComparisonGroup label="Primary path proof focus" tone="amber" items={primaryGrowth} empty="No path-specific proof labels" />
+      <ComparisonGroup label="Alternative path proof focus" tone="amber" items={alternativeGrowth} empty="No path-specific proof labels" />
+    </div>
+  </section>;
+}
+
+function PathComparisonHeader({ label, path, evidenceCount }: { label: string; path: FuturePath; evidenceCount: number }) {
+  return <div className="rounded-xl border border-blue-200/10 bg-blue-300/[0.035] px-3 py-2"><p className="text-[8px] font-semibold uppercase tracking-wider text-blue-300">{label}</p><p className="mt-0.5 text-[11px] font-semibold text-slate-100">{path.roleFamily}</p><p className="mt-1 text-[9px] text-slate-400">#{path.rank} · {path.fitLabel}</p><p className="mt-0.5 text-[9px] text-slate-500">Supported by {evidenceCount} mock evidence {evidenceCount === 1 ? "item" : "items"}</p></div>;
+}
+
+function PathDifferenceGroup({ label, backed, partial }: { label: string; backed: string[]; partial: string[] }) {
+  return <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] px-3 py-2"><p className="text-[8px] font-semibold uppercase tracking-wider text-slate-400">{label}</p><ComparisonItems label="Evidence-backed" tone="teal" items={backed} /><ComparisonItems label="Transferable" tone="blue" items={partial} /></div>;
+}
+
+function ComparisonGroup({ label, tone, items, empty }: { label: string; tone: "teal" | "blue" | "amber"; items: string[]; empty: string }) {
+  return <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] px-3 py-2"><p className="text-[8px] font-semibold uppercase tracking-wider text-slate-400">{label}</p>{items.length > 0 ? <ComparisonChips tone={tone} items={items} /> : <p className="mt-1 text-[9px] leading-4 text-slate-600">{empty}</p>}</div>;
+}
+
+function ComparisonItems({ label, tone, items }: { label: string; tone: "teal" | "blue"; items: string[] }) {
+  return <div className="mt-1.5"><p className="text-[8px] text-slate-500">{label}</p>{items.length > 0 ? <ComparisonChips tone={tone} items={items} /> : <p className="mt-1 text-[9px] text-slate-600">None visible on this example path</p>}</div>;
+}
+
+function ComparisonChips({ tone, items }: { tone: "teal" | "blue" | "amber"; items: string[] }) {
+  const classes = tone === "teal" ? "border-teal-300/20 bg-teal-300/[0.06] text-teal-100" : tone === "blue" ? "border-blue-300/20 bg-blue-300/[0.06] text-blue-100" : "border-amber-300/20 bg-amber-300/[0.06] text-amber-100";
+  return <div className="mt-1 flex flex-wrap gap-1">{items.map((item) => <span key={item} className={`rounded-full border px-2 py-0.5 text-[8px] leading-4 ${classes}`}>{item}</span>)}</div>;
 }
 
 function EvidenceDetail({ experience, result }: { experience: CareerCapabilityExplorerResult["experiences"][number]; result: CareerCapabilityExplorerResult }) {
