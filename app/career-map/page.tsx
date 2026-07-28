@@ -10,13 +10,13 @@ export default function CareerMapPage() {
           <span className="rounded-full border border-cyan-300/20 bg-cyan-300/5 px-3 py-1.5 text-xs text-cyan-200">Example map</span>
           <Link href="/" className="text-sm text-slate-400 transition hover:text-cyan-200">Try another resume</Link>
         </header>
-        <section className="py-9 sm:py-12">
+        <section className="py-7 sm:py-9">
           <div className="flex flex-col justify-between gap-5 lg:flex-row lg:items-end"><div><p className="text-xs font-semibold uppercase tracking-[0.22em] text-cyan-300">Capability Explorer</p><h1 className="mt-3 text-3xl font-semibold tracking-[-0.03em] sm:text-5xl">Explore a capability map</h1><p className="mt-3 text-base text-slate-400 sm:text-lg">Discover how strengths can connect to future opportunities.</p></div><span className="w-fit rounded-full border border-blue-300/15 bg-blue-300/5 px-3 py-1.5 text-xs text-blue-200">Mock data preview</span></div>
-          <p className="mt-6 max-w-4xl text-sm leading-6 text-slate-500">{mockCareerPossibility.profileSummary}</p>
-          <p className="mt-4 max-w-4xl rounded-xl border border-cyan-100/10 bg-white/[0.025] px-4 py-3 text-xs leading-5 text-slate-500">Frontend prototype — this example is not connected to the CV or resume text selected on the previous page yet.</p>
+          <p className="mt-4 max-w-4xl text-sm leading-6 text-slate-500">{mockCareerPossibility.profileSummary}</p>
+          <p className="mt-3 max-w-4xl rounded-xl border border-cyan-100/10 bg-white/[0.025] px-4 py-2.5 text-xs leading-5 text-slate-500">Frontend prototype — this example is not connected to the CV or resume text selected on the previous page yet.</p>
         </section>
         <CapabilityExplorer result={mockCareerPossibility} />
-        <footer className="py-8 text-center text-xs text-slate-600">This is a direction map, not a hiring guarantee.</footer>
+        <footer className="py-6 text-center text-xs text-slate-600">This is a direction map, not a hiring guarantee.</footer>
       </div>
     </main>
   );
