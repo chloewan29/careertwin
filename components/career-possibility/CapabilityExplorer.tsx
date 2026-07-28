@@ -60,6 +60,7 @@ export function CapabilityExplorer({ result }: { result: CareerCapabilityExplore
   const [selectedEvidenceId, setSelectedEvidenceId] = useState<string | null>(null);
   const [alternativePathId, setAlternativePathId] = useState<string | null>(null);
   const [isChoosingAlternative, setIsChoosingAlternative] = useState(false);
+  const [isIdentityLensOpen, setIsIdentityLensOpen] = useState(false);
   const orderedPaths = [...result.adjacentRoles].sort((a, b) => a.rank - b.rank || b.fitScore - a.fitScore);
   const selectedCapability = result.capabilities.find((capability) => capability.id === selectedCapabilityId) ?? null;
   const selectedPath = orderedPaths.find((path) => path.id === selectedPathId) ?? null;
@@ -102,15 +103,18 @@ export function CapabilityExplorer({ result }: { result: CareerCapabilityExplore
     setSelectedCapabilityId(null);
     clearPathAndSecondary();
     clearComparison();
+    setIsIdentityLensOpen(false);
   }
 
   function selectCapability(capabilityId: string) {
     clearPathAndSecondary();
     clearComparison();
+    setIsIdentityLensOpen(false);
     setSelectedCapabilityId((current) => current === capabilityId ? null : capabilityId);
   }
 
   function selectPath(pathId: string) {
+    setIsIdentityLensOpen(false);
     if (isChoosingAlternative && selectedPath) {
       if (pathId === selectedPath.id) return;
       clearSecondaryDisclosures();
@@ -126,18 +130,21 @@ export function CapabilityExplorer({ result }: { result: CareerCapabilityExplore
 
   function toggleGrowthArea(growthAreaId: string) {
     if (comparisonActive) return;
+    setIsIdentityLensOpen(false);
     setSelectedEvidenceId(null);
     setExpandedGrowthAreaId((current) => current === growthAreaId ? null : growthAreaId);
   }
 
   function toggleEvidence(evidenceId: string) {
     if (comparisonActive) return;
+    setIsIdentityLensOpen(false);
     setExpandedGrowthAreaId(null);
     setSelectedEvidenceId((current) => current === evidenceId ? null : evidenceId);
   }
 
   function beginComparison() {
     if (!selectedPath) return;
+    setIsIdentityLensOpen(false);
     clearSecondaryDisclosures();
     setIsChoosingAlternative(true);
   }
@@ -145,6 +152,13 @@ export function CapabilityExplorer({ result }: { result: CareerCapabilityExplore
   function stopComparing() {
     clearSecondaryDisclosures();
     clearComparison();
+  }
+
+  function toggleIdentityLens() {
+    if (isIdentityLensOpen) return setIsIdentityLensOpen(false);
+    clearSecondaryDisclosures();
+    clearComparison();
+    setIsIdentityLensOpen(true);
   }
 
   return (
@@ -158,6 +172,7 @@ export function CapabilityExplorer({ result }: { result: CareerCapabilityExplore
           <span className="text-teal-300"><span aria-hidden="true">●</span> Evidence-backed</span>
           <span className="text-blue-300"><span aria-hidden="true">●</span> Transferable</span>
           <span className="text-amber-300"><span aria-hidden="true">◆</span> Proof to build</span>
+          <button type="button" onClick={toggleIdentityLens} aria-expanded={isIdentityLensOpen} aria-controls={isIdentityLensOpen ? "desktop-identity-lens mobile-identity-lens" : undefined} aria-label={`${isIdentityLensOpen ? "Hide" : "View"} example transferable identity`} className="rounded-full border border-slate-300/15 px-3 py-1.5 text-slate-300 transition-colors hover:border-slate-200/30 hover:text-slate-100 motion-reduce:transition-none">{isIdentityLensOpen ? "Hide example identity" : "View example transferable identity"}</button>
           {selectedPath && !comparisonActive && !isChoosingAlternative && <button type="button" onClick={beginComparison} aria-label={`Compare ${selectedPath.roleFamily} with another path`} className="rounded-full border border-blue-300/20 px-3 py-1.5 text-blue-200 transition-colors hover:border-blue-200/40 hover:text-blue-100">Compare another path</button>}
           {selectedPath && isChoosingAlternative && <><span className="text-blue-200" role="status">Choose an alternative path</span><button type="button" onClick={() => setIsChoosingAlternative(false)} className="rounded-full border border-white/10 px-3 py-1.5 text-slate-300 transition-colors hover:border-white/25">Cancel comparison</button></>}
           {comparisonActive && !isChoosingAlternative && <><button type="button" onClick={beginComparison} className="rounded-full border border-blue-300/20 px-3 py-1.5 text-blue-200 transition-colors hover:border-blue-200/40">Replace alternative</button><button type="button" onClick={stopComparing} aria-label="Stop comparing career paths" className="rounded-full border border-white/10 px-3 py-1.5 text-slate-300 transition-colors hover:border-white/25">Stop comparing</button></>}
@@ -183,7 +198,7 @@ export function CapabilityExplorer({ result }: { result: CareerCapabilityExplore
             return <button key={path.id} type="button" onClick={() => selectPath(path.id)} disabled={isChoosingAlternative && isSelected} aria-pressed={isSelected || isAlternative} aria-label={accessibleLabel} className={`flex items-center justify-between rounded-xl border px-3 py-2.5 text-left transition-colors disabled:cursor-not-allowed ${isSelected || isAlternative || isRelated ? "border-cyan-200/40 bg-cyan-300/[0.09]" : selectedCapability ? "border-white/[0.06] bg-white/[0.02] opacity-45" : "border-blue-200/15 bg-blue-300/[0.035]"}`}><span><span className="block text-[9px] uppercase tracking-wider text-blue-300">{isSelected ? "Primary path" : isAlternative ? "Alternative path" : path.fitLabel}</span><span className="mt-0.5 block text-xs font-medium text-slate-100">{path.roleFamily}</span></span><span className="text-xs text-cyan-200">#{path.rank}</span></button>;
           })}</div>
         </div>
-        <MobileDetail result={result} selectedCapability={selectedCapability} selectedPath={selectedPath} alternativePath={alternativePath} evidence={relevantEvidence} growthAreas={visibleGrowthAreas} expandedGrowthAreaId={expandedGrowthAreaId} selectedEvidenceId={selectedEvidenceId} onToggleGrowthArea={toggleGrowthArea} onToggleEvidence={toggleEvidence} />
+        {isIdentityLensOpen ? <div id="mobile-identity-lens" className="border-b border-white/[0.06] p-4"><IdentityLens headingId="mobile-identity-heading" result={result} /></div> : <MobileDetail result={result} selectedCapability={selectedCapability} selectedPath={selectedPath} alternativePath={alternativePath} evidence={relevantEvidence} growthAreas={visibleGrowthAreas} expandedGrowthAreaId={expandedGrowthAreaId} selectedEvidenceId={selectedEvidenceId} onToggleGrowthArea={toggleGrowthArea} onToggleEvidence={toggleEvidence} />}
       </div>
 
       <div className="relative hidden h-[640px] overflow-hidden bg-[radial-gradient(circle_at_39%_48%,rgba(34,211,238,0.11),rgba(7,16,28,0.3)_30%,rgba(4,8,16,0.94)_76%)] md:block">
@@ -273,6 +288,7 @@ export function CapabilityExplorer({ result }: { result: CareerCapabilityExplore
         </div>}
 
       </div>
+      {isIdentityLensOpen && <div id="desktop-identity-lens" className="hidden max-h-72 overflow-y-auto border-t border-slate-200/10 bg-[#0b111b]/95 p-4 md:block"><IdentityLens headingId="desktop-identity-heading" result={result} /></div>}
       {selectedPath && alternativePath && <div className="hidden max-h-72 overflow-y-auto border-t border-blue-200/10 bg-[#08131f]/95 p-4 md:block">
         <ComparisonSummary headingId="desktop-comparison-heading" primary={selectedPath} alternative={alternativePath} result={result} />
       </div>}
@@ -317,6 +333,28 @@ function MobileDetail({ result, selectedCapability, selectedPath, alternativePat
 }
 
 type FuturePath = CareerCapabilityExplorerResult["adjacentRoles"][number];
+
+function IdentityLens({ headingId, result }: { headingId: string; result: CareerCapabilityExplorerResult }) {
+  const established = [...result.capabilities].sort((a, b) => b.strength - a.strength || result.capabilities.indexOf(a) - result.capabilities.indexOf(b)).slice(0, 3);
+  const counts = new Map<string, number>();
+  result.experiences.forEach((experience) => experience.capabilityIds.forEach((id) => counts.set(id, (counts.get(id) ?? 0) + 1)));
+  const recurringIds = new Set([...counts].filter(([, count]) => count > 1).map(([id]) => id));
+  const source = result.experiences.find((experience) => experience.capabilityIds.some((id) => recurringIds.has(id)) && experience.transferabilityExplanation.trim());
+  const pattern = source?.transferabilityExplanation.trim() || "The example experiences show transferable capability across more than one business context.";
+  const directions = [...result.adjacentRoles].sort((a, b) => a.rank - b.rank || b.fitScore - a.fitScore).slice(0, 2);
+  const priorityOrder = { high: 0, medium: 1, low: 2 } as const;
+  const proof = result.adjacentRoles.flatMap((path) => path.growthAreas.map((area, index) => ({ area, rank: path.rank, index }))).sort((a, b) => priorityOrder[a.area.priority] - priorityOrder[b.area.priority] || a.rank - b.rank || a.index - b.index)[0]?.area;
+  return <section aria-labelledby={headingId} className="min-w-0 text-left"><p className="text-[9px] font-semibold uppercase tracking-[0.18em] text-slate-400">Example transferable identity</p><h3 id={headingId} className="mt-1 text-base font-semibold text-slate-100">A pattern beyond job titles</h3><div className="mt-3 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+    <IdentityGroup label="Strongest example signals"><div className="flex flex-wrap gap-1.5">{established.map((capability) => <span key={capability.id} className="rounded-full border border-slate-300/15 bg-white/[0.025] px-2 py-1 text-[9px] text-slate-200">{capability.label} · {capability.strength}% example signal</span>)}</div></IdentityGroup>
+    <IdentityGroup label="Transferable pattern"><p>{pattern}</p></IdentityGroup>
+    <IdentityGroup label="Credible example directions"><div className="grid gap-1.5">{directions.map((path) => <div key={path.id} className="text-[10px] text-slate-200">#{path.rank} · {path.roleFamily} <span className="text-slate-500">— {path.fitLabel}</span></div>)}</div></IdentityGroup>
+    <IdentityGroup label="Example proof priority">{proof ? <div className="border-l-2 border-amber-300/35 pl-2"><p className="text-[10px] font-medium text-amber-100">{proof.label}</p><p className="mt-1 text-[9px] leading-4 text-slate-400">{proof.proofToBuild}</p></div> : <p>No example proof priority is available.</p>}</IdentityGroup>
+  </div></section>;
+}
+
+function IdentityGroup({ label, children }: { label: string; children: ReactNode }) {
+  return <div className="min-w-0 rounded-xl border border-white/[0.06] bg-white/[0.02] p-3"><h4 className="text-[8px] font-semibold uppercase tracking-wider text-slate-500">{label}</h4><div className="mt-2 break-words text-[10px] leading-4 text-slate-300">{children}</div></div>;
+}
 
 function ComparisonSummary({ headingId, primary, alternative, result }: { headingId: string; primary: FuturePath; alternative: FuturePath; result: CareerCapabilityExplorerResult }) {
   const capabilityLabelById = new Map(result.capabilities.map((capability) => [capability.id, capability.label]));
