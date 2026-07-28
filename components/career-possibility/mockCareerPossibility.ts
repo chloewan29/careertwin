@@ -19,6 +19,9 @@ export type SupportingExperience = {
   relevance: "high" | "strong" | "medium";
   capabilityIds: string[];
   roleIds: string[];
+  context: string;
+  outcome: string;
+  transferabilityExplanation: string;
 };
 
 export type AdjacentRole = CareerMapFuturePath;
@@ -41,9 +44,9 @@ const capabilities: CapabilityNode[] = [
 ];
 
 const experiences: SupportingExperience[] = [
-    { id: "optus", company: "Optus", role: "Analytics Lead", evidenceText: "Led self-serve analytics adoption across cross-functional teams.", relevance: "high", capabilityIds: ["analytics", "transformation", "leadership", "delivery", "customer"], roleIds: ["path:transformation-manager", "path:strategy-operations-manager", "path:customer-insights-lead", "path:program-manager"] },
-    { id: "amobee", company: "Amobee", role: "Sr Product Analytics", evidenceText: "Built scalable measurement frameworks and commercial insights.", relevance: "strong", capabilityIds: ["analytics", "transformation", "commercial", "delivery"], roleIds: ["path:transformation-manager", "path:strategy-operations-manager", "path:customer-insights-lead"] },
-    { id: "microsoft", company: "Microsoft Ads", role: "Insights", evidenceText: "Drove client-facing storytelling and strategic recommendations.", relevance: "strong", capabilityIds: ["analytics", "transformation", "leadership", "commercial", "customer"], roleIds: ["path:strategy-operations-manager", "path:customer-insights-lead", "path:program-manager"] },
+    { id: "optus", company: "Optus", role: "Analytics Lead", evidenceText: "Led self-serve analytics adoption across cross-functional teams.", relevance: "high", capabilityIds: ["analytics", "transformation", "leadership", "delivery", "customer"], roleIds: ["path:transformation-manager", "path:strategy-operations-manager", "path:customer-insights-lead", "path:program-manager"], context: "Worked across analytics and commercial teams to improve how decisions were supported.", outcome: "Created a more repeatable way for teams to access and use insights.", transferabilityExplanation: "Shows how adoption, stakeholder alignment, and delivery can turn specialist analysis into shared organisational capability." },
+    { id: "amobee", company: "Amobee", role: "Sr Product Analytics", evidenceText: "Built scalable measurement frameworks and commercial insights.", relevance: "strong", capabilityIds: ["analytics", "transformation", "commercial", "delivery"], roleIds: ["path:transformation-manager", "path:strategy-operations-manager", "path:customer-insights-lead"], context: "Supported product and commercial teams that needed a consistent way to frame measurement decisions.", outcome: "Established reusable measurement approaches that made commercial insight easier to apply.", transferabilityExplanation: "Shows the ability to structure ambiguous questions into repeatable decision tools that can work across functions." },
+    { id: "microsoft", company: "Microsoft Ads", role: "Insights", evidenceText: "Drove client-facing storytelling and strategic recommendations.", relevance: "strong", capabilityIds: ["analytics", "transformation", "leadership", "commercial", "customer"], roleIds: ["path:strategy-operations-manager", "path:customer-insights-lead", "path:program-manager"], context: "Worked in a client-facing setting where insight needed to connect with commercial priorities.", outcome: "Turned analysis into clearer narratives and recommendations for stakeholder decisions.", transferabilityExplanation: "Shows the ability to translate evidence for different audiences, a capability that transfers beyond an insights role." },
 ];
 
 const demoRoleFamilyIds = ["transformation-manager", "strategy-operations-manager", "customer-insights-lead", "program-manager"];

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import type { CareerCapabilityExplorerResult } from "./mockCareerPossibility";
 
 type Point = { x: number; y: number };
@@ -47,6 +47,7 @@ export function CapabilityExplorer({ result }: { result: CareerCapabilityExplore
   const [selectedCapabilityId, setSelectedCapabilityId] = useState<string | null>(null);
   const [selectedPathId, setSelectedPathId] = useState<string | null>(null);
   const [expandedGrowthAreaId, setExpandedGrowthAreaId] = useState<string | null>(null);
+  const [selectedEvidenceId, setSelectedEvidenceId] = useState<string | null>(null);
   const orderedPaths = [...result.adjacentRoles].sort((a, b) => a.rank - b.rank || b.fitScore - a.fitScore);
   const selectedCapability = result.capabilities.find((capability) => capability.id === selectedCapabilityId) ?? null;
   const selectedPath = orderedPaths.find((path) => path.id === selectedPathId) ?? null;
@@ -66,30 +67,42 @@ export function CapabilityExplorer({ result }: { result: CareerCapabilityExplore
       : [];
   const visibleGrowthAreas = selectedPath?.growthAreas.slice(0, 3) ?? [];
   const expandedGrowthArea = visibleGrowthAreas.find((growthArea) => growthArea.id === expandedGrowthAreaId) ?? null;
+  const selectedEvidence = relevantEvidence.find((experience) => experience.id === selectedEvidenceId) ?? null;
 
-  function clearPathAndProof() {
-    setSelectedPathId(null);
+  function clearSecondaryDisclosures() {
     setExpandedGrowthAreaId(null);
+    setSelectedEvidenceId(null);
+  }
+
+  function clearPathAndSecondary() {
+    setSelectedPathId(null);
+    clearSecondaryDisclosures();
   }
 
   function clearSelection() {
     setSelectedCapabilityId(null);
-    clearPathAndProof();
+    clearPathAndSecondary();
   }
 
   function selectCapability(capabilityId: string) {
-    clearPathAndProof();
+    clearPathAndSecondary();
     setSelectedCapabilityId((current) => current === capabilityId ? null : capabilityId);
   }
 
   function selectPath(pathId: string) {
     setSelectedCapabilityId(null);
-    setExpandedGrowthAreaId(null);
+    clearSecondaryDisclosures();
     setSelectedPathId((current) => current === pathId ? null : pathId);
   }
 
   function toggleGrowthArea(growthAreaId: string) {
+    setSelectedEvidenceId(null);
     setExpandedGrowthAreaId((current) => current === growthAreaId ? null : growthAreaId);
+  }
+
+  function toggleEvidence(evidenceId: string) {
+    setExpandedGrowthAreaId(null);
+    setSelectedEvidenceId((current) => current === evidenceId ? null : evidenceId);
   }
 
   return (
@@ -123,7 +136,7 @@ export function CapabilityExplorer({ result }: { result: CareerCapabilityExplore
             return <button key={path.id} type="button" onClick={() => selectPath(path.id)} aria-pressed={isSelected} className={`flex items-center justify-between rounded-xl border px-3 py-2.5 text-left transition-colors ${isSelected || isRelated ? "border-cyan-200/40 bg-cyan-300/[0.09]" : selectedCapability ? "border-white/[0.06] bg-white/[0.02] opacity-45" : "border-blue-200/15 bg-blue-300/[0.035]"}`}><span><span className="block text-[9px] uppercase tracking-wider text-blue-300">{path.fitLabel}</span><span className="mt-0.5 block text-xs font-medium text-slate-100">{path.roleFamily}</span></span><span className="text-xs text-cyan-200">#{path.rank}</span></button>;
           })}</div>
         </div>
-        <MobileDetail result={result} selectedCapability={selectedCapability} selectedPath={selectedPath} evidence={relevantEvidence} growthAreas={visibleGrowthAreas} expandedGrowthAreaId={expandedGrowthAreaId} onToggleGrowthArea={toggleGrowthArea} />
+        <MobileDetail result={result} selectedCapability={selectedCapability} selectedPath={selectedPath} evidence={relevantEvidence} growthAreas={visibleGrowthAreas} expandedGrowthAreaId={expandedGrowthAreaId} selectedEvidenceId={selectedEvidenceId} onToggleGrowthArea={toggleGrowthArea} onToggleEvidence={toggleEvidence} />
       </div>
 
       <div className="relative hidden h-[640px] overflow-hidden bg-[radial-gradient(circle_at_39%_48%,rgba(34,211,238,0.11),rgba(7,16,28,0.3)_30%,rgba(4,8,16,0.94)_76%)] md:block">
@@ -186,7 +199,11 @@ export function CapabilityExplorer({ result }: { result: CareerCapabilityExplore
 
         {(selectedCapability || selectedPath) && <div className="absolute bottom-5 left-[4%] z-30 w-[63%] rounded-2xl border border-violet-200/10 bg-[#07111e]/95 p-3 shadow-2xl backdrop-blur">
           <div className="flex items-center justify-between gap-3"><p className="text-[9px] font-semibold uppercase tracking-[0.18em] text-violet-300">Supporting evidence</p><p className="text-[9px] text-slate-500">Mock proof signals</p></div>
-          <div className="mt-2 grid gap-2 sm:grid-cols-2">{relevantEvidence.map((experience) => <article key={experience.id} className="rounded-xl border border-violet-200/10 bg-violet-300/[0.035] px-3 py-2"><p className="text-[11px] leading-4 text-slate-200">{experience.evidenceText}</p><p className="mt-1 text-[9px] text-slate-500">{experience.company} · {experience.role}</p></article>)}</div>
+          <div className="mt-2 grid gap-2 sm:grid-cols-2">{relevantEvidence.map((experience) => {
+            const isSelected = experience.id === selectedEvidence?.id;
+            const contentId = `desktop-evidence-detail-${experience.id}`;
+            return <button key={experience.id} type="button" onClick={() => toggleEvidence(experience.id)} aria-expanded={isSelected} aria-controls={contentId} aria-label={`${isSelected ? "Hide" : "Show"} example evidence detail for ${experience.evidenceText}`} className={`rounded-xl border px-3 py-2 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200/80 motion-reduce:transition-none ${isSelected ? "border-violet-200/40 bg-violet-300/[0.1]" : "border-violet-200/10 bg-violet-300/[0.035] hover:border-violet-200/25"}`}><span className="block text-[11px] leading-4 text-slate-200">{experience.evidenceText}</span><span className="mt-1 flex items-center justify-between gap-2 text-[9px] text-slate-500"><span>{experience.company} · {experience.role}</span><span aria-hidden="true" className="shrink-0 text-violet-300/70">{isSelected ? "Hide −" : "Detail +"}</span></span></button>;
+          })}</div>
         </div>}
 
         {selectedPath && selectedPathPosition && visibleGrowthAreas.map((growthArea, index) => {
@@ -201,6 +218,10 @@ export function CapabilityExplorer({ result }: { result: CareerCapabilityExplore
           <p className="mt-2 text-xs leading-5 text-amber-50">{expandedGrowthArea.proofToBuild.trim() || "Example proof idea not available in this preview."}</p>
           {expandedGrowthArea.reason.trim() && <div className="mt-2 border-t border-amber-200/10 pt-2"><p className="text-[9px] font-semibold uppercase tracking-wider text-amber-200/70">Why it matters</p><p className="mt-1 text-[10px] leading-4 text-slate-400">{expandedGrowthArea.reason}</p></div>}
         </article>}
+
+        {selectedEvidence && <div id={`desktop-evidence-detail-${selectedEvidence.id}`} className="absolute left-[3%] top-[26%] z-30 max-h-40 w-[30%] overflow-y-auto rounded-2xl border border-violet-300/25 bg-[#13121d]/95 p-3.5 shadow-[0_12px_32px_rgba(0,0,0,0.22)]">
+          <EvidenceDetail experience={selectedEvidence} result={result} />
+        </div>}
       </div>
     </section>
   );
@@ -213,10 +234,12 @@ type MobileDetailProps = {
   evidence: CareerCapabilityExplorerResult["experiences"];
   growthAreas: CareerCapabilityExplorerResult["adjacentRoles"][number]["growthAreas"];
   expandedGrowthAreaId: string | null;
+  selectedEvidenceId: string | null;
   onToggleGrowthArea: (growthAreaId: string) => void;
+  onToggleEvidence: (evidenceId: string) => void;
 };
 
-function MobileDetail({ result, selectedCapability, selectedPath, evidence, growthAreas, expandedGrowthAreaId, onToggleGrowthArea }: MobileDetailProps) {
+function MobileDetail({ result, selectedCapability, selectedPath, evidence, growthAreas, expandedGrowthAreaId, selectedEvidenceId, onToggleGrowthArea, onToggleEvidence }: MobileDetailProps) {
   if (!selectedCapability && !selectedPath) return <div className="p-5 text-sm leading-6 text-slate-400">Select a capability to trace supported directions, or choose a Future Path to open its Role Gap Lens.</div>;
   return <div className="p-4">
     <p className="text-[10px] font-semibold uppercase tracking-wider text-cyan-300">{selectedPath ? "Role Gap Lens" : "Capability focus"}</p>
@@ -230,8 +253,35 @@ function MobileDetail({ result, selectedCapability, selectedPath, evidence, grow
         return <div key={area.id} className="min-w-0"><button type="button" onClick={() => onToggleGrowthArea(area.id)} aria-expanded={isExpanded} aria-controls={contentId} aria-label={`${isExpanded ? "Hide" : "Show"} example proof to build for ${area.label}`} className={`flex w-full items-center justify-between gap-3 rounded-lg border px-3 py-2 text-left text-xs text-amber-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-200/80 motion-reduce:transition-none ${isExpanded ? "border-amber-200/55 bg-amber-300/[0.12]" : "border-amber-300/30 bg-amber-300/[0.07]"}`}><span><span aria-hidden="true">◆</span> {area.label}</span><span aria-hidden="true" className="shrink-0 text-amber-200/70">{isExpanded ? "−" : "+"}</span></button>{isExpanded && <div id={contentId} className="mt-1.5 rounded-lg border border-amber-200/15 bg-amber-300/[0.04] px-3 py-2.5"><p className="text-[9px] font-semibold uppercase tracking-wider text-amber-300">Example proof to build</p><p className="mt-1.5 break-words text-xs leading-5 text-amber-50">{area.proofToBuild.trim() || "Example proof idea not available in this preview."}</p>{area.reason.trim() && <div className="mt-2 border-t border-amber-200/10 pt-2"><p className="text-[9px] font-semibold uppercase tracking-wider text-amber-200/70">Why it matters</p><p className="mt-1 break-words text-[11px] leading-4 text-slate-400">{area.reason}</p></div>}</div>}</div>;
       })}</div></div>
     </div> : <div className="mt-3 flex flex-wrap gap-2">{selectedCapability?.subCapabilities.map((sub) => <span key={sub.id} className="rounded-full border border-blue-300/15 bg-blue-300/[0.06] px-2.5 py-1.5 text-xs text-blue-100">{sub.label}</span>)}</div>}
-    <div className="mt-5"><p className="text-[10px] uppercase tracking-wider text-violet-300">Supporting evidence</p><div className="mt-2 grid gap-2">{evidence.map((experience) => <article key={experience.id} className="rounded-xl border border-violet-200/10 bg-violet-300/[0.035] p-3"><p className="text-xs leading-5 text-slate-200">{experience.evidenceText}</p><p className="mt-1 text-[10px] text-slate-500">{experience.company} · {experience.role}</p></article>)}</div></div>
+    <div className="mt-5"><p className="text-[10px] uppercase tracking-wider text-violet-300">Supporting evidence</p><div className="mt-2 grid gap-2">{evidence.map((experience) => {
+      const isSelected = experience.id === selectedEvidenceId;
+      const contentId = `mobile-evidence-detail-${experience.id}`;
+      return <div key={experience.id} className="min-w-0"><button type="button" onClick={() => onToggleEvidence(experience.id)} aria-expanded={isSelected} aria-controls={contentId} aria-label={`${isSelected ? "Hide" : "Show"} example evidence detail for ${experience.evidenceText}`} className={`w-full rounded-xl border p-3 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200/80 motion-reduce:transition-none ${isSelected ? "border-violet-200/40 bg-violet-300/[0.1]" : "border-violet-200/10 bg-violet-300/[0.035]"}`}><span className="block text-xs leading-5 text-slate-200">{experience.evidenceText}</span><span className="mt-1 flex items-center justify-between gap-2 text-[10px] text-slate-500"><span>{experience.company} · {experience.role}</span><span aria-hidden="true" className="shrink-0 text-violet-300/70">{isSelected ? "Hide −" : "Detail +"}</span></span></button>{isSelected && <div id={contentId} className="mt-1.5 rounded-xl border border-violet-200/15 bg-violet-300/[0.035] p-3"><EvidenceDetail experience={experience} result={result} /></div>}</div>;
+    })}</div></div>
   </div>;
+}
+
+function EvidenceDetail({ experience, result }: { experience: CareerCapabilityExplorerResult["experiences"][number]; result: CareerCapabilityExplorerResult }) {
+  const capabilityLabels = experience.capabilityIds
+    .map((id) => result.capabilities.find((capability) => capability.id === id)?.label)
+    .filter((label) => label !== undefined);
+  const pathLabels = experience.roleIds
+    .map((id) => result.adjacentRoles.find((path) => path.id === id)?.roleFamily)
+    .filter((label) => label !== undefined);
+  return <div className="min-w-0 text-left">
+    <p className="text-[9px] font-semibold uppercase tracking-[0.16em] text-violet-300">Example evidence detail</p>
+    {experience.evidenceText.trim() && <DetailSection label="Action or achievement"><p>{experience.evidenceText}</p></DetailSection>}
+    {experience.context.trim() && <DetailSection label="Context"><p>{experience.context}</p></DetailSection>}
+    {experience.outcome.trim() && <DetailSection label="Outcome"><p>{experience.outcome}</p></DetailSection>}
+    {capabilityLabels.length > 0 && <DetailSection label="Capabilities demonstrated"><div className="flex flex-wrap gap-1.5">{capabilityLabels.map((label) => <span key={label} className="rounded-full border border-teal-300/20 bg-teal-300/[0.06] px-2 py-1 text-[9px] text-teal-100">{label}</span>)}</div></DetailSection>}
+    {pathLabels.length > 0 && <DetailSection label="Future Paths supported"><div className="flex flex-wrap gap-1.5">{pathLabels.map((label) => <span key={label} className="rounded-full border border-blue-300/20 bg-blue-300/[0.06] px-2 py-1 text-[9px] text-blue-100">{label}</span>)}</div></DetailSection>}
+    {experience.transferabilityExplanation.trim() && <DetailSection label="Why this transfers"><p>{experience.transferabilityExplanation}</p></DetailSection>}
+    <DetailSection label="Mock relevance signal"><p className="capitalize">{experience.relevance}</p></DetailSection>
+  </div>;
+}
+
+function DetailSection({ label, children }: { label: string; children: ReactNode }) {
+  return <section className="mt-2 border-t border-violet-200/10 pt-2"><h4 className="text-[8px] font-semibold uppercase tracking-wider text-violet-200/65">{label}</h4><div className="mt-1 break-words text-[10px] leading-4 text-slate-300">{children}</div></section>;
 }
 
 function SemanticGroup({ label, tone, ids, result }: { label: string; tone: "teal" | "blue"; ids: string[]; result: CareerCapabilityExplorerResult }) {
