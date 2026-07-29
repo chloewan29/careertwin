@@ -2,6 +2,11 @@ import {
   validateCanonicalCapabilityLibrary,
   type CanonicalCapabilityLibrary,
 } from "./canonical-capability-library";
+import type {
+  CanonicalCapabilityGovernanceDecision,
+  CanonicalCapabilityGovernanceLibrary,
+} from "./canonical-capability-governance-decisions";
+import { validateCanonicalCapabilityGovernance } from "./canonical-capability-governance-decisions";
 import {
   ROLE_CAPABILITY_PROFILE_SCHEMA_VERSION,
   type CapabilityImportance,
@@ -45,6 +50,19 @@ export type RoleCapabilityRegistryCoverage = {
   readonly referenceCoverageRatio: number;
   readonly uniqueIdCoverageRatio: number;
   readonly complete: boolean;
+  readonly deferredRequirementReferenceCount: number;
+  readonly deferredUniqueRequirementIdCount: number;
+  readonly excludedRequirementReferenceCount: number;
+  readonly excludedUniqueRequirementIdCount: number;
+  readonly unknownRequirementReferenceCount: number;
+  readonly unknownUniqueRequirementIdCount: number;
+  readonly governedUniqueRequirementIdCount: number;
+  readonly governanceComplete: boolean;
+};
+
+export type GovernedNoncanonicalRoleCapabilityReference = RoleCapabilityRequirementReference & {
+  readonly outcome: "defer" | "exclude";
+  readonly reason: Exclude<CanonicalCapabilityGovernanceDecision, { outcome: "admit" }>["reason"];
 };
 
 export type RoleCapabilityRegistryReconciliationIssueCode =
@@ -52,6 +70,7 @@ export type RoleCapabilityRegistryReconciliationIssueCode =
   | "invalid_profile_schema_version"
   | "mixed_profile_schema_versions"
   | "invalid_canonical_library"
+  | "invalid_governance_library"
   | "unknown_canonical_capability"
   | "role_requirement_label_differs_from_canonical"
   | "canonical_capability_unreferenced"
@@ -73,6 +92,8 @@ type ReconciliationResultBase = {
   readonly coverage: RoleCapabilityRegistryCoverage;
   /** Diagnostic references only. Canonical selector definitions remain registry-owned. */
   readonly resolvedReferences: readonly ResolvedRoleCapabilityReference[];
+  readonly deferredReferences: readonly GovernedNoncanonicalRoleCapabilityReference[];
+  readonly excludedReferences: readonly GovernedNoncanonicalRoleCapabilityReference[];
   readonly warnings: readonly RoleCapabilityRegistryReconciliationIssue[];
 };
 
@@ -86,6 +107,7 @@ export type RoleCapabilityRegistryReconciliationResult =
 export type ReconcileRoleCapabilityProfilesInput = {
   readonly profiles: readonly RoleCapabilityProfile[];
   readonly canonicalLibrary: CanonicalCapabilityLibrary;
+  readonly governanceLibrary?: CanonicalCapabilityGovernanceLibrary;
 };
 
 type CollectedReference = RoleCapabilityRequirementReference & {
@@ -230,6 +252,14 @@ function emptyCoverage(
     referenceCoverageRatio: 0,
     uniqueIdCoverageRatio: 0,
     complete: false,
+    deferredRequirementReferenceCount: 0,
+    deferredUniqueRequirementIdCount: 0,
+    excludedRequirementReferenceCount: 0,
+    excludedUniqueRequirementIdCount: 0,
+    unknownRequirementReferenceCount: sourceRequirementReferenceCount,
+    unknownUniqueRequirementIdCount: uniqueRequirementIdCount,
+    governedUniqueRequirementIdCount: 0,
+    governanceComplete: false,
   };
 }
 
@@ -258,6 +288,17 @@ export function reconcileRoleCapabilityProfilesWithCanonicalLibrary(
       .join(", ");
     inputIssues.push(issue("invalid_canonical_library", "error", "canonicalLibrary", `Canonical capability library validation failed: ${summary}.`));
   }
+  if (input.governanceLibrary && canonicalValidation.ok) {
+    const governanceValidation = validateCanonicalCapabilityGovernance({
+      library: input.governanceLibrary,
+      reviewedCandidateIds: input.governanceLibrary.decisions.map((decision) => decision.capabilityId),
+      canonicalLibrary: input.canonicalLibrary,
+    });
+    const staleDecision = input.governanceLibrary.decisions.find((decision) => !uniqueRequirementIds.has(decision.capabilityId));
+    if (!governanceValidation.ok || staleDecision) {
+      inputIssues.push(issue("invalid_governance_library", "error", "governanceLibrary", "Canonical capability governance decisions are invalid for the supplied profiles and registry."));
+    }
+  }
   if (profileVersions.length > 1) {
     inputIssues.push(issue("mixed_profile_schema_versions", "error", "profiles.version", `Role capability profiles contain mixed schema versions: ${profileVersions.join(", ")}.`));
   } else if (input.profiles.length > 0 && (!profileSchemaVersion || !canonicalText(profileSchemaVersion) || !profileSchemaValid)) {
@@ -281,6 +322,8 @@ export function reconcileRoleCapabilityProfilesWithCanonicalLibrary(
       reconciliationVersion: version,
       coverage: emptyCoverage(input.profiles.length, references.length, uniqueRequirementIds.size, input.canonicalLibrary.capabilities.length),
       resolvedReferences: [],
+      deferredReferences: [],
+      excludedReferences: [],
       issues: inputIssues.sort(compareIssues),
       warnings: [],
     };
@@ -289,6 +332,9 @@ export function reconcileRoleCapabilityProfilesWithCanonicalLibrary(
   const canonicalById = new Map(input.canonicalLibrary.capabilities.map((capability) => [capability.id, capability]));
   const resolvedReferences: ResolvedRoleCapabilityReference[] = [];
   const unresolvedById = new Map<string, RoleCapabilityRequirementReference[]>();
+  const deferredReferences: GovernedNoncanonicalRoleCapabilityReference[] = [];
+  const excludedReferences: GovernedNoncanonicalRoleCapabilityReference[] = [];
+  const governanceById = new Map((input.governanceLibrary?.decisions ?? []).map((decision) => [decision.capabilityId, decision]));
   const referencedCanonicalIds = new Set<string>();
   const warnings: RoleCapabilityRegistryReconciliationIssue[] = [];
 
@@ -296,6 +342,15 @@ export function reconcileRoleCapabilityProfilesWithCanonicalLibrary(
     const reference = publicReference(collected);
     const canonical = canonicalById.get(reference.capabilityId);
     if (!canonical) {
+      const governance = governanceById.get(reference.capabilityId);
+      if (governance?.outcome === "defer") {
+        deferredReferences.push({ ...reference, outcome: "defer", reason: governance.reason });
+        return;
+      }
+      if (governance?.outcome === "exclude") {
+        excludedReferences.push({ ...reference, outcome: "exclude", reason: governance.reason });
+        return;
+      }
       unresolvedById.set(reference.capabilityId, [...(unresolvedById.get(reference.capabilityId) ?? []), reference]);
       return;
     }
@@ -357,22 +412,35 @@ export function reconcileRoleCapabilityProfilesWithCanonicalLibrary(
   });
 
   resolvedReferences.sort(compareReferences);
+  deferredReferences.sort(compareReferences);
+  excludedReferences.sort(compareReferences);
   warnings.sort(compareWarnings);
   const matchedUniqueIds = new Set(resolvedReferences.map((reference) => reference.capabilityId));
   const unresolvedReferenceCount = [...unresolvedById.values()].reduce((total, occurrences) => total + occurrences.length, 0);
+  const deferredUniqueIds = new Set(deferredReferences.map((reference) => reference.capabilityId));
+  const excludedUniqueIds = new Set(excludedReferences.map((reference) => reference.capabilityId));
+  const governedUniqueIdCount = matchedUniqueIds.size + deferredUniqueIds.size + excludedUniqueIds.size;
   const coverage: RoleCapabilityRegistryCoverage = {
     sourceProfileCount: input.profiles.length,
     sourceRequirementReferenceCount: references.length,
     uniqueRequirementIdCount: uniqueRequirementIds.size,
     matchedRequirementReferenceCount: resolvedReferences.length,
     matchedUniqueRequirementIdCount: matchedUniqueIds.size,
-    unresolvedRequirementReferenceCount: unresolvedReferenceCount,
-    unresolvedUniqueRequirementIdCount: unresolvedById.size,
+    unresolvedRequirementReferenceCount: unresolvedReferenceCount + deferredReferences.length + excludedReferences.length,
+    unresolvedUniqueRequirementIdCount: unresolvedById.size + deferredUniqueIds.size + excludedUniqueIds.size,
     registryCapabilityCount: input.canonicalLibrary.capabilities.length,
     unreferencedRegistryCapabilityCount: input.canonicalLibrary.capabilities.length - referencedCanonicalIds.size,
     referenceCoverageRatio: references.length === 0 ? 0 : resolvedReferences.length / references.length,
     uniqueIdCoverageRatio: uniqueRequirementIds.size === 0 ? 0 : matchedUniqueIds.size / uniqueRequirementIds.size,
-    complete: unresolvedById.size === 0,
+    complete: unresolvedById.size === 0 && deferredUniqueIds.size === 0 && excludedUniqueIds.size === 0,
+    deferredRequirementReferenceCount: deferredReferences.length,
+    deferredUniqueRequirementIdCount: deferredUniqueIds.size,
+    excludedRequirementReferenceCount: excludedReferences.length,
+    excludedUniqueRequirementIdCount: excludedUniqueIds.size,
+    unknownRequirementReferenceCount: unresolvedReferenceCount,
+    unknownUniqueRequirementIdCount: unresolvedById.size,
+    governedUniqueRequirementIdCount: governedUniqueIdCount,
+    governanceComplete: unresolvedById.size === 0 && governedUniqueIdCount === uniqueRequirementIds.size,
   };
 
   if (!coverage.complete) {
@@ -381,9 +449,11 @@ export function reconcileRoleCapabilityProfilesWithCanonicalLibrary(
       reconciliationVersion: version,
       coverage,
       resolvedReferences,
+      deferredReferences,
+      excludedReferences,
       issues: unknownIssues,
       warnings,
     };
   }
-  return { ok: true, reconciliationVersion: version, coverage, resolvedReferences, warnings };
+  return { ok: true, reconciliationVersion: version, coverage, resolvedReferences, deferredReferences, excludedReferences, warnings };
 }

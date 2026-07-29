@@ -6,6 +6,7 @@ import {
   type CanonicalCapabilityDefinition,
   type CanonicalCapabilityLibrary,
 } from "../../lib/career-possibility/canonical-capability-library";
+import { canonicalCapabilityGovernanceLibrary, type CanonicalCapabilityGovernanceLibrary } from "../../lib/career-possibility/canonical-capability-governance-decisions";
 import {
   ROLE_CAPABILITY_REGISTRY_RECONCILIATION_VERSION,
   reconcileRoleCapabilityProfilesWithCanonicalLibrary,
@@ -70,7 +71,8 @@ const completeProfiles = () => [
 const reconcile = (
   profiles: readonly RoleCapabilityProfile[] = completeProfiles(),
   canonicalLibrary: CanonicalCapabilityLibrary = completeLibrary(),
-) => reconcileRoleCapabilityProfilesWithCanonicalLibrary({ profiles, canonicalLibrary });
+  governanceLibrary?: CanonicalCapabilityGovernanceLibrary,
+) => reconcileRoleCapabilityProfilesWithCanonicalLibrary({ profiles, canonicalLibrary, governanceLibrary });
 
 const expectIssue = (result: RoleCapabilityRegistryReconciliationResult, code: string) => {
   assert.equal(result.ok, false);
@@ -131,6 +133,14 @@ assert.deepEqual(clean.coverage, {
   referenceCoverageRatio: 1,
   uniqueIdCoverageRatio: 1,
   complete: true,
+  deferredRequirementReferenceCount: 0,
+  deferredUniqueRequirementIdCount: 0,
+  excludedRequirementReferenceCount: 0,
+  excludedUniqueRequirementIdCount: 0,
+  unknownRequirementReferenceCount: 0,
+  unknownUniqueRequirementIdCount: 0,
+  governedUniqueRequirementIdCount: 2,
+  governanceComplete: true,
 });
 assert.equal("definitions" in clean, false);
 assert.equal(clean.resolvedReferences.length, 3);
@@ -239,59 +249,45 @@ assert.equal(JSON.stringify([frozenProfiles, frozenLibrary]), frozenBefore);
 
 const currentFixtureBefore = JSON.stringify(roleCapabilityProfiles);
 const canonicalBefore = JSON.stringify(canonicalCapabilityLibrary);
-const currentFixture = reconcile(roleCapabilityProfiles, canonicalCapabilityLibrary);
+const currentFixture = reconcile(roleCapabilityProfiles, canonicalCapabilityLibrary, canonicalCapabilityGovernanceLibrary);
 assert.equal(currentFixture.ok, false);
 assert.deepEqual(currentFixture.coverage, {
   sourceProfileCount: 20,
   sourceRequirementReferenceCount: 80,
   uniqueRequirementIdCount: 79,
-  matchedRequirementReferenceCount: 26,
-  matchedUniqueRequirementIdCount: 25,
-  unresolvedRequirementReferenceCount: 54,
-  unresolvedUniqueRequirementIdCount: 54,
-  registryCapabilityCount: 25,
+  matchedRequirementReferenceCount: 52,
+  matchedUniqueRequirementIdCount: 51,
+  unresolvedRequirementReferenceCount: 28,
+  unresolvedUniqueRequirementIdCount: 28,
+  registryCapabilityCount: 51,
   unreferencedRegistryCapabilityCount: 0,
-  referenceCoverageRatio: 26 / 80,
-  uniqueIdCoverageRatio: 25 / 79,
+  referenceCoverageRatio: 52 / 80,
+  uniqueIdCoverageRatio: 51 / 79,
   complete: false,
+  deferredRequirementReferenceCount: 27,
+  deferredUniqueRequirementIdCount: 27,
+  excludedRequirementReferenceCount: 1,
+  excludedUniqueRequirementIdCount: 1,
+  unknownRequirementReferenceCount: 0,
+  unknownUniqueRequirementIdCount: 0,
+  governedUniqueRequirementIdCount: 79,
+  governanceComplete: true,
 });
-assert.equal(currentFixture.resolvedReferences.length, 26);
-const newlyAdmittedIds = [
-  "account-growth",
-  "audience-insight",
-  "commercial-negotiation",
-  "commercial-partnerships",
-  "consultative-selling",
-  "cross-functional-delivery",
-  "customer-adoption",
-  "customer-segmentation",
-  "dependency-management",
-  "employee-relations",
-  "forecasting",
-  "insight-synthesis",
-  "market-strategy",
-  "measurement-design",
-  "operating-model",
-  "operating-rhythm",
-  "organisation-design",
-  "process-improvement",
-  "product-cadence",
-  "product-insights",
-  "regulatory-compliance",
-  "research-design",
-  "scenario-modelling",
-  "variance-analysis",
-] as const;
+assert.equal(currentFixture.resolvedReferences.length, 52);
+const expectedResolvedIds = canonicalCapabilityLibrary.capabilities
+  .map((capability) => capability.id)
+  .filter((id) => id !== "people-leadership");
 assert.deepEqual(
   [...new Set(currentFixture.resolvedReferences
     .map((item) => item.capabilityId)
     .filter((id) => id !== "people-leadership"))].sort(),
-  [...newlyAdmittedIds].sort(),
+  [...expectedResolvedIds].sort(),
 );
 assert.ok(currentFixture.resolvedReferences
   .filter((item) => item.capabilityId !== "people-leadership")
   .every((item) => item.contextualLabel === item.canonicalLabel && item.labelMatchesCanonical));
-const currentEngineering = currentFixture.resolvedReferences.find((item) => item.profileId === "engineering-manager");
+const currentEngineering = currentFixture.resolvedReferences.find((item) =>
+  item.profileId === "engineering-manager" && item.capabilityId === "people-leadership");
 assert.deepEqual({
   contextualLabel: currentEngineering?.contextualLabel,
   profileDomain: currentEngineering?.profileDomain,
@@ -311,7 +307,7 @@ assert.equal(JSON.stringify(canonicalCapabilityLibrary), canonicalBefore);
 const mappingCompatible: readonly CareerMapCapabilityDefinition[] = currentFixture.resolvedReferences
   .filter((item, index, values) => values.findIndex((candidate) => candidate.capabilityId === item.capabilityId) === index)
   .map((item) => ({ id: item.capabilityId, label: item.canonicalLabel, family: item.canonicalFamily }));
-assert.equal(mappingCompatible.length, 25);
+assert.equal(mappingCompatible.length, 51);
 assert.deepEqual(
   mappingCompatible.find((item) => item.id === "people-leadership"),
   { id: "people-leadership", label: "People Leadership", family: "Leadership" },

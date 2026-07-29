@@ -6,6 +6,7 @@ import {
   type CanonicalCapabilityDefinition,
   type CanonicalCapabilityLibrary,
 } from "../../lib/career-possibility/canonical-capability-library";
+import { canonicalCapabilityGovernanceLibrary, type CanonicalCapabilityGovernanceLibrary } from "../../lib/career-possibility/canonical-capability-governance-decisions";
 import {
   CANONICAL_CAPABILITY_CANDIDATE_REPORT_GENERATOR_VERSION,
   buildCanonicalCapabilityCandidateReport,
@@ -68,7 +69,8 @@ const admittedLibrary = (contentVersion = "2.0.0") => library([
 const build = (
   profiles: readonly RoleCapabilityProfile[],
   canonicalLibrary: CanonicalCapabilityLibrary = admittedLibrary(),
-) => buildCanonicalCapabilityCandidateReport({ profiles, canonicalLibrary });
+  governanceLibrary?: CanonicalCapabilityGovernanceLibrary,
+) => buildCanonicalCapabilityCandidateReport({ profiles, canonicalLibrary, governanceLibrary });
 
 const expectFailure = (result: CanonicalCapabilityCandidateReportResult, sourceCode: string) => {
   assert.equal(result.ok, false);
@@ -124,7 +126,12 @@ assert.deepEqual(complete.counts, {
   candidateUniqueIdCount: 0,
   candidateReferenceCount: 0,
   completeCoverage: true,
+  reviewedDeferredUniqueIdCount: 0,
+  reviewedExcludedUniqueIdCount: 0,
+  governanceComplete: true,
 });
+assert.deepEqual(complete.reviewedDeferred, []);
+assert.deepEqual(complete.reviewedExcluded, []);
 
 const one = build([profile("one", "domain", [requirement("unknown", "Unknown")])]);
 assert.equal(one.ok, true);
@@ -252,19 +259,22 @@ assert.equal(JSON.stringify([frozenProfiles, frozenLibrary]), frozenBefore);
 
 const fixtureBefore = JSON.stringify(roleCapabilityProfiles);
 const registryBefore = JSON.stringify(canonicalCapabilityLibrary);
-const fixtureResult = build(roleCapabilityProfiles, canonicalCapabilityLibrary);
+const fixtureResult = build(roleCapabilityProfiles, canonicalCapabilityLibrary, canonicalCapabilityGovernanceLibrary);
 assert.equal(fixtureResult.ok, true, fixtureResult.ok ? undefined : JSON.stringify(fixtureResult.issues));
 if (!fixtureResult.ok) throw new Error(JSON.stringify(fixtureResult.issues));
 assert.deepEqual(fixtureResult.counts, {
   sourceProfileCount: 20,
   sourceRequirementReferenceCount: 80,
   sourceUniqueCapabilityIdCount: 79,
-  alreadyAdmittedUniqueIdCount: 25,
-  candidateUniqueIdCount: 54,
-  candidateReferenceCount: 54,
+  alreadyAdmittedUniqueIdCount: 51,
+  candidateUniqueIdCount: 0,
+  candidateReferenceCount: 0,
   completeCoverage: false,
+  reviewedDeferredUniqueIdCount: 27,
+  reviewedExcludedUniqueIdCount: 1,
+  governanceComplete: true,
 });
-assert.equal(fixtureResult.candidates.length, 54);
+assert.equal(fixtureResult.candidates.length, 0);
 assert.equal(fixtureResult.candidates.some((item) => item.capabilityId === "people-leadership"), false);
 const newlyAdmittedIds = [
   "account-growth",
@@ -297,7 +307,6 @@ assert.ok(newlyAdmittedIds.every((id) =>
 const deferredIds = [
   "analytics-leadership",
   "technical-leadership",
-  "benefits-realisation",
   "value-realisation",
   "financial-planning",
   "program-planning",
@@ -321,7 +330,12 @@ const deferredIds = [
   "vendor-governance",
 ] as const;
 assert.ok(deferredIds.every((id) =>
-  fixtureResult.candidates.some((candidateItem) => candidateItem.capabilityId === id)));
+  fixtureResult.reviewedDeferred.some((item) => item.capabilityId === id)));
+assert.deepEqual(fixtureResult.reviewedExcluded, [{
+  capabilityId: "matter-management",
+  reason: "role_responsibility_not_capability",
+  referenceCount: 1,
+}]);
 assert.ok(fixtureResult.candidates.every((item) =>
   item.referenceCount === 1
   && item.observedLabels.length === 1

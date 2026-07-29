@@ -35,10 +35,11 @@ const expectTransitionFailure = (previous: CanonicalCapabilityLibrary, next: Can
 };
 
 assert.equal(CANONICAL_CAPABILITY_LIBRARY_SCHEMA_VERSION, "1.0.0");
-assert.equal(CANONICAL_CAPABILITY_LIBRARY_CONTENT_VERSION, "1.1.0");
+assert.equal(CANONICAL_CAPABILITY_LIBRARY_CONTENT_VERSION, "1.2.0");
 const expectedCapabilities = [
   ["forecasting", "Forecasting", "Analytics & Insight"],
   ["insight-synthesis", "Insight Synthesis", "Analytics & Insight"],
+  ["marketing-effectiveness", "Marketing Effectiveness", "Analytics & Insight"],
   ["measurement-design", "Measurement Design", "Analytics & Insight"],
   ["research-design", "Research Design", "Analytics & Insight"],
   ["scenario-modelling", "Scenario Modelling", "Analytics & Insight"],
@@ -47,26 +48,51 @@ const expectedCapabilities = [
   ["commercial-negotiation", "Commercial Negotiation", "Commercial"],
   ["commercial-partnerships", "Commercial Partnerships", "Commercial"],
   ["consultative-selling", "Consultative Selling", "Commercial"],
+  ["pipeline-management", "Pipeline Management", "Commercial"],
+  ["education-partnerships", "Education Partnerships", "Communication & Collaboration"],
   ["audience-insight", "Audience Insight", "Customer & Market"],
   ["customer-adoption", "Customer Adoption", "Customer & Market"],
   ["customer-segmentation", "Customer Segmentation", "Customer & Market"],
+  ["legal-technology", "Legal Technology", "Data & Technology"],
+  ["tooling-enablement", "Tooling Enablement", "Data & Technology"],
+  ["analytics-governance", "Analytics Governance", "Governance & Risk"],
+  ["architecture-governance", "Architecture Governance", "Governance & Risk"],
+  ["investment-governance", "Investment Governance", "Governance & Risk"],
+  ["operating-control", "Operating Control", "Governance & Risk"],
+  ["policy-governance", "Policy Governance", "Governance & Risk"],
   ["regulatory-compliance", "Regulatory Compliance", "Governance & Risk"],
+  ["risk-controls", "Risk and Controls", "Governance & Risk"],
+  ["business-ownership", "Business Ownership", "Leadership"],
+  ["commercial-leadership", "Commercial Leadership", "Leadership"],
   ["people-leadership", "People Leadership", "Leadership"],
+  ["education-delivery", "Education Delivery", "Learning & Development"],
   ["cross-functional-delivery", "Cross-functional Delivery", "Operations & Delivery"],
   ["dependency-management", "Dependency Management", "Operations & Delivery"],
+  ["ecosystem-operations", "Ecosystem Operations", "Operations & Delivery"],
   ["operating-rhythm", "Operating Rhythm", "Operations & Delivery"],
   ["process-improvement", "Process Improvement", "Operations & Delivery"],
+  ["service-performance", "Service Performance", "Operations & Delivery"],
   ["employee-relations", "Employee Relations", "People & Organisation"],
+  ["hr-systems", "HR Systems", "People & Organisation"],
   ["organisation-design", "Organisation Design", "People & Organisation"],
+  ["people-process", "People Process Design", "People & Organisation"],
+  ["talent-planning", "Talent Planning", "People & Organisation"],
+  ["workforce-advisory", "Workforce Advisory", "People & Organisation"],
   ["product-insights", "Product Insights", "Product"],
   ["product-cadence", "Product Operating Cadence", "Product"],
+  ["roadmap-governance", "Roadmap Governance", "Product"],
+  ["benefits-realisation", "Benefits Realisation", "Strategy & Transformation"],
+  ["change-leadership", "Change Leadership", "Strategy & Transformation"],
   ["market-strategy", "Market Strategy", "Strategy & Transformation"],
   ["operating-model", "Operating Model Design", "Strategy & Transformation"],
+  ["operating-strategy", "Operating Strategy", "Strategy & Transformation"],
+  ["partner-strategy", "Partner Strategy", "Strategy & Transformation"],
+  ["strategic-analysis", "Strategic Analysis", "Strategy & Transformation"],
 ] as const;
 const newlyAdmittedIds = expectedCapabilities
   .map(([id]) => id)
   .filter((id) => id !== "people-leadership");
-assert.equal(newlyAdmittedIds.length, 24);
+assert.equal(newlyAdmittedIds.length, 50);
 assert.deepEqual(
   canonicalCapabilityLibrary.capabilities.map(({ id, label, family }) => [id, label, family]),
   expectedCapabilities,
@@ -85,7 +111,7 @@ assert.equal(
   true,
   membershipValidation.ok ? undefined : JSON.stringify(membershipValidation.issues),
 );
-if (membershipValidation.ok) assert.equal(membershipValidation.memberships.length, 25);
+if (membershipValidation.ok) assert.equal(membershipValidation.memberships.length, 51);
 
 const people = canonicalCapabilityLibrary.capabilities.filter((item) => item.id === "people-leadership");
 assert.equal(people.length, 1);
@@ -95,7 +121,6 @@ assert.equal(canonicalCapabilityLibrary.capabilities.some((item) => item.id === 
 const deferredIds = [
   "analytics-leadership",
   "technical-leadership",
-  "benefits-realisation",
   "value-realisation",
   "financial-planning",
   "program-planning",
@@ -193,6 +218,18 @@ const previousSeed = validLibrary([
 ], "1.0.0");
 assert.deepEqual(
   validateCanonicalCapabilityLibraryVersionTransition(previousSeed, canonicalCapabilityLibrary),
+  { ok: true, warnings: [] },
+);
+const finalBatchIds = new Set([
+  "analytics-governance", "architecture-governance", "benefits-realisation", "business-ownership", "change-leadership", "commercial-leadership", "ecosystem-operations", "education-delivery", "education-partnerships", "hr-systems", "investment-governance", "legal-technology", "marketing-effectiveness", "operating-control", "operating-strategy", "partner-strategy", "people-process", "pipeline-management", "policy-governance", "risk-controls", "roadmap-governance", "service-performance", "strategic-analysis", "talent-planning", "tooling-enablement", "workforce-advisory",
+]);
+const previousBatch = validLibrary(
+  canonicalCapabilityLibrary.capabilities.filter((capability) => !finalBatchIds.has(capability.id)),
+  "1.1.0",
+);
+assert.equal(previousBatch.capabilities.length, 25);
+assert.deepEqual(
+  validateCanonicalCapabilityLibraryVersionTransition(previousBatch, canonicalCapabilityLibrary),
   { ok: true, warnings: [] },
 );
 

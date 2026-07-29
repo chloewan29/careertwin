@@ -1,4 +1,5 @@
 import type { CanonicalCapabilityLibrary } from "./canonical-capability-library";
+import type { CanonicalCapabilityGovernanceLibrary, CanonicalCapabilityGovernanceReason } from "./canonical-capability-governance-decisions";
 import {
   reconcileRoleCapabilityProfilesWithCanonicalLibrary,
   type RoleCapabilityRequirementReference,
@@ -37,6 +38,15 @@ export type CanonicalCapabilityCandidateReportCounts = {
   readonly candidateUniqueIdCount: number;
   readonly candidateReferenceCount: number;
   readonly completeCoverage: boolean;
+  readonly reviewedDeferredUniqueIdCount: number;
+  readonly reviewedExcludedUniqueIdCount: number;
+  readonly governanceComplete: boolean;
+};
+
+export type ReviewedCanonicalCapabilityOutcome = {
+  readonly capabilityId: string;
+  readonly reason: CanonicalCapabilityGovernanceReason;
+  readonly referenceCount: number;
 };
 
 export type CanonicalCapabilityCandidateReportIssueCode =
@@ -63,6 +73,8 @@ export type CanonicalCapabilityCandidateReportResult =
       readonly counts: CanonicalCapabilityCandidateReportCounts;
       readonly candidates: readonly CanonicalCapabilityCandidate[];
       readonly warnings: readonly CanonicalCapabilityCandidateReportIssue[];
+      readonly reviewedDeferred: readonly ReviewedCanonicalCapabilityOutcome[];
+      readonly reviewedExcluded: readonly ReviewedCanonicalCapabilityOutcome[];
     }
   | {
       readonly ok: false;
@@ -73,6 +85,7 @@ export type CanonicalCapabilityCandidateReportResult =
 export type BuildCanonicalCapabilityCandidateReportInput = {
   readonly profiles: readonly RoleCapabilityProfile[];
   readonly canonicalLibrary: CanonicalCapabilityLibrary;
+  readonly governanceLibrary?: CanonicalCapabilityGovernanceLibrary;
 };
 
 const compareText = (left: string, right: string) => left.localeCompare(right, "en");
@@ -105,9 +118,12 @@ function countsFromCoverage(coverage: RoleCapabilityRegistryCoverage): Canonical
     sourceRequirementReferenceCount: coverage.sourceRequirementReferenceCount,
     sourceUniqueCapabilityIdCount: coverage.uniqueRequirementIdCount,
     alreadyAdmittedUniqueIdCount: coverage.matchedUniqueRequirementIdCount,
-    candidateUniqueIdCount: coverage.unresolvedUniqueRequirementIdCount,
-    candidateReferenceCount: coverage.unresolvedRequirementReferenceCount,
+    candidateUniqueIdCount: coverage.unknownUniqueRequirementIdCount,
+    candidateReferenceCount: coverage.unknownRequirementReferenceCount,
     completeCoverage: coverage.complete,
+    reviewedDeferredUniqueIdCount: coverage.deferredUniqueRequirementIdCount,
+    reviewedExcludedUniqueIdCount: coverage.excludedUniqueRequirementIdCount,
+    governanceComplete: coverage.governanceComplete,
   };
 }
 
@@ -178,7 +194,19 @@ export function buildCanonicalCapabilityCandidateReport(
   const reconciliation = reconcileRoleCapabilityProfilesWithCanonicalLibrary({
     profiles: input.profiles,
     canonicalLibrary: input.canonicalLibrary,
+    governanceLibrary: input.governanceLibrary,
   });
+
+  const reviewedOutcomes = (references: typeof reconciliation.deferredReferences) => {
+    const byId = new Map<string, { reason: CanonicalCapabilityGovernanceReason; count: number }>();
+    references.forEach((reference) => byId.set(reference.capabilityId, {
+      reason: reference.reason,
+      count: (byId.get(reference.capabilityId)?.count ?? 0) + 1,
+    }));
+    return [...byId.entries()].sort(([left], [right]) => compareText(left, right)).map(([capabilityId, value]) => ({ capabilityId, reason: value.reason, referenceCount: value.count }));
+  };
+  const reviewedDeferred = reviewedOutcomes(reconciliation.deferredReferences);
+  const reviewedExcluded = reviewedOutcomes(reconciliation.excludedReferences);
 
   if (!reconciliation.ok) {
     const unsupported = reconciliation.issues.filter((item) => item.code !== "unknown_canonical_capability");
@@ -207,7 +235,7 @@ export function buildCanonicalCapabilityCandidateReport(
         issues: [issue("invalid_reconciliation_result", "error", "reconciliation.coverage", "Complete reconciliation returned inconsistent candidate coverage.")],
       };
     }
-    return { ok: true, reportVersion, counts, candidates: [], warnings: [] };
+    return { ok: true, reportVersion, counts, candidates: [], reviewedDeferred, reviewedExcluded, warnings: [] };
   }
 
   const referencesById = new Map<string, RoleCapabilityRequirementReference[]>();
@@ -236,8 +264,8 @@ export function buildCanonicalCapabilityCandidateReport(
   const candidateReferenceCount = candidates.reduce((total, candidate) => total + candidate.referenceCount, 0);
   const arithmeticValid = candidates.length === counts.candidateUniqueIdCount
     && candidateReferenceCount === counts.candidateReferenceCount
-    && counts.alreadyAdmittedUniqueIdCount + counts.candidateUniqueIdCount === counts.sourceUniqueCapabilityIdCount
-    && reconciliation.coverage.matchedRequirementReferenceCount + counts.candidateReferenceCount === counts.sourceRequirementReferenceCount;
+    && counts.alreadyAdmittedUniqueIdCount + counts.candidateUniqueIdCount + counts.reviewedDeferredUniqueIdCount + counts.reviewedExcludedUniqueIdCount === counts.sourceUniqueCapabilityIdCount
+    && reconciliation.coverage.matchedRequirementReferenceCount + counts.candidateReferenceCount + reconciliation.coverage.deferredRequirementReferenceCount + reconciliation.coverage.excludedRequirementReferenceCount === counts.sourceRequirementReferenceCount;
   if (!arithmeticValid || counts.completeCoverage) {
     return {
       ok: false,
@@ -245,5 +273,5 @@ export function buildCanonicalCapabilityCandidateReport(
       issues: [issue("invalid_reconciliation_result", "error", "reconciliation.coverage", "Candidate aggregates do not match authoritative reconciliation coverage.")],
     };
   }
-  return { ok: true, reportVersion, counts, candidates, warnings: sharedLabelWarnings(candidates) };
+  return { ok: true, reportVersion, counts, candidates, reviewedDeferred, reviewedExcluded, warnings: sharedLabelWarnings(candidates) };
 }

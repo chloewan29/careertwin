@@ -243,7 +243,7 @@ assert.equal(JSON.stringify(membershipInput), membershipBefore);
 assert.deepEqual(JSON.parse(JSON.stringify(membershipA)), membershipA);
 assert.equal(membershipA.ok, true);
 if (!membershipA.ok) throw new Error(JSON.stringify(membershipA.issues));
-assert.equal(membershipA.memberships.length, 25);
+assert.equal(membershipA.memberships.length, 51);
 const expectedMembershipCapabilityIds = canonicalCapabilityLibrary.capabilities
   .map((capability) => capability.id)
   .sort((left, right) => left.localeCompare(right, "en"));
@@ -251,7 +251,7 @@ assert.deepEqual(
   membershipA.memberships.map((membership) => membership.capabilityId),
   expectedMembershipCapabilityIds,
 );
-assert.equal(new Set(membershipA.memberships.map((membership) => membership.capabilityId)).size, 25);
+assert.equal(new Set(membershipA.memberships.map((membership) => membership.capabilityId)).size, 51);
 const governedFamilyById = new Map(
   canonicalCapabilityFamilyLibrary.families.map((family) => [family.id, family] as const),
 );

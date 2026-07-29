@@ -1,5 +1,5 @@
 export const CANONICAL_CAPABILITY_LIBRARY_SCHEMA_VERSION = "1.0.0" as const;
-export const CANONICAL_CAPABILITY_LIBRARY_CONTENT_VERSION = "1.1.0" as const;
+export const CANONICAL_CAPABILITY_LIBRARY_CONTENT_VERSION = "1.2.0" as const;
 
 export type CanonicalCapabilityDefinition = {
   readonly id: string;
@@ -132,6 +132,7 @@ export function validateCanonicalCapabilityLibraryVersionTransition(
 const seedCapabilities = [
   { id: "forecasting", label: "Forecasting", family: "Analytics & Insight" },
   { id: "insight-synthesis", label: "Insight Synthesis", family: "Analytics & Insight" },
+  { id: "marketing-effectiveness", label: "Marketing Effectiveness", family: "Analytics & Insight" },
   { id: "measurement-design", label: "Measurement Design", family: "Analytics & Insight" },
   { id: "research-design", label: "Research Design", family: "Analytics & Insight" },
   { id: "scenario-modelling", label: "Scenario Modelling", family: "Analytics & Insight" },
@@ -140,21 +141,46 @@ const seedCapabilities = [
   { id: "commercial-negotiation", label: "Commercial Negotiation", family: "Commercial" },
   { id: "commercial-partnerships", label: "Commercial Partnerships", family: "Commercial" },
   { id: "consultative-selling", label: "Consultative Selling", family: "Commercial" },
+  { id: "pipeline-management", label: "Pipeline Management", family: "Commercial" },
+  { id: "education-partnerships", label: "Education Partnerships", family: "Communication & Collaboration" },
   { id: "audience-insight", label: "Audience Insight", family: "Customer & Market" },
   { id: "customer-adoption", label: "Customer Adoption", family: "Customer & Market" },
   { id: "customer-segmentation", label: "Customer Segmentation", family: "Customer & Market" },
+  { id: "legal-technology", label: "Legal Technology", family: "Data & Technology" },
+  { id: "tooling-enablement", label: "Tooling Enablement", family: "Data & Technology" },
+  { id: "analytics-governance", label: "Analytics Governance", family: "Governance & Risk" },
+  { id: "architecture-governance", label: "Architecture Governance", family: "Governance & Risk" },
+  { id: "investment-governance", label: "Investment Governance", family: "Governance & Risk" },
+  { id: "operating-control", label: "Operating Control", family: "Governance & Risk" },
+  { id: "policy-governance", label: "Policy Governance", family: "Governance & Risk" },
   { id: "regulatory-compliance", label: "Regulatory Compliance", family: "Governance & Risk" },
+  { id: "risk-controls", label: "Risk and Controls", family: "Governance & Risk" },
+  { id: "business-ownership", label: "Business Ownership", family: "Leadership" },
+  { id: "commercial-leadership", label: "Commercial Leadership", family: "Leadership" },
   { id: "people-leadership", label: "People Leadership", family: "Leadership" },
+  { id: "education-delivery", label: "Education Delivery", family: "Learning & Development" },
   { id: "cross-functional-delivery", label: "Cross-functional Delivery", family: "Operations & Delivery" },
   { id: "dependency-management", label: "Dependency Management", family: "Operations & Delivery" },
+  { id: "ecosystem-operations", label: "Ecosystem Operations", family: "Operations & Delivery" },
   { id: "operating-rhythm", label: "Operating Rhythm", family: "Operations & Delivery" },
   { id: "process-improvement", label: "Process Improvement", family: "Operations & Delivery" },
+  { id: "service-performance", label: "Service Performance", family: "Operations & Delivery" },
   { id: "employee-relations", label: "Employee Relations", family: "People & Organisation" },
+  { id: "hr-systems", label: "HR Systems", family: "People & Organisation" },
   { id: "organisation-design", label: "Organisation Design", family: "People & Organisation" },
+  { id: "people-process", label: "People Process Design", family: "People & Organisation" },
+  { id: "talent-planning", label: "Talent Planning", family: "People & Organisation" },
+  { id: "workforce-advisory", label: "Workforce Advisory", family: "People & Organisation" },
   { id: "product-insights", label: "Product Insights", family: "Product" },
   { id: "product-cadence", label: "Product Operating Cadence", family: "Product" },
+  { id: "roadmap-governance", label: "Roadmap Governance", family: "Product" },
+  { id: "benefits-realisation", label: "Benefits Realisation", family: "Strategy & Transformation" },
+  { id: "change-leadership", label: "Change Leadership", family: "Strategy & Transformation" },
   { id: "market-strategy", label: "Market Strategy", family: "Strategy & Transformation" },
   { id: "operating-model", label: "Operating Model Design", family: "Strategy & Transformation" },
+  { id: "operating-strategy", label: "Operating Strategy", family: "Strategy & Transformation" },
+  { id: "partner-strategy", label: "Partner Strategy", family: "Strategy & Transformation" },
+  { id: "strategic-analysis", label: "Strategic Analysis", family: "Strategy & Transformation" },
 ].map((capability) => Object.freeze(capability)) as readonly CanonicalCapabilityDefinition[];
 
 /** Admitted seed identities only; this is not a complete external capability taxonomy. */
