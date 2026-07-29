@@ -10,20 +10,23 @@ export const RESUME_EVIDENCE_REVIEW_SCHEMA_VERSION = "1.0.0" as const;
 
 export type ResumeEvidenceReviewSessionStatus = "not_started" | "in_progress" | "completed";
 export type ResumeEvidenceReviewActor = "user";
-export type ResumeEvidenceReviewAction = "confirm" | "edit" | "reject" | "restore" | "remap";
+export type ResumeEvidenceReviewAction = "confirm" | "edit" | "reject" | "restore" | "remap" | CreateCapabilityMappingReviewDecision["action"];
 export type EmploymentReviewField = "employerName" | "roleTitle" | "startDate" | "endDate" | "location";
 export type EvidenceReviewField = "displayText" | "action" | "context" | "outcome";
 
-type DecisionBase = {
+type DecisionIdentity = {
   id: string;
   sequence: number;
   actor: ResumeEvidenceReviewActor;
-  targetId: string;
-  expectedReviewStatus?: EvidenceReviewStatus;
   priorDecisionId?: string;
   reason?: string;
   /** Non-semantic metadata; explicit sequence alone controls replay order. */
   createdAt?: string;
+};
+
+type DecisionBase = DecisionIdentity & {
+  targetId: string;
+  expectedReviewStatus?: EvidenceReviewStatus;
 };
 
 type ReviewOnlyAction = "confirm" | "reject" | "restore";
@@ -64,6 +67,21 @@ export type CapabilityMappingReviewDecision = DecisionBase & {
     }
 );
 
+export type CreateCapabilityMappingReviewDecision = DecisionIdentity & {
+  targetType: "evidence_capability_mapping";
+  action: "create";
+  /** Creation targets evidence; a nonexistent mapping target is forbidden. */
+  targetId?: undefined;
+  targetEvidenceId: string;
+  newMappingId: string;
+  capabilityId: string;
+  relationship: Exclude<EvidenceCapabilityRelationship, "possible">;
+  sourceSpanIds: string[];
+  expectedEvidenceReviewStatus: Extract<EvidenceReviewStatus, "confirmed" | "edited">;
+  expectedMappingState: "absent";
+  rationale?: string;
+};
+
 export type InterpretationReviewDecision = DecisionBase & {
   targetType: "interpretation";
 } & (
@@ -77,6 +95,7 @@ export type ResumeEvidenceReviewDecision =
   | EvidenceRecordReviewDecision
   | EvidenceFieldReviewDecision
   | CapabilityMappingReviewDecision
+  | CreateCapabilityMappingReviewDecision
   | InterpretationReviewDecision;
 
 export type ResumeEvidenceReviewSession = {

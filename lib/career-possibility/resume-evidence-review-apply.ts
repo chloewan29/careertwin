@@ -23,6 +23,7 @@ function issue(code: string, path: string, message: string, severity: ResumeEvid
 }
 
 function logicalTarget(decision: ResumeEvidenceReviewDecision) {
+  if (decision.targetType === "evidence_capability_mapping") return `capability_mapping:${decision.newMappingId}`;
   const field = "field" in decision ? `:${decision.field}` : "";
   return `${decision.targetType}:${decision.targetId}${field}`;
 }
@@ -69,7 +70,10 @@ function validateBase(input: ApplyResumeEvidenceReviewInput): ResumeEvidenceRevi
   ]);
   session.decisions.forEach((decision, index) => {
     const path = `session.decisions[${index}]`;
-    if (!nonEmpty(decision.id) || !nonEmpty(decision.targetId) || decision.actor !== "user") issues.push(issue("invalid_review_session", path, "Decision ID, target ID, and actor are invalid."));
+    const targetIsValid = decision.targetType === "evidence_capability_mapping"
+      ? nonEmpty(decision.targetEvidenceId)
+      : nonEmpty(decision.targetId);
+    if (!nonEmpty(decision.id) || !targetIsValid || decision.actor !== "user") issues.push(issue("invalid_review_session", path, "Decision ID, target ID, and actor are invalid."));
     if (decisionIds.has(decision.id)) issues.push(issue("duplicate_decision_id", `${path}.id`, `Duplicate decision ID ${decision.id}.`));
     decisionIds.add(decision.id);
     if (!Number.isInteger(decision.sequence) || decision.sequence < 1) issues.push(issue("invalid_review_session", `${path}.sequence`, "Decision sequence must be a positive integer."));
@@ -85,16 +89,24 @@ function validateBase(input: ApplyResumeEvidenceReviewInput): ResumeEvidenceRevi
       if (!["confirm", "reject", "restore"].includes(decision.action)) issues.push(issue("unsupported_action", `${path}.action`, "Evidence record review action is unsupported."));
     } else if (decision.targetType === "capability_mapping") {
       if (!["confirm", "reject", "restore", "remap"].includes(decision.action)) issues.push(issue("unsupported_action", `${path}.action`, "Capability mapping review action is unsupported."));
+    } else if (decision.targetType === "evidence_capability_mapping") {
+      if (decision.action !== "create") issues.push(issue("unsupported_action", `${path}.action`, "Evidence capability mapping action must be create."));
     } else if (decision.targetType === "interpretation") {
       if (!["confirm", "edit", "reject", "restore"].includes(decision.action)) issues.push(issue("unsupported_action", `${path}.action`, "Interpretation review action is unsupported."));
     } else {
       issues.push(issue("invalid_review_session", `${path}.targetType`, "Decision target type is unsupported."));
     }
-    if (decision.targetType === "capability_mapping" && decision.action === "remap") {
+    if ((decision.targetType === "capability_mapping" && decision.action === "remap") || decision.targetType === "evidence_capability_mapping") {
       if (!nonEmpty(decision.newMappingId)) issues.push(issue("invalid_review_session", `${path}.newMappingId`, "Generated mapping ID must be non-empty."));
       else if (generatedIds.has(decision.newMappingId)) issues.push(issue("duplicate_generated_entity_id", `${path}.newMappingId`, `Generated entity ID ${decision.newMappingId} already exists.`));
       generatedIds.add(decision.newMappingId);
       if (!capabilityIds.has(decision.capabilityId)) issues.push(issue("unknown_capability", `${path}.capabilityId`, `Unknown capability ${decision.capabilityId}.`));
+    }
+    if (decision.targetType === "evidence_capability_mapping") {
+      if (decision.relationship !== "direct_evidence" && decision.relationship !== "transferable_signal") issues.push(issue("invalid_mapping_relationship", `${path}.relationship`, "Created mapping relationship must be direct_evidence or transferable_signal."));
+      if (decision.expectedEvidenceReviewStatus !== "confirmed" && decision.expectedEvidenceReviewStatus !== "edited") issues.push(issue("invalid_review_session", `${path}.expectedEvidenceReviewStatus`, "Created mapping expected evidence status must be confirmed or edited."));
+      if (decision.expectedMappingState !== "absent") issues.push(issue("stale_mapping_state", `${path}.expectedMappingState`, "Created mapping requires an absent target state."));
+      if (!Array.isArray(decision.sourceSpanIds) || decision.sourceSpanIds.length === 0) issues.push(issue("source_span_not_linked_to_evidence", `${path}.sourceSpanIds`, "Created mapping requires at least one evidence-linked source span."));
     }
     if (decision.targetType === "interpretation" && decision.action === "edit") {
       if (!nonEmpty(decision.newInterpretationId)) issues.push(issue("invalid_review_session", `${path}.newInterpretationId`, "Generated interpretation ID must be non-empty."));
@@ -166,6 +178,7 @@ export function applyResumeEvidenceReviewDecisions(input: ApplyResumeEvidenceRev
   const ordered = [...input.session.decisions].sort((a, b) => a.sequence - b.sequence);
   const applied = new Map<string, ResumeEvidenceReviewDecision>();
   const latestByTarget = new Map<string, string>();
+  const originalMappingIds = new Set(input.bundle.capabilityMappings.map((mapping) => mapping.id));
 
   for (const decision of ordered) {
     const path = `decision:${decision.id}`;
@@ -188,6 +201,32 @@ export function applyResumeEvidenceReviewDecisions(input: ApplyResumeEvidenceRev
         const status = nextStatus(record.reviewStatus, decision.action, path);
         if (typeof status === "string") record.reviewStatus = status; else failure = status;
       }
+    } else if (decision.targetType === "evidence_capability_mapping") {
+      const evidence = bundle.evidenceRecords.find((item) => item.id === decision.targetEvidenceId);
+      if (!evidence) failure = issue("unknown_target", path, `Unknown evidence target ${decision.targetEvidenceId}.`);
+      else if (evidence.reviewStatus === "unreviewed") failure = issue("evidence_unreviewed", path, `Evidence target ${decision.targetEvidenceId} is unreviewed.`);
+      else if (evidence.reviewStatus === "rejected") failure = issue("evidence_rejected", path, `Evidence target ${decision.targetEvidenceId} is rejected.`);
+      else if (evidence.processingStatus === "unsupported") failure = issue("unsupported_evidence", path, `Evidence target ${decision.targetEvidenceId} is unsupported.`);
+      else if (evidence.reviewStatus !== decision.expectedEvidenceReviewStatus) failure = issue("stale_review_status", path, `Evidence target ${decision.targetEvidenceId} no longer has the expected review status.`);
+      else {
+        const evidenceSpanIds = new Set(evidence.sourceSpanIds);
+        const invalidSpanId = decision.sourceSpanIds.find((spanId) => !evidenceSpanIds.has(spanId));
+        if (invalidSpanId) failure = issue("source_span_not_linked_to_evidence", path, `Source span ${invalidSpanId} is not linked to evidence ${decision.targetEvidenceId}.`);
+        else {
+          const existing = bundle.capabilityMappings.find((mapping) => mapping.evidenceId === decision.targetEvidenceId && mapping.capabilityId === decision.capabilityId);
+          if (existing) failure = issue(originalMappingIds.has(existing.id) ? "mapping_target_exists" : "stale_mapping_state", path, `Mapping target ${decision.targetEvidenceId}/${decision.capabilityId} is not absent.`);
+          else bundle.capabilityMappings.push({
+            id: decision.newMappingId,
+            evidenceId: decision.targetEvidenceId,
+            capabilityId: decision.capabilityId,
+            relationship: decision.relationship,
+            method: "user",
+            ...(decision.rationale ? { rationale: decision.rationale } : {}),
+            sourceSpanIds: [...decision.sourceSpanIds],
+            reviewStatus: "edited",
+          });
+        }
+      }
     } else if (decision.targetType === "capability_mapping") {
       const mapping = bundle.capabilityMappings.find((item) => item.id === decision.targetId);
       if (!mapping) failure = issue("unknown_target", path, `Unknown mapping target ${decision.targetId}.`);
@@ -199,6 +238,9 @@ export function applyResumeEvidenceReviewDecisions(input: ApplyResumeEvidenceRev
           mapping.reviewStatus = status;
           bundle.capabilityMappings.push({ id: decision.newMappingId, evidenceId: mapping.evidenceId, capabilityId: decision.capabilityId, relationship: decision.relationship, method: "user", ...(decision.rationale ? { rationale: decision.rationale } : {}), sourceSpanIds: [...decision.sourceSpanIds], reviewStatus: "edited" });
         }
+      } else if (decision.action === "restore" && mapping.method === "user") {
+        if (mapping.reviewStatus !== "rejected") failure = issue("invalid_state_transition", path, "Restore requires a rejected target.");
+        else mapping.reviewStatus = "edited";
       } else {
         const status = nextStatus(mapping.reviewStatus, decision.action, path);
         if (typeof status === "string") mapping.reviewStatus = status; else failure = status;

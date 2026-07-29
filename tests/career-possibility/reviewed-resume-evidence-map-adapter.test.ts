@@ -2,6 +2,13 @@ import { strict as assert } from "node:assert";
 import { validateCareerCapabilityMapPresentation } from "../../lib/career-possibility/career-capability-map-contract";
 import { exampleResumeEvidence } from "../../lib/career-possibility/fixtures/exampleResumeEvidence";
 import { validateResumeEvidenceBundle } from "../../lib/career-possibility/resume-evidence-contract";
+import { applyResumeEvidenceReviewDecisions } from "../../lib/career-possibility/resume-evidence-review-apply";
+import {
+  RESUME_EVIDENCE_REVIEW_SCHEMA_VERSION,
+  type CreateCapabilityMappingReviewDecision,
+  type ResumeEvidenceReviewDecision,
+  type ResumeEvidenceReviewSession,
+} from "../../lib/career-possibility/resume-evidence-review-contract";
 import {
   DEFAULT_REVIEWED_EVIDENCE_INCLUSION_POLICY,
   REVIEWED_RESUME_EVIDENCE_MAP_ADAPTER_VERSION,
@@ -15,6 +22,36 @@ const definitions = [
   { id: "customer-insight", label: "Customer insight", family: "Insight" },
 ] as const satisfies readonly CareerMapCapabilityDefinition[];
 const adapt = (bundle = structuredClone(exampleResumeEvidence), capabilityDefinitions: readonly CareerMapCapabilityDefinition[] = definitions, policy = { ...DEFAULT_REVIEWED_EVIDENCE_INCLUSION_POLICY }) => adaptReviewedResumeEvidenceToCareerMap({ bundle, capabilityDefinitions, policy });
+const capabilityDefinitionVersion = "fixture-capabilities/1";
+const createdMapping = (relationship: CreateCapabilityMappingReviewDecision["relationship"] = "direct_evidence"): CreateCapabilityMappingReviewDecision => ({
+  id: "create-adapter-mapping",
+  sequence: 1,
+  actor: "user",
+  targetType: "evidence_capability_mapping",
+  action: "create",
+  targetEvidenceId: "evidence-3",
+  newMappingId: "mapping-adapter-created",
+  capabilityId: "automation",
+  relationship,
+  sourceSpanIds: ["span-3"],
+  expectedEvidenceReviewStatus: "confirmed",
+  expectedMappingState: "absent",
+});
+const applyCreatedMapping = (decisions: ResumeEvidenceReviewDecision[]) => {
+  const bundle = structuredClone(exampleResumeEvidence);
+  bundle.capabilityMappings = [];
+  const session: ResumeEvidenceReviewSession = {
+    schemaVersion: RESUME_EVIDENCE_REVIEW_SCHEMA_VERSION,
+    id: "adapter-review-session",
+    sourceBundleId: bundle.id,
+    sourceSchemaVersion: bundle.schemaVersion,
+    capabilityDefinitionVersion,
+    status: "not_started",
+    decisions,
+    warnings: [],
+  };
+  return applyResumeEvidenceReviewDecisions({ bundle, session, capabilityDefinitions: definitions, capabilityDefinitionVersion });
+};
 const success = adapt();
 assert.equal(success.ok, true, success.ok ? undefined : JSON.stringify(success.issues));
 if (!success.ok) throw new Error("Fixture adaptation failed");
@@ -193,6 +230,55 @@ assert.equal(JSON.stringify(presentation).includes("exampleStrength"), false);
 assert.equal(JSON.stringify(presentation).includes("exampleFitScore"), false);
 assert.equal(JSON.stringify(presentation).includes("roleIds"), false);
 assert.equal(JSON.stringify(presentation).includes("relevance"), false);
+
+for (const [relationship, signalType] of [["direct_evidence", "evidence_backed"], ["transferable_signal", "transferable"]] as const) {
+  const reviewed = applyCreatedMapping([createdMapping(relationship)]);
+  assert.equal(reviewed.ok, true);
+  if (reviewed.ok) {
+    const result = adapt(reviewed.reviewedBundle);
+    assert.equal(result.ok, true);
+    if (result.ok) {
+      const signal = result.presentation.evidenceCards.find((item) => item.id === "evidence-3")?.capabilitySignals.find((item) => item.capabilityId === "automation");
+      assert.deepEqual([signal?.type, signal?.active, signal?.mappingMethod, signal?.reviewStatus], [signalType, true, "user", "edited"]);
+      assert.deepEqual(signal?.sourceSpanIds, ["span-3"]);
+      assert.equal(result.presentation.analysisStatus, "provisional");
+      assert.equal(validateCareerCapabilityMapPresentation(result.presentation).valid, true);
+      assert.equal(JSON.stringify(result.presentation).includes("verified"), false);
+    }
+  }
+}
+
+{
+  const create = createdMapping();
+  const reject = { id: "reject-adapter-mapping", sequence: 2, actor: "user", targetType: "capability_mapping", targetId: create.newMappingId, action: "reject", expectedReviewStatus: "edited", priorDecisionId: create.id } as const;
+  const rejected = applyCreatedMapping([create, reject]);
+  assert.equal(rejected.ok, true);
+  if (rejected.ok) {
+    const result = adapt(rejected.reviewedBundle);
+    assert.equal(result.ok, true);
+    if (result.ok) assert.equal(result.presentation.evidenceCards.find((item) => item.id === "evidence-3")?.capabilitySignals.find((item) => item.capabilityId === "automation")?.active, false);
+  }
+  const restored = applyCreatedMapping([create, reject, { id: "restore-adapter-mapping", sequence: 3, actor: "user", targetType: "capability_mapping", targetId: create.newMappingId, action: "restore", expectedReviewStatus: "rejected", priorDecisionId: reject.id }]);
+  assert.equal(restored.ok, true);
+  if (restored.ok) {
+    const result = adapt(restored.reviewedBundle);
+    assert.equal(result.ok, true);
+    if (result.ok) assert.deepEqual([result.presentation.evidenceCards.find((item) => item.id === "evidence-3")?.capabilitySignals.find((item) => item.capabilityId === "automation")?.active, result.presentation.analysisStatus], [true, "provisional"]);
+  }
+  const remapped = applyCreatedMapping([create, { id: "remap-adapter-mapping", sequence: 2, actor: "user", targetType: "capability_mapping", targetId: create.newMappingId, action: "remap", expectedReviewStatus: "edited", priorDecisionId: create.id, newMappingId: "mapping-adapter-remapped", capabilityId: "stakeholder-coordination", relationship: "transferable_signal", sourceSpanIds: ["span-3"] }]);
+  assert.equal(remapped.ok, true);
+  if (remapped.ok) {
+    const result = adapt(remapped.reviewedBundle);
+    assert.equal(result.ok, true);
+    if (result.ok) {
+      const signals = result.presentation.evidenceCards.find((item) => item.id === "evidence-3")?.capabilitySignals ?? [];
+      assert.equal(signals.find((item) => item.capabilityId === "automation")?.active, false);
+      assert.deepEqual([signals.find((item) => item.capabilityId === "stakeholder-coordination")?.active, signals.find((item) => item.capabilityId === "stakeholder-coordination")?.type], [true, "transferable"]);
+      assert.equal(remapped.reviewedBundle.capabilityMappings.find((item) => item.id === create.newMappingId)?.reviewStatus, "rejected");
+    }
+  }
+}
+
 const bundleBefore = JSON.stringify(exampleResumeEvidence);
 const definitionsBefore = JSON.stringify(definitions);
 adaptReviewedResumeEvidenceToCareerMap({ bundle: exampleResumeEvidence, capabilityDefinitions: definitions });
