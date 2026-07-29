@@ -252,28 +252,28 @@ const canonicalBefore = JSON.stringify(canonicalCapabilityLibrary);
 const currentFixture = reconcile(roleCapabilityProfiles, canonicalCapabilityLibrary, canonicalCapabilityGovernanceLibrary);
 assert.equal(currentFixture.ok, false);
 assert.deepEqual(currentFixture.coverage, {
-  sourceProfileCount: 20,
-  sourceRequirementReferenceCount: 80,
-  uniqueRequirementIdCount: 79,
-  matchedRequirementReferenceCount: 52,
+  sourceProfileCount: 22,
+  sourceRequirementReferenceCount: 98,
+  uniqueRequirementIdCount: 76,
+  matchedRequirementReferenceCount: 73,
   matchedUniqueRequirementIdCount: 51,
-  unresolvedRequirementReferenceCount: 28,
-  unresolvedUniqueRequirementIdCount: 28,
+  unresolvedRequirementReferenceCount: 25,
+  unresolvedUniqueRequirementIdCount: 25,
   registryCapabilityCount: 51,
   unreferencedRegistryCapabilityCount: 0,
-  referenceCoverageRatio: 52 / 80,
-  uniqueIdCoverageRatio: 51 / 79,
+  referenceCoverageRatio: 73 / 98,
+  uniqueIdCoverageRatio: 51 / 76,
   complete: false,
-  deferredRequirementReferenceCount: 27,
-  deferredUniqueRequirementIdCount: 27,
+  deferredRequirementReferenceCount: 24,
+  deferredUniqueRequirementIdCount: 24,
   excludedRequirementReferenceCount: 1,
   excludedUniqueRequirementIdCount: 1,
   unknownRequirementReferenceCount: 0,
   unknownUniqueRequirementIdCount: 0,
-  governedUniqueRequirementIdCount: 79,
+  governedUniqueRequirementIdCount: 76,
   governanceComplete: true,
 });
-assert.equal(currentFixture.resolvedReferences.length, 52);
+assert.equal(currentFixture.resolvedReferences.length, 73);
 const expectedResolvedIds = canonicalCapabilityLibrary.capabilities
   .map((capability) => capability.id)
   .filter((id) => id !== "people-leadership");

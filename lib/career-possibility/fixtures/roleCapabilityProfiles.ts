@@ -1,4 +1,5 @@
 import { ROLE_CAPABILITY_PROFILE_SCHEMA_VERSION, type GrowthAreaType, type RoleCapabilityProfile, type RoleCapabilityRequirement } from "../role-capability-library";
+import { representativeGenericRoleProfiles } from "../generic-role-archetype";
 
 type CapabilitySeed = [id: string, label: string];
 type GrowthSeed = [label: string, type: GrowthAreaType, proofToBuild: string];
@@ -68,6 +69,7 @@ const seeds: RoleSeed[] = [
   { id: "general-business-manager", title: "General Manager / Business Manager", aliases: ["Business Unit Manager", "General Business Manager", "Divisional Manager"], domain: "general-management", capabilities: [["business-ownership", "Business Ownership"], ["commercial-leadership", "Commercial Leadership"], ["people-leadership", "People Leadership"], ["operating-strategy", "Operating Strategy"]], growth: [["Full P&L Scope", "scope_gap", "Own revenue, cost, margin, and trade-off decisions for a business area."], ["Enterprise Leadership Proof", "missing_proof", "Lead cross-functional performance across commercial, people, and operations outcomes."]], related: ["operations-manager", "commercial-finance-manager"] },
 ];
 
-export const roleCapabilityProfiles: RoleCapabilityProfile[] = seeds.map(profile);
+const representativeIds = new Set(representativeGenericRoleProfiles.map((item) => item.roleFamilyId));
+export const roleCapabilityProfiles: RoleCapabilityProfile[] = [...seeds.filter((seed) => !representativeIds.has(seed.id)).map(profile), ...representativeGenericRoleProfiles];
 
 export const roleCapabilityProfileById = new Map(roleCapabilityProfiles.map((item) => [item.roleFamilyId, item]));

@@ -263,14 +263,14 @@ const fixtureResult = build(roleCapabilityProfiles, canonicalCapabilityLibrary, 
 assert.equal(fixtureResult.ok, true, fixtureResult.ok ? undefined : JSON.stringify(fixtureResult.issues));
 if (!fixtureResult.ok) throw new Error(JSON.stringify(fixtureResult.issues));
 assert.deepEqual(fixtureResult.counts, {
-  sourceProfileCount: 20,
-  sourceRequirementReferenceCount: 80,
-  sourceUniqueCapabilityIdCount: 79,
+  sourceProfileCount: 22,
+  sourceRequirementReferenceCount: 98,
+  sourceUniqueCapabilityIdCount: 76,
   alreadyAdmittedUniqueIdCount: 51,
   candidateUniqueIdCount: 0,
   candidateReferenceCount: 0,
   completeCoverage: false,
-  reviewedDeferredUniqueIdCount: 27,
+  reviewedDeferredUniqueIdCount: 24,
   reviewedExcludedUniqueIdCount: 1,
   governanceComplete: true,
 });
@@ -305,7 +305,6 @@ const newlyAdmittedIds = [
 assert.ok(newlyAdmittedIds.every((id) =>
   fixtureResult.candidates.every((candidateItem) => candidateItem.capabilityId !== id)));
 const deferredIds = [
-  "analytics-leadership",
   "technical-leadership",
   "value-realisation",
   "financial-planning",
@@ -313,8 +312,6 @@ const deferredIds = [
   "campaign-planning",
   "gtm-planning",
   "resource-planning",
-  "data-storytelling",
-  "decision-storytelling",
   "executive-narrative",
   "executive-reporting",
   "commercial-analysis",

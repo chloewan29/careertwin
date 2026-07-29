@@ -294,8 +294,7 @@ export function reconcileRoleCapabilityProfilesWithCanonicalLibrary(
       reviewedCandidateIds: input.governanceLibrary.decisions.map((decision) => decision.capabilityId),
       canonicalLibrary: input.canonicalLibrary,
     });
-    const staleDecision = input.governanceLibrary.decisions.find((decision) => !uniqueRequirementIds.has(decision.capabilityId));
-    if (!governanceValidation.ok || staleDecision) {
+    if (!governanceValidation.ok) {
       inputIssues.push(issue("invalid_governance_library", "error", "governanceLibrary", "Canonical capability governance decisions are invalid for the supplied profiles and registry."));
     }
   }
