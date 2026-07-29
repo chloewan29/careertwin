@@ -241,15 +241,45 @@ const membershipB = validateCanonicalCapabilityFamilyMembership(membershipInput)
 assert.deepEqual(membershipA, membershipB);
 assert.equal(JSON.stringify(membershipInput), membershipBefore);
 assert.deepEqual(JSON.parse(JSON.stringify(membershipA)), membershipA);
-assert.deepEqual(membershipA, {
-  ok: true,
-  memberships: [{
-    capabilityId: "people-leadership",
-    capabilityLabel: "People Leadership",
-    familyId: "leadership",
-    familyLabel: "Leadership",
-  }],
-});
+assert.equal(membershipA.ok, true);
+if (!membershipA.ok) throw new Error(JSON.stringify(membershipA.issues));
+assert.equal(membershipA.memberships.length, 25);
+const expectedMembershipCapabilityIds = canonicalCapabilityLibrary.capabilities
+  .map((capability) => capability.id)
+  .sort((left, right) => left.localeCompare(right, "en"));
+assert.deepEqual(
+  membershipA.memberships.map((membership) => membership.capabilityId),
+  expectedMembershipCapabilityIds,
+);
+assert.equal(new Set(membershipA.memberships.map((membership) => membership.capabilityId)).size, 25);
+const governedFamilyById = new Map(
+  canonicalCapabilityFamilyLibrary.families.map((family) => [family.id, family] as const),
+);
+assert.ok(membershipA.memberships.every((membership) => {
+  const governedFamily = governedFamilyById.get(membership.familyId);
+  return governedFamily?.label === membership.familyLabel
+    && !("profileDomain" in membership)
+    && !("domain" in membership);
+}));
+const expectedRepresentativeMemberships = [
+  ["forecasting", "Forecasting", "analytics-insight", "Analytics & Insight"],
+  ["consultative-selling", "Consultative Selling", "commercial", "Commercial"],
+  ["customer-segmentation", "Customer Segmentation", "customer-market", "Customer & Market"],
+  ["dependency-management", "Dependency Management", "operations-delivery", "Operations & Delivery"],
+  ["people-leadership", "People Leadership", "leadership", "Leadership"],
+  ["regulatory-compliance", "Regulatory Compliance", "governance-risk", "Governance & Risk"],
+  ["organisation-design", "Organisation Design", "people-organisation", "People & Organisation"],
+  ["product-insights", "Product Insights", "product", "Product"],
+  ["market-strategy", "Market Strategy", "strategy-transformation", "Strategy & Transformation"],
+] as const;
+expectedRepresentativeMemberships.forEach(
+  ([capabilityId, capabilityLabel, familyId, familyLabel]) => {
+    assert.deepEqual(
+      membershipA.memberships.find((membership) => membership.capabilityId === capabilityId),
+      { capabilityId, capabilityLabel, familyId, familyLabel },
+    );
+  },
+);
 
 expectMembershipIssue("Operations");
 expectMembershipIssue("leadership");

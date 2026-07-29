@@ -1,5 +1,5 @@
 export const CANONICAL_CAPABILITY_LIBRARY_SCHEMA_VERSION = "1.0.0" as const;
-export const CANONICAL_CAPABILITY_LIBRARY_CONTENT_VERSION = "1.0.0" as const;
+export const CANONICAL_CAPABILITY_LIBRARY_CONTENT_VERSION = "1.1.0" as const;
 
 export type CanonicalCapabilityDefinition = {
   readonly id: string;
@@ -130,8 +130,32 @@ export function validateCanonicalCapabilityLibraryVersionTransition(
 }
 
 const seedCapabilities = [
-  Object.freeze({ id: "people-leadership", label: "People Leadership", family: "Leadership" }),
-] as const satisfies readonly CanonicalCapabilityDefinition[];
+  { id: "forecasting", label: "Forecasting", family: "Analytics & Insight" },
+  { id: "insight-synthesis", label: "Insight Synthesis", family: "Analytics & Insight" },
+  { id: "measurement-design", label: "Measurement Design", family: "Analytics & Insight" },
+  { id: "research-design", label: "Research Design", family: "Analytics & Insight" },
+  { id: "scenario-modelling", label: "Scenario Modelling", family: "Analytics & Insight" },
+  { id: "variance-analysis", label: "Variance Analysis", family: "Analytics & Insight" },
+  { id: "account-growth", label: "Account Growth", family: "Commercial" },
+  { id: "commercial-negotiation", label: "Commercial Negotiation", family: "Commercial" },
+  { id: "commercial-partnerships", label: "Commercial Partnerships", family: "Commercial" },
+  { id: "consultative-selling", label: "Consultative Selling", family: "Commercial" },
+  { id: "audience-insight", label: "Audience Insight", family: "Customer & Market" },
+  { id: "customer-adoption", label: "Customer Adoption", family: "Customer & Market" },
+  { id: "customer-segmentation", label: "Customer Segmentation", family: "Customer & Market" },
+  { id: "regulatory-compliance", label: "Regulatory Compliance", family: "Governance & Risk" },
+  { id: "people-leadership", label: "People Leadership", family: "Leadership" },
+  { id: "cross-functional-delivery", label: "Cross-functional Delivery", family: "Operations & Delivery" },
+  { id: "dependency-management", label: "Dependency Management", family: "Operations & Delivery" },
+  { id: "operating-rhythm", label: "Operating Rhythm", family: "Operations & Delivery" },
+  { id: "process-improvement", label: "Process Improvement", family: "Operations & Delivery" },
+  { id: "employee-relations", label: "Employee Relations", family: "People & Organisation" },
+  { id: "organisation-design", label: "Organisation Design", family: "People & Organisation" },
+  { id: "product-insights", label: "Product Insights", family: "Product" },
+  { id: "product-cadence", label: "Product Operating Cadence", family: "Product" },
+  { id: "market-strategy", label: "Market Strategy", family: "Strategy & Transformation" },
+  { id: "operating-model", label: "Operating Model Design", family: "Strategy & Transformation" },
+].map((capability) => Object.freeze(capability)) as readonly CanonicalCapabilityDefinition[];
 
 /** Admitted seed identities only; this is not a complete external capability taxonomy. */
 export const canonicalCapabilityLibrary: CanonicalCapabilityLibrary = Object.freeze({

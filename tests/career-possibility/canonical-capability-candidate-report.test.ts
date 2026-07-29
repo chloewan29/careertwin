@@ -259,13 +259,69 @@ assert.deepEqual(fixtureResult.counts, {
   sourceProfileCount: 20,
   sourceRequirementReferenceCount: 80,
   sourceUniqueCapabilityIdCount: 79,
-  alreadyAdmittedUniqueIdCount: 1,
-  candidateUniqueIdCount: 78,
-  candidateReferenceCount: 78,
+  alreadyAdmittedUniqueIdCount: 25,
+  candidateUniqueIdCount: 54,
+  candidateReferenceCount: 54,
   completeCoverage: false,
 });
-assert.equal(fixtureResult.candidates.length, 78);
+assert.equal(fixtureResult.candidates.length, 54);
 assert.equal(fixtureResult.candidates.some((item) => item.capabilityId === "people-leadership"), false);
+const newlyAdmittedIds = [
+  "account-growth",
+  "audience-insight",
+  "commercial-negotiation",
+  "commercial-partnerships",
+  "consultative-selling",
+  "cross-functional-delivery",
+  "customer-adoption",
+  "customer-segmentation",
+  "dependency-management",
+  "employee-relations",
+  "forecasting",
+  "insight-synthesis",
+  "market-strategy",
+  "measurement-design",
+  "operating-model",
+  "operating-rhythm",
+  "organisation-design",
+  "process-improvement",
+  "product-cadence",
+  "product-insights",
+  "regulatory-compliance",
+  "research-design",
+  "scenario-modelling",
+  "variance-analysis",
+] as const;
+assert.ok(newlyAdmittedIds.every((id) =>
+  fixtureResult.candidates.every((candidateItem) => candidateItem.capabilityId !== id)));
+const deferredIds = [
+  "analytics-leadership",
+  "technical-leadership",
+  "benefits-realisation",
+  "value-realisation",
+  "financial-planning",
+  "program-planning",
+  "campaign-planning",
+  "gtm-planning",
+  "resource-planning",
+  "data-storytelling",
+  "decision-storytelling",
+  "executive-narrative",
+  "executive-reporting",
+  "commercial-analysis",
+  "commercial-modelling",
+  "business-partnering",
+  "executive-engagement",
+  "learner-outcomes",
+  "learning-design",
+  "quality-oversight",
+  "renewal-risk",
+  "service-operations",
+  "site-management",
+  "vendor-governance",
+] as const;
+assert.ok(deferredIds.every((id) =>
+  fixtureResult.candidates.some((candidateItem) => candidateItem.capabilityId === id)));
 assert.ok(fixtureResult.candidates.every((item) =>
   item.referenceCount === 1
   && item.observedLabels.length === 1

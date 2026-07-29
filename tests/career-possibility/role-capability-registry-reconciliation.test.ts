@@ -245,21 +245,52 @@ assert.deepEqual(currentFixture.coverage, {
   sourceProfileCount: 20,
   sourceRequirementReferenceCount: 80,
   uniqueRequirementIdCount: 79,
-  matchedRequirementReferenceCount: 2,
-  matchedUniqueRequirementIdCount: 1,
-  unresolvedRequirementReferenceCount: 78,
-  unresolvedUniqueRequirementIdCount: 78,
-  registryCapabilityCount: 1,
+  matchedRequirementReferenceCount: 26,
+  matchedUniqueRequirementIdCount: 25,
+  unresolvedRequirementReferenceCount: 54,
+  unresolvedUniqueRequirementIdCount: 54,
+  registryCapabilityCount: 25,
   unreferencedRegistryCapabilityCount: 0,
-  referenceCoverageRatio: 0.025,
-  uniqueIdCoverageRatio: 1 / 79,
+  referenceCoverageRatio: 26 / 80,
+  uniqueIdCoverageRatio: 25 / 79,
   complete: false,
 });
-assert.equal(currentFixture.resolvedReferences.length, 2);
-assert.ok(currentFixture.resolvedReferences.every((item) =>
-  item.capabilityId === "people-leadership"
-  && item.canonicalLabel === "People Leadership"
-  && item.canonicalFamily === "Leadership"));
+assert.equal(currentFixture.resolvedReferences.length, 26);
+const newlyAdmittedIds = [
+  "account-growth",
+  "audience-insight",
+  "commercial-negotiation",
+  "commercial-partnerships",
+  "consultative-selling",
+  "cross-functional-delivery",
+  "customer-adoption",
+  "customer-segmentation",
+  "dependency-management",
+  "employee-relations",
+  "forecasting",
+  "insight-synthesis",
+  "market-strategy",
+  "measurement-design",
+  "operating-model",
+  "operating-rhythm",
+  "organisation-design",
+  "process-improvement",
+  "product-cadence",
+  "product-insights",
+  "regulatory-compliance",
+  "research-design",
+  "scenario-modelling",
+  "variance-analysis",
+] as const;
+assert.deepEqual(
+  [...new Set(currentFixture.resolvedReferences
+    .map((item) => item.capabilityId)
+    .filter((id) => id !== "people-leadership"))].sort(),
+  [...newlyAdmittedIds].sort(),
+);
+assert.ok(currentFixture.resolvedReferences
+  .filter((item) => item.capabilityId !== "people-leadership")
+  .every((item) => item.contextualLabel === item.canonicalLabel && item.labelMatchesCanonical));
 const currentEngineering = currentFixture.resolvedReferences.find((item) => item.profileId === "engineering-manager");
 assert.deepEqual({
   contextualLabel: currentEngineering?.contextualLabel,
@@ -280,7 +311,14 @@ assert.equal(JSON.stringify(canonicalCapabilityLibrary), canonicalBefore);
 const mappingCompatible: readonly CareerMapCapabilityDefinition[] = currentFixture.resolvedReferences
   .filter((item, index, values) => values.findIndex((candidate) => candidate.capabilityId === item.capabilityId) === index)
   .map((item) => ({ id: item.capabilityId, label: item.canonicalLabel, family: item.canonicalFamily }));
-assert.deepEqual(mappingCompatible, [{ id: "people-leadership", label: "People Leadership", family: "Leadership" }]);
+assert.equal(mappingCompatible.length, 25);
+assert.deepEqual(
+  mappingCompatible.find((item) => item.id === "people-leadership"),
+  { id: "people-leadership", label: "People Leadership", family: "Leadership" },
+);
+assert.ok(mappingCompatible.every((item) =>
+  canonicalCapabilityLibrary.capabilities.some((capability) =>
+    capability.id === item.id && capability.label === item.label && capability.family === item.family)));
 
 const source = readFileSync("lib/career-possibility/role-capability-registry-reconciliation.ts", "utf8");
 assert.equal(source.includes("fixtures/roleCapabilityProfiles"), false);
