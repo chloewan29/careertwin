@@ -1,8 +1,14 @@
 import Link from "next/link";
 import { CapabilityExplorer } from "@/components/career-possibility/CapabilityExplorer";
 import { mockCareerPossibility } from "@/components/career-possibility/mockCareerPossibility";
+import { LocalCareerMapWorkspace } from "@/components/career-possibility/LocalCareerMapWorkspace";
+import { canonicalCapabilityLibrary } from "@/lib/career-possibility/canonical-capability-library";
+import { canonicalCapabilityFamilyLibrary } from "@/lib/career-possibility/canonical-capability-family-library";
+import { buildCareerMapCapabilityDefinitionsFromCanonicalLibrary } from "@/lib/career-possibility/canonical-capability-definition-adapter";
 
 export default function CareerMapPage() {
+  const definitions = buildCareerMapCapabilityDefinitionsFromCanonicalLibrary({ capabilityLibrary: canonicalCapabilityLibrary, familyLibrary: canonicalCapabilityFamilyLibrary });
+  if (!definitions.ok) throw new Error("Canonical capability definitions are invalid.");
   return (
     <main className="min-h-screen bg-[#050912] px-4 pb-5 pt-24 text-[#e8f4f6] sm:px-7 sm:pb-7 sm:pt-28">
       <div className="mx-auto max-w-[1500px]">
@@ -15,7 +21,7 @@ export default function CareerMapPage() {
           <p className="mt-4 max-w-4xl text-sm leading-6 text-slate-500">{mockCareerPossibility.profileSummary}</p>
           <p className="mt-3 max-w-4xl rounded-xl border border-cyan-100/10 bg-white/[0.025] px-4 py-2.5 text-xs leading-5 text-slate-500">Frontend prototype — this example is not connected to the CV or resume text selected on the previous page yet.</p>
         </section>
-        <CapabilityExplorer result={mockCareerPossibility} />
+        <LocalCareerMapWorkspace definitions={definitions.definitions} definitionVersion={definitions.definitionVersion} fallback={<CapabilityExplorer key="example-map" result={mockCareerPossibility} />} />
         <footer className="py-6 text-center text-xs text-slate-600">This is a direction map, not a hiring guarantee.</footer>
       </div>
     </main>

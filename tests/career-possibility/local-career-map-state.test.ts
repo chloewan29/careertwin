@@ -1,0 +1,9 @@
+import assert from "node:assert/strict";
+import { buildLocalCareerMapState, validateLocalCareerMapState } from "../../lib/career-possibility/local-career-map-state";
+import { exampleResumeEvidence } from "../../lib/career-possibility/fixtures/exampleResumeEvidence";
+const definitions = [{ id: "automation", label: "Automation", family: "Delivery" }];
+const bundle = structuredClone(exampleResumeEvidence); bundle.evidenceRecords[0].reviewStatus = "confirmed"; bundle.capabilityMappings = [{ id: "map", evidenceId: bundle.evidenceRecords[0].id, capabilityId: "automation", relationship: "direct_evidence", method: "user", sourceSpanIds: [...bundle.evidenceRecords[0].sourceSpanIds], reviewStatus: "confirmed" }];
+const built = buildLocalCareerMapState({ bundle, definitions, definitionVersion: "defs/1", importedAt: "2026-01-01T00:00:00Z", updatedAt: "2026-01-01T00:00:00Z" }); assert.equal(built.ok, true); if (!built.ok) throw new Error(); assert.equal(built.state.capabilities.length, 1); assert.equal(Object.isFrozen(built.state), true); assert.deepEqual(JSON.parse(JSON.stringify(built.state)), built.state); assert.deepEqual(validateLocalCareerMapState(built.state, definitions), { ok: true, state: built.state });
+const rejected = structuredClone(bundle); rejected.capabilityMappings[0].reviewStatus = "rejected"; assert.equal(buildLocalCareerMapState({ bundle: rejected, definitions, definitionVersion: "defs/1", importedAt: "x", updatedAt: "x" }).ok, false);
+assert.equal(validateLocalCareerMapState({ ...built.state, schemaVersion: "2" }, definitions).ok, false); assert.equal(validateLocalCareerMapState({ ...built.state, definitionVersion: "" }, definitions).ok, false); assert.equal(validateLocalCareerMapState({ ...built.state, capabilities: [{ ...built.state.capabilities[0], capabilityId: "matter-management" }] }, definitions).ok, false);
+console.log("local career map state tests passed");

@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useRef, useState } from "react";
+import Link from "next/link";
 import { ResumeDerivedCapabilityExplorer } from "./ResumeDerivedCapabilityExplorer";
 import type { CareerCapabilityMapPresentation } from "../../lib/career-possibility/career-capability-map-contract";
 import { validateCareerCapabilityMapPresentation } from "../../lib/career-possibility/career-capability-map-contract";
@@ -21,6 +22,8 @@ import {
   adaptReviewedResumeEvidenceToCareerMap,
   type CareerMapCapabilityDefinition,
 } from "../../lib/career-possibility/reviewed-resume-evidence-map-adapter";
+import { buildLocalCareerMapState } from "../../lib/career-possibility/local-career-map-state";
+import { readLocalCareerMapState, writeLocalCareerMapState } from "../../lib/career-possibility/local-career-map-storage";
 
 type Props = {
   bundle: ResumeEvidenceBundle;
@@ -103,6 +106,7 @@ export function ResumeEvidenceReviewWorkspace({
   >(null);
   const [announcement, setAnnouncement] = useState("");
   const [historyOpen, setHistoryOpen] = useState(false);
+  const [applyStatus, setApplyStatus] = useState<"idle" | "saved">("idle");
   const errorRef = useRef<HTMLDivElement>(null);
 
   const working = useMemo(
@@ -134,6 +138,7 @@ export function ResumeEvidenceReviewWorkspace({
   const previewCurrent =
     Boolean(previewPresentation) &&
     previewDecisionCount === session.decisions.length;
+  const canApply = working.ok && effectiveBundle.capabilityMappings.some((item) => (item.reviewStatus === "confirmed" || item.reviewStatus === "edited") && Boolean(item.capabilityId) && item.relationship !== "possible");
   const nextSequence =
     Math.max(0, ...session.decisions.map((item) => item.sequence)) + 1;
 
@@ -375,6 +380,18 @@ export function ResumeEvidenceReviewWorkspace({
     setPreviewDecisionCount(session.decisions.length);
     setBlockingIssues([]);
     setAnnouncement("Preview updated.");
+  }
+  function applyToCareerMap() {
+    const applied = applyResumeEvidenceReviewDecisions({ bundle, session, capabilityDefinitions, capabilityDefinitionVersion });
+    if (!applied.ok) { setBlockingIssues(applied.issues); return; }
+    const existing = readLocalCareerMapState(capabilityDefinitions, capabilityDefinitionVersion);
+    if ((existing.status === "loaded" || existing.status === "incompatible_version") && !window.confirm("Replace the existing imported Career Map evidence? This replaces the prior reviewed résumé import stored in this browser.")) return;
+    const timestamp = new Date().toISOString();
+    const built = buildLocalCareerMapState({ bundle: applied.reviewedBundle, definitions: capabilityDefinitions, definitionVersion: capabilityDefinitionVersion, importedAt: timestamp, updatedAt: timestamp });
+    if (!built.ok) { setBlockingIssues(built.issues.map((item) => ({ ...item, severity: "error" as const }))); setAnnouncement("Reviewed evidence could not be applied."); return; }
+    const written = writeLocalCareerMapState(built.state, capabilityDefinitions);
+    if (!written.ok) { setBlockingIssues([{ code: written.status, path: "localStorage", message: written.message, severity: "error" }]); return; }
+    setApplyStatus("saved"); setBlockingIssues([]); setAnnouncement("Reviewed evidence applied to Career Map in this browser.");
   }
   function selectEvidence(id: string) {
     if (draft) {
@@ -811,6 +828,12 @@ export function ResumeEvidenceReviewWorkspace({
           <ResumeDerivedCapabilityExplorer presentation={previewPresentation} />
         </div>
       )}
+      <div className="mt-6 rounded-2xl border border-teal-300/20 bg-teal-300/[0.04] p-4">
+        <p className="text-sm font-semibold">Apply reviewed evidence</p><p className="mt-1 text-xs text-slate-400">Stores reviewed canonical mappings and their evidence text in this browser, not the full pasted résumé.</p>
+        <div className="mt-4 flex flex-wrap gap-2"><button type="button" disabled={!canApply} onClick={applyToCareerMap} className="min-h-11 rounded-xl bg-teal-200 px-5 font-semibold text-slate-950 disabled:cursor-not-allowed disabled:opacity-40">Apply reviewed evidence to Career Map</button>{applyStatus === "saved" && <Link href="/career-map" className="min-h-11 rounded-xl border border-teal-300/25 px-5 py-3 text-sm text-teal-200">View Career Map</Link>}</div>
+        {!canApply && <p className="mt-2 text-xs text-amber-200">Review evidence and create at least one canonical mapping before applying.</p>}
+        {applyStatus === "saved" && <p className="mt-3 text-sm text-teal-200">Applied successfully. Stored only in this browser.</p>}
+      </div>
     </section>
   );
 }
