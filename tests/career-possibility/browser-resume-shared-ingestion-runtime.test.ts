@@ -109,7 +109,7 @@ async function main() {
 
   const editDecision: ResumeEvidenceReviewDecision = {
     id: "review:runtime:edit", sequence: 1, actor: "user", targetType: "evidence_field", targetId: evidence.id,
-    field: "action", action: "edit", value: "Private edited value", sourceSpanIds: [...evidence.sourceSpanIds],
+    field: "action", action: "edit", value: "Private edited value", sourceSpanIds: [...evidence.sourceSpanIds], expectedReviewStatus: "unreviewed",
   };
   const editSession = session([editDecision]);
   const editedReview = replay(editSession);

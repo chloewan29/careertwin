@@ -144,8 +144,10 @@ function applyEvidenceFieldDecision(bundle: ResumeEvidenceBundle, decision: Evid
   const record = bundle.evidenceRecords.find((item) => item.id === decision.targetId);
   if (!record) return issue("unknown_target", path, `Unknown evidence target ${decision.targetId}.`);
   const current = record[decision.field];
-  if (decision.expectedReviewStatus && current?.reviewStatus !== decision.expectedReviewStatus) return issue("stale_review_status", path, `Evidence field ${decision.field} no longer has the expected review status.`);
+  const currentReviewStatus = current?.reviewStatus ?? "unreviewed";
+  if (decision.expectedReviewStatus && currentReviewStatus !== decision.expectedReviewStatus) return issue("stale_review_status", path, `Evidence field ${decision.field} no longer has the expected review status.`);
   if (decision.action === "edit") {
+    if (currentReviewStatus === "rejected") return issue("decision_against_rejected_target", path, "Rejected target requires restore before another review action.");
     if (decision.sourceSpanIds.length === 0) return issue(decision.field === "outcome" ? "invalid_outcome" : "unsupported_target_field", path, `Evidence field ${decision.field} edit requires source context.`);
     if (decision.field === "outcome") {
       const value = decision.value as ResumeEvidenceOutcome;

@@ -178,6 +178,79 @@ for (const [field, value] of [["displayText", "User display text"], ["action", "
   }
 }
 
+{
+  const evidenceField = (
+    id: string,
+    sequence: number,
+    field: "action" | "context",
+    action: "confirm" | "edit" | "reject" | "restore",
+    expectedReviewStatus: "unreviewed" | "confirmed" | "edited" | "rejected",
+    priorDecisionId?: string,
+  ): ResumeEvidenceReviewDecision => ({
+    id,
+    sequence,
+    actor: "user",
+    targetType: "evidence_field",
+    targetId: "evidence-1",
+    field,
+    action,
+    expectedReviewStatus,
+    ...(priorDecisionId ? { priorDecisionId } : {}),
+    ...(action === "edit" ? { value: `${field} replacement ${sequence}`, sourceSpanIds: ["span-1"] } : {}),
+  } as ResumeEvidenceReviewDecision);
+
+  const absent = apply([evidenceField("absent-edit", 1, "context", "edit", "unreviewed")]);
+  assert.equal(absent.ok, true);
+  if (absent.ok) assert.deepEqual([absent.reviewedBundle.evidenceRecords[0].context?.value, absent.reviewedBundle.evidenceRecords[0].context?.reviewStatus], ["context replacement 1", "edited"]);
+
+  const populated = apply([evidenceField("populated-edit", 1, "action", "edit", "confirmed")]);
+  assert.equal(populated.ok, true);
+  if (populated.ok) assert.equal(populated.reviewedBundle.evidenceRecords[0].action?.reviewStatus, "edited");
+
+  const confirmedThenEdited = apply([
+    evidenceField("field-confirm", 1, "action", "confirm", "confirmed"),
+    evidenceField("field-edit-after-confirm", 2, "action", "edit", "confirmed", "field-confirm"),
+  ]);
+  assert.equal(confirmedThenEdited.ok, true);
+
+  const editedTwice = apply([
+    evidenceField("field-edit-1", 1, "action", "edit", "confirmed"),
+    evidenceField("field-edit-2", 2, "action", "edit", "edited", "field-edit-1"),
+  ]);
+  assert.equal(editedTwice.ok, true);
+  if (editedTwice.ok) assert.equal(editedTwice.reviewedBundle.evidenceRecords[0].action?.value, "action replacement 2");
+
+  expectFailure(apply([
+    evidenceField("field-reject", 1, "action", "reject", "confirmed"),
+    evidenceField("field-edit-rejected", 2, "action", "edit", "rejected", "field-reject"),
+  ]), "decision_against_rejected_target");
+
+  const restoredThenEdited = apply([
+    evidenceField("field-reject", 1, "action", "reject", "confirmed"),
+    evidenceField("field-restore", 2, "action", "restore", "rejected", "field-reject"),
+    evidenceField("field-edit-restored", 3, "action", "edit", "unreviewed", "field-restore"),
+  ]);
+  assert.equal(restoredThenEdited.ok, true);
+
+  expectFailure(apply([
+    evidenceField("field-edit-1", 1, "action", "edit", "confirmed"),
+    evidenceField("field-edit-2", 2, "action", "edit", "edited", "field-edit-1"),
+    evidenceField("field-edit-stale", 3, "action", "edit", "edited", "field-edit-1"),
+  ]), "conflicting_decisions");
+  expectFailure(apply([evidenceField("field-edit-unknown-prior", 1, "action", "edit", "confirmed", "missing")]), "invalid_prior_decision");
+  expectFailure(apply([
+    evidenceField("other-target", 1, "context", "edit", "unreviewed"),
+    evidenceField("field-edit-cross-target", 2, "action", "edit", "confirmed", "other-target"),
+  ]), "invalid_prior_decision");
+  expectFailure(apply([{ ...evidenceField("unknown-evidence-field", 1, "action", "edit", "unreviewed"), targetId: "missing-evidence" }]), "unknown_target");
+  expectFailure(apply([{ ...evidenceField("unsupported-evidence-field", 1, "action", "edit", "unreviewed"), field: "sourceText" } as unknown as ResumeEvidenceReviewDecision]), "unsupported_target_field");
+
+  expectFailure(apply([
+    { id: "parent-reject", sequence: 1, actor: "user", targetType: "evidence_record", targetId: "evidence-1", action: "reject", expectedReviewStatus: "confirmed" },
+    { id: "parent-confirm", sequence: 2, actor: "user", targetType: "evidence_record", targetId: "evidence-1", action: "confirm", expectedReviewStatus: "rejected", priorDecisionId: "parent-reject" },
+  ]), "decision_against_rejected_target");
+}
+
 for (const targetId of ["evidence-3", "evidence-4"] as const) {
   const result = apply([{ id: `outcome-${targetId}`, sequence: 1, actor: "user", targetType: "evidence_field", targetId, field: "outcome", action: "edit", value: { text: "Improved the workflow.", kind: "qualitative" }, sourceSpanIds: [targetId === "evidence-3" ? "span-3" : "span-4"] }]);
   assert.equal(result.ok, true);
