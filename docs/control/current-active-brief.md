@@ -62,7 +62,7 @@ Default do-not-read in light mode:
 ## 2. Current active line
 
 Primary active line:
-- `CAREER-MAP-SHARED-INGESTION-RUNTIME`
+- `CAREER-MAP-PROOF-TO-BUILD-GUIDANCE`
 
 Current mode:
 - `HOLD`
@@ -71,12 +71,15 @@ Current task type:
 - post-repair closure / next-product-priority selection
 
 Current active question:
-- Which user-facing Career Map capability should become the next admitted product task now that shared ingestion and runtime failure handling are complete?
+- Which user-facing Career Map capability should become the next admitted product task now that Proof to build guidance is complete?
 
 Completed Career Map milestone:
-- `SHARED_INGESTION_RUNTIME_COMPLETE`
-- stable baseline: `b9746c9d5ddecdc105cdc4cb6c37bba511ba4b29`
-- evidence-field edit repair closed: valid edits reach runtime, `missing_semantic_payload_revision` is inline and retryable, and the successful no-edit flow remains intact
+- `CAREER_MAP_PROOF_TO_BUILD_GUIDANCE_COMPLETE`
+- implementation commit: `22b995b0289efb95d656be61eb2575207cceb0c8`
+- the target-role comparison transports exact authored `expectedEvidence` only for applicable `evidence_not_yet_shown` requirements
+- no guidance is fabricated when authored guidance is absent; direct, transferable, deferred, and excluded outcomes remain unchanged
+- all 26 Career Possibility tests, targeted ESLint, TypeScript, production build, and browser QA at 1440×900, 768×1024, and 390×844 passed
+- shared ingestion and runtime failure handling remain complete and closed
 
 Secondary line status:
 - the former `JOB-COPILOT-SIDEPANEL-USER-READY-AUDIT` line is historical/non-active context; its user-exposure HOLD remains unchanged
@@ -119,7 +122,7 @@ Tailored CV flow closure note (2026-05-15):
 ## 3. One main next action
 
 Main next action:
-- Hold the shared-ingestion line as complete and select one user-facing Career Map product task before admitting further implementation.
+- Hold the completed Proof to build guidance and select the next user-facing Career Map product priority before further implementation.
 
 Not the next action:
 - do not treat the closed `stale_review_status` evidence-field defect as active
