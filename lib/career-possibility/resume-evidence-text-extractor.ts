@@ -2,7 +2,9 @@ import {
   RESUME_EVIDENCE_SCHEMA_VERSION,
   validateResumeEvidenceBundle,
   type ResumeEvidenceBundle,
+  type ResumeEmploymentRecord,
   type ResumeEvidenceRecord,
+  type ProvenancedField,
   type ResumeSourceSpan,
 } from "./resume-evidence-contract";
 import {
@@ -15,6 +17,15 @@ import {
 } from "./resume-evidence-extraction-contract";
 
 type Candidate = { startOffset: number; endOffset: number; text: string; bullet: boolean };
+type EmploymentBoundary = {
+  startOffset: number;
+  contentStartOffset: number;
+  endOffset: number;
+  employer?: string;
+  roleTitle?: string;
+  startDate?: string;
+  endDate?: string;
+};
 
 function issue(
   code: ResumeEvidenceExtractionIssueCode,
@@ -41,6 +52,58 @@ function hasEvidenceContent(text: string): boolean {
 function isHeadingLike(text: string): boolean {
   const value = text.trim();
   return !value.includes("\n") && value.length <= 80 && /\p{Lu}/u.test(value) && !/\p{Ll}/u.test(value);
+}
+
+const workHistoryHeading = /^(?:work|professional|career|employment)\s+(?:experience|history)$|^experience$/i;
+const dateRange = /\b((?:(?:jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|jul(?:y)?|aug(?:ust)?|sep(?:tember)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?)\s+)?(?:19|20)\d{2})\s*[-–—]\s*((?:(?:jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|jul(?:y)?|aug(?:ust)?|sep(?:tember)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?)\s+)?(?:19|20)\d{2}|present|current)\b/i;
+const companySuffix = /\b(?:inc\.?|llc|ltd\.?|limited|corp\.?|corporation|company|co\.?|group|plc|pty\.?\s+ltd\.?)$/i;
+
+function sourced(value: string, sourceSpanId: string, methodVersion: string): ProvenancedField<string> {
+  return { value, provenance: "user_provided", sourceSpanIds: [sourceSpanId], method: "deterministic", methodVersion, reviewStatus: "unreviewed" };
+}
+
+function sourceLines(text: string) {
+  const lines: Array<{ start: number; end: number; text: string }> = [];
+  let start = 0;
+  for (let index = 0; index <= text.length; index += 1) {
+    if (index === text.length || text[index] === "\n") {
+      lines.push({ start, end: index, text: text.slice(start, index) });
+      start = index + 1;
+    }
+  }
+  return lines;
+}
+
+/** Conservative structural boundaries only; values are copied from explicit headings. */
+function employmentBoundaries(text: string): EmploymentBoundary[] {
+  const lines = sourceLines(text);
+  const boundaries: Array<Omit<EmploymentBoundary, "endOffset">> = [];
+  let workSectionStart: number | undefined;
+  for (let index = 0; index < lines.length; index += 1) {
+    const line = lines[index];
+    const value = line.text.trim();
+    if (!value) continue;
+    if (workHistoryHeading.test(value)) {
+      workSectionStart = line.end < text.length ? line.end + 1 : line.end;
+      continue;
+    }
+    const combined = /^(.+?)\s+[-–—]\s+(.+?)(?:\s*[|,]\s*(.+))?$/.exec(value);
+    if (combined && (dateRange.test(combined[3] ?? "") || companySuffix.test(combined[1]))) {
+      const dates = dateRange.exec(combined[3] ?? "");
+      boundaries.push({ startOffset: line.start, contentStartOffset: line.end < text.length ? line.end + 1 : line.end, employer: combined[1].trim(), roleTitle: combined[2].trim(), ...(dates ? { startDate: dates[1], endDate: dates[2] } : {}) });
+      continue;
+    }
+    const roleWithDates = /^(.+?)\s*[|,]\s*(.+)$/.exec(value);
+    const dates = dateRange.exec(roleWithDates?.[2] ?? "");
+    if (roleWithDates && dates) {
+      const previous = lines[index - 1];
+      const previousValue = previous?.text.trim() ?? "";
+      const explicitEmployer = previousValue && companySuffix.test(previousValue) && !workHistoryHeading.test(previousValue) ? previous : undefined;
+      boundaries.push({ startOffset: explicitEmployer?.start ?? line.start, contentStartOffset: line.end < text.length ? line.end + 1 : line.end, ...(explicitEmployer ? { employer: previousValue } : {}), roleTitle: roleWithDates[1].trim(), startDate: dates[1], endDate: dates[2] });
+    }
+  }
+  if (boundaries.length === 0 && workSectionStart !== undefined) boundaries.push({ startOffset: workSectionStart, contentStartOffset: workSectionStart });
+  return boundaries.map((boundary, index) => ({ ...boundary, endOffset: boundaries[index + 1]?.startOffset ?? text.length })).filter((boundary) => boundary.endOffset > boundary.contentStartOffset);
 }
 
 /**
@@ -114,7 +177,7 @@ export function extractResumeEvidenceFromText(
     return { ok: false, issues: [issue("invalid_control_character", "error", "text", "Plain-text input contains an unsupported control character.")] };
   }
 
-  const candidates = segmentCandidates(canonicalText);
+  const boundaries = employmentBoundaries(canonicalText);
   const documentSpanId = `span:${input.documentId}:document`;
   const generatedIds = new Set<string>([input.documentId, input.bundleId, input.extractionRunId]);
   const reserveId = (id: string) => {
@@ -132,43 +195,47 @@ export function extractResumeEvidenceFromText(
     endOffset: canonicalText.length,
     originalText: canonicalText,
   }];
+  const employmentRecords: ResumeEmploymentRecord[] = [];
   const evidenceRecords: ResumeEvidenceRecord[] = [];
   const warnings: ResumeEvidenceExtractionIssue[] = [];
   const seenCandidateText = new Map<string, number>();
   let bulletIndex = 0;
 
-  for (const [index, candidate] of candidates.entries()) {
-    const sequence = index + 1;
-    const spanId = `span:${input.documentId}:${sequence}`;
-    const evidenceId = `evidence:${input.bundleId}:${sequence}`;
-    if (!reserveId(spanId) || !reserveId(evidenceId)) {
-      return { ok: false, issues: [issue("duplicate_generated_id", "error", `evidenceRecords[${index}]`, "A deterministic child ID collided with another identity.")] };
-    }
-    if (canonicalText.slice(candidate.startOffset, candidate.endOffset) !== candidate.text) {
-      return { ok: false, issues: [issue("source_span_generation_failed", "error", `sourceSpans[${sequence}]`, "A deterministic source span could not be reproduced from canonical text.")] };
-    }
-    sourceSpans.push({
-      id: spanId,
-      documentId: input.documentId,
-      sourceType: "resume_paste",
-      ...(candidate.bullet ? { bulletIndex: bulletIndex++ } : {}),
-      startOffset: candidate.startOffset,
-      endOffset: candidate.endOffset,
-      originalText: candidate.text,
-    });
-    evidenceRecords.push({
-      id: evidenceId,
-      sourceSpanIds: [spanId],
-      sourceText: candidate.text,
+  for (const boundary of boundaries) {
+    const employmentId = `employment:${input.bundleId}:${boundary.startOffset}`;
+    const employmentSpanId = `span:${input.documentId}:employment:${boundary.startOffset}`;
+    if (!reserveId(employmentId) || !reserveId(employmentSpanId)) return { ok: false, issues: [issue("duplicate_generated_id", "error", "employmentRecords", "A deterministic employment identity collided with another identity.")] };
+    const employmentText = canonicalText.slice(boundary.startOffset, boundary.endOffset);
+    sourceSpans.push({ id: employmentSpanId, documentId: input.documentId, sourceType: "resume_paste", employmentRecordId: employmentId, startOffset: boundary.startOffset, endOffset: boundary.endOffset, originalText: employmentText });
+    employmentRecords.push({
+      id: employmentId,
+      ...(boundary.employer ? { employerName: sourced(boundary.employer, employmentSpanId, input.parserVersion) } : {}),
+      ...(boundary.roleTitle ? { roleTitle: sourced(boundary.roleTitle, employmentSpanId, input.parserVersion) } : {}),
+      ...(boundary.startDate ? { startDate: sourced(boundary.startDate, employmentSpanId, input.parserVersion) } : {}),
+      ...(boundary.endDate ? { endDate: sourced(boundary.endDate, employmentSpanId, input.parserVersion) } : {}),
+      sourceSpanIds: [employmentSpanId],
       reviewStatus: "unreviewed",
-      processingStatus: "source_provided",
-      extractionMethod: "deterministic",
       warnings: [],
     });
-    if (isHeadingLike(candidate.text)) warnings.push(issue("ambiguous_segmentation", "warning", `evidenceRecords[${index}]`, "A short uppercase candidate may require segmentation review."));
-    const previous = seenCandidateText.get(candidate.text);
-    if (previous !== undefined) warnings.push(issue("duplicate_evidence_candidate", "warning", `evidenceRecords[${index}]`, "An exact candidate is repeated elsewhere in the source and was retained separately."));
-    else seenCandidateText.set(candidate.text, index);
+    const localCandidates = segmentCandidates(canonicalText.slice(boundary.contentStartOffset, boundary.endOffset)).map((candidate) => ({ ...candidate, startOffset: candidate.startOffset + boundary.contentStartOffset, endOffset: candidate.endOffset + boundary.contentStartOffset }));
+    for (const candidate of localCandidates) {
+      const index = evidenceRecords.length;
+      const sequence = index + 1;
+      const spanId = `span:${input.documentId}:${sequence}`;
+      const evidenceId = `evidence:${input.bundleId}:${sequence}`;
+      if (!reserveId(spanId) || !reserveId(evidenceId)) return { ok: false, issues: [issue("duplicate_generated_id", "error", `evidenceRecords[${index}]`, "A deterministic child ID collided with another identity.")] };
+      if (canonicalText.slice(candidate.startOffset, candidate.endOffset) !== candidate.text) return { ok: false, issues: [issue("source_span_generation_failed", "error", `sourceSpans[${sequence}]`, "A deterministic source span could not be reproduced from canonical text.")] };
+      sourceSpans.push({ id: spanId, documentId: input.documentId, sourceType: "resume_paste", employmentRecordId: employmentId, ...(candidate.bullet ? { bulletIndex: bulletIndex++ } : {}), startOffset: candidate.startOffset, endOffset: candidate.endOffset, originalText: candidate.text });
+      evidenceRecords.push({ id: evidenceId, employmentRecordId: employmentId, sourceSpanIds: [spanId], sourceText: candidate.text, reviewStatus: "unreviewed", processingStatus: "source_provided", extractionMethod: "deterministic", warnings: [] });
+      if (isHeadingLike(candidate.text)) warnings.push(issue("ambiguous_segmentation", "warning", `evidenceRecords[${index}]`, "A short uppercase candidate may require segmentation review."));
+      const previous = seenCandidateText.get(candidate.text);
+      if (previous !== undefined) warnings.push(issue("duplicate_evidence_candidate", "warning", `evidenceRecords[${index}]`, "An exact candidate is repeated elsewhere in the source and was retained separately."));
+      else seenCandidateText.set(candidate.text, index);
+    }
+  }
+
+  if (boundaries.length === 0) {
+    segmentCandidates(canonicalText).forEach((_, index) => warnings.push(issue("unassigned_evidence_candidate", "warning", `evidenceRecords[${index}]`, "Evidence could not be assigned to a source-provenanced employment context.")));
   }
 
   if (evidenceRecords.length === 0) warnings.push(issue("no_evidence_candidates", "warning", "evidenceRecords", "No safe evidence candidates were produced; intake review must not be initialized."));
@@ -178,7 +245,7 @@ export function extractResumeEvidenceFromText(
     id: input.bundleId,
     sourceDocuments: [{ id: input.documentId, sourceType: "resume_paste" }],
     sourceSpans,
-    employmentRecords: [],
+    employmentRecords,
     evidenceRecords,
     capabilityMappings: [],
     interpretations: [],

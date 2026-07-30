@@ -1,6 +1,6 @@
 import type { ResumeEvidenceBundle } from "./resume-evidence-contract";
 
-export const RESUME_EVIDENCE_EXTRACTION_SCHEMA_VERSION = "1.0.0" as const;
+export const RESUME_EVIDENCE_EXTRACTION_SCHEMA_VERSION = "1.1.0" as const;
 export const TEXT_RESUME_EVIDENCE_PARSER_NAME = "career-twin-text-resume-extractor" as const;
 export const DEFAULT_TEXT_RESUME_MAX_CHARACTERS = 200_000;
 
@@ -16,6 +16,7 @@ export type ResumeEvidenceExtractionIssueCode =
   | "no_evidence_candidates"
   | "ambiguous_segmentation"
   | "duplicate_evidence_candidate"
+  | "unassigned_evidence_candidate"
   | "bundle_validation_failed";
 
 export type ResumeEvidenceExtractionIssue = {

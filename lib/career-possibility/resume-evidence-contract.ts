@@ -1,4 +1,4 @@
-export const RESUME_EVIDENCE_SCHEMA_VERSION = "1.0.0" as const;
+export const RESUME_EVIDENCE_SCHEMA_VERSION = "1.1.0" as const;
 
 export type EvidenceProvenanceCategory = "user_provided" | "normalised" | "deterministically_derived" | "model_inferred" | "unverified_suggestion" | "mock";
 export type EvidenceReviewStatus = "unreviewed" | "confirmed" | "edited" | "rejected";
@@ -55,7 +55,7 @@ export type ResumeEvidenceOutcome = { text: string; kind: "quantitative" | "qual
 /** Capability and role identifiers are intentionally absent from normalised evidence. */
 export type ResumeEvidenceRecord = {
   id: string;
-  employmentRecordId?: string;
+  employmentRecordId: string;
   sourceSpanIds: string[];
   sourceText: string;
   displayText?: ProvenancedField<string>;
@@ -118,6 +118,7 @@ export type ResumeEvidenceValidationResult = { valid: boolean; issues: ResumeEvi
 
 const sourcedProvenance = new Set<EvidenceProvenanceCategory>(["user_provided", "normalised"]);
 const nonEmpty = (value: string | undefined) => Boolean(value?.trim());
+const forbiddenEmploymentPlaceholder = /^(unknown company|unknown role|current role|general experience|resume experience)$/i;
 
 export function isReviewedEvidence(evidence: ResumeEvidenceRecord) {
   return evidence.reviewStatus === "confirmed" || evidence.reviewStatus === "edited";
@@ -172,17 +173,29 @@ export function validateResumeEvidenceBundle(bundle: ResumeEvidenceBundle): Resu
     if (span.startOffset !== undefined && span.startOffset < 0) add("invalid_start_offset", `${path}.startOffset`, "Start offset must be non-negative.");
     if (span.startOffset !== undefined && span.endOffset !== undefined && span.endOffset <= span.startOffset) add("invalid_offset_range", `${path}.endOffset`, "End offset must be greater than start offset.");
     if (!nonEmpty(span.originalText)) add("empty_source_text", `${path}.originalText`, "Original text must be non-empty.");
+    if (span.employmentRecordId && !employmentIds.has(span.employmentRecordId)) add("unknown_employment", `${path}.employmentRecordId`, `Unknown employment ${span.employmentRecordId}.`);
   });
   bundle.employmentRecords.forEach((record, index) => {
     const path = `employmentRecords[${index}]`;
     checkSpanRefs(record.sourceSpanIds, `${path}.sourceSpanIds`, true);
     checkField(record.employerName, `${path}.employerName`); checkField(record.roleTitle, `${path}.roleTitle`);
     checkField(record.startDate, `${path}.startDate`); checkField(record.endDate, `${path}.endDate`); checkField(record.location, `${path}.location`);
+    if (record.employerName && forbiddenEmploymentPlaceholder.test(record.employerName.value.trim())) add("placeholder_employer", `${path}.employerName.value`, "Placeholder employers are not source facts.");
+    if (record.roleTitle && forbiddenEmploymentPlaceholder.test(record.roleTitle.value.trim())) add("placeholder_role", `${path}.roleTitle.value`, "Placeholder roles are not source facts.");
+    record.sourceSpanIds.forEach((spanId) => {
+      const span = bundle.sourceSpans.find((item) => item.id === spanId);
+      if (span && span.employmentRecordId !== record.id) add("employment_span_mismatch", `${path}.sourceSpanIds`, "Employment source spans must identify their employment record.");
+    });
   });
   bundle.evidenceRecords.forEach((record, index) => {
     const path = `evidenceRecords[${index}]`;
-    if (record.employmentRecordId && !employmentIds.has(record.employmentRecordId)) add("unknown_employment", `${path}.employmentRecordId`, `Unknown employment ${record.employmentRecordId}.`);
+    if (!nonEmpty(record.employmentRecordId)) add("missing_employment", `${path}.employmentRecordId`, "Evidence must reference an employment record.");
+    else if (!employmentIds.has(record.employmentRecordId)) add("unknown_employment", `${path}.employmentRecordId`, `Unknown employment ${record.employmentRecordId}.`);
     checkSpanRefs(record.sourceSpanIds, `${path}.sourceSpanIds`, true);
+    record.sourceSpanIds.forEach((spanId) => {
+      const span = bundle.sourceSpans.find((item) => item.id === spanId);
+      if (span && span.employmentRecordId !== record.employmentRecordId) add("evidence_employment_span_mismatch", `${path}.sourceSpanIds`, "Evidence spans must belong to the referenced employment record.");
+    });
     if (!nonEmpty(record.sourceText)) add("empty_evidence_source", `${path}.sourceText`, "Evidence source text must be non-empty.");
     checkField(record.displayText, `${path}.displayText`); checkField(record.action, `${path}.action`); checkField(record.context, `${path}.context`); checkField(record.outcome, `${path}.outcome`);
     const outcome = record.outcome?.value;

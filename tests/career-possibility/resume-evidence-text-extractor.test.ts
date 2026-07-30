@@ -37,11 +37,11 @@ const failure = (text: string, code: string, overrides: Partial<ExtractResumeEvi
   return result;
 };
 
-assert.equal(RESUME_EVIDENCE_EXTRACTION_SCHEMA_VERSION, "1.0.0");
+assert.equal(RESUME_EVIDENCE_EXTRACTION_SCHEMA_VERSION, "1.1.0");
 failure("", "empty_input");
 failure(" \t\r\n ", "empty_input");
 
-const basic = success("Built a reporting workflow.\n\nCoordinated a planning cycle.");
+const basic = success("Example Company Ltd — Operations Analyst | Jan 2020 - Dec 2023\n- Built a reporting workflow.\n- Coordinated a planning cycle.");
 assert.equal(basic.metadata.parserName, TEXT_RESUME_EVIDENCE_PARSER_NAME);
 assert.deepEqual(basic.metadata, {
   extractionRunId: "run-session-a",
@@ -55,8 +55,12 @@ assert.deepEqual(basic.bundle.sourceDocuments[0], { id: "document-session-a", so
 assert.equal(basic.bundle.sourceSpans[0].id, "span:document-session-a:document");
 assert.equal(basic.bundle.sourceSpans[0].startOffset, 0);
 assert.equal(basic.bundle.sourceSpans[0].endOffset, basic.bundle.sourceSpans[0].originalText.length);
-assert.equal(basic.bundle.sourceSpans[0].originalText, "Built a reporting workflow.\n\nCoordinated a planning cycle.");
-assert.deepEqual(basic.bundle.employmentRecords, []);
+assert.equal(basic.bundle.sourceSpans[0].originalText, "Example Company Ltd — Operations Analyst | Jan 2020 - Dec 2023\n- Built a reporting workflow.\n- Coordinated a planning cycle.");
+assert.equal(basic.bundle.employmentRecords.length, 1);
+assert.equal(basic.bundle.employmentRecords[0].employerName?.value, "Example Company Ltd");
+assert.equal(basic.bundle.employmentRecords[0].roleTitle?.value, "Operations Analyst");
+assert.equal(basic.bundle.employmentRecords[0].startDate?.value, "Jan 2020");
+assert.equal(basic.bundle.employmentRecords[0].endDate?.value, "Dec 2023");
 assert.deepEqual(basic.bundle.capabilityMappings, []);
 assert.deepEqual(basic.bundle.interpretations, []);
 assert.equal(basic.bundle.evidenceRecords.length, 2);
@@ -65,56 +69,58 @@ basic.bundle.evidenceRecords.forEach((record, index) => {
   assert.equal(record.reviewStatus, "unreviewed");
   assert.equal(record.processingStatus, "source_provided");
   assert.equal(record.extractionMethod, "deterministic");
-  assert.equal(record.employmentRecordId, undefined);
+  assert.equal(record.employmentRecordId, basic.bundle.employmentRecords[0].id);
   assert.equal(record.displayText, undefined);
   assert.equal(record.action, undefined);
   assert.equal(record.context, undefined);
   assert.equal(record.outcome, undefined);
 });
 
-const canonical = success("\uFEFF  Lead line\r\nwrapped line\r\r- Bullet one\r1) Numbered item\r2024 results\r\n  ");
-const canonicalText = "  Lead line\nwrapped line\n\n- Bullet one\n1) Numbered item\n2024 results\n  ";
+const canonical = success("\uFEFFWORK EXPERIENCE\r\n\r\n- Bullet one\r1) Numbered item\r2024 results\r\n  ");
+const canonicalText = "WORK EXPERIENCE\n\n- Bullet one\n1) Numbered item\n2024 results\n  ";
 assert.equal(canonical.bundle.sourceSpans[0].originalText, canonicalText);
 canonical.bundle.sourceSpans.forEach((span) => {
   assert.equal(canonicalText.slice(span.startOffset, span.endOffset), span.originalText);
 });
 assert.deepEqual(canonical.bundle.evidenceRecords.map((item) => item.sourceText), [
-  "  Lead line\nwrapped line",
   "- Bullet one",
   "1) Numbered item",
   "2024 results",
 ]);
-assert.deepEqual(canonical.bundle.sourceSpans.slice(1).map((item) => item.bulletIndex), [undefined, 0, 1, undefined]);
+assert.equal(canonical.bundle.employmentRecords[0].employerName, undefined);
+assert.equal(canonical.bundle.employmentRecords[0].roleTitle, undefined);
+assert.deepEqual(canonical.bundle.sourceSpans.filter((item) => /^span:document-session-a:\d+$/.test(item.id)).map((item) => item.bulletIndex), [0, 1, undefined]);
 
-const unix = success("Alpha\nBeta");
-const windows = success("Alpha\r\nBeta");
-const classic = success("Alpha\rBeta");
+const unix = success("WORK EXPERIENCE\n- Alpha\n- Beta");
+const windows = success("WORK EXPERIENCE\r\n- Alpha\r\n- Beta");
+const classic = success("WORK EXPERIENCE\r- Alpha\r- Beta");
 assert.deepEqual(windows, unix);
 assert.deepEqual(classic, unix);
 
 const heading = success("EXPERIENCE\n\nDelivered a project.");
-assert.equal(heading.bundle.evidenceRecords[0].sourceText, "EXPERIENCE");
-assert.equal(heading.warnings.some((item) => item.code === "ambiguous_segmentation"), true);
+assert.equal(heading.bundle.evidenceRecords[0].sourceText, "Delivered a project.");
+assert.equal(heading.bundle.employmentRecords.length, 1);
+assert.equal(heading.bundle.employmentRecords[0].employerName, undefined);
 
-const duplicate = success("- Repeated item\n\n- Repeated item");
+const duplicate = success("WORK EXPERIENCE\n- Repeated item\n\n- Repeated item");
 assert.equal(duplicate.bundle.evidenceRecords.length, 2);
 assert.notEqual(duplicate.bundle.evidenceRecords[0].id, duplicate.bundle.evidenceRecords[1].id);
 assert.equal(duplicate.warnings.filter((item) => item.code === "duplicate_evidence_candidate").length, 1);
 assert.deepEqual(duplicate.bundle.evidenceRecords.map((item) => item.sourceText), ["- Repeated item", "- Repeated item"]);
 
 const unicode = success("Résumé coordination العربية 中文\n\nImproved delivery 🚀.");
-assert.equal(unicode.bundle.evidenceRecords.length, 2);
+assert.equal(unicode.bundle.evidenceRecords.length, 0);
 const emojiSpan = unicode.bundle.sourceSpans.at(-1)!;
 assert.equal(unicode.bundle.sourceSpans[0].originalText.slice(emojiSpan.startOffset!, emojiSpan.endOffset!), emojiSpan.originalText);
 const cjk = success("构建客户反馈分类体系。\n推动跨团队协作。");
-assert.equal(cjk.bundle.evidenceRecords.length, 1);
+assert.equal(cjk.bundle.evidenceRecords.length, 0);
 
-const tabbed = success("Action\twith\ttabs");
+const tabbed = success("WORK EXPERIENCE\nAction\twith\ttabs");
 assert.equal(tabbed.bundle.evidenceRecords[0].sourceText, "Action\twith\ttabs");
 failure("Safe\u0000unsafe", "invalid_control_character");
 failure("Safe\u000Bunsafe", "invalid_control_character");
 failure("x".repeat(DEFAULT_TEXT_RESUME_MAX_CHARACTERS + 1), "input_too_large");
-const atLimit = success("x".repeat(DEFAULT_TEXT_RESUME_MAX_CHARACTERS));
+const atLimit = success(`WORK EXPERIENCE\n${"x".repeat(DEFAULT_TEXT_RESUME_MAX_CHARACTERS - 16)}`);
 assert.equal(atLimit.bundle.sourceSpans[0].endOffset, DEFAULT_TEXT_RESUME_MAX_CHARACTERS);
 
 failure("Valid text", "invalid_identifier", { documentId: "" });
@@ -122,7 +128,7 @@ failure("Valid text", "invalid_identifier", { parserVersion: " " });
 failure("Valid text", "invalid_identifier", { maxCharacters: 0 });
 failure("Valid text", "duplicate_generated_id", { bundleId: "document-session-a" });
 
-const identityText = "Confidential Candidate at Example Employer";
+const identityText = "WORK EXPERIENCE\n- Confidential Candidate at Example Employer";
 const identities = success(identityText, {
   documentId: "opaque-document",
   bundleId: "opaque-bundle",
@@ -141,7 +147,7 @@ const frozenBefore = JSON.stringify(frozenInput);
 extractResumeEvidenceFromText(frozenInput);
 assert.equal(JSON.stringify(frozenInput), frozenBefore);
 
-const deterministicInput = baseInput("First paragraph.\n\n- Second candidate\n- Second candidate");
+const deterministicInput = baseInput("WORK EXPERIENCE\nFirst paragraph.\n\n- Second candidate\n- Second candidate");
 const deterministicA = extractResumeEvidenceFromText(deterministicInput);
 const deterministicB = extractResumeEvidenceFromText(deterministicInput);
 assert.deepEqual(deterministicA, deterministicB);
@@ -155,10 +161,45 @@ console.log = () => { logCalls += 1; };
 const promptResult = success(promptText);
 console.log = originalLog;
 assert.equal(logCalls, 0);
-assert.equal(promptResult.bundle.evidenceRecords[0].sourceText, promptText);
-assert.equal(promptResult.bundle.evidenceRecords[0].reviewStatus, "unreviewed");
+assert.equal(promptResult.bundle.evidenceRecords.length, 0);
+assert.equal(promptResult.warnings.some((item) => item.code === "unassigned_evidence_candidate"), true);
 assert.deepEqual(promptResult.bundle.capabilityMappings, []);
 assert.deepEqual(promptResult.bundle.interpretations, []);
+
+const twoRoles = success("Northstar Ltd — Operations Analyst | 2020 - 2022\n- Automated weekly reporting.\nHarbour Group — Insights Lead | 2022 - Present\n- Built a customer taxonomy.");
+assert.equal(twoRoles.bundle.employmentRecords.length, 2);
+assert.deepEqual(twoRoles.bundle.employmentRecords.map((item) => item.roleTitle?.value), ["Operations Analyst", "Insights Lead"]);
+assert.deepEqual(twoRoles.bundle.evidenceRecords.map((item) => item.employmentRecordId), [twoRoles.bundle.employmentRecords[0].id, twoRoles.bundle.employmentRecords[1].id]);
+assert.notEqual(twoRoles.bundle.employmentRecords[0].id, twoRoles.bundle.employmentRecords[1].id);
+
+const roleOnly = success("Senior Analyst | 2021 - 2024\n- Improved forecasting accuracy.");
+assert.equal(roleOnly.bundle.employmentRecords[0].employerName, undefined);
+assert.equal(roleOnly.bundle.employmentRecords[0].roleTitle?.value, "Senior Analyst");
+
+const companyThenRole = success("Example Company Ltd\nOperations Manager | 2019 - 2021\n- Led an operating review.");
+assert.equal(companyThenRole.bundle.employmentRecords[0].employerName?.value, "Example Company Ltd");
+assert.equal(companyThenRole.bundle.employmentRecords[0].roleTitle?.value, "Operations Manager");
+
+const unassigned = success("Built a reporting workflow without a trustworthy work-history boundary.");
+assert.equal(unassigned.bundle.employmentRecords.length, 0);
+assert.equal(unassigned.bundle.evidenceRecords.length, 0);
+assert.equal(unassigned.warnings.some((item) => item.code === "unassigned_evidence_candidate"), true);
+
+const invalidMissingEmployment = structuredClone(basic.bundle);
+invalidMissingEmployment.evidenceRecords[0].employmentRecordId = "";
+assert.equal(validateResumeEvidenceBundle(invalidMissingEmployment).issues.some((item) => item.code === "missing_employment"), true);
+const invalidUnknownEmployment = structuredClone(basic.bundle);
+invalidUnknownEmployment.evidenceRecords[0].employmentRecordId = "employment:missing";
+assert.equal(validateResumeEvidenceBundle(invalidUnknownEmployment).issues.some((item) => item.code === "unknown_employment"), true);
+const invalidDuplicateEmployment = structuredClone(basic.bundle);
+invalidDuplicateEmployment.employmentRecords.push(structuredClone(invalidDuplicateEmployment.employmentRecords[0]));
+assert.equal(validateResumeEvidenceBundle(invalidDuplicateEmployment).issues.some((item) => item.code === "duplicate_id"), true);
+const invalidUnknownSource = structuredClone(basic.bundle);
+invalidUnknownSource.sourceSpans.find((item) => item.employmentRecordId)!.documentId = "document:missing";
+assert.equal(validateResumeEvidenceBundle(invalidUnknownSource).issues.some((item) => item.code === "unknown_document"), true);
+const invalidPlaceholder = structuredClone(basic.bundle);
+invalidPlaceholder.employmentRecords[0].employerName!.value = "Unknown Company";
+assert.equal(validateResumeEvidenceBundle(invalidPlaceholder).issues.some((item) => item.code === "placeholder_employer"), true);
 
 const zero = success("---\n\n***\n\n…");
 assert.equal(zero.bundle.evidenceRecords.length, 0);
