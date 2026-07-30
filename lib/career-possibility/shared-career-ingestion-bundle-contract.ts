@@ -1,4 +1,4 @@
-export const SHARED_CAREER_INGESTION_BUNDLE_SCHEMA_VERSION = "1.0.0" as const;
+export const SHARED_CAREER_INGESTION_BUNDLE_SCHEMA_VERSION = "1.1.0" as const;
 export const SHARED_CAREER_INGESTION_IDENTITY_MODEL_VERSION = "1.0.0" as const;
 
 export type SharedIngestionProvenanceSource =
@@ -101,21 +101,74 @@ export type SharedCanonicalMapping = {
   readonly provenance: SharedIngestionProvenance;
 };
 
-export type SharedReviewDecision = {
+export type SharedEmploymentReviewField = "employerName" | "roleTitle" | "startDate" | "endDate" | "location";
+export type SharedEvidenceReviewField = "displayText" | "action" | "context" | "outcome";
+
+export type SharedReviewTarget =
+  | { readonly type: "evidence"; readonly evidenceId: string }
+  | { readonly type: "employment_field"; readonly employmentRecordId: string; readonly field: SharedEmploymentReviewField }
+  | { readonly type: "evidence_field"; readonly evidenceId: string; readonly field: SharedEvidenceReviewField }
+  | { readonly type: "interpretation"; readonly interpretationId: string }
+  | { readonly type: "mapping"; readonly mappingId: string };
+
+export type SharedReviewInterpretationReference = {
+  readonly interpretationId: string;
+  readonly evidenceId: string;
+};
+
+type SharedReviewDecisionBase = {
   readonly decisionId: string;
-  readonly action: "confirm" | "edit_mapping" | "reject" | "restore" | "remap";
-  readonly targetType: "evidence" | "proposal" | "mapping";
-  readonly targetId: string;
+  readonly sequence: number;
+  readonly target: SharedReviewTarget;
   readonly reviewRevision: string;
-  readonly previousDecisionId?: string;
-  readonly mappingId?: string;
-  readonly capabilityRegistryVersion?: string;
-  readonly historicalRegistryVersion?: true;
+  readonly priorDecisionId?: string;
   readonly provenance: SharedIngestionProvenance;
 };
 
+export type SharedReviewDecision =
+  | (SharedReviewDecisionBase & {
+      readonly action: "confirm" | "reject" | "restore";
+      readonly semanticPayloadRevision?: never;
+      readonly proposalId?: never;
+      readonly mappingId?: never;
+      readonly canonicalCapabilityId?: never;
+      readonly relationship?: never;
+      readonly capabilityRegistryVersion?: never;
+    })
+  | (SharedReviewDecisionBase & {
+      readonly action: "edit";
+      readonly target: Extract<SharedReviewTarget, { readonly type: "employment_field" | "evidence_field" | "interpretation" }>;
+      readonly semanticPayloadRevision: string;
+      readonly proposalId?: never;
+      readonly mappingId?: never;
+      readonly canonicalCapabilityId?: never;
+      readonly relationship?: never;
+      readonly capabilityRegistryVersion?: never;
+    })
+  | (SharedReviewDecisionBase & {
+      readonly action: "create_mapping";
+      readonly target: Extract<SharedReviewTarget, { readonly type: "evidence" }>;
+      readonly semanticPayloadRevision?: never;
+      readonly proposalId: string;
+      readonly mappingId: string;
+      readonly canonicalCapabilityId: string;
+      readonly relationship: "direct_evidence" | "transferable_signal";
+      readonly capabilityRegistryVersion: string;
+    })
+  | (SharedReviewDecisionBase & {
+      readonly action: "remap";
+      readonly target: Extract<SharedReviewTarget, { readonly type: "mapping" }>;
+      readonly semanticPayloadRevision?: never;
+      readonly proposalId: string;
+      readonly mappingId: string;
+      readonly canonicalCapabilityId: string;
+      readonly relationship: "direct_evidence" | "transferable_signal";
+      readonly capabilityRegistryVersion: string;
+    });
+
 export type SharedReviewState = {
   readonly reviewRevision: string;
+  readonly interpretations: readonly SharedReviewInterpretationReference[];
   readonly decisions: readonly SharedReviewDecision[];
 };
 
@@ -158,6 +211,17 @@ const deepFreeze = <T>(value: T): T => {
 export function buildSharedCareerIngestionBundle(input: SharedCareerIngestionBundle): BuildSharedCareerIngestionBundleResult {
   const issues: SharedCareerIngestionBundleIssue[] = [];
   const add = (code: string, path: string, message: string) => issues.push({ code, path, message });
+  if (
+    !input || typeof input !== "object"
+    || !Array.isArray(input.sourceSet)
+    || !Array.isArray(input.employmentRecords)
+    || !Array.isArray(input.evidenceRecords)
+    || !Array.isArray(input.capabilityProposals)
+    || !Array.isArray(input.canonicalMappings)
+    || !input.reviewState || !Array.isArray(input.reviewState.interpretations) || !Array.isArray(input.reviewState.decisions)
+  ) {
+    return deepFreeze({ ok: false, issues: [{ code: "invalid_input", path: "bundle", message: "Shared ingestion bundle input is invalid." }] });
+  }
   const required = (value: unknown, path: string) => { if (!nonBlank(value)) add("missing_identity", path, "A nonblank identity is required."); };
   const ids = <T>(items: readonly T[], path: string, getId: (item: T) => unknown) => {
     const result = new Set<string>();
@@ -203,7 +267,7 @@ export function buildSharedCareerIngestionBundle(input: SharedCareerIngestionBun
   const evidenceIds = ids(input.evidenceRecords, "evidenceRecords", (item) => item.evidenceId);
   const proposalIds = ids(input.capabilityProposals, "capabilityProposals", (item) => item.proposalId);
   const mappingIds = ids(input.canonicalMappings, "canonicalMappings", (item) => item.mappingId);
-  const decisionIds = ids(input.reviewState.decisions, "reviewState.decisions", (item) => item.decisionId);
+  const interpretationIds = ids(input.reviewState.interpretations, "reviewState.interpretations", (item) => item.interpretationId);
 
   input.sourceSet.forEach((document, index) => {
     const path = `sourceSet[${index}]`;
@@ -248,7 +312,7 @@ export function buildSharedCareerIngestionBundle(input: SharedCareerIngestionBun
       if (record.lineage.derivedFrom.length === 0) add("missing_predecessor", `${path}.lineage.derivedFrom`, "Derived evidence requires a predecessor.");
       const predecessorKeys = new Set<string>();
       const internal: string[] = [];
-      record.lineage.derivedFrom.forEach((reference, referenceIndex) => {
+      record.lineage.derivedFrom.forEach((reference: EvidencePredecessorReference, referenceIndex: number) => {
         const referencePath = `${path}.lineage.derivedFrom[${referenceIndex}]`;
         required(reference.evidenceId, `${referencePath}.evidenceId`);
         const key = `${reference.scope}:${reference.evidenceId}:${reference.scope === "prior_revision" ? reference.sourceRevision : ""}`;
@@ -295,23 +359,157 @@ export function buildSharedCareerIngestionBundle(input: SharedCareerIngestionBun
     required(mapping.capabilityRegistryVersion, `${path}.capabilityRegistryVersion`);
     if (!mapping.historicalRegistryVersion && mapping.capabilityRegistryVersion !== input.capabilityRegistryVersion) add("registry_version_mismatch", `${path}.capabilityRegistryVersion`, "Current mapping must use the bundle registry version.");
     if (mapping.mappingId === mapping.canonicalCapabilityId) add("mapping_identity_collision", `${path}.mappingId`, "Mapping identity must remain separate from canonical identity.");
-    if (mapping.supersedesMappingId && !mappingIds.has(mapping.supersedesMappingId)) add("unknown_superseded_mapping", `${path}.supersedesMappingId`, "Superseded mapping must exist in this admitted bundle.");
+    if (mapping.supersedesMappingId === mapping.mappingId) add("self_supersession", `${path}.supersedesMappingId`, "A mapping cannot supersede itself.");
+    else if (mapping.supersedesMappingId && !mappingIds.has(mapping.supersedesMappingId)) add("unknown_superseded_mapping", `${path}.supersedesMappingId`, "Superseded mapping must exist in this admitted bundle.");
     provenance(mapping.provenance, `${path}.provenance`);
+  });
+
+  const mappingGraph = new Map<string, string>();
+  input.canonicalMappings.forEach((mapping) => {
+    if (mapping.supersedesMappingId && mappingIds.has(mapping.supersedesMappingId) && mapping.supersedesMappingId !== mapping.mappingId) {
+      mappingGraph.set(mapping.mappingId, mapping.supersedesMappingId);
+    }
+  });
+  const visitingMappings = new Set<string>();
+  const visitedMappings = new Set<string>();
+  const visitMapping = (mappingId: string): boolean => {
+    if (visitingMappings.has(mappingId)) return true;
+    if (visitedMappings.has(mappingId)) return false;
+    visitingMappings.add(mappingId);
+    const predecessor = mappingGraph.get(mappingId);
+    if (predecessor && visitMapping(predecessor)) return true;
+    visitingMappings.delete(mappingId);
+    visitedMappings.add(mappingId);
+    return false;
+  };
+  if ([...mappingIds].some(visitMapping)) add("circular_supersession", "canonicalMappings", "Mapping supersession must be acyclic.");
+
+  input.reviewState.interpretations.forEach((interpretation, index) => {
+    const path = `reviewState.interpretations[${index}]`;
+    if (!evidenceIds.has(interpretation.evidenceId)) add("unknown_evidence_reference", `${path}.evidenceId`, "Interpretation references unknown evidence.");
   });
 
   required(input.reviewState.reviewRevision, "reviewState.reviewRevision");
   const revisionValues = [input.sourceRevision, input.reviewState.reviewRevision, input.materializationState.materializationRevision].filter(nonBlank);
   if (new Set(revisionValues).size !== revisionValues.length) add("revision_identity_collision", "reviewState.reviewRevision", "Source, review, and materialization revisions must be distinct.");
-  input.reviewState.decisions.forEach((decision, index) => {
+  const orderedDecisions = [...input.reviewState.decisions].sort((left, right) => left.sequence - right.sequence);
+  const decisionIds = new Set<string>();
+  const decisionSequences = new Set<number>();
+  orderedDecisions.forEach((decision, index) => {
     const path = `reviewState.decisions[${index}]`;
+    required(decision?.decisionId, `${path}.decisionId`);
+    if (nonBlank(decision?.decisionId)) {
+      if (decisionIds.has(decision.decisionId)) add("duplicate_review_decision_id", `${path}.decisionId`, "Review decision identity is duplicated.");
+      decisionIds.add(decision.decisionId);
+    }
+    if (!Number.isSafeInteger(decision?.sequence) || decision.sequence < 1) add("invalid_review_decision_sequence", `${path}.sequence`, "Review decision sequence must be a positive safe integer.");
+    else if (decisionSequences.has(decision.sequence)) add("duplicate_review_decision_sequence", `${path}.sequence`, "Review decision sequence is duplicated.");
+    decisionSequences.add(decision.sequence);
+  });
+
+  const decisionsById = new Map<string, SharedReviewDecision>();
+  const latestByTarget = new Map<string, string>();
+  const targetKey = (target: SharedReviewTarget): string => {
+    if (target.type === "evidence") return `evidence:${target.evidenceId}`;
+    if (target.type === "employment_field") return `employment:${target.employmentRecordId}:${target.field}`;
+    if (target.type === "evidence_field") return `evidence-field:${target.evidenceId}:${target.field}`;
+    if (target.type === "interpretation") return `interpretation:${target.interpretationId}`;
+    return `mapping:${target.mappingId}`;
+  };
+  const decisionTargetKeys = (decision: SharedReviewDecision): string[] => {
+    const keys = [targetKey(decision.target)];
+    if ((decision.action === "create_mapping" || decision.action === "remap") && nonBlank(decision.mappingId)) keys.push(`mapping:${decision.mappingId}`);
+    return keys;
+  };
+  const employmentFields = new Set<SharedEmploymentReviewField>(["employerName", "roleTitle", "startDate", "endDate", "location"]);
+  const evidenceFields = new Set<SharedEvidenceReviewField>(["displayText", "action", "context", "outcome"]);
+  const allowedActions = new Set(["confirm", "reject", "restore", "edit", "create_mapping", "remap"]);
+
+  orderedDecisions.forEach((decision, index) => {
+    const path = `reviewState.decisions[${index}]`;
+    if (!decision || typeof decision !== "object" || !decision.target || typeof decision.target !== "object") {
+      add("unsupported_review_target", `${path}.target`, "Review target is unsupported.");
+      return;
+    }
     if (decision.reviewRevision !== input.reviewState.reviewRevision) add("review_revision_mismatch", `${path}.reviewRevision`, "Decision must belong to the current review revision.");
-    const targets = decision.targetType === "evidence" ? evidenceIds : decision.targetType === "proposal" ? proposalIds : mappingIds;
-    if (!targets.has(decision.targetId)) add("unknown_review_target", `${path}.targetId`, "Review target is not admitted by the bundle.");
-    if (decision.previousDecisionId && !decisionIds.has(decision.previousDecisionId)) add("unknown_previous_decision", `${path}.previousDecisionId`, "Previous decision is unknown.");
-    if (decision.mappingId && !mappingIds.has(decision.mappingId)) add("unknown_mapping", `${path}.mappingId`, "Decision mapping is unknown.");
-    if ((decision.action === "edit_mapping" || decision.action === "remap") && !decision.mappingId) add("missing_mapping", `${path}.mappingId`, "Mapping-changing review requires a mapping identity.");
-    if (decision.capabilityRegistryVersion && !decision.historicalRegistryVersion && decision.capabilityRegistryVersion !== input.capabilityRegistryVersion) add("registry_version_mismatch", `${path}.capabilityRegistryVersion`, "Current review decision must use the bundle registry version.");
     provenance(decision.provenance, `${path}.provenance`);
+    if (decision.provenance?.source !== "user_review" || decision.provenance?.actorClass !== "user") add("invalid_review_actor", `${path}.provenance`, "Review decisions require user-review provenance.");
+
+    const target = decision.target as SharedReviewTarget;
+    let targetValid = true;
+    if (target.type === "evidence") {
+      if (!evidenceIds.has(target.evidenceId)) { add("unknown_evidence_reference", `${path}.target.evidenceId`, "Review target references unknown evidence."); targetValid = false; }
+    } else if (target.type === "employment_field") {
+      if (!employmentIds.has(target.employmentRecordId)) { add("unknown_employment_reference", `${path}.target.employmentRecordId`, "Review target references unknown employment."); targetValid = false; }
+      if (!employmentFields.has(target.field)) { add("unsupported_review_target", `${path}.target.field`, "Employment review field is unsupported."); targetValid = false; }
+    } else if (target.type === "evidence_field") {
+      if (!evidenceIds.has(target.evidenceId)) { add("unknown_evidence_reference", `${path}.target.evidenceId`, "Review target references unknown evidence."); targetValid = false; }
+      if (!evidenceFields.has(target.field)) { add("unsupported_review_target", `${path}.target.field`, "Evidence review field is unsupported."); targetValid = false; }
+    } else if (target.type === "interpretation") {
+      if (!interpretationIds.has(target.interpretationId)) { add("unknown_interpretation_reference", `${path}.target.interpretationId`, "Review target references an unknown interpretation."); targetValid = false; }
+    } else if (target.type === "mapping") {
+      if (!mappingIds.has(target.mappingId)) { add("unknown_mapping_reference", `${path}.target.mappingId`, "Review target references an unknown mapping."); targetValid = false; }
+    } else {
+      add("unsupported_review_target", `${path}.target.type`, "Review target is unsupported.");
+      targetValid = false;
+    }
+
+    if (!allowedActions.has(decision.action)) add("unsupported_review_action", `${path}.action`, "Review action is unsupported.");
+    const compatible =
+      (target.type === "evidence" && ["confirm", "reject", "restore", "create_mapping"].includes(decision.action))
+      || ((target.type === "employment_field" || target.type === "evidence_field" || target.type === "interpretation") && ["confirm", "edit", "reject", "restore"].includes(decision.action))
+      || (target.type === "mapping" && ["confirm", "reject", "restore", "remap"].includes(decision.action));
+    if (allowedActions.has(decision.action) && !compatible) add("invalid_review_action_target", path, "Review action is incompatible with its target.");
+
+    const semanticPayloadRevision = "semanticPayloadRevision" in decision ? decision.semanticPayloadRevision : undefined;
+    if (decision.action === "edit" && !nonBlank(semanticPayloadRevision)) add("missing_semantic_payload_revision", `${path}.semanticPayloadRevision`, "An edit requires an opaque semantic payload revision.");
+    if (decision.action !== "edit" && semanticPayloadRevision !== undefined) add("unexpected_semantic_payload_revision", `${path}.semanticPayloadRevision`, "Only edit actions accept a semantic payload revision.");
+
+    const key = targetValid ? targetKey(target) : "";
+    const latestDecisionId = key ? latestByTarget.get(key) : undefined;
+    if (decision.priorDecisionId === decision.decisionId) add("unknown_prior_decision", `${path}.priorDecisionId`, "A decision cannot reference itself.");
+    else if (decision.priorDecisionId && !decisionsById.has(decision.priorDecisionId)) add("unknown_prior_decision", `${path}.priorDecisionId`, "Prior decision is unknown.");
+    else if (decision.priorDecisionId) {
+      const prior = decisionsById.get(decision.priorDecisionId)!;
+      if (!decisionTargetKeys(prior).includes(key)) add("prior_decision_target_mismatch", `${path}.priorDecisionId`, "Prior decision targets a different logical entity.");
+      else if (latestDecisionId !== decision.priorDecisionId) add("prior_decision_not_latest", `${path}.priorDecisionId`, "Prior decision must be the latest decision for this target.");
+    } else if (latestDecisionId) add("prior_decision_not_latest", `${path}.priorDecisionId`, "A repeated target must reference its latest prior decision.");
+    if (decision.action === "restore") {
+      const prior = decision.priorDecisionId ? decisionsById.get(decision.priorDecisionId) : undefined;
+      if (!prior || prior.action !== "reject" || targetKey(prior.target) !== key) add("invalid_restore", path, "Restore must reference the latest rejection for the same target.");
+    }
+
+    if (decision.action === "create_mapping" || decision.action === "remap") {
+      const proposalId = "proposalId" in decision ? decision.proposalId : undefined;
+      const newMappingId = "mappingId" in decision ? decision.mappingId : undefined;
+      const proposal = input.capabilityProposals.find((item) => item.proposalId === proposalId);
+      const mapping = input.canonicalMappings.find((item) => item.mappingId === newMappingId);
+      const expectedEvidenceId = target.type === "evidence"
+        ? target.evidenceId
+        : target.type === "mapping"
+          ? input.canonicalMappings.find((item) => item.mappingId === target.mappingId)?.evidenceId
+          : undefined;
+      if (!proposal) add("unknown_proposal_reference", `${path}.proposalId`, "Mapping decision references an unknown proposal.");
+      if (!mapping) add("unknown_mapping_reference", `${path}.mappingId`, "Mapping decision references an unknown created mapping.");
+      const consistent = proposal && mapping && expectedEvidenceId
+        && mapping.proposalId === proposal.proposalId
+        && proposal.evidenceId === expectedEvidenceId
+        && mapping.evidenceId === expectedEvidenceId
+        && mapping.canonicalCapabilityId === decision.canonicalCapabilityId
+        && proposal.proposedCapabilityId === decision.canonicalCapabilityId
+        && mapping.relationship === decision.relationship
+        && mapping.capabilityRegistryVersion === decision.capabilityRegistryVersion
+        && decision.capabilityRegistryVersion === input.capabilityRegistryVersion
+        && decision.decisionId !== proposal.proposalId
+        && decision.decisionId !== mapping.mappingId
+        && proposal.proposalId !== mapping.mappingId;
+      if (proposal && mapping && !consistent) add(decision.action === "create_mapping" ? "invalid_mapping_creation" : "invalid_remap", path, "Mapping decision references are semantically inconsistent.");
+      if (decision.action === "create_mapping" && mapping?.supersedesMappingId) add("invalid_mapping_creation", path, "A newly created mapping cannot supersede another mapping.");
+      if (decision.action === "remap" && target.type === "mapping" && mapping?.supersedesMappingId !== target.mappingId) add("invalid_remap", path, "Remap must explicitly supersede its target mapping.");
+    }
+
+    if (nonBlank(decision.decisionId)) decisionsById.set(decision.decisionId, decision);
+    if (key) decisionTargetKeys(decision).forEach((decisionTargetKey) => latestByTarget.set(decisionTargetKey, decision.decisionId));
   });
 
   if (input.materializationState.status === "not_materialized") {
@@ -323,5 +521,12 @@ export function buildSharedCareerIngestionBundle(input: SharedCareerIngestionBun
 
   if (issues.length > 0) return deepFreeze({ ok: false, issues: issues.map((issue) => ({ ...issue })) });
   const clone = structuredClone(input);
-  return deepFreeze({ ok: true, bundle: clone });
+  const bundle = {
+    ...clone,
+    reviewState: {
+      ...clone.reviewState,
+      decisions: [...clone.reviewState.decisions].sort((left, right) => left.sequence - right.sequence),
+    },
+  };
+  return deepFreeze({ ok: true, bundle });
 }
