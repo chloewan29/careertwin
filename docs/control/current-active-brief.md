@@ -62,18 +62,24 @@ Default do-not-read in light mode:
 ## 2. Current active line
 
 Primary active line:
-- `JOB-COPILOT-SIDEPANEL-USER-READY-AUDIT`
+- `CAREER-MAP-SHARED-INGESTION-RUNTIME`
 
 Current mode:
-- `HOLD` (temporary hold for user exposure)
+- `REPAIR`
 
 Current task type:
-- sidepanel user-readiness hold
+- narrow evidence-field review-transition repair
 
 Current active question:
-- controlled borderline exposure go/no-go checkpoint is complete: CTA confirmation is wired, but required advisory disclosure, Career Verdict residual disclosure, and monitoring/downgrade controls are not yet wired in runtime release controls
+- Why is a valid evidence-field edit rejected as `stale_review_status` before the shared-ingestion runtime is reached?
+
+Completed Career Map milestone:
+- `SharedCareerIngestionBundle 1.1.0` headless vertical slice complete
+- browser runtime wiring complete
+- successful no-edit browser flow verified
 
 Secondary line status:
+- the former `JOB-COPILOT-SIDEPANEL-USER-READY-AUDIT` line is historical/non-active context; its user-exposure HOLD remains unchanged
 - `JOB-COPILOT-NS-QUICK-CHECKS-LINKAGE` = parked, low-leverage residual
 - do not reopen unless new evidence proves a stable writable owner
 
@@ -113,9 +119,11 @@ Tailored CV flow closure note (2026-05-15):
 ## 3. One main next action
 
 Main next action:
-- keep user exposure on HOLD; run one bounded release-control wiring admission checkpoint that wires advisory + residual disclosure and monitoring/downgrade controls before turning exposure on
+- Repair only the evidence-field edit status transition, then rerun focused automated verification and browser QA.
 
 Not the next action:
+- do not reopen source revision, source identity, review identity/revision, `SharedCareerIngestionBundle`, browser adapter, or browser runtime architecture
+- do not add persistence, server materialization, Supabase, authentication, or package changes
 - do not expose sidepanel to users now
 - do not reopen parked Quick Checks DECISION-UPDATE residual without `fixed_guard_case`
 - do not reopen kept repairs by default

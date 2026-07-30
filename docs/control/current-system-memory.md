@@ -34,7 +34,7 @@ Use with:
 - `docs/control/policy-registry.md`
 - active line plan(s)
 
-Last updated: 2026-05-15
+Last updated: 2026-07-30
 
 ---
 
@@ -63,6 +63,100 @@ Last updated: 2026-05-15
 
 ### Product framing
 - Job Copilot should operate as a buy-side decision system, not a generic relevance-summary generator.
+
+### Career Map / Job Copilot product boundary
+- Career Map is candidate-first and generic. It owns the role-independent candidate capability profile, stable generic role archetypes, and general career-path guidance.
+- Job Copilot is live-JD first and company-specific. It owns requirement-weighted Match V2 analysis and job-specific gaps, positioning, and recommendations.
+- Match V2, live-JD parsing, and company-specific scoring must not move into Career Map.
+
+### Career Map shared-ingestion authority (accepted at `ff4e121b7e72cbf1cf3eb0529f55332f58ae70f3`)
+
+Current active line and mode:
+- line: `CAREER-MAP-SHARED-INGESTION-RUNTIME`
+- mode: `REPAIR`
+- task type: narrow runtime review-transition repair
+
+Completed foundations:
+- `CandidateBaseline` is the shared, role-independent candidate-side capability kernel.
+- Generic Role Archetypes are stable generic target-role definitions; they do not import live-JD or Match V2 semantics.
+- `GenericCareerPathAlignment` and `PersonalGenericPathPresentation` consume the shared candidate and generic-role foundations.
+- The evidence-universe reconciliation contract and `SharedCareerIngestionBundle` authority boundary are implemented.
+- Employment-linked résumé evidence extraction, source revision, source identity manifest, stable review decision/proposal/mapping identities, and history-aware review revision are implemented.
+- `SharedCareerIngestionBundle` schema `1.1.0` review fidelity, the browser résumé shared-ingestion adapter, and browser shared-ingestion runtime wiring are implemented, admitted, committed, and pushed.
+
+Authoritative ingestion chain:
+```text
+canonical résumé source
+→ buildCareerSourceRevision()
+→ résumé extraction
+→ buildCareerSourceIdentityManifest()
+→ buildCareerReviewDecisionIdentityContract()
+→ buildCareerReviewRevision()
+→ buildSharedCareerIngestionBundleFromResumeReview()
+→ buildSharedCareerIngestionBundle()
+→ SharedCareerIngestionBundle 1.1.0
+```
+
+Browser runtime chain:
+```text
+résumé paste
+→ extraction
+→ evidence review
+→ applyToCareerMap()
+→ buildBrowserResumeSharedIngestionRuntime()
+→ buildSharedCareerIngestionBundleFromResumeReview()
+→ admitted SharedCareerIngestionBundle 1.1.0
+→ component-local ready / failed state
+```
+
+Identity and revision separation:
+- Keep `sourceRevision`, `extractionRevision`, source identity manifest revision, `bundleId`, subject identity, review decision identities, `reviewRevision`, and `materializationRevision` distinct.
+- Anonymous subject identity must not derive from résumé content.
+- Bundle identity must not derive from review/intake session IDs.
+- Local browser IDs must be translated before authoritative admission.
+
+Privacy boundary:
+- Raw résumé text, raw edits, and rationale do not enter the authoritative shared bundle.
+- Browser shared-ingestion state remains component-local and memory-only.
+
+Browser adapter and runtime admission:
+- The browser adapter truthfully translates reviewed browser evidence into the authoritative shared-ingestion contract.
+- Runtime wiring reaches the adapter from the existing review completion action and exposes bounded component-local ready/failed state.
+- No API, Supabase, authentication, persistence, or server materialization surface was introduced.
+
+Accepted browser QA:
+- `/career-map/resume-intake` extracted one employment and two evidence records.
+- The no-edit flow, explicit canonical mapping, and Apply to Career Map flow succeeded.
+- `Career evidence bundle ready` appeared through `role="status"` with bounded employment/evidence counts.
+- Desktop, tablet, and mobile layouts had no overflow or clipping.
+- No React, hydration, or console errors occurred; no API, Supabase, auth, or materialization request was introduced.
+- Start over and refresh behaved as expected.
+
+Current verified defect:
+```text
+valid evidence-field edit
+→ review replay rejects it as stale_review_status
+→ edit decision is not admitted
+→ shared-ingestion adapter is never called
+→ runtime failed/retry path cannot be exercised
+```
+- This is a review-transition defect, not an adapter, runtime-helper, identity, revision, shared-bundle-contract, or persistence defect.
+- First drift point: evidence-field review decision replay/status validation.
+- First writable fault: review transition logic incorrectly treats a valid first edit of an absent or currently editable evidence field as `stale_review_status`.
+
+Single main next action:
+- Repair the evidence-field edit status transition so a valid first edit can be admitted, while preserving stale-prior and reject/restore protections; then rerun focused tests and browser QA.
+
+Explicit non-reopen boundaries:
+- Do not reopen the source revision producer, source identity manifest, review decision identity contract, review revision producer, `SharedCareerIngestionBundle` contract, browser shared-ingestion adapter, or browser shared-ingestion runtime architecture.
+- Do not expand this line into `CandidateBaseline` materialization, persistence/local-storage redesign, server materialization, Supabase, authentication, multi-document support, anonymous-subject persistence, automatic semantic edit hashing, Job Copilot, Career Map visual redesign, Impeccable work, or package manifests.
+
+Accepted non-blocking limitations:
+- Bundle and anonymous subject identities do not survive reload.
+- Semantic edit payload revisions remain caller supplied.
+- Multi-document ingestion is not supported.
+- No server materialization exists.
+- Shared-ingestion state is component-local and memory-only.
 
 ---
 
