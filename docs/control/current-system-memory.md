@@ -69,12 +69,13 @@ Last updated: 2026-07-30
 - Job Copilot is live-JD first and company-specific. It owns requirement-weighted Match V2 analysis and job-specific gaps, positioning, and recommendations.
 - Match V2, live-JD parsing, and company-specific scoring must not move into Career Map.
 
-### Career Map shared-ingestion authority (accepted at `ff4e121b7e72cbf1cf3eb0529f55332f58ae70f3`)
+### Career Map shared-ingestion authority (`SHARED_INGESTION_RUNTIME_COMPLETE`)
 
 Current active line and mode:
 - line: `CAREER-MAP-SHARED-INGESTION-RUNTIME`
-- mode: `REPAIR`
-- task type: narrow runtime review-transition repair
+- mode: `HOLD`
+- task type: post-repair closure / next-product-priority selection
+- stable baseline: `b9746c9d5ddecdc105cdc4cb6c37bba511ba4b29`
 
 Completed foundations:
 - `CandidateBaseline` is the shared, role-independent candidate-side capability kernel.
@@ -132,31 +133,34 @@ Accepted browser QA:
 - No React, hydration, or console errors occurred; no API, Supabase, auth, or materialization request was introduced.
 - Start over and refresh behaved as expected.
 
-Current verified defect:
-```text
-valid evidence-field edit
-→ review replay rejects it as stale_review_status
-→ edit decision is not admitted
-→ shared-ingestion adapter is never called
-→ runtime failed/retry path cannot be exercised
-```
-- This is a review-transition defect, not an adapter, runtime-helper, identity, revision, shared-bundle-contract, or persistence defect.
-- First drift point: evidence-field review decision replay/status validation.
-- First writable fault: review transition logic incorrectly treats a valid first edit of an absent or currently editable evidence field as `stale_review_status`.
+Completed evidence-field transition repair:
+- Commit `b9746c9d5ddecdc105cdc4cb6c37bba511ba4b29` (`fix(career): allow valid evidence field edits`) is accepted.
+- Absent evidence fields have effective initial status `unreviewed`; valid populated-field and absent optional-field first edits are admitted.
+- Confirm → edit passes; edit → edit passes only with latest prior-decision linkage.
+- Reject → edit remains blocked until restore; reject → restore → edit passes.
+- Stale, unknown, and cross-target prior protections remain intact, as do unsupported-field and parent-rejection protections.
+- Browser edit/save no longer fails with active `stale_review_status`; Apply reaches the shared-ingestion runtime.
+- A missing semantic edit revision surfaces as `missing_semantic_payload_revision`; failed state remains inline and retryable, and review state remains intact.
+- The successful no-edit flow still produces `Career evidence bundle ready`.
+- All 26 Career Possibility tests, targeted ESLint, TypeScript, and production build passed.
+- Browser QA passed at 1440×900, 768×1024, and 390×844 with no console errors and no API, Supabase, or authentication requests.
+- No adapter/runtime architecture, identity/revision contract, or shared-bundle contract changed.
+- The prior evidence-field review replay/status-validation defect is closed; this line has no remaining active defect.
 
 Single main next action:
-- Repair the evidence-field edit status transition so a valid first edit can be admitted, while preserving stale-prior and reject/restore protections; then rerun focused tests and browser QA.
+- Hold the shared-ingestion line as complete and select one user-facing Career Map product task before admitting further implementation.
 
 Explicit non-reopen boundaries:
 - Do not reopen the source revision producer, source identity manifest, review decision identity contract, review revision producer, `SharedCareerIngestionBundle` contract, browser shared-ingestion adapter, or browser shared-ingestion runtime architecture.
 - Do not expand this line into `CandidateBaseline` materialization, persistence/local-storage redesign, server materialization, Supabase, authentication, multi-document support, anonymous-subject persistence, automatic semantic edit hashing, Job Copilot, Career Map visual redesign, Impeccable work, or package manifests.
 
 Accepted non-blocking limitations:
-- Bundle and anonymous subject identities do not survive reload.
+- Bundle and anonymous subject identities remain memory-only across reload.
 - Semantic edit payload revisions remain caller supplied.
 - Multi-document ingestion is not supported.
-- No server materialization exists.
-- Shared-ingestion state is component-local and memory-only.
+- No persistence or server materialization exists.
+- Anonymous-subject persistence is not implemented.
+- These limitations are not mandatory next work.
 
 ---
 

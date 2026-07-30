@@ -65,18 +65,18 @@ Primary active line:
 - `CAREER-MAP-SHARED-INGESTION-RUNTIME`
 
 Current mode:
-- `REPAIR`
+- `HOLD`
 
 Current task type:
-- narrow evidence-field review-transition repair
+- post-repair closure / next-product-priority selection
 
 Current active question:
-- Why is a valid evidence-field edit rejected as `stale_review_status` before the shared-ingestion runtime is reached?
+- Which user-facing Career Map capability should become the next admitted product task now that shared ingestion and runtime failure handling are complete?
 
 Completed Career Map milestone:
-- `SharedCareerIngestionBundle 1.1.0` headless vertical slice complete
-- browser runtime wiring complete
-- successful no-edit browser flow verified
+- `SHARED_INGESTION_RUNTIME_COMPLETE`
+- stable baseline: `b9746c9d5ddecdc105cdc4cb6c37bba511ba4b29`
+- evidence-field edit repair closed: valid edits reach runtime, `missing_semantic_payload_revision` is inline and retryable, and the successful no-edit flow remains intact
 
 Secondary line status:
 - the former `JOB-COPILOT-SIDEPANEL-USER-READY-AUDIT` line is historical/non-active context; its user-exposure HOLD remains unchanged
@@ -119,11 +119,12 @@ Tailored CV flow closure note (2026-05-15):
 ## 3. One main next action
 
 Main next action:
-- Repair only the evidence-field edit status transition, then rerun focused automated verification and browser QA.
+- Hold the shared-ingestion line as complete and select one user-facing Career Map product task before admitting further implementation.
 
 Not the next action:
+- do not treat the closed `stale_review_status` evidence-field defect as active
 - do not reopen source revision, source identity, review identity/revision, `SharedCareerIngestionBundle`, browser adapter, or browser runtime architecture
-- do not add persistence, server materialization, Supabase, authentication, or package changes
+- do not promote persistence, server materialization, multi-document ingestion, automatic semantic edit hashing, Supabase, authentication, or package changes into mandatory next work
 - do not expose sidepanel to users now
 - do not reopen parked Quick Checks DECISION-UPDATE residual without `fixed_guard_case`
 - do not reopen kept repairs by default
