@@ -13,6 +13,12 @@ import {
   type ResumeEvidenceReviewSession,
 } from "@/lib/career-possibility/resume-evidence-review-contract";
 import type { CareerMapCapabilityDefinition } from "@/lib/career-possibility/reviewed-resume-evidence-map-adapter";
+import {
+  buildBrowserResumeSharedIngestionRuntime,
+  createBrowserResumeRuntimeIdentity,
+  type BrowserResumeRuntimeIdentity,
+  type SharedBundleRuntimeState,
+} from "@/lib/career-possibility/browser-resume-shared-ingestion-runtime";
 
 type Props = {
   parserVersion: string;
@@ -46,12 +52,16 @@ export function ResumeTextIntakeWorkspace({
   const [reviewSession, setReviewSession] =
     useState<ResumeEvidenceReviewSession | null>(null);
   const [issues, setIssues] = useState<ResumeEvidenceExtractionIssue[]>([]);
+  const [sharedBundleState, setSharedBundleState] =
+    useState<SharedBundleRuntimeState>({ status: "idle" });
+  const runtimeIdentityRef = useRef<BrowserResumeRuntimeIdentity | null>(null);
   const [announcement, setAnnouncement] = useState("Paste stage ready.");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const summaryRef = useRef<HTMLDivElement>(null);
   const errorRef = useRef<HTMLDivElement>(null);
 
   function extractEvidence() {
+    runtimeIdentityRef.current ??= createBrowserResumeRuntimeIdentity();
     const nextRun = runSequence + 1;
     const extracted = extractResumeEvidenceFromText({
       text,
@@ -64,6 +74,7 @@ export function ResumeTextIntakeWorkspace({
     setRunSequence(nextRun);
     setResult(extracted);
     setReviewSession(null);
+    setSharedBundleState({ status: "idle" });
     if (!extracted.ok) {
       setIssues(extracted.issues);
       setAnnouncement("Extraction could not start.");
@@ -91,6 +102,7 @@ export function ResumeTextIntakeWorkspace({
     setAnnouncement("Evidence and capability review ready.");
   }
   function startOver() {
+    runtimeIdentityRef.current = null;
     setIntakeSessionId(newSessionId());
     setRunSequence(0);
     setStage("paste");
@@ -98,8 +110,32 @@ export function ResumeTextIntakeWorkspace({
     setResult(null);
     setReviewSession(null);
     setIssues([]);
+    setSharedBundleState({ status: "idle" });
     setAnnouncement("New paste session ready.");
     requestAnimationFrame(() => textareaRef.current?.focus());
+  }
+  async function completeReview({
+    reviewedEvidenceBundle,
+    reviewSession: completedSession,
+  }: {
+    reviewedEvidenceBundle: Parameters<typeof buildBrowserResumeSharedIngestionRuntime>[0]["reviewedEvidenceBundle"];
+    reviewSession: ResumeEvidenceReviewSession;
+  }) {
+    if (!result?.ok) return false;
+    const identity = runtimeIdentityRef.current ?? createBrowserResumeRuntimeIdentity();
+    runtimeIdentityRef.current = identity;
+    setSharedBundleState({ status: "building" });
+    const nextState = await buildBrowserResumeSharedIngestionRuntime({
+      canonicalResumeText: result.bundle.sourceSpans[0]?.originalText ?? "",
+      extractedBundle: result.bundle,
+      extractionMetadata: result.metadata,
+      reviewedEvidenceBundle,
+      reviewSession: completedSession,
+      capabilityRegistryVersion: capabilityDefinitionVersion,
+      identity,
+    });
+    setSharedBundleState(nextState);
+    return nextState.status === "ready";
   }
 
   return (
@@ -236,7 +272,29 @@ export function ResumeTextIntakeWorkspace({
             initialSession={reviewSession}
             capabilityDefinitions={capabilityDefinitions}
             capabilityDefinitionVersion={capabilityDefinitionVersion}
+            onReviewComplete={completeReview}
           />
+          {sharedBundleState.status === "building" && (
+            <p role="status" className="mt-4 text-sm text-cyan-200">
+              Preparing career evidence bundle…
+            </p>
+          )}
+          {sharedBundleState.status === "ready" && (
+            <p role="status" className="mt-4 text-sm text-teal-200">
+              Career evidence bundle ready · {sharedBundleState.bundle.evidenceRecords.length.toLocaleString()} evidence records · {sharedBundleState.bundle.employmentRecords.length.toLocaleString()} employment records
+            </p>
+          )}
+          {sharedBundleState.status === "failed" && (
+            <div role="alert" className="mt-4 rounded-xl border border-amber-200/25 bg-amber-200/5 p-4 text-sm text-amber-100">
+              <p className="font-semibold">Career evidence bundle could not be prepared.</p>
+              <ul className="mt-2 list-disc space-y-1 break-words pl-5 text-xs">
+                {sharedBundleState.issues.map((item) => (
+                  <li key={`${item.code}:${item.path}`}>{item.code}: {item.message}</li>
+                ))}
+              </ul>
+              <p className="mt-2 text-xs">Your review is unchanged. Apply again to retry.</p>
+            </div>
+          )}
         </>
       )}
     </section>
