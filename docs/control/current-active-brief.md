@@ -62,7 +62,7 @@ Default do-not-read in light mode:
 ## 2. Current active line
 
 Primary active line:
-- `CAREER-MAP-PRIORITIZED-NEXT-PROOF-GUIDANCE`
+- `CAREER-MAP-CALIBRATED-ROLE-LENS-CATALOG`
 
 Current mode:
 - `HOLD`
@@ -71,14 +71,15 @@ Current task type:
 - post-repair closure / next-product-priority selection
 
 Current active question:
-- Which user-facing Career Map capability should become the next admitted product task now that prioritised next-proof guidance is complete?
+- Which user-facing Career Map capability should become the next admitted product task now that the calibrated Role Lens catalog is complete?
 
 Completed Career Map milestone:
-- `CAREER_MAP_PRIORITIZED_NEXT_PROOF_COMPLETE`
-- implementation commit: `7eab5849456a63f466c08cf50ce20221699e1fe0`
-- the target-role comparison owns an optional authoritative `nextProofToBuild` projection limited to actionable missing requirements with authored guidance
-- priority is deterministic: `must` -> `should` -> `differentiator`, with existing requirement order as the tie-breaker
-- no score, fit, suitability, readiness, or generated coaching was introduced; the full requirement list, ordering, and classifications remain unchanged
+- `CAREER_MAP_CALIBRATED_ROLE_LENS_CATALOG_COMPLETE`
+- implementation commit: `9ae0480ca85098ad657afb203e6fe8a2d4643b8a`
+- the active Career Map route uses `representativeGenericRoleProfiles` directly and exposes exactly four calibrated generic role lenses: Analytics Manager, Customer Insights Lead, Marketing Analytics Lead, and Data Product Manager
+- all 18 development seed profiles remain intact in the combined development collection but are no longer user-facing through the active route
+- selector copy frames these as currently available directional generic archetypes, not an exhaustive catalog or externally certified role definitions
+- comparison behavior, `Proof to build`, and `Start here` remain unchanged; no score, fit, suitability, readiness, or recommendation claim was introduced
 - all 26 Career Possibility tests, targeted ESLint, TypeScript, production build, and browser QA at 1440×900, 768×1024, and 390×844 passed
 - shared ingestion and runtime failure handling remain complete and closed
 
@@ -123,7 +124,7 @@ Tailored CV flow closure note (2026-05-15):
 ## 3. One main next action
 
 Main next action:
-- Hold the completed prioritised next-proof guidance and select the next user-facing Career Map product priority before further implementation.
+- Hold the calibrated Role Lens catalog and select the next user-facing Career Map product priority before further implementation.
 
 Not the next action:
 - do not treat the closed `stale_review_status` evidence-field defect as active
