@@ -69,13 +69,27 @@ Last updated: 2026-07-30
 - Job Copilot is live-JD first and company-specific. It owns requirement-weighted Match V2 analysis and job-specific gaps, positioning, and recommendations.
 - Match V2, live-JD parsing, and company-specific scoring must not move into Career Map.
 
-### Career Map current closure (`CAREER_MAP_PROOF_TO_BUILD_GUIDANCE_COMPLETE`)
+### Career Map current closure (`CAREER_MAP_PRIORITIZED_NEXT_PROOF_COMPLETE`)
 
 Current active line and mode:
-- line: `CAREER-MAP-PROOF-TO-BUILD-GUIDANCE`
+- line: `CAREER-MAP-PRIORITIZED-NEXT-PROOF-GUIDANCE`
 - mode: `HOLD`
 - task type: post-repair closure / next-product-priority selection
-- implementation commit: `22b995b0289efb95d656be61eb2575207cceb0c8`
+- implementation commit: `7eab5849456a63f466c08cf50ce20221699e1fe0`
+
+Completed prioritised next-proof guidance:
+- The personal target-role comparison owns an optional authoritative `nextProofToBuild` projection.
+- Eligible candidates are limited to `evidence_not_yet_shown` requirements with nonblank authored `expectedEvidence`; direct, transferable, governance-deferred, and governance-excluded requirements cannot be selected.
+- Selection priority is `must` -> `should` -> `differentiator`; existing requirement order is the only same-importance tie-breaker.
+- The Career Map Role Lens renders at most one restrained `Start here` block above the unchanged complete requirement list.
+- The block carries the canonical capability label, a bounded importance-based reason, and exact existing authored proof guidance.
+- Blank or absent guidance is skipped; when no eligible candidate exists, no empty block or fabricated fallback appears.
+- No score, fit, suitability, readiness, generated coaching, role ranking, or new inference was introduced.
+- Requirement output, order, outcome classification, existing evidence disclosures, and per-card `Proof to build` guidance remain unchanged.
+- All 26 Career Possibility tests, targeted ESLint, TypeScript, production build, and `git diff --check` passed.
+- Browser QA passed the synthetic résumé intake -> extraction -> evidence review -> canonical mapping -> Apply to Career Map -> target-role selection flow.
+- Browser QA passed at 1440×900, 768×1024, and 390×844, including role switching and no-eligible-candidate behavior, with no overflow, clipping, React/hydration/console warnings, or API, Supabase, authentication, or telemetry requests.
+- No completed ingestion, identity, revision, adapter, runtime, persistence, server, generic-path, or Job Copilot architecture was reopened.
 
 Completed Proof to build guidance:
 - The personal target-role comparison now transports the generic role profile's exact authored `expectedEvidence` only when the outcome is `evidence_not_yet_shown` and the guidance is non-empty.
@@ -159,7 +173,7 @@ Completed evidence-field transition repair:
 - The prior evidence-field review replay/status-validation defect is closed; this line has no remaining active defect.
 
 Single main next action:
-- Hold the completed Proof to build guidance and select the next user-facing Career Map product priority before further implementation.
+- Hold the completed prioritised next-proof guidance and select the next user-facing Career Map product priority before further implementation.
 
 Explicit non-reopen boundaries:
 - Do not reopen the source revision producer, source identity manifest, review decision identity contract, review revision producer, `SharedCareerIngestionBundle` contract, browser shared-ingestion adapter, or browser shared-ingestion runtime architecture.

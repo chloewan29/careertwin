@@ -62,7 +62,7 @@ Default do-not-read in light mode:
 ## 2. Current active line
 
 Primary active line:
-- `CAREER-MAP-PROOF-TO-BUILD-GUIDANCE`
+- `CAREER-MAP-PRIORITIZED-NEXT-PROOF-GUIDANCE`
 
 Current mode:
 - `HOLD`
@@ -71,13 +71,14 @@ Current task type:
 - post-repair closure / next-product-priority selection
 
 Current active question:
-- Which user-facing Career Map capability should become the next admitted product task now that Proof to build guidance is complete?
+- Which user-facing Career Map capability should become the next admitted product task now that prioritised next-proof guidance is complete?
 
 Completed Career Map milestone:
-- `CAREER_MAP_PROOF_TO_BUILD_GUIDANCE_COMPLETE`
-- implementation commit: `22b995b0289efb95d656be61eb2575207cceb0c8`
-- the target-role comparison transports exact authored `expectedEvidence` only for applicable `evidence_not_yet_shown` requirements
-- no guidance is fabricated when authored guidance is absent; direct, transferable, deferred, and excluded outcomes remain unchanged
+- `CAREER_MAP_PRIORITIZED_NEXT_PROOF_COMPLETE`
+- implementation commit: `7eab5849456a63f466c08cf50ce20221699e1fe0`
+- the target-role comparison owns an optional authoritative `nextProofToBuild` projection limited to actionable missing requirements with authored guidance
+- priority is deterministic: `must` -> `should` -> `differentiator`, with existing requirement order as the tie-breaker
+- no score, fit, suitability, readiness, or generated coaching was introduced; the full requirement list, ordering, and classifications remain unchanged
 - all 26 Career Possibility tests, targeted ESLint, TypeScript, production build, and browser QA at 1440×900, 768×1024, and 390×844 passed
 - shared ingestion and runtime failure handling remain complete and closed
 
@@ -122,7 +123,7 @@ Tailored CV flow closure note (2026-05-15):
 ## 3. One main next action
 
 Main next action:
-- Hold the completed Proof to build guidance and select the next user-facing Career Map product priority before further implementation.
+- Hold the completed prioritised next-proof guidance and select the next user-facing Career Map product priority before further implementation.
 
 Not the next action:
 - do not treat the closed `stale_review_status` evidence-field defect as active
