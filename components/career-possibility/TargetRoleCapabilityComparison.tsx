@@ -10,7 +10,7 @@ import { buildPersonalTargetRoleComparison } from "@/lib/career-possibility/pers
 export function TargetRoleCapabilityComparison({ state, roles, canonicalLibrary, governance, definitionVersion }: { state: LocalCareerMapState; roles: readonly RoleCapabilityProfile[]; canonicalLibrary: CanonicalCapabilityLibrary; governance: CanonicalCapabilityGovernanceLibrary; definitionVersion: string }) {
   const [selected, setSelected] = useState("");
   const [expanded, setExpanded] = useState<string | null>(null);
-  const ordered = [...roles].sort((a, b) => a.canonicalTitle.localeCompare(b.canonicalTitle, "en") || a.roleFamilyId.localeCompare(b.roleFamilyId, "en"));
+  const ordered = roles;
   const role = ordered.find((item) => item.roleFamilyId === selected);
   const result = role ? buildPersonalTargetRoleComparison({ localCareerMapState: state, targetRoleProfile: role, canonicalCapabilityLibrary: canonicalLibrary, governanceDecisions: governance, definitionVersion }) : null;
 
@@ -18,6 +18,7 @@ export function TargetRoleCapabilityComparison({ state, roles, canonicalLibrary,
     <p className="text-xs font-semibold uppercase tracking-[0.18em] text-violet-300">Personal Role Lens</p>
     <h2 id="target-role-heading" className="mt-2 text-2xl font-semibold">Compare with a target role</h2>
     <p className="mt-2 text-sm text-slate-400">Requirement-by-requirement evidence comparison only. No fit score or suitability verdict.</p>
+    <p className="mt-2 text-sm text-slate-400">Explore the calibrated generic role lenses currently available. These directional archetypes are not an exhaustive list of careers.</p>
     <label htmlFor="target-role" className="mt-5 block text-sm font-medium">Choose a target role</label>
     <select id="target-role" value={selected} onChange={(event) => { setSelected(event.target.value); setExpanded(null); }} className="mt-2 min-h-11 w-full rounded-xl border border-white/15 bg-[#101827] px-3">
       <option value="">Choose a target role</option>
