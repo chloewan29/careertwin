@@ -26,6 +26,12 @@ export function TargetRoleCapabilityComparison({ state, roles, canonicalLibrary,
     {result && !result.ok && <p role="alert" className="mt-4 text-red-200">{result.issues[0].message}</p>}
     {result?.ok && <>
       <div className="mt-5 flex flex-wrap gap-2 text-xs"><Pill n={result.comparison.summary.directly_demonstrated} t="directly demonstrated"/><Pill n={result.comparison.summary.transferable_signal} t="transferable"/><Pill n={result.comparison.summary.evidence_not_yet_shown} t="evidence not yet shown"/><Pill n={result.comparison.summary.governance_deferred + result.comparison.summary.governance_excluded} t="taxonomy limitations"/></div>
+      {result.comparison.nextProofToBuild && <aside className="mt-5 rounded-2xl border border-amber-200/20 bg-amber-200/[0.05] p-4 sm:p-5" aria-labelledby="next-proof-heading">
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-amber-200">Start here</p>
+        <h3 id="next-proof-heading" className="mt-2 text-lg font-semibold">{result.comparison.nextProofToBuild.capabilityLabel}</h3>
+        <p className="mt-1 text-sm text-slate-400">{result.comparison.nextProofToBuild.reason} This is the first evidence gap to investigate, not a suitability or readiness verdict.</p>
+        <div className="mt-3 border-t border-amber-100/10 pt-3"><p className="text-xs font-semibold text-amber-100">Proof to build</p><p className="mt-1 text-sm leading-6 text-slate-300">{result.comparison.nextProofToBuild.expectedEvidence}</p></div>
+      </aside>}
       <div className="mt-5 grid gap-3">{result.comparison.requirements.map((requirement) => {
         const open = expanded === requirement.capabilityId;
         return <article key={requirement.capabilityId} className="rounded-xl border border-white/10 p-4">

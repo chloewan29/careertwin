@@ -2,57 +2,76 @@ import assert from "node:assert/strict";
 import { buildPersonalTargetRoleComparison } from "../../lib/career-possibility/personal-target-role-comparison";
 import { canonicalCapabilityLibrary } from "../../lib/career-possibility/canonical-capability-library";
 import { canonicalCapabilityGovernanceLibrary } from "../../lib/career-possibility/canonical-capability-governance-decisions";
-import { roleCapabilityProfileById } from "../../lib/career-possibility/fixtures/roleCapabilityProfiles";
 import type { LocalCareerMapState } from "../../lib/career-possibility/local-career-map-state";
-import type { RoleCapabilityProfile } from "../../lib/career-possibility/role-capability-library";
+import type { CapabilityImportance, RoleCapabilityProfile, RoleCapabilityRequirement } from "../../lib/career-possibility/role-capability-library";
 
-const version = "defs/1";
-const state: LocalCareerMapState = { schemaVersion: "1.0.0", definitionVersion: version, source: "reviewed_resume", importedAt: "x", updatedAt: "x", capabilities: [
-  { capabilityId: "forecasting", capabilityLabel: "Forecasting", family: "Analytics & Insight", mappings: [{ mappingId: "m1", evidenceId: "e1", relationship: "direct_evidence", sourceText: "Forecast evidence", sourceStart: 0, sourceEnd: 17, provisional: true }] },
-  { capabilityId: "variance-analysis", capabilityLabel: "Variance Analysis", family: "Analytics & Insight", mappings: [{ mappingId: "m2", evidenceId: "e2", relationship: "transferable_signal", sourceText: "Variance evidence", sourceStart: 0, sourceEnd: 17, provisional: true }] },
-] };
-const build = (role: RoleCapabilityProfile) => buildPersonalTargetRoleComparison({ localCareerMapState: state, targetRoleProfile: role, canonicalCapabilityLibrary, governanceDecisions: canonicalCapabilityGovernanceLibrary, definitionVersion: version });
+const definitionVersion = "defs/1";
+const canonicalById = new Map(canonicalCapabilityLibrary.capabilities.map((item) => [item.id, item]));
+const requirement = (capabilityId: string, importance: CapabilityImportance, expectedEvidence = `Show authored proof for ${capabilityId}.`): RoleCapabilityRequirement => ({ capabilityId, label: canonicalById.get(capabilityId)?.label ?? capabilityId, importance, expectedEvidence, minimumProofLevel: "demonstrated" });
+const role = (must: RoleCapabilityRequirement[], should: RoleCapabilityRequirement[], differentiators: RoleCapabilityRequirement[]): RoleCapabilityProfile => ({ roleFamilyId: "test-role", canonicalTitle: "Test Role", aliases: [], searchTitles: [], domain: "test", seniorityBand: "manager", description: "Test role.", mustHaveCapabilities: must, shouldHaveCapabilities: should, differentiatingCapabilities: differentiators, evidenceRequirements: [], commonGrowthAreas: [], adjacentFromCapabilities: [], relatedRoleFamilies: [], sourceNotes: [], version: "1.0.0" });
+const state = (supported: readonly { id: string; relationship: "direct_evidence" | "transferable_signal" }[]): LocalCareerMapState => { const present = supported.length ? supported : [{ id: "forecasting", relationship: "direct_evidence" as const }]; return { schemaVersion: "1.0.0", definitionVersion, source: "reviewed_resume", importedAt: "x", updatedAt: "x", capabilities: present.map(({ id, relationship }, index) => { const definition = canonicalById.get(id)!; return { capabilityId: id, capabilityLabel: definition.label, family: definition.family, mappings: [{ mappingId: `m${index}`, evidenceId: `e${index}`, relationship, sourceText: `Evidence ${index}`, sourceStart: 0, sourceEnd: 10, provisional: true }] }; }) }; };
+const build = (targetRoleProfile: RoleCapabilityProfile, localCareerMapState = state([])) => buildPersonalTargetRoleComparison({ localCareerMapState, targetRoleProfile, canonicalCapabilityLibrary, governanceDecisions: canonicalCapabilityGovernanceLibrary, definitionVersion });
 
-const role = structuredClone(roleCapabilityProfileById.get("fpa-manager")!);
-role.shouldHaveCapabilities.push({ capabilityId: "strategic-analysis", label: "Strategic Analysis", importance: "should", expectedEvidence: "Show a decision shaped by structured strategic analysis.", minimumProofLevel: "demonstrated" });
-const inputBefore = structuredClone({ state, role });
-const fpa = build(role);
-assert.equal(fpa.ok, true);
-if (!fpa.ok) throw new Error();
-assert.deepEqual(fpa.comparison.requirements.map((item) => item.capabilityId), ["forecasting", "financial-planning", "variance-analysis", "executive-reporting", "strategic-analysis"]);
-assert.deepEqual(fpa.comparison.requirements.map((item) => item.outcome), ["directly_demonstrated", "governance_deferred", "transferable_signal", "governance_deferred", "evidence_not_yet_shown"]);
-assert.equal(fpa.comparison.requirements[4].expectedEvidence, "Show a decision shaped by structured strategic analysis.");
-assert.equal("expectedEvidence" in fpa.comparison.requirements[0], false);
-assert.equal("expectedEvidence" in fpa.comparison.requirements[2], false);
-assert.equal("expectedEvidence" in fpa.comparison.requirements[1], false);
-assert.equal(fpa.comparison.requirements[0].evidence[0].text, "Forecast evidence");
-assert.equal(fpa.comparison.requirements[2].evidence[0].relationship, "transferable_signal");
+const rankedRole = role(
+  [requirement("research-design", "must", "First must guidance."), requirement("customer-segmentation", "must", "Second must guidance.")],
+  [requirement("strategic-analysis", "should", "Should guidance.")],
+  [requirement("benefits-realisation", "differentiator", "Differentiator guidance.")],
+);
+const rankedBefore = structuredClone(rankedRole);
+const ranked = build(rankedRole);
+assert.equal(ranked.ok, true);
+if (!ranked.ok) throw new Error();
+assert.deepEqual(ranked.comparison.nextProofToBuild, { capabilityId: "research-design", capabilityLabel: "Research Design", importance: "must", expectedEvidence: "First must guidance.", reason: "Must-have requirement with no reviewed evidence yet." });
+assert.deepEqual(ranked.comparison.requirements.map((item) => item.capabilityId), ["research-design", "customer-segmentation", "strategic-analysis", "benefits-realisation"]);
+assert.deepEqual(ranked.comparison.requirements.map((item) => item.outcome), ["evidence_not_yet_shown", "evidence_not_yet_shown", "evidence_not_yet_shown", "evidence_not_yet_shown"]);
 
-const noGuidanceRole = structuredClone(role);
-noGuidanceRole.shouldHaveCapabilities[2].expectedEvidence = "   ";
-const noGuidance = build(noGuidanceRole);
-assert.equal(noGuidance.ok, true);
-if (!noGuidance.ok) throw new Error();
-assert.equal("expectedEvidence" in noGuidance.comparison.requirements[4], false);
+const shouldWins = build(rankedRole, state([{ id: "research-design", relationship: "direct_evidence" }, { id: "customer-segmentation", relationship: "direct_evidence" }]));
+assert.equal(shouldWins.ok, true);
+if (!shouldWins.ok) throw new Error();
+assert.equal(shouldWins.comparison.nextProofToBuild?.capabilityId, "strategic-analysis");
+assert.equal(shouldWins.comparison.nextProofToBuild?.reason, "Supporting requirement with no reviewed evidence yet.");
 
-const legal = build(structuredClone(roleCapabilityProfileById.get("legal-operations-manager")!));
-assert.equal(legal.ok, true);
-if (!legal.ok) throw new Error();
-assert.equal(legal.comparison.requirements.some((item) => item.outcome === "governance_excluded"), true);
-assert.equal(legal.comparison.requirements.filter((item) => item.outcome === "governance_excluded").every((item) => !("expectedEvidence" in item)), true);
-assert.deepEqual({ state, role }, inputBefore);
-assert.deepEqual(build(role), fpa);
-assert.equal(Object.isFrozen(fpa.comparison), true);
-assert.equal(Object.isFrozen(fpa.comparison.requirements), true);
-assert.equal(fpa.comparison.requirements.every(Object.isFrozen), true);
-assert.equal(fpa.comparison.requirements.every((item) => Object.isFrozen(item.evidence)), true);
-assert.deepEqual(JSON.parse(JSON.stringify(fpa.comparison)), fpa.comparison);
-assert.equal("score" in fpa.comparison, false);
-assert.equal("suitability" in fpa.comparison, false);
-assert.equal("matchV2" in fpa.comparison, false);
-assert.equal("jobDescription" in fpa.comparison, false);
+const differentiatorWins = build(rankedRole, state([{ id: "research-design", relationship: "direct_evidence" }, { id: "customer-segmentation", relationship: "direct_evidence" }, { id: "strategic-analysis", relationship: "transferable_signal" }]));
+assert.equal(differentiatorWins.ok, true);
+if (!differentiatorWins.ok) throw new Error();
+assert.equal(differentiatorWins.comparison.nextProofToBuild?.capabilityId, "benefits-realisation");
+assert.equal(differentiatorWins.comparison.nextProofToBuild?.reason, "Differentiating requirement with no reviewed evidence yet.");
 
-const unknownRole = structuredClone(roleCapabilityProfileById.get("fpa-manager")!);
-unknownRole.mustHaveCapabilities[0].capabilityId = "unknown-id";
-assert.equal(build(unknownRole).ok, false);
+const blankThenEligible = structuredClone(rankedRole);
+blankThenEligible.mustHaveCapabilities[0].expectedEvidence = "   ";
+delete (blankThenEligible.mustHaveCapabilities[1] as Partial<RoleCapabilityRequirement>).expectedEvidence;
+const skipUnguided = build(blankThenEligible);
+assert.equal(skipUnguided.ok, true);
+if (!skipUnguided.ok) throw new Error();
+assert.equal(skipUnguided.comparison.nextProofToBuild?.capabilityId, "strategic-analysis");
+assert.equal("expectedEvidence" in skipUnguided.comparison.requirements[0], false);
+assert.equal("expectedEvidence" in skipUnguided.comparison.requirements[1], false);
+
+const noCandidate = build(rankedRole, state([{ id: "research-design", relationship: "direct_evidence" }, { id: "customer-segmentation", relationship: "transferable_signal" }, { id: "strategic-analysis", relationship: "direct_evidence" }, { id: "benefits-realisation", relationship: "transferable_signal" }]));
+assert.equal(noCandidate.ok, true);
+if (!noCandidate.ok) throw new Error();
+assert.equal("nextProofToBuild" in noCandidate.comparison, false);
+assert.deepEqual(noCandidate.comparison.requirements.map((item) => item.outcome), ["directly_demonstrated", "transferable_signal", "directly_demonstrated", "transferable_signal"]);
+
+const governedRole = role([requirement("analytics-leadership", "must"), requirement("matter-management", "must"), requirement("research-design", "must", "Actionable guidance.")], [], []);
+const governed = build(governedRole);
+assert.equal(governed.ok, true);
+if (!governed.ok) throw new Error();
+assert.equal(governed.comparison.requirements[0].outcome, "governance_deferred");
+assert.equal(governed.comparison.requirements[1].outcome, "governance_excluded");
+assert.equal(governed.comparison.nextProofToBuild?.capabilityId, "research-design");
+assert.equal(governed.comparison.requirements.slice(0, 2).every((item) => !("expectedEvidence" in item)), true);
+
+assert.deepEqual(rankedRole, rankedBefore);
+assert.deepEqual(build(rankedRole), ranked);
+assert.equal(Object.isFrozen(ranked.comparison), true);
+assert.equal(Object.isFrozen(ranked.comparison.nextProofToBuild), true);
+assert.equal(Object.isFrozen(ranked.comparison.requirements), true);
+assert.equal(ranked.comparison.requirements.every(Object.isFrozen), true);
+assert.equal(ranked.comparison.requirements.every((item) => Object.isFrozen(item.evidence)), true);
+assert.deepEqual(JSON.parse(JSON.stringify(ranked.comparison)), ranked.comparison);
+const serialized = JSON.stringify(ranked.comparison);
+assert.equal(/"(?:score|fit|suitability|readiness|jobDescription|matchV2)"/i.test(serialized), false);
+assert.equal(ranked.comparison.requirements[0].expectedEvidence, "First must guidance.");
+
 console.log("personal target role comparison tests passed");
