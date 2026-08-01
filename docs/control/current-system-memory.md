@@ -34,7 +34,7 @@ Use with:
 - `docs/control/policy-registry.md`
 - active line plan(s)
 
-Last updated: 2026-07-31
+Last updated: 2026-08-02
 
 ---
 
@@ -69,13 +69,26 @@ Last updated: 2026-07-31
 - Job Copilot is live-JD first and company-specific. It owns requirement-weighted Match V2 analysis and job-specific gaps, positioning, and recommendations.
 - Match V2, live-JD parsing, and company-specific scoring must not move into Career Map.
 
-### Career Map current closure (`CAREER_MAP_CALIBRATED_ROLE_LENS_CATALOG_COMPLETE`)
+### Career Map current closure (`CAREER_MAP_SELECTED_ROLE_LENS_MANDATE_COMPLETE`)
 
 Current active line and mode:
-- line: `CAREER-MAP-CALIBRATED-ROLE-LENS-CATALOG`
+- line: `CAREER-MAP-SELECTED-ROLE-LENS-MANDATE`
 - mode: `HOLD`
 - task type: post-repair closure / next-product-priority selection
-- implementation commit: `9ae0480ca85098ad657afb203e6fe8a2d4643b8a`
+- implementation commit: `50887e1370cd3024975f5b4e1a1a39de8f7ff6ba`
+
+Completed selected-role mandate orientation:
+- Selecting a calibrated Role Lens displays one restrained orientation block before comparison output.
+- The block consumes the selected profile's existing canonical title and exact authored description, which is projected from the admitted archetype mandate.
+- Analytics Manager, Customer Insights Lead, Marketing Analytics Lead, and Data Product Manager were all verified; switching roles updates both title and mandate without stale or duplicate content.
+- No generated role summary, day-to-day responsibility, ownership inference, certification, fit, readiness, suitability, or exhaustive-coverage claim was introduced.
+- Outcome summary, requirement order, evidence disclosures, `Proof to build`, and `Start here` remain unchanged.
+- The focused archetype test, all 26 Career Possibility tests, targeted ESLint, TypeScript, production build, and `git diff --check` passed.
+- Browser QA passed the full synthetic resume intake flow at 1440x900, 768x1024, and 390x844, with correct orientation for all four roles, no overflow or clipping, no React/hydration/console warnings, and no API, Supabase, authentication, telemetry, or persistence requests.
+- No role definition, profile projection, comparison contract, ingestion, identity, revision, adapter, runtime, persistence, server, generic-path, or Job Copilot architecture was reopened.
+
+Single next action:
+- Hold the completed selected-role mandate orientation and select the next user-facing Career Map product priority before further implementation.
 
 Completed calibrated Role Lens catalog gate:
 - The active Career Map route consumes `representativeGenericRoleProfiles` directly as its user-facing Role Lens catalog.
@@ -88,9 +101,6 @@ Completed calibrated Role Lens catalog gate:
 - The focused archetype test, all 26 Career Possibility tests, targeted ESLint, TypeScript, production build, and `git diff --check` passed.
 - Browser QA passed the full synthetic resume intake flow and all four retained-role selections at 1440x900, 768x1024, and 390x844 with no overflow, clipping, React/hydration/console warnings, or API, Supabase, authentication, telemetry, or persistence requests.
 - No completed ingestion, identity, revision, adapter, runtime, persistence, server, generic-path, or Job Copilot architecture was reopened.
-
-Single next action:
-- Hold the calibrated Role Lens catalog and select the next user-facing Career Map product priority before further implementation.
 
 Completed prioritised next-proof guidance:
 - The personal target-role comparison owns an optional authoritative `nextProofToBuild` projection.
