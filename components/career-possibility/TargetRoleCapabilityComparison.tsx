@@ -6,6 +6,7 @@ import type { CanonicalCapabilityLibrary } from "@/lib/career-possibility/canoni
 import type { CanonicalCapabilityGovernanceLibrary } from "@/lib/career-possibility/canonical-capability-governance-decisions";
 import type { RoleCapabilityProfile } from "@/lib/career-possibility/role-capability-library";
 import { buildPersonalTargetRoleComparison } from "@/lib/career-possibility/personal-target-role-comparison";
+import { buildProofBuildingAction } from "@/lib/career-possibility/proof-building-action";
 
 export function TargetRoleCapabilityComparison({ state, roles, canonicalLibrary, governance, definitionVersion }: { state: LocalCareerMapState; roles: readonly RoleCapabilityProfile[]; canonicalLibrary: CanonicalCapabilityLibrary; governance: CanonicalCapabilityGovernanceLibrary; definitionVersion: string }) {
   const [selected, setSelected] = useState("");
@@ -13,6 +14,7 @@ export function TargetRoleCapabilityComparison({ state, roles, canonicalLibrary,
   const ordered = roles;
   const role = ordered.find((item) => item.roleFamilyId === selected);
   const result = role ? buildPersonalTargetRoleComparison({ localCareerMapState: state, targetRoleProfile: role, canonicalCapabilityLibrary: canonicalLibrary, governanceDecisions: governance, definitionVersion }) : null;
+  const proofAction = buildProofBuildingAction(result?.ok ? result.comparison.nextProofToBuild : undefined);
 
   return <section className="mt-6 rounded-[2rem] border border-violet-300/15 bg-[#0b0c1b] p-4 sm:p-6" aria-labelledby="target-role-heading">
     <p className="text-xs font-semibold uppercase tracking-[0.18em] text-violet-300">Personal Role Lens</p>
@@ -37,6 +39,7 @@ export function TargetRoleCapabilityComparison({ state, roles, canonicalLibrary,
         <h3 id="next-proof-heading" className="mt-2 text-lg font-semibold">{result.comparison.nextProofToBuild.capabilityLabel}</h3>
         <p className="mt-1 text-sm text-slate-400">{result.comparison.nextProofToBuild.reason} This is the first evidence gap to investigate, not a suitability or readiness verdict.</p>
         <div className="mt-3 border-t border-amber-100/10 pt-3"><p className="text-xs font-semibold text-amber-100">Proof to build</p><p className="mt-1 text-sm leading-6 text-slate-300">{result.comparison.nextProofToBuild.expectedEvidence}</p></div>
+        {proofAction.status === "available" && <section className="mt-4 rounded-xl border border-cyan-200/15 bg-cyan-200/[0.04] p-3" aria-labelledby="proof-action-heading"><h4 id="proof-action-heading" className="text-sm font-semibold text-cyan-100">{proofAction.copy.heading}</h4><p className="mt-2 text-sm leading-6 text-slate-300">{proofAction.copy.instruction}</p><p className="mt-1 text-xs leading-5 text-slate-400">{proofAction.copy.uncertainty}</p></section>}
       </aside>}
       <div className="mt-5 grid gap-3">{result.comparison.requirements.map((requirement) => {
         const open = expanded === requirement.capabilityId;
