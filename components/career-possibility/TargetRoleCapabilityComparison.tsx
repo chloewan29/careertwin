@@ -25,7 +25,12 @@ export function TargetRoleCapabilityComparison({ state, roles, canonicalLibrary,
       {ordered.map((item) => <option key={item.roleFamilyId} value={item.roleFamilyId}>{item.canonicalTitle} · {item.domain}</option>)}
     </select>
     {result && !result.ok && <p role="alert" className="mt-4 text-red-200">{result.issues[0].message}</p>}
-    {result?.ok && <>
+    {result?.ok && role && <>
+      <div className="mt-5 rounded-2xl border border-violet-200/15 bg-violet-200/[0.04] p-4 sm:p-5">
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-violet-300">About this role lens</p>
+        <h3 className="mt-2 text-xl font-semibold">{role.canonicalTitle}</h3>
+        <p className="mt-2 text-sm leading-6 text-slate-300">{role.description}</p>
+      </div>
       <div className="mt-5 flex flex-wrap gap-2 text-xs"><Pill n={result.comparison.summary.directly_demonstrated} t="directly demonstrated"/><Pill n={result.comparison.summary.transferable_signal} t="transferable"/><Pill n={result.comparison.summary.evidence_not_yet_shown} t="evidence not yet shown"/><Pill n={result.comparison.summary.governance_deferred + result.comparison.summary.governance_excluded} t="taxonomy limitations"/></div>
       {result.comparison.nextProofToBuild && <aside className="mt-5 rounded-2xl border border-amber-200/20 bg-amber-200/[0.05] p-4 sm:p-5" aria-labelledby="next-proof-heading">
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-amber-200">Start here</p>
