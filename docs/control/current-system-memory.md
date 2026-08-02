@@ -69,12 +69,17 @@ Last updated: 2026-08-02
 - Job Copilot is live-JD first and company-specific. It owns requirement-weighted Match V2 analysis and job-specific gaps, positioning, and recommendations.
 - Match V2, live-JD parsing, and company-specific scoring must not move into Career Map.
 
-### Career Map current closure (`CAREER_MAP_REVIEWED_EVIDENCE_RETURN_PATH_COMPLETE`)
+### Career Map V1 closure (`CAREER_MAP_V1_COMPLETE`)
 
 Current active line and mode:
-- line: `CAREER-MAP-REVIEWED-EVIDENCE-RETURN-PATH`
+- line: `CAREER-MAP-V1-RELEASE`
 - mode: `HOLD`
-- task type: post-repair closure / next-product-priority selection
+- task type: V1 release closure / scope freeze
+- release-readiness decision: `V1_RELEASE_READY_WITH_KNOWN_LIMITATIONS`
+- final verified implementation baseline: `6cee2f67a07cd1a852081b8391aadd39f8bc2faf`
+- release blocker count after repair and re-audit: `0`
+- repaired blocker: valid reviewed field edits now receive deterministic opaque semantic payload revisions from the browser runtime and reach Apply successfully
+- repair commit: `6cee2f67a07cd1a852081b8391aadd39f8bc2faf` (`fix(career): admit reviewed field edits at apply`)
 - audit decision: the missing visible return path after evidence inspection was the highest-value bounded gap
 - first drift point: evidence inspection completed but the lookup loop lost a visible continuation back to the Role Lens
 - first writable fault: the Personal Capability Explorer had no reciprocal anchor and `#target-role-heading` was not focusable
@@ -100,8 +105,26 @@ Completed proof-lookup reviewed-evidence navigation:
 - Browser QA passed the full synthetic resume flow, all four calibrated role switches, and the no-eligible-action abstention state at 1440x900, 768x1024, and 390x844, with no stale/duplicate action, overflow, clipping, React/hydration/console warnings, or API, Supabase, authentication, telemetry, or persistence requests.
 - No CandidateBaseline, ingestion, identity, revision, adapter, runtime, persistence, server, generic-path, or Job Copilot architecture was reopened.
 
+V1 frozen product boundary:
+- one browser-local reviewed résumé/source import
+- explicit replace-only re-import
+- page-memory-only active intake and review session
+- reviewed capability and evidence exploration
+- four calibrated generic Role Lenses with mandate, deterministic comparison outcomes, authored Proof to build, prioritised Start here, bounded find-existing-proof guidance, and reciprocal evidence navigation
+- no incremental supplementation, multiple sources, cross-device sync, server persistence, role ranking, evidence-quality diagnosis, progress tracking, or generated coaching
+
+Release verification:
+- all 27 Career Possibility tests passed
+- tracked Career Map ESLint, TypeScript, production build, and `git diff --check` passed sequentially
+- full synthetic intake/review/edit/reject/replace/Apply flow and malformed-state recovery passed
+- browser QA passed at 1440×900, 1280×800, 768×1024, 390×844, and 375×667 with no overflow, clipping, console, hydration, network, authentication, Supabase, telemetry, or unexpected persistence regression
+
+V2 boundary retained:
+- incremental supplementation remains a separately admitted Model A architecture sequence: lineage-ready import, independent new-source review, then atomic cumulative merge
+- this sequence is not part of V1 and must not start without explicit founder scope reopening
+
 Single next action:
-- Hold the completed task and select the next user-facing Career Map product priority before further implementation.
+- Hold Career Map V1 as complete. Begin a separately admitted V2 planning cycle only when the founder explicitly chooses to reopen scope.
 
 Completed selected-role mandate orientation:
 - Selecting a calibrated Role Lens displays one restrained orientation block before comparison output.
@@ -221,7 +244,7 @@ Completed evidence-field transition repair:
 - The prior evidence-field review replay/status-validation defect is closed; this line has no remaining active defect.
 
 Single main next action:
-- Hold the completed task and select the next user-facing Career Map product priority before further implementation.
+- Hold Career Map V1 as complete. Begin a separately admitted V2 planning cycle only when the founder explicitly chooses to reopen scope.
 
 Explicit non-reopen boundaries:
 - Do not reopen the source revision producer, source identity manifest, review decision identity contract, review revision producer, `SharedCareerIngestionBundle` contract, browser shared-ingestion adapter, or browser shared-ingestion runtime architecture.

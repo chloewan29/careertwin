@@ -62,19 +62,28 @@ Default do-not-read in light mode:
 ## 2. Current active line
 
 Primary active line:
-- `CAREER-MAP-REVIEWED-EVIDENCE-RETURN-PATH`
+- `CAREER-MAP-V1-RELEASE`
 
 Current mode:
 - `HOLD`
 
 Current task type:
-- post-repair closure / next-product-priority selection
+- V1 release closure / scope freeze
 
 Current active question:
-- Which user-facing Career Map capability should become the next admitted product task now that the reviewed-evidence return path is complete?
+- Is there an explicitly admitted founder decision to reopen Career Map scope for V2 planning?
 
 Completed Career Map milestone:
-- `CAREER_MAP_REVIEWED_EVIDENCE_RETURN_PATH_COMPLETE`
+- `CAREER_MAP_V1_COMPLETE`
+- release-readiness decision: `V1_RELEASE_READY_WITH_KNOWN_LIMITATIONS`
+- final verified implementation baseline: `6cee2f67a07cd1a852081b8391aadd39f8bc2faf`
+- release blocker count after repair and re-audit: `0`
+- V1 is frozen as a browser-local, single-source reviewed import with explicit replace-only re-import
+- the full intake, extraction, review/edit/reject, mapping, Apply, Career Map, four-role Role Lens, proof guidance, evidence navigation, and return-path journey passed
+- blocker repair `6cee2f67a07cd1a852081b8391aadd39f8bc2faf` (`fix(career): admit reviewed field edits at apply`) supplies deterministic opaque semantic payload revisions through the existing browser runtime transport
+- all 27 Career Possibility tests, tracked Career Map ESLint, TypeScript, production build, `git diff --check`, replacement/recovery QA, and browser QA at 1440×900, 1280×800, 768×1024, 390×844, and 375×667 passed
+- accepted V1 limitations: single source, replace-only re-import, browser-local map, page-memory intake/review, no incremental supplementation, no cross-device/server persistence, four calibrated roles, and no ranking, evidence-quality diagnosis, progress tracking, or generated coaching
+- the Model A incremental-supplementation architecture sequence remains V2 planning input only and is not started
 - audit decision: the first material dead end was the absence of a visible continuation from reviewed evidence back to the Role Lens
 - first drift point: evidence inspection completed but visible task continuity ended
 - first writable fault: the Personal Capability Explorer lacked a reciprocal native anchor and the existing Role Lens heading was not programmatically focusable
@@ -134,7 +143,7 @@ Tailored CV flow closure note (2026-05-15):
 ## 3. One main next action
 
 Main next action:
-- Hold the completed task and select the next user-facing Career Map product priority before further implementation.
+- Hold Career Map V1 as complete. Begin a separately admitted V2 planning cycle only when the founder explicitly chooses to reopen scope.
 
 Not the next action:
 - do not treat the closed `stale_review_status` evidence-field defect as active
