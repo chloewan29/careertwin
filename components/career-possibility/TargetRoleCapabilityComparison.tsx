@@ -18,7 +18,7 @@ export function TargetRoleCapabilityComparison({ state, roles, canonicalLibrary,
 
   return <section className="mt-6 rounded-[2rem] border border-violet-300/15 bg-[#0b0c1b] p-4 sm:p-6" aria-labelledby="target-role-heading">
     <p className="text-xs font-semibold uppercase tracking-[0.18em] text-violet-300">Personal Role Lens</p>
-    <h2 id="target-role-heading" className="mt-2 text-2xl font-semibold">Compare with a target role</h2>
+    <h2 id="target-role-heading" tabIndex={-1} className="mt-2 text-2xl font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-200">Compare with a target role</h2>
     <p className="mt-2 text-sm text-slate-400">Requirement-by-requirement evidence comparison only. No fit score or suitability verdict.</p>
     <p className="mt-2 text-sm text-slate-400">Explore the calibrated generic role lenses currently available. These directional archetypes are not an exhaustive list of careers.</p>
     <label htmlFor="target-role" className="mt-5 block text-sm font-medium">Choose a target role</label>

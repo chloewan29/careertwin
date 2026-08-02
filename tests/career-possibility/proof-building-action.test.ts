@@ -36,5 +36,7 @@ assert.equal(componentSource.includes("buildProofBuildingAction"), true); assert
 assert.equal(componentSource.match(/Review evidence already in your Career Map/g)?.length, 1); assert.equal(componentSource.match(/href="#personal-explorer-heading"/g)?.length, 1); assert.equal(/proofAction\.status === "available"[\s\S]*href="#personal-explorer-heading"/.test(componentSource), true); assert.equal(/<a[^>]*(?:onClick|scrollIntoView)/i.test(componentSource), false); assert.equal(/related evidence|matching evidence|closest evidence|recommended evidence/i.test(componentSource), false);
 const personalExplorerSource = readFileSync("components/career-possibility/PersonalCapabilityExplorer.tsx", "utf8");
 assert.equal(personalExplorerSource.match(/id="personal-explorer-heading"/g)?.length, 1); assert.equal(/id="personal-explorer-heading" tabIndex=\{-1\}/.test(personalExplorerSource), true); assert.equal(/filter\(|\.sort\(|autoFocus|scrollIntoView/.test(personalExplorerSource), false);
+assert.equal(personalExplorerSource.match(/Continue to Role Lens/g)?.length, 1); assert.equal(personalExplorerSource.match(/href="#target-role-heading"/g)?.length, 1); assert.equal(/<a[^>]*(?:onClick|scrollIntoView)/i.test(personalExplorerSource), false);
+assert.equal(componentSource.match(/id="target-role-heading"/g)?.length, 1); assert.equal(/id="target-role-heading" tabIndex=\{-1\}/.test(componentSource), true);
 assert.equal(/strengthen_existing_proof|build_new_proof|capture_future_proof/.test(componentSource), false);
 console.log("proof building action tests passed");
