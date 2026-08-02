@@ -69,13 +69,17 @@ Last updated: 2026-08-02
 - Job Copilot is live-JD first and company-specific. It owns requirement-weighted Match V2 analysis and job-specific gaps, positioning, and recommendations.
 - Match V2, live-JD parsing, and company-specific scoring must not move into Career Map.
 
-### Career Map current closure (`CAREER_MAP_PROOF_LOOKUP_EVIDENCE_NAVIGATION_COMPLETE`)
+### Career Map current closure (`CAREER_MAP_REVIEWED_EVIDENCE_RETURN_PATH_COMPLETE`)
 
 Current active line and mode:
-- line: `CAREER-MAP-PROOF-LOOKUP-EVIDENCE-NAVIGATION`
+- line: `CAREER-MAP-REVIEWED-EVIDENCE-RETURN-PATH`
 - mode: `HOLD`
 - task type: post-repair closure / next-product-priority selection
-- implementation commit: `19224a2abdc5421da015558a0adfcc78d57c47e5`
+- audit decision: the missing visible return path after evidence inspection was the highest-value bounded gap
+- first drift point: evidence inspection completed but the lookup loop lost a visible continuation back to the Role Lens
+- first writable fault: the Personal Capability Explorer had no reciprocal anchor and `#target-role-heading` was not focusable
+- implementation commit: `1aacb62697ec21c295bfd3c96ad20d0f4ca67652` (`feat(career): add return path to role lens`)
+- implementation boundary: `components/career-possibility/PersonalCapabilityExplorer.tsx`, `components/career-possibility/TargetRoleCapabilityComparison.tsx`, and `tests/career-possibility/proof-building-action.test.ts` only
 
 Completed proof-lookup reviewed-evidence navigation:
 - A standalone deterministic proof-building-action authority consumes only the existing selected comparison's `nextProofToBuild` projection.
@@ -85,6 +89,8 @@ Completed proof-lookup reviewed-evidence navigation:
 - The uncertainty boundary says: `Career Map does not know whether that experience exists.` No claim is made that experience exists or is absent.
 - Available proof-lookup actions render exactly one neutral native anchor, `Review evidence already in your Career Map`, targeting the existing Personal Capability Explorer heading at `#personal-explorer-heading`; unavailable actions render no link.
 - The target ID is unique and its semantic heading uses `tabIndex={-1}` for native fragment focus placement without entering the positive tab order.
+- The reviewed-evidence surface provides exactly one neutral `Continue to Role Lens` anchor to `#target-role-heading`; the existing Role Lens heading is a unique `tabIndex={-1}` target.
+- Reciprocal native navigation preserves selected-role state, comparison output, Start here, and evidence disclosure state without custom scrolling, state lifting, network requests, or persistence changes.
 - Browser QA confirmed Enter activation, viewport movement, focus placement, browser Back with selected-role preservation, evidence disclosure operation, role switching, and the no-action state.
 - No evidence relevance or matching claim, auto-selection, filtering, sorting, highlighting, or auto-expansion was introduced; navigation produces no API, persistence, storage, or telemetry behavior.
 - No `strengthen_existing_proof`, `build_new_proof`, or `capture_future_proof` action, generated coaching, evidence-quality inference, or project, course, certification, networking, employer, or timeline advice was introduced.
@@ -95,7 +101,7 @@ Completed proof-lookup reviewed-evidence navigation:
 - No CandidateBaseline, ingestion, identity, revision, adapter, runtime, persistence, server, generic-path, or Job Copilot architecture was reopened.
 
 Single next action:
-- Hold the completed proof-lookup evidence navigation and select the next user-facing Career Map product priority before further implementation.
+- Hold the completed task and select the next user-facing Career Map product priority before further implementation.
 
 Completed selected-role mandate orientation:
 - Selecting a calibrated Role Lens displays one restrained orientation block before comparison output.
@@ -215,7 +221,7 @@ Completed evidence-field transition repair:
 - The prior evidence-field review replay/status-validation defect is closed; this line has no remaining active defect.
 
 Single main next action:
-- Hold the completed proof-lookup evidence navigation and select the next user-facing Career Map product priority before further implementation.
+- Hold the completed task and select the next user-facing Career Map product priority before further implementation.
 
 Explicit non-reopen boundaries:
 - Do not reopen the source revision producer, source identity manifest, review decision identity contract, review revision producer, `SharedCareerIngestionBundle` contract, browser shared-ingestion adapter, or browser shared-ingestion runtime architecture.
