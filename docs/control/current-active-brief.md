@@ -62,7 +62,7 @@ Default do-not-read in light mode:
 ## 2. Current active line
 
 Primary active line:
-- `CAREER-MAP-SELECTED-ROLE-LENS-MANDATE`
+- `CAREER-MAP-BOUNDED-PROOF-LOOKUP-ACTION`
 
 Current mode:
 - `HOLD`
@@ -71,16 +71,16 @@ Current task type:
 - post-repair closure / next-product-priority selection
 
 Current active question:
-- Which user-facing Career Map capability should become the next admitted product task now that selected-role mandate orientation is complete?
+- Which user-facing Career Map capability should become the next admitted product task now that the bounded proof-lookup action is complete?
 
 Completed Career Map milestone:
-- `CAREER_MAP_SELECTED_ROLE_LENS_MANDATE_COMPLETE`
-- implementation commit: `50887e1370cd3024975f5b4e1a1a39de8f7ff6ba`
-- selecting any calibrated Role Lens now displays its canonical title and exact authored mandate before comparison output
-- all four calibrated roles were verified, and role switching updates the orientation without stale or duplicate content
-- no generated role content or day-to-day, certification, fit, readiness, suitability, or exhaustive-coverage claim was introduced
-- comparison behavior, requirement order, evidence disclosures, `Proof to build`, and `Start here` remain unchanged
-- all 26 Career Possibility tests, targeted ESLint, TypeScript, production build, and browser QA at 1440×900, 768×1024, and 390×844 passed
+- `CAREER_MAP_BOUNDED_PROOF_LOOKUP_ACTION_COMPLETE`
+- implementation commit: `cd550c4f555740be551f4e3ac3be633087c06dcf`
+- a standalone proof-building-action authority consumes only valid `nextProofToBuild` and admits only `find_existing_proof`; `no_action_available` remains the deterministic abstention result
+- fixed platform copy version `1.0.0` asks the user to look through past work and explicitly says Career Map does not know whether that experience exists
+- no strengthen/build/capture action, generated coaching, evidence-quality inference, or project, course, certification, networking, employer, or timeline advice was introduced
+- `nextProofToBuild`, `Start here`, `Proof to build`, comparison behavior, requirement order, and evidence disclosures remain unchanged
+- all 27 Career Possibility tests, targeted ESLint, TypeScript, production build, and browser QA at 1440×900, 768×1024, and 390×844 passed
 - shared ingestion and runtime failure handling remain complete and closed
 
 Secondary line status:
@@ -124,7 +124,7 @@ Tailored CV flow closure note (2026-05-15):
 ## 3. One main next action
 
 Main next action:
-- Hold the completed selected-role mandate orientation and select the next user-facing Career Map product priority before further implementation.
+- Hold the completed bounded proof-lookup action and select the next user-facing Career Map product priority before further implementation.
 
 Not the next action:
 - do not treat the closed `stale_review_status` evidence-field defect as active

@@ -69,13 +69,28 @@ Last updated: 2026-08-02
 - Job Copilot is live-JD first and company-specific. It owns requirement-weighted Match V2 analysis and job-specific gaps, positioning, and recommendations.
 - Match V2, live-JD parsing, and company-specific scoring must not move into Career Map.
 
-### Career Map current closure (`CAREER_MAP_SELECTED_ROLE_LENS_MANDATE_COMPLETE`)
+### Career Map current closure (`CAREER_MAP_BOUNDED_PROOF_LOOKUP_ACTION_COMPLETE`)
 
 Current active line and mode:
-- line: `CAREER-MAP-SELECTED-ROLE-LENS-MANDATE`
+- line: `CAREER-MAP-BOUNDED-PROOF-LOOKUP-ACTION`
 - mode: `HOLD`
 - task type: post-repair closure / next-product-priority selection
-- implementation commit: `50887e1370cd3024975f5b4e1a1a39de8f7ff6ba`
+- implementation commit: `cd550c4f555740be551f4e3ac3be633087c06dcf`
+
+Completed bounded proof-lookup action:
+- A standalone deterministic proof-building-action authority consumes only the existing selected comparison's `nextProofToBuild` projection.
+- `find_existing_proof` is the only admitted available category; `no_action_available` is the explicit abstention result and renders no user-facing shell.
+- Valid input preserves the originating capability ID, label, importance, exact expected evidence, fixed-copy source/version, and authority provenance.
+- Fixed platform copy version `1.0.0` says: `Look through your past work for an example that demonstrates this proof.`
+- The uncertainty boundary says: `Career Map does not know whether that experience exists.` No claim is made that experience exists or is absent.
+- No `strengthen_existing_proof`, `build_new_proof`, or `capture_future_proof` action, generated coaching, evidence-quality inference, or project, course, certification, networking, employer, or timeline advice was introduced.
+- `nextProofToBuild`, comparison classification, selected-role mandate, `Start here`, per-card `Proof to build`, requirement order, and evidence disclosures remain unchanged.
+- The focused proof-building-action test, all 27 Career Possibility tests, targeted ESLint, TypeScript, production build, and `git diff --check` passed.
+- Browser QA passed the full synthetic resume flow, all four calibrated role switches, and the no-eligible-action abstention state at 1440x900, 768x1024, and 390x844, with no stale/duplicate action, overflow, clipping, React/hydration/console warnings, or API, Supabase, authentication, telemetry, or persistence requests.
+- No CandidateBaseline, ingestion, identity, revision, adapter, runtime, persistence, server, generic-path, or Job Copilot architecture was reopened.
+
+Single next action:
+- Hold the completed bounded proof-lookup action and select the next user-facing Career Map product priority before further implementation.
 
 Completed selected-role mandate orientation:
 - Selecting a calibrated Role Lens displays one restrained orientation block before comparison output.
@@ -86,9 +101,6 @@ Completed selected-role mandate orientation:
 - The focused archetype test, all 26 Career Possibility tests, targeted ESLint, TypeScript, production build, and `git diff --check` passed.
 - Browser QA passed the full synthetic resume intake flow at 1440x900, 768x1024, and 390x844, with correct orientation for all four roles, no overflow or clipping, no React/hydration/console warnings, and no API, Supabase, authentication, telemetry, or persistence requests.
 - No role definition, profile projection, comparison contract, ingestion, identity, revision, adapter, runtime, persistence, server, generic-path, or Job Copilot architecture was reopened.
-
-Single next action:
-- Hold the completed selected-role mandate orientation and select the next user-facing Career Map product priority before further implementation.
 
 Completed calibrated Role Lens catalog gate:
 - The active Career Map route consumes `representativeGenericRoleProfiles` directly as its user-facing Role Lens catalog.
