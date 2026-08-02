@@ -69,28 +69,33 @@ Last updated: 2026-08-02
 - Job Copilot is live-JD first and company-specific. It owns requirement-weighted Match V2 analysis and job-specific gaps, positioning, and recommendations.
 - Match V2, live-JD parsing, and company-specific scoring must not move into Career Map.
 
-### Career Map current closure (`CAREER_MAP_BOUNDED_PROOF_LOOKUP_ACTION_COMPLETE`)
+### Career Map current closure (`CAREER_MAP_PROOF_LOOKUP_EVIDENCE_NAVIGATION_COMPLETE`)
 
 Current active line and mode:
-- line: `CAREER-MAP-BOUNDED-PROOF-LOOKUP-ACTION`
+- line: `CAREER-MAP-PROOF-LOOKUP-EVIDENCE-NAVIGATION`
 - mode: `HOLD`
 - task type: post-repair closure / next-product-priority selection
-- implementation commit: `cd550c4f555740be551f4e3ac3be633087c06dcf`
+- implementation commit: `19224a2abdc5421da015558a0adfcc78d57c47e5`
 
-Completed bounded proof-lookup action:
+Completed proof-lookup reviewed-evidence navigation:
 - A standalone deterministic proof-building-action authority consumes only the existing selected comparison's `nextProofToBuild` projection.
 - `find_existing_proof` is the only admitted available category; `no_action_available` is the explicit abstention result and renders no user-facing shell.
 - Valid input preserves the originating capability ID, label, importance, exact expected evidence, fixed-copy source/version, and authority provenance.
 - Fixed platform copy version `1.0.0` says: `Look through your past work for an example that demonstrates this proof.`
 - The uncertainty boundary says: `Career Map does not know whether that experience exists.` No claim is made that experience exists or is absent.
+- Available proof-lookup actions render exactly one neutral native anchor, `Review evidence already in your Career Map`, targeting the existing Personal Capability Explorer heading at `#personal-explorer-heading`; unavailable actions render no link.
+- The target ID is unique and its semantic heading uses `tabIndex={-1}` for native fragment focus placement without entering the positive tab order.
+- Browser QA confirmed Enter activation, viewport movement, focus placement, browser Back with selected-role preservation, evidence disclosure operation, role switching, and the no-action state.
+- No evidence relevance or matching claim, auto-selection, filtering, sorting, highlighting, or auto-expansion was introduced; navigation produces no API, persistence, storage, or telemetry behavior.
 - No `strengthen_existing_proof`, `build_new_proof`, or `capture_future_proof` action, generated coaching, evidence-quality inference, or project, course, certification, networking, employer, or timeline advice was introduced.
-- `nextProofToBuild`, comparison classification, selected-role mandate, `Start here`, per-card `Proof to build`, requirement order, and evidence disclosures remain unchanged.
+- Proof-building semantic authority, `nextProofToBuild`, comparison classification, selected-role mandate, `Start here`, per-card `Proof to build`, requirement order, and evidence disclosures remain unchanged.
 - The focused proof-building-action test, all 27 Career Possibility tests, targeted ESLint, TypeScript, production build, and `git diff --check` passed.
+- TypeScript and the production build ran sequentially to avoid the known `.next/types` race.
 - Browser QA passed the full synthetic resume flow, all four calibrated role switches, and the no-eligible-action abstention state at 1440x900, 768x1024, and 390x844, with no stale/duplicate action, overflow, clipping, React/hydration/console warnings, or API, Supabase, authentication, telemetry, or persistence requests.
 - No CandidateBaseline, ingestion, identity, revision, adapter, runtime, persistence, server, generic-path, or Job Copilot architecture was reopened.
 
 Single next action:
-- Hold the completed bounded proof-lookup action and select the next user-facing Career Map product priority before further implementation.
+- Hold the completed proof-lookup evidence navigation and select the next user-facing Career Map product priority before further implementation.
 
 Completed selected-role mandate orientation:
 - Selecting a calibrated Role Lens displays one restrained orientation block before comparison output.
@@ -210,7 +215,7 @@ Completed evidence-field transition repair:
 - The prior evidence-field review replay/status-validation defect is closed; this line has no remaining active defect.
 
 Single main next action:
-- Hold the completed prioritised next-proof guidance and select the next user-facing Career Map product priority before further implementation.
+- Hold the completed proof-lookup evidence navigation and select the next user-facing Career Map product priority before further implementation.
 
 Explicit non-reopen boundaries:
 - Do not reopen the source revision producer, source identity manifest, review decision identity contract, review revision producer, `SharedCareerIngestionBundle` contract, browser shared-ingestion adapter, or browser shared-ingestion runtime architecture.

@@ -62,7 +62,7 @@ Default do-not-read in light mode:
 ## 2. Current active line
 
 Primary active line:
-- `CAREER-MAP-BOUNDED-PROOF-LOOKUP-ACTION`
+- `CAREER-MAP-PROOF-LOOKUP-EVIDENCE-NAVIGATION`
 
 Current mode:
 - `HOLD`
@@ -71,16 +71,20 @@ Current task type:
 - post-repair closure / next-product-priority selection
 
 Current active question:
-- Which user-facing Career Map capability should become the next admitted product task now that the bounded proof-lookup action is complete?
+- Which user-facing Career Map capability should become the next admitted product task now that proof-lookup evidence navigation is complete?
 
 Completed Career Map milestone:
-- `CAREER_MAP_BOUNDED_PROOF_LOOKUP_ACTION_COMPLETE`
-- implementation commit: `cd550c4f555740be551f4e3ac3be633087c06dcf`
+- `CAREER_MAP_PROOF_LOOKUP_EVIDENCE_NAVIGATION_COMPLETE`
+- implementation commit: `19224a2abdc5421da015558a0adfcc78d57c47e5`
 - a standalone proof-building-action authority consumes only valid `nextProofToBuild` and admits only `find_existing_proof`; `no_action_available` remains the deterministic abstention result
 - fixed platform copy version `1.0.0` asks the user to look through past work and explicitly says Career Map does not know whether that experience exists
 - no strengthen/build/capture action, generated coaching, evidence-quality inference, or project, course, certification, networking, employer, or timeline advice was introduced
-- `nextProofToBuild`, `Start here`, `Proof to build`, comparison behavior, requirement order, and evidence disclosures remain unchanged
+- the available proof-lookup action includes exactly one neutral in-page link, `Review evidence already in your Career Map`, targeting `#personal-explorer-heading` in the existing Personal Capability Explorer
+- the unique semantic heading uses `tabIndex={-1}` without entering the positive tab order; native fragment navigation, Enter activation, focus placement, and browser Back behavior passed
+- unavailable actions render no link; no evidence relevance/matching claim, auto-selection, filtering, sorting, highlighting, or expansion was introduced
+- proof-building semantic authority, `nextProofToBuild`, `Start here`, `Proof to build`, comparison behavior, requirement order, role mandate, and evidence disclosures remain unchanged
 - all 27 Career Possibility tests, targeted ESLint, TypeScript, production build, and browser QA at 1440×900, 768×1024, and 390×844 passed
+- TypeScript and production build verification ran sequentially to avoid the known `.next/types` race
 - shared ingestion and runtime failure handling remain complete and closed
 
 Secondary line status:
@@ -124,7 +128,7 @@ Tailored CV flow closure note (2026-05-15):
 ## 3. One main next action
 
 Main next action:
-- Hold the completed bounded proof-lookup action and select the next user-facing Career Map product priority before further implementation.
+- Hold the completed proof-lookup evidence navigation and select the next user-facing Career Map product priority before further implementation.
 
 Not the next action:
 - do not treat the closed `stale_review_status` evidence-field defect as active
