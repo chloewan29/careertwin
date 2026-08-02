@@ -113,17 +113,20 @@ async function main() {
   };
   const editSession = session([editDecision]);
   const editedReview = replay(editSession);
-  const failed = await buildBrowserResumeSharedIngestionRuntime({ ...runtimeInput, reviewedEvidenceBundle: editedReview.reviewedBundle, reviewSession: editedReview.session });
-  assert.equal(failed.status, "failed");
-  if (failed.status !== "failed") throw new Error("Expected failed runtime state.");
-  assert.equal(failed.issues.some((issue) => issue.code === "missing_semantic_payload_revision"), true);
+  const editedReady = await buildBrowserResumeSharedIngestionRuntime({ ...runtimeInput, reviewedEvidenceBundle: editedReview.reviewedBundle, reviewSession: editedReview.session });
+  assert.equal(editedReady.status, "ready", editedReady.status === "failed" ? JSON.stringify(editedReady.issues) : undefined);
+  if (editedReady.status !== "ready") throw new Error("Expected edited review to reach ready runtime state.");
+  const semanticRevision = editedReady.bundle.reviewState.decisions.find((decision) => decision.action === "edit")?.semanticPayloadRevision;
+  assert.match(semanticRevision ?? "", /^career-review-semantic-payload:schema-1\.0\.0:sha256:[a-f0-9]{64}$/);
+  assert.deepEqual(await buildBrowserResumeSharedIngestionRuntime({ ...runtimeInput, reviewedEvidenceBundle: editedReview.reviewedBundle, reviewSession: editedReview.session }), editedReady);
 
   const readyJson = JSON.stringify(ready);
-  const failedJson = JSON.stringify(failed);
-  for (const privateValue of [resumeText, "Private edited value", "review:runtime:session", "intake:runtime"]) {
+  const editedReadyJson = JSON.stringify(editedReady);
+  for (const privateValue of [resumeText, "review:runtime:session", "intake:runtime"]) {
     assert.equal(readyJson.includes(privateValue), false);
-    assert.equal(failedJson.includes(privateValue), false);
+    assert.equal(editedReadyJson.includes(privateValue), false);
   }
+  assert.equal(editedReadyJson.includes("Private edited value"), true, "Reviewed edit content remains admitted evidence, not raw résumé storage.");
   assert.deepEqual(JSON.parse(readyJson), ready);
   assert.equal("localStorage" in ready, false);
   assert.equal("CandidateBaseline" in ready, false);

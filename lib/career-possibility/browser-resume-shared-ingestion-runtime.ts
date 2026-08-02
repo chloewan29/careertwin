@@ -14,6 +14,8 @@ import type { CareerSubjectBinding, SharedCareerIngestionBundle } from "./shared
 
 export const BROWSER_RESUME_EXTRACTION_REVISION_SCHEMA_VERSION = "1.0.0" as const;
 export const BROWSER_RESUME_EXTRACTION_STRUCTURE_VERSION = "1.0.0" as const;
+export const BROWSER_RESUME_SEMANTIC_PAYLOAD_REVISION_SCHEMA_VERSION = "1.0.0" as const;
+export const BROWSER_RESUME_SEMANTIC_PAYLOAD_REVISION_ALGORITHM_VERSION = "review-payload-sha256-1.0.0" as const;
 export const PRIMARY_RESUME_DOCUMENT_OCCURRENCE_ID = "primary-resume-paste" as const;
 
 export type BrowserResumeRuntimeIdentity = {
@@ -84,6 +86,23 @@ async function sha256(value: string): Promise<string> {
   return toHex(new Uint8Array(digest));
 }
 
+async function buildBrowserResumeSemanticPayloadRevisions(
+  reviewSession: ResumeEvidenceReviewSession,
+): Promise<Readonly<Record<string, string>>> {
+  const revisions = await Promise.all(reviewSession.decisions.filter((decision) => decision.action === "edit").map(async (decision) => {
+    const payload = decision.targetType === "interpretation"
+      ? { targetType: decision.targetType, targetId: decision.targetId, text: decision.text, sourceSpanIds: decision.sourceSpanIds }
+      : { targetType: decision.targetType, targetId: decision.targetId, field: decision.field, value: decision.value, sourceSpanIds: decision.sourceSpanIds };
+    const digest = await sha256(JSON.stringify({
+      schemaVersion: BROWSER_RESUME_SEMANTIC_PAYLOAD_REVISION_SCHEMA_VERSION,
+      algorithmVersion: BROWSER_RESUME_SEMANTIC_PAYLOAD_REVISION_ALGORITHM_VERSION,
+      payload,
+    }));
+    return [decision.id, `career-review-semantic-payload:schema-${BROWSER_RESUME_SEMANTIC_PAYLOAD_REVISION_SCHEMA_VERSION}:sha256:${digest}`] as const;
+  }));
+  return Object.freeze(Object.fromEntries(revisions));
+}
+
 export function createBrowserResumeRuntimeIdentity(
   randomUUID: () => string = () => globalThis.crypto.randomUUID(),
 ): BrowserResumeRuntimeIdentity {
@@ -143,6 +162,7 @@ export async function buildBrowserResumeSharedIngestionRuntime(
       bundle: input.extractedBundle,
       metadata: input.extractionMetadata,
     });
+    const generatedSemanticPayloadRevisions = await buildBrowserResumeSemanticPayloadRevisions(input.reviewSession);
     const result = await buildSharedCareerIngestionBundleFromResumeReview({
       canonicalResumeText: input.canonicalResumeText,
       resumeEvidenceBundle: input.extractedBundle,
@@ -153,7 +173,7 @@ export async function buildBrowserResumeSharedIngestionRuntime(
       documentOccurrenceId: input.identity.documentOccurrenceId,
       subjectBinding: input.identity.subjectBinding,
       capabilityRegistryVersion: input.capabilityRegistryVersion,
-      ...(input.semanticPayloadRevisions ? { semanticPayloadRevisions: input.semanticPayloadRevisions } : {}),
+      semanticPayloadRevisions: { ...generatedSemanticPayloadRevisions, ...input.semanticPayloadRevisions },
     });
     if (!result.ok) return Object.freeze({ status: "failed", issues: result.issues });
     return Object.freeze({
