@@ -74,10 +74,18 @@ Current active question:
 - Is there an explicitly admitted founder decision to reopen Career Map scope for V2 planning?
 
 Completed Career Map milestone:
+- `CAREERTWIN_LOCAL_CV_EXTRACTION_SLICE_1_COMPLETE`
 - `CAREER_MAP_V1_COMPLETE`
 - `CAREER_MAP_V1_LANDING_STATE_HANDOFF_REPAIRED`
 - `CAREERTWIN_V1_ROOT_INLINE_INTAKE_COMPLETE`
 - `CAREERTWIN_V1_ENTRY_RESULT_ROUTES_CORRECTED`
+- accepted architecture: Model A (`browser-local CV parse -> provisional map -> optional review later`); only local extraction Slice 1 is implemented, while provisional evidence, mapping, materialization, and direct-build UI remain unopened
+- browser-local PDF and DOCX extraction is admitted through `pdf-parse@2.4.5` and `mammoth@1.11.0`; PDF uses a same-origin bundled PDF.js worker, scanned/image-only PDFs are unsupported, and no OCR is introduced
+- raw binary and extracted full text remain page-memory only; the extractor performs no fetch, API, Supabase, persistence, telemetry, or logging
+- deterministic failures cover unsupported/mismatched types, empty/oversized files, protected or no-text PDFs, malformed documents, unavailable parsers, and bounded unexpected failures
+- persistent-Chrome real-browser validation passed valid PDF and DOCX extraction with localhost-only bundle/worker requests, no `/api/parse-resume` or Supabase traffic, unchanged localStorage, empty IndexedDB/Cache Storage, and no runtime errors
+- implementation commit: `ca573a2` (`feat(career): add browser-local CV text extraction`)
+- next action: Hold after Slice 1. Admit provisional evidence and mapping contracts separately before any direct-build UI work.
 - release-readiness decision: `V1_RELEASE_READY_WITH_KNOWN_LIMITATIONS`
 - final verified implementation baseline: `73a976bd67d1360814f893533e5f3812b84473c6`
 - founder correction to the prior route misunderstanding: `/` owns product proposition plus résumé entry, while `/career-map` owns only the resulting personal Career Map or a compact no-map state

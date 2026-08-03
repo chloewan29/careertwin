@@ -34,7 +34,7 @@ Use with:
 - `docs/control/policy-registry.md`
 - active line plan(s)
 
-Last updated: 2026-08-03
+Last updated: 2026-08-04
 
 ---
 
@@ -68,6 +68,19 @@ Last updated: 2026-08-03
 - Career Map is candidate-first and generic. It owns the role-independent candidate capability profile, stable generic role archetypes, and general career-path guidance.
 - Job Copilot is live-JD first and company-specific. It owns requirement-weighted Match V2 analysis and job-specific gaps, positioning, and recommendations.
 - Match V2, live-JD parsing, and company-specific scoring must not move into Career Map.
+
+### Browser-local CV extraction (`CAREERTWIN_LOCAL_CV_EXTRACTION_SLICE_1_COMPLETE`)
+
+- Model A is the accepted architecture: browser-local CV parsing may later feed a provisional map with optional review, but automatic output must never be represented as reviewed.
+- Slice 1 only is complete at `ca573a2` (`feat(career): add browser-local CV text extraction`). Slice 2 provisional evidence, provisional mappings, LocalCareerMapState v2, materialization, and direct-build UI remain unopened.
+- Supported local formats are PDF and DOCX with a 5 MB maximum, extension/MIME/signature validation, bounded parser errors, and deterministic minimal text normalization.
+- PDF uses `pdf-parse@2.4.5` with its browser export and a same-origin bundled PDF.js worker. DOCX uses the browser-compatible `mammoth@1.11.0` ArrayBuffer path. Scanned/image-only PDFs are unsupported; OCR is not admitted.
+- Raw file bytes exist only during browser extraction. Extracted full text is returned to the caller but is not persisted, logged, transmitted, summarized, or interpreted by this module.
+- The boundary has no API, Supabase, authentication, telemetry, localStorage, IndexedDB, Cache Storage, or external-network dependency.
+- Persistent-Chrome validation passed real bundled PDF and DOCX extraction. Observed requests were localhost-only static chunks and the same-origin PDF worker; `/api/parse-resume` and Supabase were not called, existing localStorage was unchanged, IndexedDB and Cache Storage were empty, and no runtime error occurred.
+- Failure taxonomy includes unsupported or mismatched type, empty file, oversized file, password-protected PDF, scanned/no-text PDF, malformed PDF/DOCX, empty extracted text, parser unavailable, and bounded unexpected failure.
+- Active mode returned to `HOLD`.
+- Single next action: Hold after Slice 1. Admit provisional evidence and mapping contracts separately before any direct-build UI work.
 
 ### Career Map V1 closure (`CAREER_MAP_V1_COMPLETE`, `CAREER_MAP_V1_LANDING_STATE_HANDOFF_REPAIRED`, `CAREERTWIN_V1_ROOT_INLINE_INTAKE_COMPLETE`, `CAREERTWIN_V1_ENTRY_RESULT_ROUTES_CORRECTED`)
 
