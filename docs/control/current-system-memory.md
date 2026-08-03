@@ -69,14 +69,23 @@ Last updated: 2026-08-03
 - Job Copilot is live-JD first and company-specific. It owns requirement-weighted Match V2 analysis and job-specific gaps, positioning, and recommendations.
 - Match V2, live-JD parsing, and company-specific scoring must not move into Career Map.
 
-### Career Map V1 closure (`CAREER_MAP_V1_COMPLETE`, `CAREER_MAP_V1_LANDING_STATE_HANDOFF_REPAIRED`, `CAREERTWIN_V1_ROOT_INLINE_INTAKE_COMPLETE`)
+### Career Map V1 closure (`CAREER_MAP_V1_COMPLETE`, `CAREER_MAP_V1_LANDING_STATE_HANDOFF_REPAIRED`, `CAREERTWIN_V1_ROOT_INLINE_INTAKE_COMPLETE`, `CAREERTWIN_V1_ENTRY_RESULT_ROUTES_CORRECTED`)
 
 Current active line and mode:
 - line: `CAREER-MAP-V1-RELEASE`
 - mode: `HOLD`
 - task type: V1 release closure / scope freeze
 - release-readiness decision: `V1_RELEASE_READY_WITH_KNOWN_LIMITATIONS`
-- final verified implementation baseline: `0b65bf6bee73acaefb39bdc4b7db15c37b4805af`
+- final verified implementation baseline: `73a976bd67d1360814f893533e5f3812b84473c6`
+- corrected two-page contract after the prior route misunderstanding: `/` is the formal proposition + supported résumé-entry route; `/career-map` is the personal result route and never a marketing/example landing
+- root fresh state displays `Your career, replicated.`, the real plain-text input, and `Build my Career Map`; extraction/review can continue in the workspace, but no Career Map result renders underneath the root form
+- fresh `/career-map` displays a compact `No personal Career Map has been created yet.` state with one direct action back to `/`
+- the active Career Map route no longer imports, supplies, or renders the example `CapabilityExplorer`, mock capability network, example signals, or mock-ranked Future Paths when personal state is absent
+- loaded `/career-map` remains personal-only and preserves reviewed capabilities/evidence, Role Lens, requirement comparison, Proof to build, Start here, Next action, navigation, reload, and replace/clear behavior
+- persistent-CDP acceptance captured and visually inspected three screenshots: root entry, empty Career Map, and applied personal Career Map; fresh Apply, edit/reject/restore, replacement cancel/confirm, responsive layouts, focus, console, and privacy checks passed
+- entry/result correction commit: `73a976bd67d1360814f893533e5f3812b84473c6` (`fix(career): separate product entry from career map result`)
+- verification: two focused tests, all 28 Career Possibility tests, exact-file ESLint, TypeScript, production build, `git diff --check`, and persistent-browser acceptance passed
+- V1 remains complete and returns to HOLD; no ingestion, review, storage, persistence, CandidateBaseline, Job Copilot, package, or V2 architecture was reopened
 - founder route-contract correction: CareerTwin V1 has a root inline-intake state and an applied personal Career Map state; it does not require a passive landing followed by a duplicate intake page
 - authoritative root flow: `/` value proposition + supported plain-text résumé intake -> deterministic extraction -> evidence inspection -> accepted review/edit/accept/reject and mapping workspace -> authoritative Apply -> direct `/career-map` personal state
 - the root entry reuses `ResumeTextIntakeWorkspace`, `ResumeEvidenceReviewWorkspace`, the accepted shared-ingestion runtime, replacement confirmation, and `careertwin.local-career-map.v1`; no duplicate extractor, review model, storage key, or Apply pipeline was added

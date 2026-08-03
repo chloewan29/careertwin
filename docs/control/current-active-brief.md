@@ -77,8 +77,18 @@ Completed Career Map milestone:
 - `CAREER_MAP_V1_COMPLETE`
 - `CAREER_MAP_V1_LANDING_STATE_HANDOFF_REPAIRED`
 - `CAREERTWIN_V1_ROOT_INLINE_INTAKE_COMPLETE`
+- `CAREERTWIN_V1_ENTRY_RESULT_ROUTES_CORRECTED`
 - release-readiness decision: `V1_RELEASE_READY_WITH_KNOWN_LIMITATIONS`
-- final verified implementation baseline: `0b65bf6bee73acaefb39bdc4b7db15c37b4805af`
+- final verified implementation baseline: `73a976bd67d1360814f893533e5f3812b84473c6`
+- founder correction to the prior route misunderstanding: `/` owns product proposition plus résumé entry, while `/career-map` owns only the resulting personal Career Map or a compact no-map state
+- root heading is `Your career, replicated.` beside the accepted plain-text intake; `Build my Career Map` submits into the existing extraction/review sequence without a navigation-only CTA
+- fresh `/career-map` contains only `No personal Career Map has been created yet.` and one direct `Start with your résumé` action to `/`; it contains no landing hero, example map, capability network, example signals, or mock-ranked Future Paths
+- active `/career-map` no longer imports or receives `CapabilityExplorer` or `mockCareerPossibility`; example fixtures remain available only outside the normal V1 journey
+- applied `/career-map` remains personal-only with reviewed capabilities/evidence, calibrated Role Lens, comparison, Proof to build, Start here, and Next action
+- persistent-CDP screenshots verified root entry, empty result, and applied personal result; the same persistent page passed edit/reject/restore, direct Apply, reload, replacement cancel/confirm, five viewport sizes, keyboard focus, zero overflow, zero console issues, and zero unexpected network requests
+- entry/result correction commit: `73a976bd67d1360814f893533e5f3812b84473c6` (`fix(career): separate product entry from career map result`)
+- focused route/state tests, all 28 Career Possibility tests, exact-file ESLint, TypeScript, production build, and `git diff --check` passed
+- V1 remains complete and mode returned to HOLD; no third landing/intake page or V2 work was introduced
 - founder correction: V1 has two product states, not a passive landing plus separate intake plus Career Map; `/` is the product entry and `/career-map` is the applied personal state
 - `/` preserves the side-by-side value proposition and directly embeds the accepted `ResumeTextIntakeWorkspace`; no navigation to another intake form is required before extraction
 - the root flow reuses deterministic extraction, evidence inspection, `ResumeEvidenceReviewWorkspace`, shared-ingestion runtime preparation, replacement confirmation, and the authoritative atomic browser-local Career Map write
