@@ -269,7 +269,7 @@ export function ResumeTextIntakeWorkspace({
             onClick={extractEvidence}
             className="mt-5 min-h-11 w-full rounded-xl bg-cyan-200 px-5 font-semibold text-slate-950 focus-visible:ring-2 focus-visible:ring-white sm:w-auto"
           >
-            Extract evidence
+            {entryMode === "root" ? "Build my Career Map" : "Extract evidence"}
           </button>
         </section>
       )}

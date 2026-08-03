@@ -26,15 +26,15 @@ export default function Home() {
 
         <section className="grid items-start gap-10 py-10 lg:grid-cols-[minmax(18rem,0.72fr)_minmax(0,1.28fr)] lg:gap-14 lg:py-16">
           <div className="max-w-2xl lg:sticky lg:top-28">
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-cyan-300">Your experience is bigger than your job title</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-cyan-300">CareerTwin</p>
             <h1 className="mt-5 text-4xl font-semibold leading-[1.08] tracking-[-0.035em] sm:text-5xl lg:text-6xl">
-              I know what I have done, but I don&apos;t know what else I can do.
+              Your career, replicated.
             </h1>
             <p className="mt-7 max-w-xl text-lg leading-8 text-slate-300">
               CareerTwin turns your experience into a map of transferable capabilities, the evidence behind them, and credible career directions.
             </p>
             <p className="mt-5 max-w-xl text-sm leading-6 text-slate-500">
-              You review every evidence item and capability mapping before anything is applied to your Career Map.
+              See beyond your job title while keeping every claim grounded in evidence you review.
             </p>
           </div>
 
