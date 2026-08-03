@@ -34,7 +34,7 @@ Use with:
 - `docs/control/policy-registry.md`
 - active line plan(s)
 
-Last updated: 2026-08-02
+Last updated: 2026-08-03
 
 ---
 
@@ -69,14 +69,25 @@ Last updated: 2026-08-02
 - Job Copilot is live-JD first and company-specific. It owns requirement-weighted Match V2 analysis and job-specific gaps, positioning, and recommendations.
 - Match V2, live-JD parsing, and company-specific scoring must not move into Career Map.
 
-### Career Map V1 closure (`CAREER_MAP_V1_COMPLETE`)
+### Career Map V1 closure (`CAREER_MAP_V1_COMPLETE`, `CAREER_MAP_V1_LANDING_STATE_HANDOFF_REPAIRED`)
 
 Current active line and mode:
 - line: `CAREER-MAP-V1-RELEASE`
 - mode: `HOLD`
 - task type: V1 release closure / scope freeze
 - release-readiness decision: `V1_RELEASE_READY_WITH_KNOWN_LIMITATIONS`
-- final verified implementation baseline: `6cee2f67a07cd1a852081b8391aadd39f8bc2faf`
+- final verified implementation baseline: `6d64c81c22788bcd7db480c6941ca56d4984fdc5`
+- founder self-validation defects: the Career Map no-state view lacked the intended product proposition, used `Import résumé evidence` as its primary CTA, and could retain stale example presentation after reviewed evidence was applied
+- landing/state repair root cause: the route's unconditional generic heading left the example panel as the effective landing, and `LocalCareerMapWorkspace` reconciled the authoritative browser-local state only on initial mount
+- first drift point: the successful browser-local state mutation was not reconciled into an already cached or reactivated Career Map presentation
+- first writable fault: the workspace's one-shot mount-only storage read
+- repaired landing: `Your career, replicated.` plus concise evidence-grounded explanation and `Uncover your career map`, linked to the existing résumé intake
+- explicit presentation states: no-state mode contains the secondary disclosed example; loaded mode renders reviewed personal capabilities and evidence with the calibrated Role Lens and contains no example title, no-evidence message, mock badge, example-signal label, or mock-ranked Future Paths
+- personal Future Paths remain unavailable from résumé evidence alone; no ranking or personal path inference was added
+- applied-state reconciliation now rereads the same authoritative state on mount, focus, pageshow, cross-document storage change, and visibility restoration; refresh, Back/Forward, clear-state restoration, malformed-state safety, and replace-only semantics passed
+- corrective implementation commit: `6d64c81c22788bcd7db480c6941ca56d4984fdc5` (`fix(career): restore landing and personal state handoff`)
+- verification: focused test, all 27 Career Possibility tests, exact-file ESLint, TypeScript, production build, `git diff --check`, full edited/rejected/replacement Apply flow, malformed recovery, and browser QA at 1440×900, 1280×800, 768×1024, 390×844, and 375×667 passed
+- V1 remains complete after this corrective repair; no ingestion, identity, revision, adapter, runtime, persistence, CandidateBaseline, Job Copilot, or V2 scope was reopened
 - release blocker count after repair and re-audit: `0`
 - repaired blocker: valid reviewed field edits now receive deterministic opaque semantic payload revisions from the browser runtime and reach Apply successfully
 - repair commit: `6cee2f67a07cd1a852081b8391aadd39f8bc2faf` (`fix(career): admit reviewed field edits at apply`)
@@ -124,7 +135,7 @@ V2 boundary retained:
 - this sequence is not part of V1 and must not start without explicit founder scope reopening
 
 Single next action:
-- Hold Career Map V1 as complete. Begin a separately admitted V2 planning cycle only when the founder explicitly chooses to reopen scope.
+- Hold Career Map V1 as complete and continue founder validation before opening any V2 scope.
 
 Completed selected-role mandate orientation:
 - Selecting a calibrated Role Lens displays one restrained orientation block before comparison output.

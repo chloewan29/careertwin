@@ -75,8 +75,17 @@ Current active question:
 
 Completed Career Map milestone:
 - `CAREER_MAP_V1_COMPLETE`
+- `CAREER_MAP_V1_LANDING_STATE_HANDOFF_REPAIRED`
 - release-readiness decision: `V1_RELEASE_READY_WITH_KNOWN_LIMITATIONS`
-- final verified implementation baseline: `6cee2f67a07cd1a852081b8391aadd39f8bc2faf`
+- final verified implementation baseline: `6d64c81c22788bcd7db480c6941ca56d4984fdc5`
+- founder self-validation identified a missing landing proposition, an implementation-language primary CTA, and stale example presentation after Apply
+- root cause: the no-state presentation led with its example panel, while the client workspace reconciled browser-local Career Map state only on initial mount and could retain an absent result when a cached page was reactivated
+- the no-state view now leads with `Your career, replicated.`, concise evidence-grounded supporting copy, and `Uncover your career map` linking to the existing résumé intake
+- example content remains explicitly disclosed and secondary; the applied personal view excludes the example title, no-evidence message, mock badge, example-signal labels, and mock-ranked Future Paths
+- the applied view renders reviewed personal capabilities and evidence plus the calibrated Role Lens, uses explicit replace-only re-import copy, and reconciles state on mount, focus, pageshow, cross-document storage change, and visibility restoration
+- corrective implementation commit: `6d64c81c22788bcd7db480c6941ca56d4984fdc5` (`fix(career): restore landing and personal state handoff`)
+- focused coverage, all 27 Career Possibility tests, exact-file ESLint, TypeScript, production build, `git diff --check`, full Apply/replacement/recovery QA, and five-viewport browser QA passed
+- V1 remains complete; incremental supplementation and all V2 scope remain unopened
 - release blocker count after repair and re-audit: `0`
 - V1 is frozen as a browser-local, single-source reviewed import with explicit replace-only re-import
 - the full intake, extraction, review/edit/reject, mapping, Apply, Career Map, four-role Role Lens, proof guidance, evidence navigation, and return-path journey passed
@@ -143,7 +152,7 @@ Tailored CV flow closure note (2026-05-15):
 ## 3. One main next action
 
 Main next action:
-- Hold Career Map V1 as complete. Begin a separately admitted V2 planning cycle only when the founder explicitly chooses to reopen scope.
+- Hold Career Map V1 as complete and continue founder validation before opening any V2 scope.
 
 Not the next action:
 - do not treat the closed `stale_review_status` evidence-field defect as active
