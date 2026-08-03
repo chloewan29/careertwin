@@ -1,0 +1,14 @@
+import type { EvidenceReviewStatus, ResumeEvidenceRecord, ResumeSourceSpan } from "./resume-evidence-contract";
+import type { ProvisionalEvidenceSignal, ProvisionalMappingEvidence, ProvisionalMappingSignalField } from "./provisional-resume-mapping-contract";
+
+export const PROVISIONAL_EVIDENCE_SIGNAL_CONTRACT_VERSION = "1.0.0" as const;
+export type ProvisionalEvidenceSignalToken = "designed_research" | "supported_research_delivery" | "synthesised_findings" | "informed_decision" | "coordinated_cross_functional_delivery" | "owned_delivery" | "redesigned_process" | "cross_functional" | "hypothetical";
+export type ProvisionalEvidenceSignalUnresolvedReason = "multiple_action_signals" | "ownership_conflict" | "scope_conflict" | "outcome_conflict" | "insufficient_source_context" | "invalid_evidence" | "invalid_signal_policy" | "unexpected_signal_failure";
+export type ProvisionalEvidenceSignalRule = Readonly<{ ruleId: string; ruleVersion: string; field: ProvisionalMappingSignalField | "participation"; token?: ProvisionalEvidenceSignalToken; sourcePattern: string; exclusionPatterns: readonly string[]; explanation: string }>;
+export type ProvisionalEvidenceSignalPolicy = Readonly<{ policyVersion: string; coverage: "bounded_non_exhaustive"; vocabulary: readonly ProvisionalEvidenceSignalToken[]; rules: readonly ProvisionalEvidenceSignalRule[] }>;
+export type ProvisionalEvidenceSignalInput = Readonly<{ evidence: ResumeEvidenceRecord; sourceSpans: readonly ResumeSourceSpan[] }>;
+export type ProvisionalStructuredEvidence = ProvisionalMappingEvidence & Readonly<{ signalContractVersion: typeof PROVISIONAL_EVIDENCE_SIGNAL_CONTRACT_VERSION; signalIdentity: string; reviewStatus: Extract<EvidenceReviewStatus, "unreviewed">; signalPolicyVersion: string; matchedSignalRuleIds: readonly string[]; explanations: readonly string[] }>;
+export type ProvisionalEvidenceSignalUnresolved = Readonly<{ signalContractVersion: typeof PROVISIONAL_EVIDENCE_SIGNAL_CONTRACT_VERSION; evidenceId: string; sourceExcerpt: string; sourceLocator: ProvisionalMappingEvidence["sourceLocator"]; reviewStatus: Extract<EvidenceReviewStatus, "unreviewed">; reason: ProvisionalEvidenceSignalUnresolvedReason | "no_authored_signal_rule"; signalPolicyVersion: string; matchedSignalRuleIds: readonly string[]; explanation: string }>;
+export type ProvisionalEvidenceSignalResult = Readonly<{ status: "structured"; evidence: ProvisionalStructuredEvidence }> | Readonly<{ status: "unresolved"; unresolved: ProvisionalEvidenceSignalUnresolved }> | Readonly<{ status: "unsupported"; unresolved: ProvisionalEvidenceSignalUnresolved }>;
+export type ProvisionalEvidenceSignalValidationIssue = Readonly<{ code: string; path: string; message: string }>;
+export type ProvisionalEvidenceSignalMatch = Readonly<{ rule: ProvisionalEvidenceSignalRule; signal?: ProvisionalEvidenceSignal }>;
