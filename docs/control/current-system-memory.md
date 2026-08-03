@@ -103,7 +103,19 @@ Last updated: 2026-08-04
 - Pure presentation and Role Lens contracts normalize both schemas, expose provisional trust and unresolved counts, and define missing as `Not evidenced in your current CV-derived map.` The only proof action remains `find_existing_proof` with explicit uncertainty.
 - Focused Slice 2B tests, all 31 Career Possibility tests, exact-file ESLint, TypeScript, production build, and diff checks passed. No UI, route, package, network, Supabase, extraction, mapping-policy, supplementation, or Job Copilot change was introduced.
 - Slice 3 remains unopened and mode is `HOLD`.
-- Single next action: Hold after Slice 2B. Admit the root Upload CV direct-build UI as Slice 3 only after the provisional state path is fully verified.
+
+### Deterministic evidence-signal bridge (`CAREERTWIN_EVIDENCE_SIGNAL_BRIDGE_COMPLETE`)
+
+- The initial Slice 3 admission correctly stopped at `BOUNDARY_FAILURE`: the source-preserving text extractor emitted no Slice 2A semantic tokens, and adding interpretation inside root orchestration would have violated ownership boundaries.
+- The bridge is complete at `ec94772` (`feat(career): add deterministic evidence signal bridge`). It owns only `source-preserving evidence -> deterministic semantic signals` and directly produces the existing Slice 2A input shape.
+- Contract/policy version `1.0.0` contains nine bounded tokens and ten authored lexical rules. Coverage is explicitly non-exhaustive; it is not a general NLP, fuzzy, embedding, or capability-classification system.
+- Evidence identity, structural locator, minimal excerpt, and `unreviewed` status are preserved. Deterministic signal identity uses evidence ID, locator, policy version, matched rule IDs, and emitted field/token pairs without timestamps.
+- Explicit research design and research support remain distinct; insight synthesis requires explicit decision language for its outcome; cross-functional coordination preserves explicit ownership and scope; process redesign excludes hypothetical language.
+- Competing per-field signals and ownership/participation conflicts return unresolved. No authored rule returns unsupported. Neither outcome creates capability or mapping truth.
+- Focused integration proves direct Slice 2A admission for the five covered paths and downstream exclusion for ambiguous/unsupported fixtures. All 32 Career Possibility tests, exact-file ESLint, TypeScript, production build, and diff checks passed.
+- No existing extractor, Slice 2A, Slice 2B, UI, route, state, storage, package, API, Supabase, Job Copilot, or supplementation file changed.
+- Slice 3 remains unopened and mode is `HOLD`.
+- Single next action: Hold after the evidence-signal bridge. Reopen Slice 3 only after the end-to-end text-to-provisional-state chain passes a bounded orchestration audit.
 
 ### Career Map V1 closure (`CAREER_MAP_V1_COMPLETE`, `CAREER_MAP_V1_LANDING_STATE_HANDOFF_REPAIRED`, `CAREERTWIN_V1_ROOT_INLINE_INTAKE_COMPLETE`, `CAREERTWIN_V1_ENTRY_RESULT_ROUTES_CORRECTED`)
 
@@ -310,7 +322,7 @@ Completed evidence-field transition repair:
 - The prior evidence-field review replay/status-validation defect is closed; this line has no remaining active defect.
 
 Single main next action:
-- Hold after Slice 2B. Admit the root Upload CV direct-build UI as Slice 3 only after the provisional state path is fully verified.
+- Hold after the evidence-signal bridge. Reopen Slice 3 only after the end-to-end text-to-provisional-state chain passes a bounded orchestration audit.
 
 Explicit non-reopen boundaries:
 - Do not reopen the source revision producer, source identity manifest, review decision identity contract, review revision producer, `SharedCareerIngestionBundle` contract, browser shared-ingestion adapter, or browser shared-ingestion runtime architecture.

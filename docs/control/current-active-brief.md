@@ -74,6 +74,7 @@ Current active question:
 - Is there an explicitly admitted founder decision to reopen Career Map scope for V2 planning?
 
 Completed Career Map milestone:
+- `CAREERTWIN_EVIDENCE_SIGNAL_BRIDGE_COMPLETE`
 - `CAREERTWIN_PROVISIONAL_STATE_SLICE_2B_COMPLETE`
 - `CAREERTWIN_PROVISIONAL_MAPPING_SLICE_2A_COMPLETE`
 - `CAREERTWIN_LOCAL_CV_EXTRACTION_SLICE_1_COMPLETE`
@@ -90,12 +91,17 @@ Completed Career Map milestone:
 - the versioned provisional materializer admits only Slice 2A `auto_admitted` mappings, groups direct and transferable references separately, retains unresolved/unsupported evidence inactive, derives deterministic lineage identity, and fails closed with zero capabilities
 - pure presentation and Role Lens contracts expose provisional trust, accurate reviewed/provisional/unresolved counts, and `Not evidenced in your current CV-derived map.` semantics; existing `find_existing_proof` uncertainty remains authoritative
 - Slice 3 remains unopened: no root upload, loading state, route/UI presentation, review control, or supplementation work was introduced
+- the first Slice 3 admission stopped correctly at `BOUNDARY_FAILURE`: source-preserving résumé evidence did not yet contain the authored structured tokens required by Slice 2A, and root orchestration was not allowed to hide semantic interpretation
+- the deterministic evidence-signal bridge is implemented at `ec94772` (`feat(career): add deterministic evidence signal bridge`) with contract/policy `1.0.0`, nine bounded tokens, and ten authored lexical rules including a non-emitting participation guard
+- the bridge preserves evidence identity, source locator, excerpt, and `unreviewed` status; it creates no capability or mapping IDs and performs no UI, state, storage, network, LLM, embedding, or fuzzy work
+- direct, transferable, insight-synthesis, cross-functional-delivery, and process-improvement fixtures flow directly into Slice 2A; competing action/ownership signals remain unresolved and uncovered evidence remains unsupported
+- Slice 3 remains unopened pending a bounded full-chain orchestration audit
 - browser-local PDF and DOCX extraction is admitted through `pdf-parse@2.4.5` and `mammoth@1.11.0`; PDF uses a same-origin bundled PDF.js worker, scanned/image-only PDFs are unsupported, and no OCR is introduced
 - raw binary and extracted full text remain page-memory only; the extractor performs no fetch, API, Supabase, persistence, telemetry, or logging
 - deterministic failures cover unsupported/mismatched types, empty/oversized files, protected or no-text PDFs, malformed documents, unavailable parsers, and bounded unexpected failures
 - persistent-Chrome real-browser validation passed valid PDF and DOCX extraction with localhost-only bundle/worker requests, no `/api/parse-resume` or Supabase traffic, unchanged localStorage, empty IndexedDB/Cache Storage, and no runtime errors
 - implementation commit: `ca573a2` (`feat(career): add browser-local CV text extraction`)
-- next action: Hold after Slice 2B. Admit the root Upload CV direct-build UI as Slice 3 only after the provisional state path is fully verified.
+- next action: Hold after the evidence-signal bridge. Reopen Slice 3 only after the end-to-end text-to-provisional-state chain passes a bounded orchestration audit.
 - release-readiness decision: `V1_RELEASE_READY_WITH_KNOWN_LIMITATIONS`
 - final verified implementation baseline: `73a976bd67d1360814f893533e5f3812b84473c6`
 - founder correction to the prior route misunderstanding: `/` owns product proposition plus résumé entry, while `/career-map` owns only the resulting personal Career Map or a compact no-map state
@@ -191,7 +197,7 @@ Tailored CV flow closure note (2026-05-15):
 ## 3. One main next action
 
 Main next action:
-- Hold after Slice 2B. Admit the root Upload CV direct-build UI as Slice 3 only after the provisional state path is fully verified.
+- Hold after the evidence-signal bridge. Reopen Slice 3 only after the end-to-end text-to-provisional-state chain passes a bounded orchestration audit.
 
 Not the next action:
 - do not treat the closed `stale_review_status` evidence-field defect as active
