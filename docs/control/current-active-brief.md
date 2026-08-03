@@ -76,8 +76,19 @@ Current active question:
 Completed Career Map milestone:
 - `CAREER_MAP_V1_COMPLETE`
 - `CAREER_MAP_V1_LANDING_STATE_HANDOFF_REPAIRED`
+- `CAREERTWIN_V1_ROOT_INLINE_INTAKE_COMPLETE`
 - release-readiness decision: `V1_RELEASE_READY_WITH_KNOWN_LIMITATIONS`
-- final verified implementation baseline: `6d64c81c22788bcd7db480c6941ca56d4984fdc5`
+- final verified implementation baseline: `0b65bf6bee73acaefb39bdc4b7db15c37b4805af`
+- founder correction: V1 has two product states, not a passive landing plus separate intake plus Career Map; `/` is the product entry and `/career-map` is the applied personal state
+- `/` preserves the side-by-side value proposition and directly embeds the accepted `ResumeTextIntakeWorkspace`; no navigation to another intake form is required before extraction
+- the root flow reuses deterministic extraction, evidence inspection, `ResumeEvidenceReviewWorkspace`, shared-ingestion runtime preparation, replacement confirmation, and the authoritative atomic browser-local Career Map write
+- successful root Apply now navigates directly to `/career-map`; failed extraction and cancelled replacement preserve the existing personal map
+- the fake PDF/DOCX picker and `Frontend prototype`, `No backend connection yet`, and `mock only` copy were removed; V1 exposes only the genuinely supported plain-text path
+- an existing personal map produces a direct return link and explicit replace-only disclosure on `/`; no append or supplementation behavior was introduced
+- persistent-CDP Chrome validation passed fresh Apply, replacement cancel/confirm, extraction-failure preservation, final personal rendering, keyboard focus, and 1440×900, 1280×800, 768×1024, 390×844, and 375×667 layouts with no overflow, console issue, or unexpected network request
+- root inline-intake implementation commit: `0b65bf6bee73acaefb39bdc4b7db15c37b4805af` (`fix(career): unify root intake with career map`)
+- all 28 Career Possibility tests, exact-file ESLint, TypeScript, production build, and `git diff --check` passed
+- V1 remains complete; the legacy intake route remains compatible but is not part of the authoritative root journey
 - founder self-validation identified a missing landing proposition, an implementation-language primary CTA, and stale example presentation after Apply
 - root cause: the no-state presentation led with its example panel, while the client workspace reconciled browser-local Career Map state only on initial mount and could retain an absent result when a cached page was reactivated
 - the no-state view now leads with `Your career, replicated.`, concise evidence-grounded supporting copy, and `Uncover your career map` linking to the existing résumé intake
@@ -152,7 +163,7 @@ Tailored CV flow closure note (2026-05-15):
 ## 3. One main next action
 
 Main next action:
-- Hold Career Map V1 as complete and continue founder validation before opening any V2 scope.
+- Hold CareerTwin V1 as complete and continue founder validation through the root inline-intake journey.
 
 Not the next action:
 - do not treat the closed `stale_review_status` evidence-field defect as active

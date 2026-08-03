@@ -69,14 +69,24 @@ Last updated: 2026-08-03
 - Job Copilot is live-JD first and company-specific. It owns requirement-weighted Match V2 analysis and job-specific gaps, positioning, and recommendations.
 - Match V2, live-JD parsing, and company-specific scoring must not move into Career Map.
 
-### Career Map V1 closure (`CAREER_MAP_V1_COMPLETE`, `CAREER_MAP_V1_LANDING_STATE_HANDOFF_REPAIRED`)
+### Career Map V1 closure (`CAREER_MAP_V1_COMPLETE`, `CAREER_MAP_V1_LANDING_STATE_HANDOFF_REPAIRED`, `CAREERTWIN_V1_ROOT_INLINE_INTAKE_COMPLETE`)
 
 Current active line and mode:
 - line: `CAREER-MAP-V1-RELEASE`
 - mode: `HOLD`
 - task type: V1 release closure / scope freeze
 - release-readiness decision: `V1_RELEASE_READY_WITH_KNOWN_LIMITATIONS`
-- final verified implementation baseline: `6d64c81c22788bcd7db480c6941ca56d4984fdc5`
+- final verified implementation baseline: `0b65bf6bee73acaefb39bdc4b7db15c37b4805af`
+- founder route-contract correction: CareerTwin V1 has a root inline-intake state and an applied personal Career Map state; it does not require a passive landing followed by a duplicate intake page
+- authoritative root flow: `/` value proposition + supported plain-text résumé intake -> deterministic extraction -> evidence inspection -> accepted review/edit/accept/reject and mapping workspace -> authoritative Apply -> direct `/career-map` personal state
+- the root entry reuses `ResumeTextIntakeWorkspace`, `ResumeEvidenceReviewWorkspace`, the accepted shared-ingestion runtime, replacement confirmation, and `careertwin.local-career-map.v1`; no duplicate extractor, review model, storage key, or Apply pipeline was added
+- the obsolete root prototype link and fake PDF/DOCX picker were removed together with `Frontend prototype`, `No backend connection yet`, and `mock only`; V1 does not claim unsupported file upload
+- when a personal Career Map exists, `/` retains the intake surface, exposes `View current Career Map`, and states that applying another reviewed résumé replaces current evidence
+- direct navigation occurs only after the existing validated atomic storage write succeeds; cancellation, failed extraction, and failed review/Apply paths retain the prior map
+- persistent-CDP founder-profile validation passed the fresh root journey, direct Apply handoff, replacement dismiss/confirm, failure preservation, keyboard focus, personal Career Map rendering, and five required viewport sizes with no overflow, console warnings/errors, API calls, Supabase, or authentication traffic
+- implementation commit: `0b65bf6bee73acaefb39bdc4b7db15c37b4805af` (`fix(career): unify root intake with career map`)
+- verification: focused root integration test, all 28 Career Possibility tests, exact-file ESLint, TypeScript, production build, `git diff --check`, and persistent-browser QA passed
+- V1 remains complete; the existing `/career-map/resume-intake` compatibility route remains unchanged but is not an extra step in the authoritative product journey
 - founder self-validation defects: the Career Map no-state view lacked the intended product proposition, used `Import résumé evidence` as its primary CTA, and could retain stale example presentation after reviewed evidence was applied
 - landing/state repair root cause: the route's unconditional generic heading left the example panel as the effective landing, and `LocalCareerMapWorkspace` reconciled the authoritative browser-local state only on initial mount
 - first drift point: the successful browser-local state mutation was not reconciled into an already cached or reactivated Career Map presentation
@@ -135,7 +145,7 @@ V2 boundary retained:
 - this sequence is not part of V1 and must not start without explicit founder scope reopening
 
 Single next action:
-- Hold Career Map V1 as complete and continue founder validation before opening any V2 scope.
+- Hold CareerTwin V1 as complete and continue founder validation through the root inline-intake journey.
 
 Completed selected-role mandate orientation:
 - Selecting a calibrated Role Lens displays one restrained orientation block before comparison output.
@@ -255,7 +265,7 @@ Completed evidence-field transition repair:
 - The prior evidence-field review replay/status-validation defect is closed; this line has no remaining active defect.
 
 Single main next action:
-- Hold Career Map V1 as complete. Begin a separately admitted V2 planning cycle only when the founder explicitly chooses to reopen scope.
+- Hold CareerTwin V1 as complete and continue founder validation through the root inline-intake journey.
 
 Explicit non-reopen boundaries:
 - Do not reopen the source revision producer, source identity manifest, review decision identity contract, review revision producer, `SharedCareerIngestionBundle` contract, browser shared-ingestion adapter, or browser shared-ingestion runtime architecture.
