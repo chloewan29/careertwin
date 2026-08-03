@@ -72,7 +72,7 @@ Last updated: 2026-08-04
 ### Browser-local CV extraction (`CAREERTWIN_LOCAL_CV_EXTRACTION_SLICE_1_COMPLETE`)
 
 - Model A is the accepted architecture: browser-local CV parsing may later feed a provisional map with optional review, but automatic output must never be represented as reviewed.
-- Slice 1 only is complete at `ca573a2` (`feat(career): add browser-local CV text extraction`). Slice 2 provisional evidence, provisional mappings, LocalCareerMapState v2, materialization, and direct-build UI remain unopened.
+- Slice 1 is complete at `ca573a2` (`feat(career): add browser-local CV text extraction`). Slice 2 is admitted as two bounded stages: 2A provisional mapping authority, then 2B LocalCareerMapState v2 plus provisional materialization.
 - Supported local formats are PDF and DOCX with a 5 MB maximum, extension/MIME/signature validation, bounded parser errors, and deterministic minimal text normalization.
 - PDF uses `pdf-parse@2.4.5` with its browser export and a same-origin bundled PDF.js worker. DOCX uses the browser-compatible `mammoth@1.11.0` ArrayBuffer path. Scanned/image-only PDFs are unsupported; OCR is not admitted.
 - Raw file bytes exist only during browser extraction. Extracted full text is returned to the caller but is not persisted, logged, transmitted, summarized, or interpreted by this module.
@@ -80,7 +80,18 @@ Last updated: 2026-08-04
 - Persistent-Chrome validation passed real bundled PDF and DOCX extraction. Observed requests were localhost-only static chunks and the same-origin PDF worker; `/api/parse-resume` and Supabase were not called, existing localStorage was unchanged, IndexedDB and Cache Storage were empty, and no runtime error occurred.
 - Failure taxonomy includes unsupported or mismatched type, empty file, oversized file, password-protected PDF, scanned/no-text PDF, malformed PDF/DOCX, empty extracted text, parser unavailable, and bounded unexpected failure.
 - Active mode returned to `HOLD`.
-- Single next action: Hold after Slice 1. Admit provisional evidence and mapping contracts separately before any direct-build UI work.
+- Single next action: Hold after Slice 2A. Admit LocalCareerMapState v2 and provisional materialization as Slice 2B before any direct-build UI work.
+
+### Provisional capability mapping (`CAREERTWIN_PROVISIONAL_MAPPING_SLICE_2A_COMPLETE`)
+
+- Slice 2A is complete at `6066027` (`feat(career): add provisional capability mapping contract`). It adds a standalone versioned contract, authored deterministic policy, mapper, validators, and focused audit coverage.
+- Policy/contract version `1.0.0` contains five bounded, non-exhaustive rules spanning four existing canonical capabilities. No capability definition, ontology, schema, UI, state, storage, package, ingestion, identity, revision, adapter, runtime, persistence, or Job Copilot architecture changed.
+- Auto-admission requires exactly one exact authored match from structured action/context/outcome/ownership/scope signals. Titles and tool names are non-authoritative and do not affect mapping.
+- `direct_evidence` and `transferable_signal` remain explicit distinct relationships. Multiple capability candidates or relationship conflicts abstain as `unresolved`; no authored match returns `unsupported`; invalid policy/evidence and unexpected failures remain bounded.
+- Stable mapping IDs derive deterministically from evidence ID, capability ID, relationship, policy version, and capability-definition version. The boundary uses no timestamps, randomness, confidence score, LLM, embedding, network, persistence, or storage.
+- The audit passed direct, transferable, ambiguous, unsupported, deterministic-repeat, title/tool-independence, invalid-input, invalid-policy, and forbidden-dependency cases. Slice 2B remains unopened.
+- Active mode is `HOLD`.
+- Single next action: Hold after Slice 2A. Admit LocalCareerMapState v2 and provisional materialization as Slice 2B before any direct-build UI work.
 
 ### Career Map V1 closure (`CAREER_MAP_V1_COMPLETE`, `CAREER_MAP_V1_LANDING_STATE_HANDOFF_REPAIRED`, `CAREERTWIN_V1_ROOT_INLINE_INTAKE_COMPLETE`, `CAREERTWIN_V1_ENTRY_RESULT_ROUTES_CORRECTED`)
 
@@ -287,7 +298,7 @@ Completed evidence-field transition repair:
 - The prior evidence-field review replay/status-validation defect is closed; this line has no remaining active defect.
 
 Single main next action:
-- Hold CareerTwin V1 as complete and continue founder validation through the root inline-intake journey.
+- Hold after Slice 2A. Admit LocalCareerMapState v2 and provisional materialization as Slice 2B before any direct-build UI work.
 
 Explicit non-reopen boundaries:
 - Do not reopen the source revision producer, source identity manifest, review decision identity contract, review revision producer, `SharedCareerIngestionBundle` contract, browser shared-ingestion adapter, or browser shared-ingestion runtime architecture.
