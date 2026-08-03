@@ -1,6 +1,8 @@
 "use client";
 
-import { useRef, useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 import { ResumeEvidenceReviewWorkspace } from "./ResumeEvidenceReviewWorkspace";
 import {
   DEFAULT_TEXT_RESUME_MAX_CHARACTERS,
@@ -19,12 +21,15 @@ import {
   type BrowserResumeRuntimeIdentity,
   type SharedBundleRuntimeState,
 } from "@/lib/career-possibility/browser-resume-shared-ingestion-runtime";
+import { readLocalCareerMapState } from "@/lib/career-possibility/local-career-map-storage";
 
 type Props = {
   parserVersion: string;
   normalisationVersion: string;
   capabilityDefinitions: readonly CareerMapCapabilityDefinition[];
   capabilityDefinitionVersion: string;
+  entryMode?: "standalone" | "root";
+  navigateToCareerMapOnApply?: boolean;
 };
 type Stage = "paste" | "inspect" | "review";
 
@@ -41,7 +46,10 @@ export function ResumeTextIntakeWorkspace({
   normalisationVersion,
   capabilityDefinitions,
   capabilityDefinitionVersion,
+  entryMode = "standalone",
+  navigateToCareerMapOnApply = false,
 }: Props) {
+  const router = useRouter();
   const [intakeSessionId, setIntakeSessionId] = useState(newSessionId);
   const [runSequence, setRunSequence] = useState(0);
   const [stage, setStage] = useState<Stage>("paste");
@@ -59,6 +67,12 @@ export function ResumeTextIntakeWorkspace({
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const summaryRef = useRef<HTMLDivElement>(null);
   const errorRef = useRef<HTMLDivElement>(null);
+  const [hasExistingCareerMap, setHasExistingCareerMap] = useState(false);
+
+  useEffect(() => {
+    const existing = readLocalCareerMapState(capabilityDefinitions, capabilityDefinitionVersion);
+    setHasExistingCareerMap(existing.status === "loaded" || existing.status === "incompatible_version");
+  }, [capabilityDefinitions, capabilityDefinitionVersion]);
 
   function extractEvidence() {
     runtimeIdentityRef.current ??= createBrowserResumeRuntimeIdentity();
@@ -139,13 +153,24 @@ export function ResumeTextIntakeWorkspace({
   }
 
   return (
-    <section className="mt-8" aria-labelledby="intake-workspace-heading">
+    <section className={entryMode === "root" ? "mt-6" : "mt-8"} aria-labelledby="intake-workspace-heading">
       <h2 id="intake-workspace-heading" className="sr-only">
         Text résumé intake workspace
       </h2>
       <p className="sr-only" aria-live="polite">
         {announcement}
       </p>
+      {entryMode === "root" && hasExistingCareerMap && (
+        <div className="mb-5 rounded-xl border border-teal-300/20 bg-teal-300/[0.05] p-4 text-sm text-teal-50">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="font-semibold text-teal-100">You already have a Career Map</p>
+              <p className="mt-1 text-xs leading-5 text-teal-100/70">You can return to it now. Applying a different reviewed résumé below will replace its current evidence.</p>
+            </div>
+            <Link href="/career-map" className="min-h-11 shrink-0 rounded-lg border border-teal-300/25 px-4 py-3 text-center text-sm text-teal-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-200">View current Career Map</Link>
+          </div>
+        </div>
+      )}
       <ol
         aria-label="Intake stages"
         className="grid gap-2 text-sm sm:grid-cols-3"
@@ -273,6 +298,7 @@ export function ResumeTextIntakeWorkspace({
             capabilityDefinitions={capabilityDefinitions}
             capabilityDefinitionVersion={capabilityDefinitionVersion}
             onReviewComplete={completeReview}
+            onApplied={navigateToCareerMapOnApply ? () => router.push("/career-map") : undefined}
           />
           {sharedBundleState.status === "building" && (
             <p role="status" className="mt-4 text-sm text-cyan-200">

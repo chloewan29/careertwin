@@ -34,6 +34,7 @@ type Props = {
     reviewedEvidenceBundle: ResumeEvidenceBundle;
     reviewSession: ResumeEvidenceReviewSession;
   }) => Promise<boolean>;
+  onApplied?: () => void;
 };
 type Draft =
   | {
@@ -94,6 +95,7 @@ export function ResumeEvidenceReviewWorkspace({
   capabilityDefinitions,
   capabilityDefinitionVersion,
   onReviewComplete,
+  onApplied,
 }: Props) {
   const [session, setSession] = useState(() => structuredClone(initialSession));
   const [selectedEvidenceId, setSelectedEvidenceId] = useState(
@@ -405,7 +407,7 @@ export function ResumeEvidenceReviewWorkspace({
     if (!built.ok) { setBlockingIssues(built.issues.map((item) => ({ ...item, severity: "error" as const }))); setAnnouncement("Reviewed evidence could not be applied."); return; }
     const written = writeLocalCareerMapState(built.state, capabilityDefinitions);
     if (!written.ok) { setBlockingIssues([{ code: written.status, path: "localStorage", message: written.message, severity: "error" }]); return; }
-    setApplyStatus("saved"); setBlockingIssues([]); setAnnouncement("Reviewed evidence applied to Career Map in this browser.");
+    setApplyStatus("saved"); setBlockingIssues([]); setAnnouncement("Reviewed evidence applied to Career Map in this browser."); onApplied?.();
   }
   function selectEvidence(id: string) {
     if (draft) {
