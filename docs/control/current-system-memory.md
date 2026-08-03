@@ -89,9 +89,21 @@ Last updated: 2026-08-04
 - Auto-admission requires exactly one exact authored match from structured action/context/outcome/ownership/scope signals. Titles and tool names are non-authoritative and do not affect mapping.
 - `direct_evidence` and `transferable_signal` remain explicit distinct relationships. Multiple capability candidates or relationship conflicts abstain as `unresolved`; no authored match returns `unsupported`; invalid policy/evidence and unexpected failures remain bounded.
 - Stable mapping IDs derive deterministically from evidence ID, capability ID, relationship, policy version, and capability-definition version. The boundary uses no timestamps, randomness, confidence score, LLM, embedding, network, persistence, or storage.
-- The audit passed direct, transferable, ambiguous, unsupported, deterministic-repeat, title/tool-independence, invalid-input, invalid-policy, and forbidden-dependency cases. Slice 2B remains unopened.
+- The audit passed direct, transferable, ambiguous, unsupported, deterministic-repeat, title/tool-independence, invalid-input, invalid-policy, and forbidden-dependency cases; Slice 2B subsequently consumed these outputs without modifying the Slice 2A contract.
 - Active mode is `HOLD`.
-- Single next action: Hold after Slice 2A. Admit LocalCareerMapState v2 and provisional materialization as Slice 2B before any direct-build UI work.
+
+### Provisional local Career Map state (`CAREERTWIN_PROVISIONAL_STATE_SLICE_2B_COMPLETE`)
+
+- Slice 2B is complete at `94d8aa1` (`feat(career): add provisional career map state`). Schema `2.0.0` is a separate validated payload with `source=provisional_resume` and `mapTrustStatus=provisional`; source and trust are not conflated.
+- Schema `1.0.0` reviewed states remain strictly validated, readable, and unchanged on read. Unknown and malformed versions fail closed.
+- The authoritative key remains `careertwin.local-career-map.v1`. Writers validate and serialize fully in memory, then perform exactly one `setItem`; no clear or intermediate write occurs, so failures preserve the prior payload.
+- The versioned provisional materializer uses deterministic identity from source revision, extraction/policy/definition/materializer versions, and admitted mapping IDs. Initial builds are revision 1 lineage roots; replacement remains replace-only rather than supplementation.
+- Only `auto_admitted` mappings materialize capabilities. Direct and transferable evidence references remain separate; reviewed and provisional counts remain separate; unresolved and unsupported evidence remains addressable but inactive.
+- Minimal file metadata and structured bounded evidence are persisted. Raw file bytes, full résumé text, parser internals, scores, proficiency, fit, and reviewed lineage are not persisted or invented.
+- Pure presentation and Role Lens contracts normalize both schemas, expose provisional trust and unresolved counts, and define missing as `Not evidenced in your current CV-derived map.` The only proof action remains `find_existing_proof` with explicit uncertainty.
+- Focused Slice 2B tests, all 31 Career Possibility tests, exact-file ESLint, TypeScript, production build, and diff checks passed. No UI, route, package, network, Supabase, extraction, mapping-policy, supplementation, or Job Copilot change was introduced.
+- Slice 3 remains unopened and mode is `HOLD`.
+- Single next action: Hold after Slice 2B. Admit the root Upload CV direct-build UI as Slice 3 only after the provisional state path is fully verified.
 
 ### Career Map V1 closure (`CAREER_MAP_V1_COMPLETE`, `CAREER_MAP_V1_LANDING_STATE_HANDOFF_REPAIRED`, `CAREERTWIN_V1_ROOT_INLINE_INTAKE_COMPLETE`, `CAREERTWIN_V1_ENTRY_RESULT_ROUTES_CORRECTED`)
 
@@ -298,7 +310,7 @@ Completed evidence-field transition repair:
 - The prior evidence-field review replay/status-validation defect is closed; this line has no remaining active defect.
 
 Single main next action:
-- Hold after Slice 2A. Admit LocalCareerMapState v2 and provisional materialization as Slice 2B before any direct-build UI work.
+- Hold after Slice 2B. Admit the root Upload CV direct-build UI as Slice 3 only after the provisional state path is fully verified.
 
 Explicit non-reopen boundaries:
 - Do not reopen the source revision producer, source identity manifest, review decision identity contract, review revision producer, `SharedCareerIngestionBundle` contract, browser shared-ingestion adapter, or browser shared-ingestion runtime architecture.
