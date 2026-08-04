@@ -34,6 +34,30 @@ async function main() {
   const ownershipConflict = await bridge(fixture("ownership-conflict", "Owned delivery and assisted the team.")); assert.equal(ownershipConflict.status, "unresolved"); if (ownershipConflict.status === "unresolved") assert.equal(ownershipConflict.unresolved.reason, "ownership_conflict");
   const hypothetical = await bridge(fixture("hypothetical", "Proposed a redesigned process.")); assert.equal(hypothetical.status, "structured"); if (hypothetical.status === "structured") assert.deepEqual(hypothetical.evidence.signals, [{ field: "context", value: "hypothetical" }]); assert.equal((await map(hypothetical))?.status, "unsupported");
 
+  const realisticCases = [
+    ["developed-method", "Developed a research methodology.", ["action:designed_research"], "research-design", "direct_evidence"],
+    ["implemented-experiment", "Implemented an experiment design.", ["action:designed_research"], "research-design", "direct_evidence"],
+    ["synthesised-recommendations", "Synthesised analysis into recommendations.", ["action:synthesised_findings", "outcome:informed_decision"], "insight-synthesis", "direct_evidence"],
+    ["translated-recommendations", "Translated findings into business recommendations.", ["action:synthesised_findings", "outcome:informed_decision"], "insight-synthesis", "direct_evidence"],
+    ["commercial-decision", "Combined multiple data sources to identify insights that informed a commercial decision.", ["action:synthesised_findings", "outcome:informed_decision"], "insight-synthesis", "direct_evidence"],
+    ["partnered", "Partnered with Product and Sales.", ["scope:cross_functional"], "", ""],
+    ["coordinated-across", "Coordinated delivery across Product and Sales.", ["action:coordinated_cross_functional_delivery", "scope:cross_functional"], "", ""],
+    ["led-program", "Led a cross-functional program.", ["action:coordinated_cross_functional_delivery", "ownership:owned_delivery", "scope:cross_functional"], "cross-functional-delivery", "direct_evidence"],
+    ["supported-program", "Supported a cross-functional program.", ["scope:cross_functional"], "", ""],
+    ["streamlined-reporting", "Streamlined the reporting workflow.", ["action:redesigned_process"], "process-improvement", "direct_evidence"],
+    ["standardised-measurement", "Standardised the measurement process.", ["action:redesigned_process"], "process-improvement", "direct_evidence"],
+    ["automated-reporting", "Automated recurring reporting.", ["action:redesigned_process"], "process-improvement", "direct_evidence"],
+    ["governance-process", "Established a governance process.", ["action:redesigned_process"], "process-improvement", "direct_evidence"],
+    ["operating-model", "Scaled a repeatable operating model.", ["action:redesigned_process"], "process-improvement", "direct_evidence"],
+  ] as const;
+  for (const [id, text, expectedSignals, capabilityId, relationship] of realisticCases) {
+    const result = await bridge(fixture(id, text)); assert.equal(result.status, "structured", id); if (result.status !== "structured") throw new Error(id);
+    assert.deepEqual(result.evidence.signals.map((value) => `${value.field}:${value.value}`), [...expectedSignals], id); assert.equal(result.evidence.reviewStatus, "unreviewed", id);
+    const mapped = await map(result); if (capabilityId) { assert.equal(mapped?.status, "auto_admitted", id); if (mapped?.status === "auto_admitted") { assert.equal(mapped.mapping.capabilityId, capabilityId, id); assert.equal(mapped.mapping.relationship, relationship, id); } } else assert.equal(mapped?.status, "unsupported", id);
+  }
+  for (const [id, text] of [["dashboard", "Built a dashboard."], ["analysis-only", "Analysed customer data."], ["improved-revenue", "Improved revenue."], ["enabled-growth", "Enabled growth."], ["designed-dashboard", "Designed a dashboard."], ["implemented-sql", "Implemented SQL."], ["responsible-analytics", "Responsible for analytics."], ["skills", "Skills: analytics, SQL, Tableau"], ["requirement", "Candidate will implement an experiment design."]] as const) assert.equal((await bridge(fixture(id, text))).status, "unsupported", id);
+  const futureResearch = await bridge(fixture("future-research", "Would implement an experiment design.")); assert.equal(futureResearch.status, "structured"); if (futureResearch.status === "structured") assert.deepEqual(futureResearch.evidence.signals, [{ field: "context", value: "hypothetical" }]); assert.equal((await map(futureResearch))?.status, "unsupported");
+
   const unsupported = await bridge(fixture("unsupported", "Prepared weekly notes.")); assert.equal(unsupported.status, "unsupported"); if (unsupported.status === "unsupported") { assert.equal(unsupported.unresolved.reason, "no_authored_signal_rule"); assert.deepEqual(validateProvisionalEvidenceSignalUnresolved(unsupported.unresolved), []); }
   const invalid = await bridge({ evidence: { ...fixture("invalid", "Designed research.").evidence, reviewStatus: "confirmed" }, sourceSpans: fixture("invalid", "Designed research.").sourceSpans }); assert.equal(invalid.status, "unresolved"); if (invalid.status === "unresolved") assert.equal(invalid.unresolved.reason, "invalid_evidence");
   const duplicatePolicy: ProvisionalEvidenceSignalPolicy = { ...provisionalEvidenceSignalPolicy, rules: [provisionalEvidenceSignalPolicy.rules[0], provisionalEvidenceSignalPolicy.rules[0]] }; assert.equal(validateProvisionalEvidenceSignalPolicy(duplicatePolicy).some((item) => item.code === "duplicate_rule_id"), true); const invalidPolicy = await bridge(fixture("invalid-policy", "Designed research."), duplicatePolicy); assert.equal(invalidPolicy.status, "unresolved"); if (invalidPolicy.status === "unresolved") assert.equal(invalidPolicy.unresolved.reason, "invalid_signal_policy");
@@ -43,7 +67,7 @@ async function main() {
   const repeated = await bridge(fixture("research-direct", "Designed a research study for customer discovery.")); assert.deepEqual(repeated, direct);
   const differentId = await bridge(fixture("research-direct-2", "Designed a research study for customer discovery.", 100)); assert.equal(differentId.status, "structured"); if (differentId.status === "structured") assert.notEqual(differentId.evidence.signalIdentity, direct.evidence.signalIdentity);
   const changedPolicy = await bridge(fixture("research-direct", "Designed a research study for customer discovery."), { ...provisionalEvidenceSignalPolicy, policyVersion: "provisional-evidence-signal-policy/1.0.1" }); assert.equal(changedPolicy.status, "structured"); if (changedPolicy.status === "structured") assert.notEqual(changedPolicy.evidence.signalIdentity, direct.evidence.signalIdentity);
-  assert.equal(PROVISIONAL_EVIDENCE_SIGNAL_POLICY_VERSION, provisionalEvidenceSignalPolicy.policyVersion); assert.equal(provisionalEvidenceSignalPolicy.coverage, "bounded_non_exhaustive"); assert.equal(provisionalEvidenceSignalPolicy.vocabulary.length, 9); assert.equal(provisionalEvidenceSignalPolicy.rules.length, 10);
+  assert.equal(PROVISIONAL_EVIDENCE_SIGNAL_POLICY_VERSION, "provisional-evidence-signal-policy/1.1.0"); assert.equal(PROVISIONAL_EVIDENCE_SIGNAL_POLICY_VERSION, provisionalEvidenceSignalPolicy.policyVersion); assert.equal(provisionalEvidenceSignalPolicy.coverage, "bounded_non_exhaustive"); assert.equal(provisionalEvidenceSignalPolicy.vocabulary.length, 9); assert.equal(provisionalEvidenceSignalPolicy.rules.length, 20);
   assert.equal("capabilityId" in direct.evidence, false); assert.equal("mappingId" in direct.evidence, false);
   const source = ["provisional-evidence-signal-contract.ts", "provisional-evidence-signal-policy.ts", "provisional-evidence-signal-bridge.ts"].map((name) => readFileSync(new URL(`../../lib/career-possibility/${name}`, import.meta.url), "utf8")).join("\n"); assert.doesNotMatch(source, /\bfetch\s*\(|supabase|localStorage|indexedDB|openai|anthropic|embedding|fuzzy|react|next\//i);
 
