@@ -68,12 +68,20 @@ Current mode:
 - `HOLD`
 
 Current task type:
-- deferred founder capability mapping governance closed / founder re-upload validation pending
+- canonical multi-proposal inference established / deferred-signal decomposition audit pending
 
 Current active question:
-- Do both founder CVs remain truthful after re-upload before any ontology expansion, unmapped-experience visibility, or review workflow is admitted?
+- How should the four broad deferred signals be decomposed into existing universal capability building blocks without adding ontology or mapping semantics prematurely?
 
 Completed Career Map milestone:
+- `CAREERTWIN_CANONICAL_MULTI_PROPOSAL_INFERENCE_ESTABLISHED`
+- the existing 51-ID canonical ontology, 22 role profiles, plural materializer/state structures, and shared Career Map skeleton were reused; no ontology rebuild occurred
+- implementation `f53e5c0` (`refactor(career): support plural canonical capability proposals`) adds versioned inference contract `2.0.0`, groups authored matches by canonical capability, coalesces same-capability/same-relationship rules, and scopes relationship conflicts per capability
+- one evidence can now produce multiple independently justified proposals; unrelated valid proposals survive a conflicted capability, while proposal identity, evidence identity, source revision, deterministic ordering, and trust neutrality remain preserved
+- the v1 singular inference and provisional mapper remain explicit compatibility surfaces; browser-local text orchestration consumes the plural mapping-result projection and reuses the unchanged materializer/state/Career Map path
+- no canonical capability, role profile, signal token/rule, mapping rule, parser, state/storage schema, materializer implementation, UI, Role Lens, Job Copilot, API/Supabase/package, review, or supplementation behavior changed
+- focused plural/compatibility/projection tests, all 40 Career Possibility test files, exact-file ESLint, TypeScript, production build, and `git diff --check` passed; mode returned to `HOLD`
+- next action: Hold after plural canonical inference. Audit and refine the four broad deferred evidence signals into existing universal capability building blocks before admitting any new mapping.
 - `CAREERTWIN_DEFERRED_FOUNDER_CAPABILITY_MAPPINGS_GOVERNED`
 - founder validation confirmed the shared skeleton was correctly rendering real data; the remaining sparsity was traced to deferred semantic mappings, not presentation
 - implementation `3bb9fd2` (`feat(career): govern deferred founder capability mappings`) admits exactly `designed_measurement_framework -> measurement-design -> direct_evidence` and advances the bounded mapping policy from `1.1.0` to `1.2.0` with ten rules
@@ -251,7 +259,7 @@ Tailored CV flow closure note (2026-05-15):
 ## 3. One main next action
 
 Main next action:
-- Hold after deferred mapping governance. Founder re-uploads both CVs and validates the richer personal Career Map before any canonical capability expansion, unmapped-experience visibility, or review workflow is admitted.
+- Hold after plural canonical inference. Audit and refine the four broad deferred evidence signals into existing universal capability building blocks before admitting any new mapping.
 
 Not the next action:
 - do not treat the closed `stale_review_status` evidence-field defect as active

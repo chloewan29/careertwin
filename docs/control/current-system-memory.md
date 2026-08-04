@@ -1,5 +1,16 @@
 # Current System Memory
 
+### Canonical multi-proposal inference established (`CAREERTWIN_CANONICAL_MULTI_PROPOSAL_INFERENCE_ESTABLISHED`)
+
+- The architecture reuse audit confirmed that CareerTwin already has one 51-ID canonical capability ontology, 22 role profiles, plural downstream capability/evidence structures, and the shared Career Map skeleton. No ontology rebuild was required.
+- The active defect was singular whole-evidence arbitration: multiple independently authored capability matches were reduced to one global `multiple_candidates` result. Implementation `f53e5c0` (`refactor(career): support plural canonical capability proposals`) introduces versioned canonical plural inference contract `2.0.0` under the existing inference owner.
+- Authored candidates are grouped by canonical capability ID and arbitrated independently. Same-capability/same-relationship rules coalesce deterministically; relationship conflicts remain fail-closed for that capability; unrelated valid capabilities remain admitted.
+- Proposal identity retains evidence ID, capability ID, relationship, mapping-policy version, and registry version. Source revision, deterministic capability ordering, bounded matching-rule provenance, and trust neutrality are retained. Unsupported residue is represented only for the bounded no-rule case.
+- The v1 singular inference and `mapProvisionalResumeEvidence` remain explicit compatibility surfaces. The browser-local text build now consumes a pure plural-to-existing-mapping-result projection; the unchanged materializer successfully produced three capability nodes sharing one evidence ID.
+- No canonical capability, role profile, signal token/rule, mapping rule, parser, persisted state/storage schema, materializer implementation, UI, Role Lens, Job Copilot/server, API/Supabase/package, review, or supplementation change occurred. Mode returned to `HOLD`.
+- Focused plural inference, compatibility, and downstream projection tests, all 40 Career Possibility test files, exact-file ESLint, TypeScript, production build, and `git diff --check` passed.
+- Single next action: Hold after plural canonical inference. Audit and refine the four broad deferred evidence signals into existing universal capability building blocks before admitting any new mapping.
+
 ### Deferred founder capability mappings governed (`CAREERTWIN_DEFERRED_FOUNDER_CAPABILITY_MAPPINGS_GOVERNED`)
 
 - The founder confirmed the shared Career Map skeleton is correctly connected to real CV data; its sparsity is caused by bounded semantic mappings rather than rendering.
