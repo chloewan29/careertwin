@@ -1,5 +1,16 @@
 # Current System Memory
 
+### Post-upload Career Map simplification (`CAREERTWIN_POST_UPLOAD_CAREER_MAP_SIMPLIFIED`)
+
+- The bounded presentation repair is complete at `2b94fa6` (`fix(career): simplify post-upload career map`). Mode returned to `HOLD`.
+- The loaded personal result now leads with one `Your Career Map` heading, one concise reviewed/provisional provenance line, compact peer `Career Map` and `Role Lens` tabs, and immediately visible capability summaries.
+- Capability cards initially expose only family, name, and supporting-example count. Optional disclosure preserves the existing evidence text, direct/transferable relationship, reviewed/provisional trust status, and source span; opening moves focus to the detail heading and closing returns focus to the originating card.
+- Repeated management, explorer, and per-card trust framing is removed from the default scan. Upload another CV and Clear Career Map remain available under secondary `Map options`; the existing destructive confirmation is unchanged and the replacement warning is no longer permanently displayed.
+- The existing Role Lens and downstream comparison/proof surfaces are unchanged and mount only when their peer view is selected. Empty, incompatible, invalid, and storage-unavailable states are unchanged.
+- No ingestion, extraction, evidence, identity, revision, adapter, inference, mapping, materialization, storage, persistence, package, API, Supabase, Job Copilot, review, or supplementation authority changed.
+- Persistent-Chrome validation passed capability disclosure/focus return, keyboard tab selection/focus, Role Lens switching, and layouts at 1440x900, 1280x800, 1024x768, 768x1024, 390x844, and 375x667 without horizontal overflow. Focused coverage, all 37 Career Possibility test files, exact-file ESLint, TypeScript, production build, and `git diff --check` passed.
+- Single next action: Hold after post-upload simplification. Founder validates the clean Career Map and optional capability-detail interaction before any deferred mapping or review workflow is admitted.
+
 Status
 - authority
 - accepted current-system truth surface

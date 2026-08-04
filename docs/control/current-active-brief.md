@@ -68,12 +68,18 @@ Current mode:
 - `HOLD`
 
 Current task type:
-- founder-CV canonical mapping Group A closed / browser founder-flow replay pending
+- post-upload Career Map simplification closed / founder UX validation pending
 
 Current active question:
-- Does the real browser upload flow now materialize the admitted Group A capabilities correctly before deferred mapping governance begins?
+- Does the simplified personal Career Map make the capability overview and optional detail interaction immediately understandable to the founder?
 
 Completed Career Map milestone:
+- `CAREERTWIN_POST_UPLOAD_CAREER_MAP_SIMPLIFIED`
+- implementation `2b94fa6` (`fix(career): simplify post-upload career map`) removes repeated management/trust framing from the loaded result, places capabilities directly below a compact Career Map / Role Lens view switch, and keeps evidence relationship/trust details available only through optional capability disclosure
+- `/career-map` now has one `Your Career Map` heading and one short provenance line in the default personal state; Upload another CV and Clear Career Map are demoted into `Map options`, with the existing clear confirmation preserved and the permanent replacement warning removed
+- the map remains personal-only and the Role Lens, proof guidance, empty/invalid states, storage, inference, mapping, ingestion, persistence, and Job Copilot authorities are unchanged
+- persistent-Chrome checks passed the default view, optional detail open/close focus behavior, arrow-key tab selection/focus, Role Lens switch, six responsive viewports, and no horizontal overflow; focused tests, all 37 Career Possibility test files, exact-file ESLint, TypeScript, production build, and `git diff --check` passed
+- next action: Hold after post-upload simplification. Founder validates the clean Career Map and optional capability-detail interaction before any deferred mapping or review workflow is admitted.
 - `CAREERTWIN_FOUNDER_CV_CANONICAL_MAPPING_GROUP_A_ADMITTED`
 - `CAREERTWIN_CANONICAL_PERSONAL_CAPABILITY_INFERENCE_OWNER_ESTABLISHED`
 - `CAREERTWIN_FOUNDER_CV_SIGNAL_COVERAGE_REPAIRED`
