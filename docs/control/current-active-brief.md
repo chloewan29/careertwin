@@ -68,12 +68,13 @@ Current mode:
 - `HOLD`
 
 Current task type:
-- V1 release closure / scope freeze
+- real-CV ingestion diagnostic closure / repair admission
 
 Current active question:
-- Is there an explicitly admitted founder decision to reopen Career Map scope for V2 planning?
+- Can one bounded signal-policy coverage expansion improve realistic résumé classification without widening mapping or capability truth?
 
 Completed Career Map milestone:
+- `CAREERTWIN_REAL_CV_INGESTION_DIAGNOSTIC_COMPLETE`
 - `CAREERTWIN_DIRECT_UPLOAD_BUILD_SLICE_3_COMPLETE`
 - `CAREERTWIN_PROVISIONAL_BUILD_ORCHESTRATION_COMPLETE`
 - `CAREERTWIN_EVIDENCE_SIGNAL_BRIDGE_COMPLETE`
@@ -110,7 +111,7 @@ Completed Career Map milestone:
 - Slice 3 is implemented at `ed1ac57` (`feat(career): add direct CV to career map flow`): `/` now combines a contained interactive example with one immediate PDF/DOCX upload action; local extraction composes into validated provisional state, one atomic browser-local write, and direct `/career-map` navigation.
 - Persistent-CDP acceptance passed valid synthetic PDF and DOCX, both visible loading states, v2 provisional rendering, failure preservation, replacement semantics, responsive layouts, localhost-only traffic, and absence of service workers or Cache Storage.
 - Slice 4 optional review and missing-experience interactions remain unopened.
-- next action: Hold after Slice 3 and continue founder validation before admitting optional review or missing-experience interactions.
+- next action: Admit one bounded `EVIDENCE_SIGNAL_COVERAGE_EXPANSION` for ordinary résumé action and founder-domain language; do not combine it with structure, mapping, capability-library, parser, or UI repair.
 - release-readiness decision: `V1_RELEASE_READY_WITH_KNOWN_LIMITATIONS`
 - final verified implementation baseline: `73a976bd67d1360814f893533e5f3812b84473c6`
 - founder correction to the prior route misunderstanding: `/` owns product proposition plus résumé entry, while `/career-map` owns only the resulting personal Career Map or a compact no-map state
@@ -206,7 +207,7 @@ Tailored CV flow closure note (2026-05-15):
 ## 3. One main next action
 
 Main next action:
-- Hold after Slice 3 and continue founder validation before admitting optional review or missing-experience interactions.
+- Admit one bounded `EVIDENCE_SIGNAL_COVERAGE_EXPANSION` for ordinary résumé action and founder-domain language; do not combine it with structure, mapping, capability-library, parser, or UI repair.
 
 Not the next action:
 - do not treat the closed `stale_review_status` evidence-field defect as active

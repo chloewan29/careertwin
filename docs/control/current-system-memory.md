@@ -136,6 +136,15 @@ Last updated: 2026-08-04
 - Slice 4 review controls, missing-experience interactions, and supplementation remain unopened. Mode is `HOLD`.
 - Single next action: Hold after Slice 3 and continue founder validation before admitting optional review or missing-experience interactions.
 
+### Real CV ingestion diagnostic (`CAREERTWIN_REAL_CV_INGESTION_DIAGNOSTIC_COMPLETE`)
+
+- Founder validation reported `no_unambiguous_mappings`; the privacy-safe diagnostic owner is complete at `dd2b973` (`test(career): add resume ingestion coverage diagnostics`). It returns aggregate counts and reason codes only—never full text, source excerpts, binary data, or personal identifiers.
+- Synthetic PDF/DOCX extraction is distinguishable from downstream coverage failure. The dominant first drift is the bounded signal policy: all 33 audited common résumé verbs produced valid located evidence but remained unsupported outside exact authored phrases.
+- Founder-domain coverage is similarly narrow: exact cross-functional delivery is admitted, while ordinary analytics strategy, commercial support, stakeholder influence, self-service analytics, governance, measurement, experimentation, marketing analytics, reporting governance, process transformation, adoption analysis, and customer-insight wording remains largely unsupported.
+- Secondary structure limitations are measured but not admitted into the next repair: wrapped bullets split into an extra evidence record, two-column order is degraded but recoverable in the synthetic trace, and repeated page furniture can create one false evidence record.
+- No production runtime behavior, UI, parser, signal/mapping policy, capability library, materializer, storage, API, Supabase, package, Slice 4, or supplementation surface changed. Mode is `HOLD`.
+- Single next action: Admit one bounded `EVIDENCE_SIGNAL_COVERAGE_EXPANSION` for ordinary résumé action and founder-domain language; do not combine it with structure, mapping, capability-library, parser, or UI repair.
+
 ### Career Map V1 closure (`CAREER_MAP_V1_COMPLETE`, `CAREER_MAP_V1_LANDING_STATE_HANDOFF_REPAIRED`, `CAREERTWIN_V1_ROOT_INLINE_INTAKE_COMPLETE`, `CAREERTWIN_V1_ENTRY_RESULT_ROUTES_CORRECTED`)
 
 Current active line and mode:
@@ -221,7 +230,7 @@ V2 boundary retained:
 - this sequence is not part of V1 and must not start without explicit founder scope reopening
 
 Single next action:
-- Hold after Slice 3 and continue founder validation before admitting optional review or missing-experience interactions.
+- Admit one bounded `EVIDENCE_SIGNAL_COVERAGE_EXPANSION` for ordinary résumé action and founder-domain language; do not combine it with structure, mapping, capability-library, parser, or UI repair.
 
 Completed selected-role mandate orientation:
 - Selecting a calibrated Role Lens displays one restrained orientation block before comparison output.
@@ -341,7 +350,7 @@ Completed evidence-field transition repair:
 - The prior evidence-field review replay/status-validation defect is closed; this line has no remaining active defect.
 
 Single main next action:
-- Hold after Slice 3 and continue founder validation before admitting optional review or missing-experience interactions.
+- Admit one bounded `EVIDENCE_SIGNAL_COVERAGE_EXPANSION` for ordinary résumé action and founder-domain language; do not combine it with structure, mapping, capability-library, parser, or UI repair.
 
 Explicit non-reopen boundaries:
 - Do not reopen the source revision producer, source identity manifest, review decision identity contract, review revision producer, `SharedCareerIngestionBundle` contract, browser shared-ingestion adapter, or browser shared-ingestion runtime architecture.
