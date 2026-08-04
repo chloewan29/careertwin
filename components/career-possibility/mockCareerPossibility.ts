@@ -1,38 +1,11 @@
 import { roleCapabilityProfileById } from "../../lib/career-possibility/fixtures/roleCapabilityProfiles";
 import { buildRolePathRailFromProfiles, selectRoleProfilesById, validateCareerMapRolePathsDetailed, type CareerMapFuturePath } from "../../lib/career-possibility/role-lens-map-adapter";
+import type { CareerMapExplorerCapability, CareerMapExplorerExperience, CareerMapExplorerViewModel } from "../../lib/career-possibility/career-map-explorer-view-model";
 
-export type CapabilityNode = {
-  id: string;
-  label: string;
-  strength: number;
-  family: "analytics" | "transformation" | "leadership" | "commercial" | "delivery" | "customer";
-  subCapabilities: Array<{ id: string; label: string; strength?: number }>;
-  supportingExperienceIds: string[];
-  adjacentRoleIds: string[];
-};
-
-export type SupportingExperience = {
-  id: string;
-  company: string;
-  role: string;
-  evidenceText: string;
-  relevance: "high" | "strong" | "medium";
-  capabilityIds: string[];
-  roleIds: string[];
-  context: string;
-  outcome: string;
-  transferabilityExplanation: string;
-};
-
+export type CapabilityNode = CareerMapExplorerCapability;
+export type SupportingExperience = CareerMapExplorerExperience;
 export type AdjacentRole = CareerMapFuturePath;
-
-export type CareerCapabilityExplorerResult = {
-  profileSummary: string;
-  defaultCapabilityId: string;
-  capabilities: CapabilityNode[];
-  experiences: SupportingExperience[];
-  adjacentRoles: AdjacentRole[];
-};
+export type CareerCapabilityExplorerResult = CareerMapExplorerViewModel;
 
 const capabilities: CapabilityNode[] = [
     { id: "analytics", label: "Analytics & Insights", strength: 91, family: "analytics", subCapabilities: [{ id: "analysis", label: "Decision Analytics", strength: 93 }, { id: "measurement", label: "Measurement Design", strength: 88 }, { id: "insight", label: "Insight Synthesis", strength: 90 }], supportingExperienceIds: ["optus", "amobee", "microsoft"], adjacentRoleIds: ["path:customer-insights-lead", "path:strategy-operations-manager"] },
@@ -62,8 +35,8 @@ export const mockCareerPossibilityAdapterValidation = validateCareerMapRolePaths
 );
 
 export const mockCareerPossibility: CareerCapabilityExplorerResult = {
+  mode: "example",
   profileSummary: "Your experience consistently connects data, change, and commercial decisions. Explore each capability to see the evidence behind it and the roles it can unlock.",
-  defaultCapabilityId: "transformation",
   capabilities,
   experiences,
   adjacentRoles,
