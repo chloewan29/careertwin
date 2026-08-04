@@ -68,12 +68,20 @@ Current mode:
 - `HOLD`
 
 Current task type:
-- post-upload Career Map simplification closed / founder UX validation pending
+- personal-state-to-Career-Map-skeleton integration closed / founder validation pending
 
 Current active question:
-- Does the simplified personal Career Map make the capability overview and optional detail interaction immediately understandable to the founder?
+- Do uploaded CV capabilities and evidence now appear in the founder's intended Career Map visual language before any further product workflow is admitted?
 
 Completed Career Map milestone:
+- `CAREERTWIN_PERSONAL_STATE_CONNECTED_TO_CAREER_MAP_SKELETON`
+- founder confirmed the original `CapabilityExplorer` skeleton is the intended result product; the flat personal card renderer was an integration detour
+- implementation `e6bb584` (`feat(career): connect personal state to career map skeleton`) establishes a shared explorer view-model contract, keeps Hero mock data and personal real data separate, and routes the existing validated personal presentation through the shared skeleton
+- personal canonical capability IDs, labels, families, evidence IDs, source spans, direct/transferable relationships, and reviewed/provisional status are preserved; no capability or evidence is invented
+- personal mode hides absent Future Paths and Proof-to-build data rather than reusing demo content; deterministic sparse layouts cover 2/4/6/8+ nodes, with a compact mobile Experience Core interpretation
+- Role Lens remains the existing governed comparison behind the peer tab; a same-map overlay remains unimplemented because no admitted comparison-to-map adapter currently owns it
+- state, storage, inference, mapping, parser, root upload, API/Supabase/package, Job Copilot, review, and supplementation behavior are unchanged
+- next action: Hold after personal-skeleton integration. Founder validates that uploaded CV capabilities and evidence now appear in the intended Career Map before any deferred mappings, unmapped-experience visibility, or review workflow is admitted.
 - `CAREERTWIN_POST_UPLOAD_CAREER_MAP_SIMPLIFIED`
 - implementation `2b94fa6` (`fix(career): simplify post-upload career map`) removes repeated management/trust framing from the loaded result, places capabilities directly below a compact Career Map / Role Lens view switch, and keeps evidence relationship/trust details available only through optional capability disclosure
 - `/career-map` now has one `Your Career Map` heading and one short provenance line in the default personal state; Upload another CV and Clear Career Map are demoted into `Map options`, with the existing clear confirmation preserved and the permanent replacement warning removed

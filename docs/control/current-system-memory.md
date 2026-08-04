@@ -1,5 +1,18 @@
 # Current System Memory
 
+### Personal state connected to the Career Map skeleton (`CAREERTWIN_PERSONAL_STATE_CONNECTED_TO_CAREER_MAP_SKELETON`)
+
+- The founder confirmed the original `CapabilityExplorer` skeleton is the intended personal result product. The later flat personal capability-card result was an integration detour rather than a second authoritative Career Map.
+- Integration is complete at `e6bb584` (`feat(career): connect personal state to career map skeleton`). A shared `CareerMapExplorerViewModel` contract now supports separately sourced example and personal modes.
+- The disclosed root Hero continues to supply `mockCareerPossibility`; the personal route supplies a deterministic derived view model from the existing validated `PersonalCareerMapPresentation`. Personal mode never imports or falls back to mock capability, evidence, growth, path, identity, strength, or fit data.
+- Personal nodes preserve canonical capability identity, label, family, evidence identity, direct/transferable relationship, source span, and reviewed/provisional status. The adapter creates no capability, evidence, path, or growth item.
+- The shared skeleton renders the personal Experience Core, deterministic connectors, capability nodes, supporting-example counts, and interaction-triggered evidence detail. Two-node layouts flank the core; 4/6/8+ layouts use deterministic radial placement; mobile retains a compact Experience Core and accessible disclosure interpretation.
+- Missing Future Paths and Proof-to-build data collapse truthfully. Unmapped evidence remains absent because the current personal presentation does not expose it; no storage or schema expansion was made.
+- Role Lens remains reachable as the existing governed peer-tab comparison. Same-map highlighting is not claimed: it requires a future admitted comparison-to-map adapter and is outside this slice.
+- Persistent-Chrome validation passed the founder's real two-capability state and a restored-after-use privacy-safe four-capability state across the required desktop, tablet, and mobile sizes without overlap, overflow, mock leakage, console errors, or React warnings. The full Career Possibility suite, exact-file ESLint, TypeScript, production build, and `git diff --check` passed.
+- No state, storage, inference, mapping, parser, root upload, API, Supabase, package, Job Copilot, server inference, deferred mapping, review, or supplementation behavior changed. Mode returned to `HOLD`.
+- Single next action: Hold after personal-skeleton integration. Founder validates that uploaded CV capabilities and evidence now appear in the intended Career Map before any deferred mappings, unmapped-experience visibility, or review workflow is admitted.
+
 ### Post-upload Career Map simplification (`CAREERTWIN_POST_UPLOAD_CAREER_MAP_SIMPLIFIED`)
 
 - The bounded presentation repair is complete at `2b94fa6` (`fix(career): simplify post-upload career map`). Mode returned to `HOLD`.
