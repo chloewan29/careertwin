@@ -34,7 +34,7 @@ async function main() {
   assert.equal(Object.keys(decisions).length, 14);
   assert.equal(provisionalResumeMappingPolicy.policyVersion, "provisional-resume-mapping-policy/1.3.0");
   assert.equal(provisionalResumeMappingPolicy.rules.length, 11);
-  assert.equal(PROVISIONAL_EVIDENCE_SIGNAL_POLICY_VERSION, "provisional-evidence-signal-policy/1.3.0");
+  assert.equal(PROVISIONAL_EVIDENCE_SIGNAL_POLICY_VERSION, "provisional-evidence-signal-policy/1.4.0");
   assert.equal(provisionalEvidenceSignalPolicy.rules.length, 48);
 
   for (const [token, decision] of Object.entries(decisions)) {

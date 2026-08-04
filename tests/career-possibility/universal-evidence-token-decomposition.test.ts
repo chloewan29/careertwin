@@ -5,6 +5,7 @@ import type { ProvisionalEvidenceSignalInput, ProvisionalEvidenceSignalToken } f
 import { mapProvisionalResumeEvidencePlural } from "../../lib/career-possibility/provisional-resume-capability-mapper";
 import { provisionalResumeMappingPolicy } from "../../lib/career-possibility/provisional-resume-mapping-policy";
 import { canonicalCapabilityLibrary } from "../../lib/career-possibility/canonical-capability-library";
+import type { ProvisionalEvidenceSignalPolicy } from "../../lib/career-possibility/provisional-evidence-signal-contract";
 
 const fixture = (id: string, text: string, offset = 0): ProvisionalEvidenceSignalInput => ({ evidence: { id, employmentRecordId: "employment:synthetic", sourceSpanIds: [`span:${id}`], sourceText: text, reviewStatus: "unreviewed", processingStatus: "source_provided", extractionMethod: "deterministic", warnings: [] }, sourceSpans: [{ id: `span:${id}`, documentId: "document:synthetic", sourceType: "resume_upload", employmentRecordId: "employment:synthetic", startOffset: offset, endOffset: offset + text.length, originalText: text }] });
 const bridge = (id: string, text: string, offset = 0) => bridgeEvidenceToProvisionalSignals(fixture(id, text, offset), provisionalEvidenceSignalPolicy);
@@ -48,6 +49,7 @@ async function main() {
   assert.equal(retired.every((token) => !provisionalEvidenceSignalPolicy.vocabulary.includes(token as never)), true);
 
   await expectTokens("business-framing", "Framed an ambiguous operational problem for evidence and recommendations.", ["framed_business_problem"]);
+  await expectTokens("business-framing-infinitive", "Translate ambiguous business questions into analysis and recommendations.", ["framed_business_problem"]);
   await expectTokens("business-advice", "Advised finance leaders using evidence and recommendations.", ["advised_decision_maker"]);
   const product = await expectTokens("product-multiple", "Owned a reporting product, its requirements and delivery quality.", ["governed_delivery_quality", "managed_requirements", "owned_product_or_service"]);
   assert.equal(product.status === "structured" && product.evidence.signals.length, 3);
@@ -67,6 +69,32 @@ async function main() {
   ] as const;
   for (const [id, text] of negatives) assert.equal((await bridge(id, text)).status, "unsupported", id);
 
+  const excludedFramingMorphology = [
+    ["translating", "Translating ambiguous business questions into analysis and recommendations."],
+    ["frame", "Frame ambiguous business questions into analysis and recommendations."],
+    ["framing", "Framing ambiguous business questions into analysis and recommendations."],
+    ["define", "Define ambiguous business questions into analysis and recommendations."],
+    ["defining", "Defining ambiguous business questions into analysis and recommendations."],
+    ["shape", "Shape ambiguous business questions into analysis and recommendations."],
+    ["shaped", "Shaped ambiguous business questions into analysis and recommendations."],
+    ["shaping", "Shaping ambiguous business questions into analysis and recommendations."],
+    ["hypothetical-translate", "Intended to translate ambiguous business questions into analysis and recommendations."],
+    ["requirement-translate", "Required to translate ambiguous business questions into analysis and recommendations."],
+    ["translation-title", "Translation Lead — business questions, analysis and recommendations."],
+    ["translation-skill", "Translation, business questions, analysis, recommendations."],
+    ["dashboard-translation", "Translate dashboard labels into analysis and recommendations."],
+    ["documentation-translation", "Translate product documentation into analysis and recommendations."],
+    ["language-translation", "Translate customer language into analysis and recommendations."],
+    ["generic-support", "Support business questions with analysis and recommendations."],
+    ["generic-analysis", "Analyse business questions and produce recommendations."],
+    ["wrong-order", "Business questions required analysis and recommendations that we translate."],
+    ["period-boundary", "Translate business questions. Produce analysis and recommendations."],
+    ["semicolon-boundary", "Translate business questions; produce analysis and recommendations."],
+    ["action-distance", `Translate ${"complex ".repeat(9)}business questions into analysis and recommendations.`],
+    ["output-distance", `Translate business questions into ${"detailed ".repeat(10)}analysis and recommendations.`],
+  ] as const;
+  for (const [id, text] of excludedFramingMorphology) assert.equal(tokens(await bridge(id, text)).includes("framed_business_problem"), false, id);
+
   const crossRole = [
     ["business-delivery", "Framed an ambiguous operational problem for evidence and recommendations.", "framed_business_problem"],
     ["product-manager", "Owned a customer service, its requirements and delivery quality.", "owned_product_or_service"],
@@ -79,6 +107,15 @@ async function main() {
   ] as const;
   for (const [id, text, token] of crossRole) assert.equal(tokens(await bridge(id, text)).includes(token), true, id);
 
+  const infinitiveCrossRole = [
+    ["delivery-framing", "Translate operational problems into analysis and recommendations."],
+    ["finance-framing", "Translate commercial questions into evidence and recommendations."],
+    ["hr-framing", "Translate business problems into analytical recommendations."],
+    ["product-framing", "Translate product questions into analysis and recommendations."],
+    ["analytics-framing", "Translate ambiguous customer questions into evidence and recommendations."],
+  ] as const;
+  for (const [id, text] of infinitiveCrossRole) assert.equal(tokens(await bridge(id, text)).includes("framed_business_problem"), true, id);
+
   const repeated = await bridge("deterministic", "Owned a reporting product, its requirements and delivery quality.");
   const repeatedAgain = await bridge("deterministic", "Owned a reporting product, its requirements and delivery quality.");
   assert.deepEqual(repeatedAgain, repeated);
@@ -86,6 +123,12 @@ async function main() {
   assert.equal(repeated.status === "structured" && semanticChange.status === "structured" && repeated.evidence.signalIdentity !== semanticChange.evidence.signalIdentity, true);
   const moved = await bridge("deterministic-moved", "Owned a reporting product, its requirements and delivery quality.", 100);
   assert.equal(repeated.status === "structured" && moved.status === "structured" && repeated.evidence.signalIdentity !== moved.evidence.signalIdentity, true);
+
+  const infinitive = await bridge("policy-version", "Translate ambiguous business questions into analysis and recommendations.");
+  const priorVersionPolicy: ProvisionalEvidenceSignalPolicy = { ...provisionalEvidenceSignalPolicy, policyVersion: "provisional-evidence-signal-policy/1.3.0" };
+  const priorVersion = await bridgeEvidenceToProvisionalSignals(fixture("policy-version", "Translate ambiguous business questions into analysis and recommendations."), priorVersionPolicy);
+  assert.deepEqual(await bridge("policy-version", "Translate ambiguous business questions into analysis and recommendations."), infinitive);
+  assert.equal(infinitive.status === "structured" && priorVersion.status === "structured" && infinitive.evidence.signalIdentities[0].signalId !== priorVersion.evidence.signalIdentities[0].signalId, true);
 
   console.log("universal evidence token decomposition tests passed");
 }
