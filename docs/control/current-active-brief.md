@@ -68,12 +68,21 @@ Current mode:
 - `HOLD`
 
 Current task type:
-- canonical multi-proposal inference established / deferred-signal decomposition audit pending
+- deferred signals decomposed into universal tokens / mapping governance pending
 
 Current active question:
-- How should the four broad deferred signals be decomposed into existing universal capability building blocks without adding ontology or mapping semantics prematurely?
+- Which refined universal tokens can safely map to existing canonical capability building blocks under evidence-specific positive and negative fixtures?
 
 Completed Career Map milestone:
+- `CAREERTWIN_DEFERRED_SIGNALS_DECOMPOSED_INTO_UNIVERSAL_TOKENS`
+- implementation `e02e4c2` (`refactor(career): decompose broad evidence signals`) reuses the universal ontology and plural inference while replacing four domain-labelled parent signals with 14 narrower performed-work tokens under signal policy `1.3.0`
+- admitted dimensions cover business-problem framing and explicit advice; product/service ownership, requirements, prioritisation and delivery-quality governance; anomaly, root-cause and meaningful-pattern investigation; reusable tooling, recurring automation, workflow standardisation, platform adoption and designed AI-assisted workflow
+- all four broad parents are retired from active vocabulary and are not emitted alongside children; composable refined rules allow independently explicit tokens to coexist, while existing exclusive-rule ambiguity remains fail-closed
+- every emitted semantic token receives its own deterministic identity in addition to the existing aggregate signal identity; evidence ID, locator and `unreviewed` status remain unchanged
+- privacy-safe replay: CV A remained at 33 evidence and emitted one `owned_product_or_service` refined token; CV B remained at 33 evidence and emitted no refined token because its former investigation/workflow language did not meet the narrower thresholds; both broad-parent counts became zero and no capability was added
+- no canonical capability, mapping rule, role profile, canonical inference, parser, state/storage, materializer, UI, Job Copilot, API/Supabase/package, review, or supplementation behavior changed
+- cross-role fixtures and focused signal coverage, all 41 Career Possibility test files, exact-file ESLint, TypeScript, production build, and `git diff --check` passed; mode returned to `HOLD`
+- next action: Hold after universal token decomposition. Govern mappings from the refined tokens into existing canonical capability building blocks using evidence-specific positive and negative fixtures.
 - `CAREERTWIN_CANONICAL_MULTI_PROPOSAL_INFERENCE_ESTABLISHED`
 - the existing 51-ID canonical ontology, 22 role profiles, plural materializer/state structures, and shared Career Map skeleton were reused; no ontology rebuild occurred
 - implementation `f53e5c0` (`refactor(career): support plural canonical capability proposals`) adds versioned inference contract `2.0.0`, groups authored matches by canonical capability, coalesces same-capability/same-relationship rules, and scopes relationship conflicts per capability
@@ -259,7 +268,7 @@ Tailored CV flow closure note (2026-05-15):
 ## 3. One main next action
 
 Main next action:
-- Hold after plural canonical inference. Audit and refine the four broad deferred evidence signals into existing universal capability building blocks before admitting any new mapping.
+- Hold after universal token decomposition. Govern mappings from the refined tokens into existing canonical capability building blocks using evidence-specific positive and negative fixtures.
 
 Not the next action:
 - do not treat the closed `stale_review_status` evidence-field defect as active

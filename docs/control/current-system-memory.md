@@ -1,5 +1,18 @@
 # Current System Memory
 
+### Deferred signals decomposed into universal tokens (`CAREERTWIN_DEFERRED_SIGNALS_DECOMPOSED_INTO_UNIVERSAL_TOKENS`)
+
+- CareerTwin's existing universal capability architecture and plural canonical inference were reused. Implementation `e02e4c2` (`refactor(career): decompose broad evidence signals`) changes only the semantic signal layer and advances its policy from `1.2.0`/45 rules to `1.3.0`/48 rules.
+- Four domain-labelled parents are retired from active vocabulary: `provided_analytics_business_advice`, `owned_analytics_product`, `performed_investigative_analysis`, and `enabled_analytics_workflow`. They are never emitted alongside refined children.
+- Fourteen role-independent tokens are admitted: `framed_business_problem`, `advised_decision_maker`, `owned_product_or_service`, `managed_requirements`, `prioritised_delivery`, `governed_delivery_quality`, `investigated_anomaly`, `diagnosed_root_cause`, `isolated_meaningful_pattern`, `built_reusable_tooling`, `automated_recurring_workflow`, `standardised_workflow`, `enabled_platform_adoption`, and `designed_ai_assisted_workflow`.
+- Refined rules are composable only when each meaning has independent lexical support. Existing exclusive action ambiguity remains fail-closed. Generic partnering, collaboration, analysis, issue resolution, product support, reporting improvement, platform support, tool names, and AI use remain insufficient.
+- Each emitted token now has an ordered deterministic `signalId`; the existing aggregate `signalIdentity`, evidence ID, source locator, and `unreviewed` trust status remain. The signal contract does not independently transport source revision, so no revision value was fabricated.
+- Privacy-safe real-file replay: CV A retained 33 evidence records; previous broad counts advice=1/product=1/workflow=3 became zero, with refined `owned_product_or_service=1`, 3 mapping-unsupported and 0 mapping-unresolved. CV B retained 33 evidence records; previous broad counts investigation=1/workflow=2 became zero, with no refined token, 0 mapping-unsupported and 0 mapping-unresolved. No additional capability was claimed.
+- Cross-role fixtures passed for Business Delivery, Product, Operations, Finance, HR, Engineering, Marketing, and Analytics contexts. All refined tokens remain `unsupported/no_canonical_rule` pending separate governance.
+- No canonical capability, mapping policy/rule, role profile, canonical inference, parser, state/storage, materializer, Career Map UI, Job Copilot/server, API/Supabase/package, review, or supplementation change occurred. Mode returned to `HOLD`.
+- Focused signal/decomposition/diagnostic tests, all 41 Career Possibility test files, exact-file ESLint, TypeScript, production build, and `git diff --check` passed.
+- Single next action: Hold after universal token decomposition. Govern mappings from the refined tokens into existing canonical capability building blocks using evidence-specific positive and negative fixtures.
+
 ### Canonical multi-proposal inference established (`CAREERTWIN_CANONICAL_MULTI_PROPOSAL_INFERENCE_ESTABLISHED`)
 
 - The architecture reuse audit confirmed that CareerTwin already has one 51-ID canonical capability ontology, 22 role profiles, plural downstream capability/evidence structures, and the shared Career Map skeleton. No ontology rebuild was required.
