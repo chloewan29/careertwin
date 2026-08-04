@@ -145,6 +145,15 @@ Last updated: 2026-08-04
 - No production runtime behavior, UI, parser, signal/mapping policy, capability library, materializer, storage, API, Supabase, package, Slice 4, or supplementation surface changed. Mode is `HOLD`.
 - Single next action: Admit one bounded `EVIDENCE_SIGNAL_COVERAGE_EXPANSION` for ordinary résumé action and founder-domain language; do not combine it with structure, mapping, capability-library, parser, or UI repair.
 
+### Evidence signal coverage expansion (`CAREERTWIN_EVIDENCE_SIGNAL_COVERAGE_EXPANDED`)
+
+- The bounded signal-policy expansion is complete at `3ad8e39` (`feat(career): expand resume evidence signal coverage`). Policy version is `provisional-evidence-signal-policy/1.1.0`; the rule set expands from 10 to 20 while retaining the same nine-token vocabulary and the same seven Slice 2A-consumable tokens.
+- Context-rich research/measurement design, evidence-to-recommendation synthesis, commercial decision support, explicit cross-functional scope/coordination/ownership, and named reporting/measurement/governance/workflow/operating-model improvements now produce bounded existing signals.
+- Precision guards remain active: dashboard/tool/title/skills fragments, generic analysis, generic revenue/growth claims, requirement language, and non-performed actions do not materialize mapped actions. Participation and coordination do not become ownership; ambiguity still abstains.
+- The context-rich founder-domain replay improves from 1/6 structured/admitted statements to 6/6 across the four existing mapped capability areas. Generic `verb + analytics strategy` constructions intentionally remain unsupported.
+- Mapping policy, capability library, materializer, state/storage, parser/structure, UI, API, Supabase, packages, Slice 4, and supplementation remain unchanged. Secondary wrapped-bullet, page-furniture, and two-column limitations remain unopened. Mode is `HOLD`.
+- Single next action: Hold after signal coverage expansion. Re-run founder CV validation before admitting mapping coverage or résumé structure repair.
+
 ### Career Map V1 closure (`CAREER_MAP_V1_COMPLETE`, `CAREER_MAP_V1_LANDING_STATE_HANDOFF_REPAIRED`, `CAREERTWIN_V1_ROOT_INLINE_INTAKE_COMPLETE`, `CAREERTWIN_V1_ENTRY_RESULT_ROUTES_CORRECTED`)
 
 Current active line and mode:
@@ -230,7 +239,7 @@ V2 boundary retained:
 - this sequence is not part of V1 and must not start without explicit founder scope reopening
 
 Single next action:
-- Admit one bounded `EVIDENCE_SIGNAL_COVERAGE_EXPANSION` for ordinary résumé action and founder-domain language; do not combine it with structure, mapping, capability-library, parser, or UI repair.
+- Hold after signal coverage expansion. Re-run founder CV validation before admitting mapping coverage or résumé structure repair.
 
 Completed selected-role mandate orientation:
 - Selecting a calibrated Role Lens displays one restrained orientation block before comparison output.
@@ -350,7 +359,7 @@ Completed evidence-field transition repair:
 - The prior evidence-field review replay/status-validation defect is closed; this line has no remaining active defect.
 
 Single main next action:
-- Admit one bounded `EVIDENCE_SIGNAL_COVERAGE_EXPANSION` for ordinary résumé action and founder-domain language; do not combine it with structure, mapping, capability-library, parser, or UI repair.
+- Hold after signal coverage expansion. Re-run founder CV validation before admitting mapping coverage or résumé structure repair.
 
 Explicit non-reopen boundaries:
 - Do not reopen the source revision producer, source identity manifest, review decision identity contract, review revision producer, `SharedCareerIngestionBundle` contract, browser shared-ingestion adapter, or browser shared-ingestion runtime architecture.
