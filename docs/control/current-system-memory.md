@@ -124,8 +124,17 @@ Last updated: 2026-08-04
 - The nine-fixture audit passed direct, mixed, transferable, admitted-plus-unsupported, admitted-plus-ambiguous, all-unsupported, all-ambiguous, title-only, and tool-only paths. `unexpectedly lost evidence = 0`.
 - Successful output is deterministic validated LocalCareerMapState schema `2.0.0` with `source=provisional_resume`, `mapTrustStatus=provisional`, unreviewed evidence/mappings, intact identities and cross-references, and no confidence or fit score.
 - All 33 Career Possibility tests, exact-file ESLint, TypeScript, production build, and diff checks passed. Storage, UI, routes, packages, APIs, Supabase, Job Copilot, and supplementation remain untouched.
-- Slice 3 is now admitted but not started; mode is `HOLD`.
-- Single next action: Reopen Slice 3 for root Upload CV UI and browser-local file-to-provisional-map composition.
+- This orchestration milestone supplied the admission basis later consumed by the completed Slice 3 implementation.
+
+### Direct Upload CV build (`CAREERTWIN_DIRECT_UPLOAD_BUILD_SLICE_3_COMPLETE`)
+
+- Slice 3 is complete at `ed1ac57` (`feat(career): add direct CV to career map flow`). The root is now the simplified product entry: concise positioning, a contained hero variant of the existing interactive example, and one immediate PDF/DOCX upload action.
+- The file-to-state owner composes browser-local extraction, accepted source revision preparation, and the completed text-to-provisional-state owner. It adds no semantic rules and performs no storage, network, or UI work.
+- The upload workspace exposes only `Reading your CV...` and `Building your Career Map...`, then performs one validated atomic write to `careertwin.local-career-map.v1` and navigates directly to `/career-map`.
+- Valid v2 state renders as CV-derived and unreviewed while preserving personal capabilities/evidence, calibrated Role Lens comparison, and bounded Proof to build / Start here / Next action. Valid v1 reviewed state remains supported.
+- Persistent-CDP acceptance passed valid synthetic PDF and DOCX, unsupported/malformed/no-mapping/storage failures with prior-state preservation, replacement without append semantics, responsive root/result layouts, no external CV transmission, and no service-worker or Cache Storage activity.
+- Slice 4 review controls, missing-experience interactions, and supplementation remain unopened. Mode is `HOLD`.
+- Single next action: Hold after Slice 3 and continue founder validation before admitting optional review or missing-experience interactions.
 
 ### Career Map V1 closure (`CAREER_MAP_V1_COMPLETE`, `CAREER_MAP_V1_LANDING_STATE_HANDOFF_REPAIRED`, `CAREERTWIN_V1_ROOT_INLINE_INTAKE_COMPLETE`, `CAREERTWIN_V1_ENTRY_RESULT_ROUTES_CORRECTED`)
 
@@ -212,7 +221,7 @@ V2 boundary retained:
 - this sequence is not part of V1 and must not start without explicit founder scope reopening
 
 Single next action:
-- Hold CareerTwin V1 as complete and continue founder validation through the root inline-intake journey.
+- Hold after Slice 3 and continue founder validation before admitting optional review or missing-experience interactions.
 
 Completed selected-role mandate orientation:
 - Selecting a calibrated Role Lens displays one restrained orientation block before comparison output.
@@ -332,7 +341,7 @@ Completed evidence-field transition repair:
 - The prior evidence-field review replay/status-validation defect is closed; this line has no remaining active defect.
 
 Single main next action:
-- Reopen Slice 3 for root Upload CV UI and browser-local file-to-provisional-map composition.
+- Hold after Slice 3 and continue founder validation before admitting optional review or missing-experience interactions.
 
 Explicit non-reopen boundaries:
 - Do not reopen the source revision producer, source identity manifest, review decision identity contract, review revision producer, `SharedCareerIngestionBundle` contract, browser shared-ingestion adapter, or browser shared-ingestion runtime architecture.
