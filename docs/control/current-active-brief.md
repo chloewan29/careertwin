@@ -68,12 +68,21 @@ Current mode:
 - `HOLD`
 
 Current task type:
-- infinitive business-framing signal repair complete / canonical mapping governance pending
+- delivery-quality infinitive signal repair complete / canonical mapping governance pending
 
 Current active question:
-- Can `framed_business_problem` map truthfully to an existing canonical building block before another founder signal is repaired?
+- Can `governed_delivery_quality` map truthfully to an existing canonical building block before requirements evidence standards are repaired?
 
 Completed Career Map milestone:
+- `CAREERTWIN_DELIVERY_QUALITY_MANAGEMENT_INFINITIVE_SIGNAL_REPAIRED`
+- requirements and delivery-quality morphology were audited separately; requirements remains deferred because its current rule already over-admits `gathered requirements`
+- implementation `9b5c80d` (`fix(career): admit infinitive delivery quality management`) adds only a narrow relation-bound `manage` branch to `signal/action/governed-delivery-quality` and advances signal policy from `1.4.0` to `1.5.0` while retaining 48 rules
+- direct quality objects and bounded requirements/product-delivery coordination are admitted; delegated teams, ordinary QA execution, other morphologies, current finite forms, ownership fallback, distances, punctuation, exclusions, and composability remain governed as before
+- privacy-safe CV A replay retains 33 evidence and changes `governed_delivery_quality` from zero to one; ownership remains one, requirements remains zero, and structured/unsupported/unresolved remain 5/27/1
+- no canonical capability or mapping was added, so the founder Career Map remains `analytics-governance` and `insight-synthesis`; CV B remains unchanged
+- no requirements, extractor, state/storage, materializer, UI, Job Copilot/server, API/Supabase/package, review, or supplementation behavior changed
+- focused tests, founder replays, all 42 Career Possibility tests, exact-file ESLint, TypeScript, production build, and `git diff --check` passed; mode returned to `HOLD`
+- next action: Hold after delivery-quality infinitive repair. Govern whether `governed_delivery_quality` can map to an existing canonical capability before repairing requirements evidence standards.
 - `CAREERTWIN_BUSINESS_FRAMING_INFINITIVE_SIGNAL_REPAIRED`
 - wrapped-bullet extraction repair was already complete; the next proven false negative was infinitive business framing
 - implementation `7162c92` (`fix(career): admit infinitive business framing`) adds only `translate` to the existing `framed_business_problem` action alternatives and advances signal policy from `1.3.0` to `1.4.0` while retaining 48 rules

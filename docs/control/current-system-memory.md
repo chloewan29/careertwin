@@ -1,5 +1,15 @@
 # Current System Memory
 
+### Delivery-quality management infinitive signal repaired (`CAREERTWIN_DELIVERY_QUALITY_MANAGEMENT_INFINITIVE_SIGNAL_REPAIRED`)
+
+- Requirements and delivery-quality morphology were audited separately. Requirements repair remains deferred because its current rule already treats `gathered requirements` as `managed_requirements`; adding `manage` there would also over-claim delegated requirements work.
+- Implementation `9b5c80d` (`fix(career): admit infinitive delivery quality management`) adds one narrow relation-bound infinitive `manage` branch only to `signal/action/governed-delivery-quality`. Signal policy advances from `1.4.0` to `1.5.0` with the vocabulary and 48-rule inventory unchanged.
+- The branch admits direct delivery-quality, quality-control and QA-control objects, plus bounded coordinated requirements/product-delivery object lists. It rejects management of teams, analysts, staff, vendors, or processes performing quality work. Ordinary checks, testing, improvement, support, review, high-quality output, issue resolution, other morphologies, punctuation crossings, and non-performed language remain insufficient.
+- Existing `governed|owned|managed|established` behavior, ownership fallback, 65/70/45 bounds, exclusions, composability, plural signals, deterministic identity, and the entire requirements rule remain unchanged.
+- Privacy-safe CV A replay remains 33 evidence. `governed_delivery_quality` changes from zero to one, `owned_product_or_service` remains one, and `managed_requirements` remains zero. Structured/unsupported/unresolved remain 5/27/1; capabilities remain `analytics-governance` and `insight-synthesis` because delivery quality has no canonical mapping. CV B replay is unchanged.
+- No mapping rule, canonical capability, role profile, canonical inference, extractor, state/storage, materializer, UI, Job Copilot/server, API/Supabase/package, broad token, review, or supplementation behavior changed. Focused tests, founder replays, all 42 Career Possibility tests, exact-file ESLint, TypeScript, production build, and `git diff --check` passed; mode returned to `HOLD`.
+- Single next action: Hold after delivery-quality infinitive repair. Govern whether `governed_delivery_quality` can map to an existing canonical capability before repairing requirements evidence standards.
+
 ### Business framing infinitive signal repaired (`CAREERTWIN_BUSINESS_FRAMING_INFINITIVE_SIGNAL_REPAIRED`)
 
 - Wrapped-bullet extraction repair was already complete. The next proven founder false negative was the performed infinitive `translate` in CV A's business-problem framing evidence.
@@ -483,7 +493,7 @@ Completed evidence-field transition repair:
 - The prior evidence-field review replay/status-validation defect is closed; this line has no remaining active defect.
 
 Single main next action:
-- Hold after framing infinitive repair. Govern whether `framed_business_problem` can map to an existing canonical building block before repairing another founder signal.
+- Hold after delivery-quality infinitive repair. Govern whether `governed_delivery_quality` can map to an existing canonical capability before repairing requirements evidence standards.
 
 Explicit non-reopen boundaries:
 - Do not reopen the source revision producer, source identity manifest, review decision identity contract, review revision producer, `SharedCareerIngestionBundle` contract, browser shared-ingestion adapter, or browser shared-ingestion runtime architecture.
