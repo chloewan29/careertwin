@@ -68,12 +68,20 @@ Current mode:
 - `HOLD`
 
 Current task type:
-- refined universal-token mapping governance complete / signal coverage audit pending
+- wrapped resume bullet evidence preservation complete / refined morphology audit pending
 
 Current active question:
-- Which former broad-token founder evidence no longer emits a refined token, before any signal threshold is changed?
+- Which remaining founder false negatives are caused by exact morphology or bounded predicates after source evidence is structurally complete?
 
 Completed Career Map milestone:
+- `CAREERTWIN_WRAPPED_RESUME_BULLET_EVIDENCE_PRESERVED`
+- the coverage-loss diagnostic separated four correct broad-token removals from four true-positive losses and identified PDF wrapped-bullet fragmentation as the first upstream repair boundary
+- implementation `4b0ae92` (`fix(career): preserve wrapped resume bullet evidence`) keeps structurally safe contiguous bullet continuations in one source-provenanced record while preserving independent bullets, blank boundaries, headings, employment/date transitions, and standalone prose
+- composed evidence preserves raw text order, contiguous offsets, deterministic identity, and `unreviewed` trust; unchanged single-line evidence retains its prior identity form
+- privacy-safe replay: CV A remains 33 evidence and the same two capabilities; CV B changes from 33 fragmented records to 20 composed records, with E03/E04, E13/E14, and E29/E30 each recomposed and the same three unique capabilities retained
+- investigation morphology and other bounded-rule defects remain separate; no signal/mapping/ontology/state/UI behavior was changed
+- focused tests, all 42 Career Possibility tests, exact-file ESLint, TypeScript, production build, and `git diff --check` passed; mode returned to `HOLD`
+- next action: Hold after wrapped-bullet evidence repair. Re-run the founder refined-signal trace and audit only the remaining morphology and bounded-predicate false negatives before changing any signal rule.
 - `CAREERTWIN_REFINED_UNIVERSAL_TOKENS_MAPPED_TO_CANONICAL_CAPABILITIES`
 - implementation `2cf9672` (`feat(career): map refined signals to canonical capabilities`) reuses the existing 51-ID ontology and plural inference, governing all 14 refined tokens under mapping policy `1.3.0` with 11 rules
 - exactly `built_reusable_tooling -> tooling-enablement -> transferable_signal` is admitted; it does not claim adoption or a complete enablement outcome
@@ -276,7 +284,7 @@ Tailored CV flow closure note (2026-05-15):
 ## 3. One main next action
 
 Main next action:
-- Hold after refined-token mapping. Audit the former broad-token founder evidence that no longer emits refined tokens before changing any signal threshold.
+- Hold after wrapped-bullet evidence repair. Re-run the founder refined-signal trace and audit only the remaining morphology and bounded-predicate false negatives before changing any signal rule.
 
 Not the next action:
 - do not treat the closed `stale_review_status` evidence-field defect as active

@@ -1,5 +1,15 @@
 # Current System Memory
 
+### Wrapped resume bullet evidence preserved (`CAREERTWIN_WRAPPED_RESUME_BULLET_EVIDENCE_PRESERVED`)
+
+- The refined-signal coverage diagnostic reproduced eight historical founder broad-token emissions: four were expected false-positive removals and four were true-positive refined-signal losses. The first upstream fault was PDF-wrapped bullet fragmentation, not mapping, ontology, state, or UI.
+- Implementation `4b0ae92` (`fix(career): preserve wrapped resume bullet evidence`) keeps a bullet and structurally safe contiguous continuation lines in one source-provenanced evidence record. New bullets, blank boundaries, headings, employment/date transitions, and identified standalone prose remain separate.
+- Composed evidence preserves original text order and contiguous offsets. Its deterministic identity includes sequence, composed offsets, and a bounded source-text fingerprint; unchanged single-line evidence retains the existing identity form. No fragmented continuation record is duplicated.
+- Privacy-safe replay: CV A remains 33 evidence, five structured signals, two admitted mappings, and capabilities `analytics-governance` and `insight-synthesis`. CV B changes from 33 fragmented records to 20 composed records; the diagnosed E03/E04, E13/E14, and E29/E30 pairs each become one record. CV B has four structured signals and four admitted mappings but retains the same unique capabilities: `insight-synthesis`, `people-leadership`, and `strategic-analysis`.
+- The recomposed investigation evidence still emits no refined investigation token because gerund/finite-action morphology remains a separate defect. The other two composed pairs do not invent recurrence or reusability semantics. Signal policy `1.3.0`/48 rules and mapping policy `1.3.0`/11 rules are unchanged.
+- No parser dependency, canonical capability, role profile, inference, state/storage, materializer, UI, Job Copilot/server, API/Supabase/package, review, or supplementation change occurred. Focused extractor/diagnostic/bridge tests, all 42 Career Possibility tests, exact-file ESLint, TypeScript, production build, and `git diff --check` passed; mode returned to `HOLD`.
+- Single next action: Hold after wrapped-bullet evidence repair. Re-run the founder refined-signal trace and audit only the remaining morphology and bounded-predicate false negatives before changing any signal rule.
+
 ### Refined universal tokens mapped to canonical capabilities (`CAREERTWIN_REFINED_UNIVERSAL_TOKENS_MAPPED_TO_CANONICAL_CAPABILITIES`)
 
 - The existing 51-ID universal ontology and plural canonical inference were reused. Implementation `2cf9672` (`feat(career): map refined signals to canonical capabilities`) governs all 14 refined tokens and advances only the bounded mapping policy from `1.2.0`/10 rules to `1.3.0`/11 rules.
