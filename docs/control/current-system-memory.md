@@ -177,6 +177,17 @@ Last updated: 2026-08-04
 - Focused canonical inference and provisional-equivalence tests, the full Career Possibility suite, exact-file ESLint, TypeScript, production build, and `git diff --check` passed. Mode returned to `HOLD`.
 - Single next action: Hold after canonical inference extraction. Admit only the obvious canonical mapping group after founder-signal-to-library governance is confirmed.
 
+### Founder-CV canonical mapping Group A (`CAREERTWIN_FOUNDER_CV_CANONICAL_MAPPING_GROUP_A_ADMITTED`)
+
+- Group A is complete at `f24daf34696fc9dd36cc0f4e114d7112402c9301` (`feat(career): admit founder cv canonical mapping group a`). Mapping policy advances from `provisional-resume-mapping-policy/1.0.0` to `1.1.0` and contains nine authored rules total.
+- Exactly four canonical direct-evidence rules were added: `performed_strategic_analysis -> strategic-analysis`, `synthesised_executive_insight -> insight-synthesis`, `established_analytics_governance -> analytics-governance`, and `led_analytics_team -> people-leadership`. All destination slugs already existed in canonical registry `1.2.0`.
+- The legacy Insight rule excludes the more specific executive-synthesis token, so evidence carrying both the old `synthesised_findings + informed_decision` path and the new executive token yields one deterministic `insight-synthesis/direct_evidence` relationship. Existing conflicting-capability and conflicting-relationship cases remain fail-closed.
+- Privacy-safe local replay emitted aggregate diagnostics only. CV A produced 33 evidence records, 8 structured signals, 2 Group A tokens, 2 admitted mappings, 2 unique capabilities (`analytics-governance`, `insight-synthesis`), 6 mapping-unsupported, and 0 mapping-unresolved. CV B produced 33 evidence records, 6 structured signals, 3 Group A tokens, 3 admitted mappings, 3 unique capabilities (`insight-synthesis`, `people-leadership`, `strategic-analysis`), 3 mapping-unsupported, and 0 mapping-unresolved. Both materialized successfully and avoided `no_unambiguous_mappings`.
+- Deferred tokens `designed_measurement_framework`, `provided_analytics_business_advice`, `owned_analytics_product`, `performed_investigative_analysis`, and `enabled_analytics_workflow` remain inactive as `unsupported/no_canonical_rule`; semantic-collapse guards prevent them from entering adjacent canonical concepts.
+- Signal policy, canonical library, parser/structure, inference owner, provisional wrapper, materializer, state/storage, UI, Job Copilot, legacy server inference, API/Supabase, packages, Slice 4, and supplementation remain unchanged. Mode returned to `HOLD`.
+- Focused canonical/wrapper/bridge/diagnostic tests, all 36 Career Possibility test files, exact-file ESLint, TypeScript, production build, and `git diff --check` passed.
+- Single next action: Hold after Group A mapping admission. Re-run the founder upload flow in the browser before governing the deferred measurement, business-advice, product-ownership, investigative-analysis, or workflow-enablement mappings.
+
 ### Career Map V1 closure (`CAREER_MAP_V1_COMPLETE`, `CAREER_MAP_V1_LANDING_STATE_HANDOFF_REPAIRED`, `CAREERTWIN_V1_ROOT_INLINE_INTAKE_COMPLETE`, `CAREERTWIN_V1_ENTRY_RESULT_ROUTES_CORRECTED`)
 
 Current active line and mode:

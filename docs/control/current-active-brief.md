@@ -68,12 +68,13 @@ Current mode:
 - `HOLD`
 
 Current task type:
-- canonical personal-capability inference owner extraction closed / mapping governance pending
+- founder-CV canonical mapping Group A closed / browser founder-flow replay pending
 
 Current active question:
-- Which obvious founder-signal mappings can be admitted after signal-to-library governance is confirmed?
+- Does the real browser upload flow now materialize the admitted Group A capabilities correctly before deferred mapping governance begins?
 
 Completed Career Map milestone:
+- `CAREERTWIN_FOUNDER_CV_CANONICAL_MAPPING_GROUP_A_ADMITTED`
 - `CAREERTWIN_CANONICAL_PERSONAL_CAPABILITY_INFERENCE_OWNER_ESTABLISHED`
 - `CAREERTWIN_FOUNDER_CV_SIGNAL_COVERAGE_REPAIRED`
 - `CAREERTWIN_EVIDENCE_SIGNAL_COVERAGE_EXPANDED`
@@ -88,6 +89,13 @@ Completed Career Map milestone:
 - `CAREER_MAP_V1_LANDING_STATE_HANDOFF_REPAIRED`
 - `CAREERTWIN_V1_ROOT_INLINE_INTAKE_COMPLETE`
 - `CAREERTWIN_V1_ENTRY_RESULT_ROUTES_CORRECTED`
+- Group A is implemented at `f24daf34696fc9dd36cc0f4e114d7112402c9301` (`feat(career): admit founder cv canonical mapping group a`) with mapping policy `1.1.0` and exactly four new `direct_evidence` rules: `performed_strategic_analysis -> strategic-analysis`, `synthesised_executive_insight -> insight-synthesis`, `established_analytics_governance -> analytics-governance`, and `led_analytics_team -> people-leadership`
+- the old/new Insight paths deterministically yield one `insight-synthesis/direct_evidence` relationship; different capability matches remain governed by the existing fail-closed singular-result contract
+- privacy-safe real-file replay: CV A produced 33 evidence, 8 structured signals, 2 admitted mappings, 2 unique capabilities, 6 mapping-unsupported, 0 unresolved; CV B produced 33 evidence, 6 structured signals, 3 admitted mappings, 3 unique capabilities, 3 mapping-unsupported, 0 unresolved; both avoided `no_unambiguous_mappings`
+- `designed_measurement_framework`, `provided_analytics_business_advice`, `owned_analytics_product`, `performed_investigative_analysis`, and `enabled_analytics_workflow` remain unmapped with `no_canonical_rule`
+- no signal/capability/parser/state/storage/materializer/UI/Job Copilot/server-inference/API/Supabase/package expansion or migration occurred
+- focused tests, privacy-safe replay, all 36 Career Possibility test files, exact-file ESLint, TypeScript, production build, and `git diff --check` passed
+- next action: Hold after Group A mapping admission. Re-run the founder upload flow in the browser before governing the deferred measurement, business-advice, product-ownership, investigative-analysis, or workflow-enablement mappings.
 - architecture reconciliation found two active role-independent inference authorities: the legacy server `inferCapabilities` owner and the direct-upload provisional mapper; Option C is accepted, with one canonical role-independent personal-capability inference owner and separate JD-conditioned Job Copilot retrieval/scoring
 - implementation `402f352307775dbc3e25bbd4726bc67550177b6e` (`refactor(career): establish canonical personal capability inference owner`) extracts trust-neutral semantic inference into `canonical-personal-capability-inference.ts`; the provisional mapper is now a compatibility wrapper
 - existing mapping identities, rule/provenance data, direct/transferable relationships, admitted/unresolved/unsupported behavior, and `unreviewed` wrapper output are preserved; trust/review remains outside canonical inference
