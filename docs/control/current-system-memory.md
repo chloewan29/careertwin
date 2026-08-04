@@ -1,5 +1,15 @@
 # Current System Memory
 
+### Refined universal tokens mapped to canonical capabilities (`CAREERTWIN_REFINED_UNIVERSAL_TOKENS_MAPPED_TO_CANONICAL_CAPABILITIES`)
+
+- The existing 51-ID universal ontology and plural canonical inference were reused. Implementation `2cf9672` (`feat(career): map refined signals to canonical capabilities`) governs all 14 refined tokens and advances only the bounded mapping policy from `1.2.0`/10 rules to `1.3.0`/11 rules.
+- Exactly one mapping is admitted: `built_reusable_tooling -> tooling-enablement -> transferable_signal`. Reusable-tool construction is transferable evidence, but does not claim user adoption or a complete enablement outcome.
+- Deferred for signal-evidence standards: `framed_business_problem`, `advised_decision_maker`, `prioritised_delivery`, `investigated_anomaly`, `isolated_meaningful_pattern`, `enabled_platform_adoption`, and `designed_ai_assisted_workflow`. Deferred for canonical definition: `automated_recurring_workflow` and `standardised_workflow`. Deferred for ontology gaps: `owned_product_or_service`, `managed_requirements`, `governed_delivery_quality`, and `diagnosed_root_cause`.
+- Profile-local semantic gaps were not promoted: product/service ownership, requirements management, delivery-quality oversight, and root-cause diagnosis have no exact admitted canonical destination. In particular, `owned_product_or_service` is not Business Ownership, Roadmap Governance, Product Cadence, Cross-functional Delivery, or Tooling Enablement.
+- Privacy-safe founder replay remained unchanged. CV A: 33 evidence, capabilities `analytics-governance` and `insight-synthesis`, 3 unsupported, 0 unresolved. CV B: 33 evidence, capabilities `insight-synthesis`, `people-leadership`, and `strategic-analysis`, 0 unsupported, 0 unresolved. Neither CV emits `built_reusable_tooling`, so no Career Map node or browser check was added.
+- Signal policy remains `1.3.0`/48 rules. No canonical capability, role profile, canonical inference, parser, state/storage, materializer, UI, Job Copilot/server, API/Supabase/package, review, or supplementation behavior changed. All 42 Career Possibility tests, exact-file ESLint, TypeScript, production build, and `git diff --check` passed; mode returned to `HOLD`.
+- Single next action: Hold after refined-token mapping. Audit the former broad-token founder evidence that no longer emits refined tokens before changing any signal threshold.
+
 ### Deferred signals decomposed into universal tokens (`CAREERTWIN_DEFERRED_SIGNALS_DECOMPOSED_INTO_UNIVERSAL_TOKENS`)
 
 - CareerTwin's existing universal capability architecture and plural canonical inference were reused. Implementation `e02e4c2` (`refactor(career): decompose broad evidence signals`) changes only the semantic signal layer and advances its policy from `1.2.0`/45 rules to `1.3.0`/48 rules.

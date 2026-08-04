@@ -68,12 +68,20 @@ Current mode:
 - `HOLD`
 
 Current task type:
-- deferred signals decomposed into universal tokens / mapping governance pending
+- refined universal-token mapping governance complete / signal coverage audit pending
 
 Current active question:
-- Which refined universal tokens can safely map to existing canonical capability building blocks under evidence-specific positive and negative fixtures?
+- Which former broad-token founder evidence no longer emits a refined token, before any signal threshold is changed?
 
 Completed Career Map milestone:
+- `CAREERTWIN_REFINED_UNIVERSAL_TOKENS_MAPPED_TO_CANONICAL_CAPABILITIES`
+- implementation `2cf9672` (`feat(career): map refined signals to canonical capabilities`) reuses the existing 51-ID ontology and plural inference, governing all 14 refined tokens under mapping policy `1.3.0` with 11 rules
+- exactly `built_reusable_tooling -> tooling-enablement -> transferable_signal` is admitted; it does not claim adoption or a complete enablement outcome
+- 13 tokens remain explicitly deferred: seven for signal-evidence standards, two for canonical definition, and four ontology gaps; no profile-local requirement was promoted and `owned_product_or_service` remains unmapped
+- privacy-safe founder replay remains unchanged: CV A has 33 evidence and capabilities `analytics-governance`, `insight-synthesis`; CV B has 33 evidence and capabilities `insight-synthesis`, `people-leadership`, `strategic-analysis`
+- signal policy remains `1.3.0`/48 rules; no ontology, role-profile, canonical-inference, parser, state/storage, materializer, UI, Job Copilot/server, API/Supabase/package, review, or supplementation change occurred
+- all 42 Career Possibility tests, exact-file ESLint, TypeScript, production build, and `git diff --check` passed; mode returned to `HOLD`
+- next action: Hold after refined-token mapping. Audit the former broad-token founder evidence that no longer emits refined tokens before changing any signal threshold.
 - `CAREERTWIN_DEFERRED_SIGNALS_DECOMPOSED_INTO_UNIVERSAL_TOKENS`
 - implementation `e02e4c2` (`refactor(career): decompose broad evidence signals`) reuses the universal ontology and plural inference while replacing four domain-labelled parent signals with 14 narrower performed-work tokens under signal policy `1.3.0`
 - admitted dimensions cover business-problem framing and explicit advice; product/service ownership, requirements, prioritisation and delivery-quality governance; anomaly, root-cause and meaningful-pattern investigation; reusable tooling, recurring automation, workflow standardisation, platform adoption and designed AI-assisted workflow
@@ -268,7 +276,7 @@ Tailored CV flow closure note (2026-05-15):
 ## 3. One main next action
 
 Main next action:
-- Hold after universal token decomposition. Govern mappings from the refined tokens into existing canonical capability building blocks using evidence-specific positive and negative fixtures.
+- Hold after refined-token mapping. Audit the former broad-token founder evidence that no longer emits refined tokens before changing any signal threshold.
 
 Not the next action:
 - do not treat the closed `stale_review_status` evidence-field defect as active
