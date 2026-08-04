@@ -68,12 +68,21 @@ Current mode:
 - `HOLD`
 
 Current task type:
-- wrapped resume bullet evidence preservation complete / refined morphology audit pending
+- infinitive business-framing signal repair complete / canonical mapping governance pending
 
 Current active question:
-- Which remaining founder false negatives are caused by exact morphology or bounded predicates after source evidence is structurally complete?
+- Can `framed_business_problem` map truthfully to an existing canonical building block before another founder signal is repaired?
 
 Completed Career Map milestone:
+- `CAREERTWIN_BUSINESS_FRAMING_INFINITIVE_SIGNAL_REPAIRED`
+- wrapped-bullet extraction repair was already complete; the next proven false negative was infinitive business framing
+- implementation `7162c92` (`fix(career): admit infinitive business framing`) adds only `translate` to the existing `framed_business_problem` action alternatives and advances signal policy from `1.3.0` to `1.4.0` while retaining 48 rules
+- business-problem object, analytical-output, order, distance, punctuation, hypothetical/requirement, and conflict guards remain; no other morphology or broad token was admitted
+- privacy-safe CV A replay retains 33 evidence and changes the framing token from zero to one; structured/unsupported/unresolved remain 5/27/1
+- no canonical capability or mapping was added, so the founder Career Map remains `analytics-governance` and `insight-synthesis`
+- adoption, requirements, delivery quality, anomaly, root cause, pattern, and standardisation issues remain separate; no extractor, state/storage, materializer, UI, Job Copilot/server, API/Supabase/package, review, or supplementation behavior changed
+- focused tests, founder replay, all 42 Career Possibility tests, exact-file ESLint, TypeScript, production build, and `git diff --check` passed; mode returned to `HOLD`
+- next action: Hold after framing infinitive repair. Govern whether `framed_business_problem` can map to an existing canonical building block before repairing another founder signal.
 - `CAREERTWIN_WRAPPED_RESUME_BULLET_EVIDENCE_PRESERVED`
 - the coverage-loss diagnostic separated four correct broad-token removals from four true-positive losses and identified PDF wrapped-bullet fragmentation as the first upstream repair boundary
 - implementation `4b0ae92` (`fix(career): preserve wrapped resume bullet evidence`) keeps structurally safe contiguous bullet continuations in one source-provenanced record while preserving independent bullets, blank boundaries, headings, employment/date transitions, and standalone prose

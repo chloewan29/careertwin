@@ -1,5 +1,15 @@
 # Current System Memory
 
+### Business framing infinitive signal repaired (`CAREERTWIN_BUSINESS_FRAMING_INFINITIVE_SIGNAL_REPAIRED`)
+
+- Wrapped-bullet extraction repair was already complete. The next proven founder false negative was the performed infinitive `translate` in CV A's business-problem framing evidence.
+- Implementation `7162c92` (`fix(career): admit infinitive business framing`) adds only `translate` to `signal/action/framed-business-problem`, preserving `translated|framed|defined`, all object/output/order/distance/punctuation/exclusion guards, and the 48-rule inventory. Signal policy advances from `1.3.0` to `1.4.0` so deterministic signal identity participates in the behavior change.
+- `translating`, `frame`, `framing`, `define`, `defining`, and all `shape` variants remain excluded. Dashboard, documentation, language translation, generic support/analysis, hypothetical, requirement-style, title-only, and skills-list language remain insufficient. Existing exclusive-rule conflict behavior remains fail-closed.
+- Privacy-safe founder replay: CV A remains 33 evidence. `framed_business_problem` changes from zero to one while structured/unsupported/unresolved remain 5/27/1. Mapping remains two admitted capabilities, `analytics-governance` and `insight-synthesis`, because framing still has no canonical mapping rule. The founder Career Map therefore remains unchanged.
+- Adoption, requirements, delivery quality, anomaly, root-cause, pattern, and standardisation issues remain separate. No canonical capability, mapping rule, role profile, canonical inference, extractor, state/storage, materializer, UI, Job Copilot/server, API/Supabase/package, broad token, review, or supplementation behavior changed.
+- Focused morphology/guard/determinism tests, founder CV A replay, all 42 Career Possibility tests, exact-file ESLint, TypeScript, production build, and `git diff --check` passed; mode returned to `HOLD`.
+- Single next action: Hold after framing infinitive repair. Govern whether `framed_business_problem` can map to an existing canonical building block before repairing another founder signal.
+
 ### Wrapped resume bullet evidence preserved (`CAREERTWIN_WRAPPED_RESUME_BULLET_EVIDENCE_PRESERVED`)
 
 - The refined-signal coverage diagnostic reproduced eight historical founder broad-token emissions: four were expected false-positive removals and four were true-positive refined-signal losses. The first upstream fault was PDF-wrapped bullet fragmentation, not mapping, ontology, state, or UI.
@@ -473,7 +483,7 @@ Completed evidence-field transition repair:
 - The prior evidence-field review replay/status-validation defect is closed; this line has no remaining active defect.
 
 Single main next action:
-- Hold after signal coverage expansion. Re-run founder CV validation before admitting mapping coverage or résumé structure repair.
+- Hold after framing infinitive repair. Govern whether `framed_business_problem` can map to an existing canonical building block before repairing another founder signal.
 
 Explicit non-reopen boundaries:
 - Do not reopen the source revision producer, source identity manifest, review decision identity contract, review revision producer, `SharedCareerIngestionBundle` contract, browser shared-ingestion adapter, or browser shared-ingestion runtime architecture.
