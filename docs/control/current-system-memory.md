@@ -1,5 +1,17 @@
 # Current System Memory
 
+### Deferred founder capability mappings governed (`CAREERTWIN_DEFERRED_FOUNDER_CAPABILITY_MAPPINGS_GOVERNED`)
+
+- The founder confirmed the shared Career Map skeleton is correctly connected to real CV data; its sparsity is caused by bounded semantic mappings rather than rendering.
+- Implementation `3bb9fd2` (`feat(career): govern deferred founder capability mappings`) admits one exact Group B rule: `designed_measurement_framework -> measurement-design -> direct_evidence`. Mapping policy is now `provisional-resume-mapping-policy/1.2.0` with ten authored rules; signal policy remains `provisional-evidence-signal-policy/1.2.0` with 45 rules.
+- Governance decisions are explicit: measurement-framework design is directly admitted; analytics business advice, analytics product ownership, and investigative analysis require future canonical capability expansion; broad analytics workflow enablement requires token refinement before any mapping.
+- Unsafe adjacency remains prohibited: measurement is not Research Design; advice is not Insight Synthesis or Strategic Analysis; analytics-product ownership is not Product Insights or Business Ownership; investigation is not Strategic Analysis; broad workflow enablement is not Tooling Enablement or Process Improvement.
+- Privacy-safe replay of the currently displayed founder CV remained at 33 evidence, 8 structured signals, 2 admitted mappings, and two capabilities (`analytics-governance`, `insight-synthesis`) because it contained no measurement-design token. Its advice/product/workflow signals remain unsupported with zero unresolved mappings. No richer-map claim or browser node check was made.
+- The second accepted founder replay remains the prior aggregate baseline of 33 evidence, 6 structured signals, 3 admitted mappings, three capabilities (`insight-synthesis`, `people-leadership`, `strategic-analysis`), 3 unsupported, and 0 unresolved; its deferred investigation/workflow evidence is unaffected by this rule. The exact historical source fixture was not re-identified during closure, so this result remains accepted prior replay evidence rather than a fresh file replay.
+- No canonical capability, signal token, signal rule, inference-owner, parser, state/storage, materializer, skeleton/UI, API/Supabase/package, Job Copilot/server, unmapped-evidence UI, review, or supplementation change occurred. Mode returned to `HOLD`.
+- Focused governance/mapping coverage, all 38 Career Possibility test files, exact-file ESLint, TypeScript, production build, and `git diff --check` passed.
+- Single next action: Hold after deferred mapping governance. Founder re-uploads both CVs and validates the richer personal Career Map before any canonical capability expansion, unmapped-experience visibility, or review workflow is admitted.
+
 ### Personal state connected to the Career Map skeleton (`CAREERTWIN_PERSONAL_STATE_CONNECTED_TO_CAREER_MAP_SKELETON`)
 
 - The founder confirmed the original `CapabilityExplorer` skeleton is the intended personal result product. The later flat personal capability-card result was an integration detour rather than a second authoritative Career Map.

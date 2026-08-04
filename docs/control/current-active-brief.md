@@ -68,12 +68,20 @@ Current mode:
 - `HOLD`
 
 Current task type:
-- personal-state-to-Career-Map-skeleton integration closed / founder validation pending
+- deferred founder capability mapping governance closed / founder re-upload validation pending
 
 Current active question:
-- Do uploaded CV capabilities and evidence now appear in the founder's intended Career Map visual language before any further product workflow is admitted?
+- Do both founder CVs remain truthful after re-upload before any ontology expansion, unmapped-experience visibility, or review workflow is admitted?
 
 Completed Career Map milestone:
+- `CAREERTWIN_DEFERRED_FOUNDER_CAPABILITY_MAPPINGS_GOVERNED`
+- founder validation confirmed the shared skeleton was correctly rendering real data; the remaining sparsity was traced to deferred semantic mappings, not presentation
+- implementation `3bb9fd2` (`feat(career): govern deferred founder capability mappings`) admits exactly `designed_measurement_framework -> measurement-design -> direct_evidence` and advances the bounded mapping policy from `1.1.0` to `1.2.0` with ten rules
+- `provided_analytics_business_advice`, `owned_analytics_product`, and `performed_investigative_analysis` remain deferred pending exact canonical capability expansion; `enabled_analytics_workflow` requires token refinement before mapping
+- privacy-safe replay found no `designed_measurement_framework` token in the currently displayed founder CV, so its capabilities remain `analytics-governance` and `insight-synthesis`; no richer-map claim or browser node check was made
+- no signal policy, canonical library, inference owner, parser, state/storage, materializer, UI, API/Supabase/package, Job Copilot, review, or supplementation behavior changed
+- focused governance and mapping tests, all 38 Career Possibility test files, exact-file ESLint, TypeScript, production build, and `git diff --check` passed; mode returned to `HOLD`
+- next action: Hold after deferred mapping governance. Founder re-uploads both CVs and validates the richer personal Career Map before any canonical capability expansion, unmapped-experience visibility, or review workflow is admitted.
 - `CAREERTWIN_PERSONAL_STATE_CONNECTED_TO_CAREER_MAP_SKELETON`
 - founder confirmed the original `CapabilityExplorer` skeleton is the intended result product; the flat personal card renderer was an integration detour
 - implementation `e6bb584` (`feat(career): connect personal state to career map skeleton`) establishes a shared explorer view-model contract, keeps Hero mock data and personal real data separate, and routes the existing validated personal presentation through the shared skeleton
@@ -243,7 +251,7 @@ Tailored CV flow closure note (2026-05-15):
 ## 3. One main next action
 
 Main next action:
-- Hold after founder-CV signal repair. Audit structured signals against the existing canonical capability library before admitting mapping-policy expansion.
+- Hold after deferred mapping governance. Founder re-uploads both CVs and validates the richer personal Career Map before any canonical capability expansion, unmapped-experience visibility, or review workflow is admitted.
 
 Not the next action:
 - do not treat the closed `stale_review_status` evidence-field defect as active
