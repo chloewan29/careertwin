@@ -114,8 +114,18 @@ Last updated: 2026-08-04
 - Competing per-field signals and ownership/participation conflicts return unresolved. No authored rule returns unsupported. Neither outcome creates capability or mapping truth.
 - Focused integration proves direct Slice 2A admission for the five covered paths and downstream exclusion for ambiguous/unsupported fixtures. All 32 Career Possibility tests, exact-file ESLint, TypeScript, production build, and diff checks passed.
 - No existing extractor, Slice 2A, Slice 2B, UI, route, state, storage, package, API, Supabase, Job Copilot, or supplementation file changed.
-- Slice 3 remains unopened and mode is `HOLD`.
-- Single next action: Hold after the evidence-signal bridge. Reopen Slice 3 only after the end-to-end text-to-provisional-state chain passes a bounded orchestration audit.
+- Slice 3 remained unopened pending the pure full-chain orchestration audit.
+
+### Provisional text-build orchestration (`CAREERTWIN_PROVISIONAL_BUILD_ORCHESTRATION_COMPLETE`)
+
+- The pure orchestrator is complete at `0968e70` (`feat(career): compose provisional career map build`). It composes the existing text extractor, evidence-signal bridge, Slice 2A mapper, and Slice 2B materializer without adding lexical rules, tokens, matching rules, guessing, scoring, or review promotion.
+- Input is extracted text, minimal source metadata, caller-supplied accepted source revision and opaque extraction identities, canonical version context, definitions, and caller-supplied non-semantic timestamps. It accepts no File and performs no PDF/DOCX parsing.
+- Every extracted evidence item is classified exactly once. Structured evidence enters Slice 2A unchanged; bridge ambiguity becomes inactive unresolved evidence; bridge unsupported evidence becomes inactive `no_canonical_rule` evidence. No fallback mapping occurs.
+- The nine-fixture audit passed direct, mixed, transferable, admitted-plus-unsupported, admitted-plus-ambiguous, all-unsupported, all-ambiguous, title-only, and tool-only paths. `unexpectedly lost evidence = 0`.
+- Successful output is deterministic validated LocalCareerMapState schema `2.0.0` with `source=provisional_resume`, `mapTrustStatus=provisional`, unreviewed evidence/mappings, intact identities and cross-references, and no confidence or fit score.
+- All 33 Career Possibility tests, exact-file ESLint, TypeScript, production build, and diff checks passed. Storage, UI, routes, packages, APIs, Supabase, Job Copilot, and supplementation remain untouched.
+- Slice 3 is now admitted but not started; mode is `HOLD`.
+- Single next action: Reopen Slice 3 for root Upload CV UI and browser-local file-to-provisional-map composition.
 
 ### Career Map V1 closure (`CAREER_MAP_V1_COMPLETE`, `CAREER_MAP_V1_LANDING_STATE_HANDOFF_REPAIRED`, `CAREERTWIN_V1_ROOT_INLINE_INTAKE_COMPLETE`, `CAREERTWIN_V1_ENTRY_RESULT_ROUTES_CORRECTED`)
 
@@ -322,7 +332,7 @@ Completed evidence-field transition repair:
 - The prior evidence-field review replay/status-validation defect is closed; this line has no remaining active defect.
 
 Single main next action:
-- Hold after the evidence-signal bridge. Reopen Slice 3 only after the end-to-end text-to-provisional-state chain passes a bounded orchestration audit.
+- Reopen Slice 3 for root Upload CV UI and browser-local file-to-provisional-map composition.
 
 Explicit non-reopen boundaries:
 - Do not reopen the source revision producer, source identity manifest, review decision identity contract, review revision producer, `SharedCareerIngestionBundle` contract, browser shared-ingestion adapter, or browser shared-ingestion runtime architecture.

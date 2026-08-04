@@ -74,6 +74,7 @@ Current active question:
 - Is there an explicitly admitted founder decision to reopen Career Map scope for V2 planning?
 
 Completed Career Map milestone:
+- `CAREERTWIN_PROVISIONAL_BUILD_ORCHESTRATION_COMPLETE`
 - `CAREERTWIN_EVIDENCE_SIGNAL_BRIDGE_COMPLETE`
 - `CAREERTWIN_PROVISIONAL_STATE_SLICE_2B_COMPLETE`
 - `CAREERTWIN_PROVISIONAL_MAPPING_SLICE_2A_COMPLETE`
@@ -96,12 +97,16 @@ Completed Career Map milestone:
 - the bridge preserves evidence identity, source locator, excerpt, and `unreviewed` status; it creates no capability or mapping IDs and performs no UI, state, storage, network, LLM, embedding, or fuzzy work
 - direct, transferable, insight-synthesis, cross-functional-delivery, and process-improvement fixtures flow directly into Slice 2A; competing action/ownership signals remain unresolved and uncovered evidence remains unsupported
 - Slice 3 remains unopened pending a bounded full-chain orchestration audit
+- the pure text-to-provisional-state orchestrator is implemented at `0968e70` (`feat(career): compose provisional career map build`), composing the existing extractor, signal bridge, Slice 2A mapper, and Slice 2B materializer without new semantic rules
+- its structural adapter retains bridge ambiguity as inactive unresolved evidence and uncovered evidence as inactive unsupported evidence; it creates no fallback mapping, capability, review promotion, storage access, network call, or UI dependency
+- the nine-fixture audit passed direct, mixed, transferable, admitted-plus-unsupported, admitted-plus-ambiguous, all-unsupported, all-ambiguous, title-only, and tool-only paths with `unexpectedly lost evidence = 0`
+- deterministic valid schema `2.0.0` provisional state is now proven from extracted text; Slice 3 is admitted but not started
 - browser-local PDF and DOCX extraction is admitted through `pdf-parse@2.4.5` and `mammoth@1.11.0`; PDF uses a same-origin bundled PDF.js worker, scanned/image-only PDFs are unsupported, and no OCR is introduced
 - raw binary and extracted full text remain page-memory only; the extractor performs no fetch, API, Supabase, persistence, telemetry, or logging
 - deterministic failures cover unsupported/mismatched types, empty/oversized files, protected or no-text PDFs, malformed documents, unavailable parsers, and bounded unexpected failures
 - persistent-Chrome real-browser validation passed valid PDF and DOCX extraction with localhost-only bundle/worker requests, no `/api/parse-resume` or Supabase traffic, unchanged localStorage, empty IndexedDB/Cache Storage, and no runtime errors
 - implementation commit: `ca573a2` (`feat(career): add browser-local CV text extraction`)
-- next action: Hold after the evidence-signal bridge. Reopen Slice 3 only after the end-to-end text-to-provisional-state chain passes a bounded orchestration audit.
+- next action: Reopen Slice 3 for root Upload CV UI and browser-local file-to-provisional-map composition.
 - release-readiness decision: `V1_RELEASE_READY_WITH_KNOWN_LIMITATIONS`
 - final verified implementation baseline: `73a976bd67d1360814f893533e5f3812b84473c6`
 - founder correction to the prior route misunderstanding: `/` owns product proposition plus résumé entry, while `/career-map` owns only the resulting personal Career Map or a compact no-map state
@@ -197,7 +202,7 @@ Tailored CV flow closure note (2026-05-15):
 ## 3. One main next action
 
 Main next action:
-- Hold after the evidence-signal bridge. Reopen Slice 3 only after the end-to-end text-to-provisional-state chain passes a bounded orchestration audit.
+- Reopen Slice 3 for root Upload CV UI and browser-local file-to-provisional-map composition.
 
 Not the next action:
 - do not treat the closed `stale_review_status` evidence-field defect as active
