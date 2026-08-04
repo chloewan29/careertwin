@@ -68,12 +68,13 @@ Current mode:
 - `HOLD`
 
 Current task type:
-- evidence-signal coverage expansion closure / founder revalidation
+- founder-CV signal coverage repair closed / mapping admission audit pending
 
 Current active question:
-- Does founder CV revalidation now reach reliable existing capability mappings, or does the next funnel expose a separate mapping/structure boundary?
+- Which structured founder-CV signals can truthfully enter the existing canonical capability library before any mapping-policy expansion is admitted?
 
 Completed Career Map milestone:
+- `CAREERTWIN_FOUNDER_CV_SIGNAL_COVERAGE_REPAIRED`
 - `CAREERTWIN_EVIDENCE_SIGNAL_COVERAGE_EXPANDED`
 - `CAREERTWIN_REAL_CV_INGESTION_DIAGNOSTIC_COMPLETE`
 - `CAREERTWIN_DIRECT_UPLOAD_BUILD_SLICE_3_COMPLETE`
@@ -112,7 +113,12 @@ Completed Career Map milestone:
 - Slice 3 is implemented at `ed1ac57` (`feat(career): add direct CV to career map flow`): `/` now combines a contained interactive example with one immediate PDF/DOCX upload action; local extraction composes into validated provisional state, one atomic browser-local write, and direct `/career-map` navigation.
 - Persistent-CDP acceptance passed valid synthetic PDF and DOCX, both visible loading states, v2 provisional rendering, failure preservation, replacement semantics, responsive layouts, localhost-only traffic, and absence of service workers or Cache Storage.
 - Slice 4 optional review and missing-experience interactions remain unopened.
-- next action: Hold after signal coverage expansion. Re-run founder CV validation before admitting mapping coverage or résumé structure repair.
+- founder-CV signal coverage repair is implemented at `6de92f4` (`feat(career): expand founder cv signal coverage`) with policy `provisional-evidence-signal-policy/1.2.0`, 18 bounded tokens, and 45 authored rules
+- privacy-safe real-CV replay improved Founder CV A from 2/33 to 8/33 structured evidence and Founder CV B from 0/33 in the accepted pre-trace to 6/31 in the current production-parser replay; no new signal was auto-admitted by the unchanged mapper
+- nine new semantic tokens cover strategic analysis, executive insight synthesis, analytics governance, measurement-framework design, analytics business advice, analytics product ownership, people leadership, investigative analysis, and analytics workflow enablement
+- all nine new tokens are intentionally unmapped pending mapping governance; they retain evidence identity, remain `unreviewed`, enter the unchanged mapper, and return bounded unsupported rather than creating capability claims
+- parser/structure, mapping policy, canonical capability library, materializer, state/storage, UI, API, Supabase, packages, Slice 4, and supplementation remain unchanged
+- next action: Hold after founder-CV signal repair. Audit structured signals against the existing canonical capability library before admitting mapping-policy expansion.
 - release-readiness decision: `V1_RELEASE_READY_WITH_KNOWN_LIMITATIONS`
 - final verified implementation baseline: `73a976bd67d1360814f893533e5f3812b84473c6`
 - founder correction to the prior route misunderstanding: `/` owns product proposition plus résumé entry, while `/career-map` owns only the resulting personal Career Map or a compact no-map state
@@ -208,7 +214,7 @@ Tailored CV flow closure note (2026-05-15):
 ## 3. One main next action
 
 Main next action:
-- Hold after signal coverage expansion. Re-run founder CV validation before admitting mapping coverage or résumé structure repair.
+- Hold after founder-CV signal repair. Audit structured signals against the existing canonical capability library before admitting mapping-policy expansion.
 
 Not the next action:
 - do not treat the closed `stale_review_status` evidence-field defect as active

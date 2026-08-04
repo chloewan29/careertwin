@@ -154,6 +154,18 @@ Last updated: 2026-08-04
 - Mapping policy, capability library, materializer, state/storage, parser/structure, UI, API, Supabase, packages, Slice 4, and supplementation remain unchanged. Secondary wrapped-bullet, page-furniture, and two-column limitations remain unopened. Mode is `HOLD`.
 - Single next action: Hold after signal coverage expansion. Re-run founder CV validation before admitting mapping coverage or résumé structure repair.
 
+### Founder CV signal coverage repair (`CAREERTWIN_FOUNDER_CV_SIGNAL_COVERAGE_REPAIRED`)
+
+- The privacy-safe two-file trace established the pre-repair boundary at evidence-to-signal: Founder CV A produced 2/33 structured evidence and Founder CV B produced 0/33, with zero admitted mappings and no unexpected evidence loss.
+- The bounded repair is implemented at `6de92f4` (`feat(career): expand founder cv signal coverage`). Signal policy version is `provisional-evidence-signal-policy/1.2.0`; vocabulary expands from 9 to 18 tokens and the authored rule set from 20 to 45.
+- New bounded semantic areas are strategic analysis, executive insight synthesis, analytics governance, measurement-framework design, analytics business advice, analytics product ownership, people leadership, investigative analysis, and analytics workflow enablement.
+- Privacy-safe post-repair production replay produced 8/33 structured evidence for Founder CV A and 6/31 for Founder CV B. The current PDF replay yielded 31 evidence records rather than the earlier audit's 33; parser and structure owners were unchanged, so this denominator difference remains a measurement limitation rather than an admitted parser repair.
+- Every new semantic token is intentionally unmapped pending mapping governance. The unchanged mapper admitted 0 founder-CV mappings, returned bounded unsupported for all 14 structured records, and created no capability claim; one incompatible Founder CV A signal combination remained unresolved rather than guessed.
+- Evidence identity, source provenance, `unreviewed` status, deterministic signal identity, and inactive unsupported/unresolved retention remain authoritative. Duplicate rules emitting the same field/token are deterministically collapsed to one signal value while retaining authored rule provenance.
+- Existing canonical concepts verified as potentially relevant include People Leadership, Analytics Governance, Insight Synthesis, Product Insights, Business Ownership, Strategic Analysis, Tooling Enablement, and Cross-functional Delivery. No mapping or canonical-library admission has yet been made.
+- Parser/structure, mapping policy, capability library, materializer, state/storage, UI, API, Supabase, packages, Slice 4, and supplementation remain unchanged. Mode returned to `HOLD`.
+- Single next action: Hold after founder-CV signal repair. Audit structured signals against the existing canonical capability library before admitting mapping-policy expansion.
+
 ### Career Map V1 closure (`CAREER_MAP_V1_COMPLETE`, `CAREER_MAP_V1_LANDING_STATE_HANDOFF_REPAIRED`, `CAREERTWIN_V1_ROOT_INLINE_INTAKE_COMPLETE`, `CAREERTWIN_V1_ENTRY_RESULT_ROUTES_CORRECTED`)
 
 Current active line and mode:
