@@ -58,6 +58,47 @@ async function main() {
   for (const [id, text] of [["dashboard", "Built a dashboard."], ["analysis-only", "Analysed customer data."], ["improved-revenue", "Improved revenue."], ["enabled-growth", "Enabled growth."], ["designed-dashboard", "Designed a dashboard."], ["implemented-sql", "Implemented SQL."], ["responsible-analytics", "Responsible for analytics."], ["skills", "Skills: analytics, SQL, Tableau"], ["requirement", "Candidate will implement an experiment design."]] as const) assert.equal((await bridge(fixture(id, text))).status, "unsupported", id);
   const futureResearch = await bridge(fixture("future-research", "Would implement an experiment design.")); assert.equal(futureResearch.status, "structured"); if (futureResearch.status === "structured") assert.deepEqual(futureResearch.evidence.signals, [{ field: "context", value: "hypothetical" }]); assert.equal((await map(futureResearch))?.status, "unsupported");
 
+  const signalCases = [
+    ["strategic-risk", "Evaluated commercial trends, risks and opportunities for a planning decision.", "performed_strategic_analysis"],
+    ["strategic-case", "Developed an analytical case for a strategic decision.", "performed_strategic_analysis"],
+    ["executive-narrative", "Translated complex analysis into an executive narrative and recommendations.", "synthesised_executive_insight"],
+    ["executive-presented", "Presented findings and recommendations to senior leaders.", "synthesised_executive_insight"],
+    ["metric-governance", "Aligned KPI definitions and source logic to improve reporting consistency.", "established_analytics_governance"],
+    ["quality-governance", "Established QA routines and documentation standards for reporting.", "established_analytics_governance"],
+    ["dashboard-governance", "Reviewed the dashboard portfolio for consolidation and governance.", "established_analytics_governance"],
+    ["measurement-framework", "Designed a measurement framework for programme evaluation.", "designed_measurement_framework"],
+    ["incrementality", "Created an incrementality methodology for campaign evaluation.", "designed_measurement_framework"],
+    ["business-framing", "Translated ambiguous business questions into analysis and recommendations.", "provided_analytics_business_advice"],
+    ["business-advice", "Advised commercial leaders using evidence and recommendations.", "provided_analytics_business_advice"],
+    ["product-owner", "Owned an analytics product, its requirements and delivery quality.", "owned_analytics_product"],
+    ["workflow-owner", "Managed a reporting workflow, requirements and delivery quality.", "owned_analytics_product"],
+    ["workflow-repeatable", "Standardised a repeatable analytical production workflow.", "enabled_analytics_workflow"],
+    ["people-led", "Led and mentored analysts across the function.", "led_analytics_team"],
+    ["people-managed", "Managed a team of analysts.", "led_analytics_team"],
+    ["people-coached", "Coached analysts to build analytical capability.", "led_analytics_team"],
+    ["investigative", "Identified behavioural patterns, anomalies and root causes.", "performed_investigative_analysis"],
+    ["signal-noise", "Isolated signal from noise during an analytical deep dive.", "performed_investigative_analysis"],
+    ["ai-reusable", "Built a reusable AI-assisted analytics workflow.", "enabled_analytics_workflow"],
+    ["ai-validated", "Used an AI-assisted analytical workflow with explicit human validation.", "enabled_analytics_workflow"],
+  ] as const;
+  for (const [id, text, token] of signalCases) {
+    const result = await bridge(fixture(id, text)); assert.equal(result.status, "structured", id); if (result.status !== "structured") throw new Error(id);
+    assert.equal(result.evidence.signals.some((item) => item.value === token), true, id);
+    assert.equal(result.evidence.reviewStatus, "unreviewed", id); assert.equal("capabilityId" in result.evidence, false); assert.equal("mappingId" in result.evidence, false);
+    assert.equal((await map(result))?.status, "unsupported", `${id}: intentionally unmapped`);
+  }
+  const guardedCases = [
+    ["strategic-title", "Strategic leader"], ["commercial-skill", "Skills: commercial analytics"],
+    ["presented-dashboard", "Presented a dashboard."], ["executive-stakeholder", "Executive stakeholder"],
+    ["dashboard-tool", "Power BI dashboard"], ["measurement-report", "Delivered a measurement report."],
+    ["measurement-skill", "Skills: measurement"], ["generic-partner", "Partnered with Sales."],
+    ["stakeholder-names", "Sales, Product, Finance"], ["supported-product", "Supported an analytics product."],
+    ["lead-title", "Analytics Lead"], ["generic-analysis", "Analysed customer data."],
+    ["risk-only", "Risk analytics"], ["ai-skills", "Skills: AI, LLM, Python, Codex, Gemini"],
+    ["tool-names", "Python, Power BI, Tableau"], ["governance-only", "Analytics governance"],
+  ] as const;
+  for (const [id, text] of guardedCases) assert.equal((await bridge(fixture(id, text))).status, "unsupported", id);
+
   const unsupported = await bridge(fixture("unsupported", "Prepared weekly notes.")); assert.equal(unsupported.status, "unsupported"); if (unsupported.status === "unsupported") { assert.equal(unsupported.unresolved.reason, "no_authored_signal_rule"); assert.deepEqual(validateProvisionalEvidenceSignalUnresolved(unsupported.unresolved), []); }
   const invalid = await bridge({ evidence: { ...fixture("invalid", "Designed research.").evidence, reviewStatus: "confirmed" }, sourceSpans: fixture("invalid", "Designed research.").sourceSpans }); assert.equal(invalid.status, "unresolved"); if (invalid.status === "unresolved") assert.equal(invalid.unresolved.reason, "invalid_evidence");
   const duplicatePolicy: ProvisionalEvidenceSignalPolicy = { ...provisionalEvidenceSignalPolicy, rules: [provisionalEvidenceSignalPolicy.rules[0], provisionalEvidenceSignalPolicy.rules[0]] }; assert.equal(validateProvisionalEvidenceSignalPolicy(duplicatePolicy).some((item) => item.code === "duplicate_rule_id"), true); const invalidPolicy = await bridge(fixture("invalid-policy", "Designed research."), duplicatePolicy); assert.equal(invalidPolicy.status, "unresolved"); if (invalidPolicy.status === "unresolved") assert.equal(invalidPolicy.unresolved.reason, "invalid_signal_policy");
@@ -67,7 +108,7 @@ async function main() {
   const repeated = await bridge(fixture("research-direct", "Designed a research study for customer discovery.")); assert.deepEqual(repeated, direct);
   const differentId = await bridge(fixture("research-direct-2", "Designed a research study for customer discovery.", 100)); assert.equal(differentId.status, "structured"); if (differentId.status === "structured") assert.notEqual(differentId.evidence.signalIdentity, direct.evidence.signalIdentity);
   const changedPolicy = await bridge(fixture("research-direct", "Designed a research study for customer discovery."), { ...provisionalEvidenceSignalPolicy, policyVersion: "provisional-evidence-signal-policy/1.0.1" }); assert.equal(changedPolicy.status, "structured"); if (changedPolicy.status === "structured") assert.notEqual(changedPolicy.evidence.signalIdentity, direct.evidence.signalIdentity);
-  assert.equal(PROVISIONAL_EVIDENCE_SIGNAL_POLICY_VERSION, "provisional-evidence-signal-policy/1.1.0"); assert.equal(PROVISIONAL_EVIDENCE_SIGNAL_POLICY_VERSION, provisionalEvidenceSignalPolicy.policyVersion); assert.equal(provisionalEvidenceSignalPolicy.coverage, "bounded_non_exhaustive"); assert.equal(provisionalEvidenceSignalPolicy.vocabulary.length, 9); assert.equal(provisionalEvidenceSignalPolicy.rules.length, 20);
+  assert.equal(PROVISIONAL_EVIDENCE_SIGNAL_POLICY_VERSION, "provisional-evidence-signal-policy/1.2.0"); assert.equal(PROVISIONAL_EVIDENCE_SIGNAL_POLICY_VERSION, provisionalEvidenceSignalPolicy.policyVersion); assert.equal(provisionalEvidenceSignalPolicy.coverage, "bounded_non_exhaustive"); assert.equal(provisionalEvidenceSignalPolicy.vocabulary.length, 18); assert.equal(provisionalEvidenceSignalPolicy.rules.length, 45);
   assert.equal("capabilityId" in direct.evidence, false); assert.equal("mappingId" in direct.evidence, false);
   const source = ["provisional-evidence-signal-contract.ts", "provisional-evidence-signal-policy.ts", "provisional-evidence-signal-bridge.ts"].map((name) => readFileSync(new URL(`../../lib/career-possibility/${name}`, import.meta.url), "utf8")).join("\n"); assert.doesNotMatch(source, /\bfetch\s*\(|supabase|localStorage|indexedDB|openai|anthropic|embedding|fuzzy|react|next\//i);
 
