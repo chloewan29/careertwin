@@ -1,0 +1,39 @@
+import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+
+const workspace = readFileSync("components/career-possibility/LocalCareerMapWorkspace.tsx", "utf8");
+const explorer = readFileSync("components/career-possibility/PersonalCapabilityExplorer.tsx", "utf8");
+const roleLens = readFileSync("components/career-possibility/TargetRoleCapabilityComparison.tsx", "utf8");
+const storage = readFileSync("lib/career-possibility/local-career-map-storage.ts", "utf8");
+
+assert.equal(workspace.match(/Your Career Map/g)?.length, 1);
+assert.equal(workspace.match(/<h1[^>]*>Your Career Map<\/h1>/g)?.length, 1);
+assert.equal(workspace.match(/Based on your CV · Not reviewed yet/g)?.length, 1);
+assert.doesNotMatch(workspace, /Generated from your CV|Provisional until|Uploading another CV replaces this browser-local Career Map/);
+assert.doesNotMatch(explorer, /Personal Career Map|Explore your capabilities|CV-derived · unreviewed|Provisional ·/);
+assert.match(explorer, /supporting \{capability\.evidence\.length === 1 \? "example" : "examples"\}/);
+assert.match(explorer, /aria-expanded=\{open\}/);
+assert.match(explorer, /aria-controls=\{contentId\}/);
+assert.match(explorer, /Based on unreviewed CV evidence/);
+assert.match(explorer, /Direct evidence/);
+assert.match(explorer, /Transferable signal/);
+assert.match(explorer, /detailHeading\.current\?\.focus/);
+assert.match(explorer, /triggers\.current\.get\(id\)\?\.focus/);
+assert.match(workspace, /role="tablist"/);
+assert.match(workspace, /aria-selected=\{active\}/);
+assert.match(workspace, /event\.key === "ArrowRight"/);
+assert.match(workspace, /event\.key === "ArrowLeft"/);
+assert.match(workspace, /activeView === "map"/);
+assert.match(workspace, /activeView === "role-lens"/);
+assert.match(workspace, />Upload another CV</);
+assert.match(workspace, />Clear Career Map</);
+assert.match(workspace, /window\.confirm\("Clear the Career Map stored in this browser\?"\)/);
+assert.match(workspace, /<details className=/);
+assert.match(workspace, /No personal Career Map has been created yet\./);
+assert.match(workspace, /incompatible_version/);
+assert.match(workspace, /TargetRoleCapabilityComparison/);
+assert.match(roleLens, /buildPersonalTargetRoleComparison/);
+assert.match(storage, /careertwin\.local-career-map\.v1/);
+assert.doesNotMatch(`${workspace}\n${explorer}`, /provisional-resume-mapping-policy|canonical-personal-capability-inference|local-resume-file-extractor|resume-evidence-text-extractor/);
+
+console.log("post-upload career map simplification tests passed");

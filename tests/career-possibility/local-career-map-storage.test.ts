@@ -17,7 +17,7 @@ assert.match(workspaceSource, /window\.addEventListener\("pageshow", refresh\)/)
 assert.match(workspaceSource, /window\.addEventListener\("focus", refresh\)/);
 assert.match(workspaceSource, /document\.addEventListener\("visibilitychange", visible\)/);
 assert.match(workspaceSource, /Upload another CV/);
-assert.match(workspaceSource, /replaces this browser-local Career Map/);
+assert.doesNotMatch(workspaceSource, /replaces this browser-local Career Map/);
 assert.doesNotMatch(workspaceSource, /supplement|append|CandidateBaseline|best fit|job readiness|suitability/i);
 assert.doesNotMatch(routeSource, /Explore a capability map/);
 console.log("local career map storage tests passed");
