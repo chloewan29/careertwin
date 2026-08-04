@@ -53,7 +53,8 @@ function subtractIds(left: string[], right: string[]) {
   return [...new Set(left)].filter((id) => !rightIds.has(id));
 }
 
-export function CapabilityExplorer({ result }: { result: CareerCapabilityExplorerResult }) {
+export function CapabilityExplorer({ result, variant = "full" }: { result: CareerCapabilityExplorerResult; variant?: "full" | "hero" }) {
+  const hero = variant === "hero";
   const [selectedCapabilityId, setSelectedCapabilityId] = useState<string | null>(null);
   const [selectedPathId, setSelectedPathId] = useState<string | null>(null);
   const [expandedGrowthAreaId, setExpandedGrowthAreaId] = useState<string | null>(null);
@@ -162,7 +163,7 @@ export function CapabilityExplorer({ result }: { result: CareerCapabilityExplore
   }
 
   return (
-    <section className="overflow-hidden rounded-[2rem] border border-cyan-100/10 bg-[#07101c]/90 shadow-[0_30px_140px_rgba(6,182,212,0.08)] backdrop-blur" aria-labelledby="network-heading">
+    <section className={`overflow-hidden border border-cyan-100/10 bg-[#07101c]/90 ${hero ? "rounded-2xl shadow-[0_20px_60px_rgba(6,182,212,0.07)]" : "rounded-[2rem] shadow-[0_30px_140px_rgba(6,182,212,0.08)] backdrop-blur"}`} aria-labelledby="network-heading">
       <header className="flex flex-col justify-between gap-3 border-b border-cyan-100/[0.08] px-5 py-4 sm:flex-row sm:items-center sm:px-7">
         <div>
           <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-cyan-300">Career capability network</p>
@@ -190,7 +191,7 @@ export function CapabilityExplorer({ result }: { result: CareerCapabilityExplore
         </div>
         <div className="border-b border-white/[0.06] p-4">
           <p className="text-[10px] font-semibold uppercase tracking-wider text-blue-300">Future Paths</p>
-          <div className="mt-3 grid gap-2">{orderedPaths.map((path) => {
+          <div className="mt-3 grid gap-2">{(hero ? orderedPaths.slice(0, 2) : orderedPaths).map((path) => {
             const isSelected = path.id === selectedPath?.id;
             const isAlternative = path.id === alternativePath?.id;
             const isRelated = Boolean(selectedCapability?.id && path.capabilityIds.includes(selectedCapability.id));
@@ -201,7 +202,7 @@ export function CapabilityExplorer({ result }: { result: CareerCapabilityExplore
         {isIdentityLensOpen ? <div id="mobile-identity-lens" className="border-b border-white/[0.06] p-4"><IdentityLens headingId="mobile-identity-heading" result={result} /></div> : <MobileDetail result={result} selectedCapability={selectedCapability} selectedPath={selectedPath} alternativePath={alternativePath} evidence={relevantEvidence} growthAreas={visibleGrowthAreas} expandedGrowthAreaId={expandedGrowthAreaId} selectedEvidenceId={selectedEvidenceId} onToggleGrowthArea={toggleGrowthArea} onToggleEvidence={toggleEvidence} />}
       </div>
 
-      <div className="relative hidden h-[640px] overflow-hidden bg-[radial-gradient(circle_at_39%_48%,rgba(34,211,238,0.11),rgba(7,16,28,0.3)_30%,rgba(4,8,16,0.94)_76%)] md:block">
+      <div className={`relative hidden overflow-hidden bg-[radial-gradient(circle_at_39%_48%,rgba(34,211,238,0.11),rgba(7,16,28,0.3)_30%,rgba(4,8,16,0.94)_76%)] md:block ${hero ? "h-[440px]" : "h-[640px]"}`}>
         <div style={{ left: `${RAIL_START_X}%` }} className="absolute bottom-0 right-0 top-0 border-l border-blue-200/[0.08] bg-blue-400/[0.025]" />
         <div className="absolute right-[2.5%] top-5 z-20 w-[23%]">
           <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-blue-300">Future Paths</p>
@@ -245,7 +246,7 @@ export function CapabilityExplorer({ result }: { result: CareerCapabilityExplore
           </button>;
         })}
 
-        {orderedPaths.map((path, index) => {
+        {(hero ? orderedPaths.slice(0, 2) : orderedPaths).map((path, index) => {
           const position = pathPositions[index];
           if (!position) return null;
           const isSelected = path.id === selectedPath?.id;
