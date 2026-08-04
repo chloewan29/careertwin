@@ -1,6 +1,6 @@
 import type { ProvisionalMappingPolicy, ProvisionalMappingRule } from "./provisional-resume-mapping-contract";
 
-export const PROVISIONAL_RESUME_MAPPING_POLICY_VERSION = "provisional-resume-mapping-policy/1.1.0" as const;
+export const PROVISIONAL_RESUME_MAPPING_POLICY_VERSION = "provisional-resume-mapping-policy/1.2.0" as const;
 const authoredRule = (rule: ProvisionalMappingRule): ProvisionalMappingRule => Object.freeze(rule);
 
 /** Intentionally bounded proof set. Absence of a rule means unsupported, never a guessed match. */
@@ -17,5 +17,6 @@ export const provisionalResumeMappingPolicy: ProvisionalMappingPolicy = Object.f
     authoredRule({ ruleId: "insight-synthesis/direct/synthesised-executive-insight", ruleVersion: "1.0.0", capabilityId: "insight-synthesis", relationship: "direct_evidence", requiredSignals: Object.freeze([{ field: "action", value: "synthesised_executive_insight" }]), excludedSignals: Object.freeze([]), explanation: "The evidence explicitly records synthesising insight for an executive audience." }),
     authoredRule({ ruleId: "analytics-governance/direct/established-analytics-governance", ruleVersion: "1.0.0", capabilityId: "analytics-governance", relationship: "direct_evidence", requiredSignals: Object.freeze([{ field: "action", value: "established_analytics_governance" }]), excludedSignals: Object.freeze([]), explanation: "The evidence explicitly records establishing analytics governance." }),
     authoredRule({ ruleId: "people-leadership/direct/led-analytics-team", ruleVersion: "1.0.0", capabilityId: "people-leadership", relationship: "direct_evidence", requiredSignals: Object.freeze([{ field: "action", value: "led_analytics_team" }]), excludedSignals: Object.freeze([]), explanation: "The evidence explicitly records leading an analytics team." }),
+    authoredRule({ ruleId: "measurement-design/direct/designed-measurement-framework", ruleVersion: "1.0.0", capabilityId: "measurement-design", relationship: "direct_evidence", requiredSignals: Object.freeze([{ field: "action", value: "designed_measurement_framework" }]), excludedSignals: Object.freeze([]), explanation: "The evidence explicitly records designing a measurement framework or methodology." }),
   ]),
 });

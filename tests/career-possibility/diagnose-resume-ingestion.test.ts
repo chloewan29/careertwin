@@ -46,8 +46,8 @@ Synthetic Analytics Ltd — Manager | 2020 - Present
 - Implemented vendor platform enablement for reporting delivery.
 - Presented a dashboard.
 - Supported an analytics product.`);
-assert.equal(founderCategoryReplay.evidence.count, 15); assert.ok(founderCategoryReplay.signals.structuredCount >= 12); assert.equal(founderCategoryReplay.signals.unresolvedCount, 0); assert.equal(founderCategoryReplay.mappings.autoAdmittedCount, 5); assert.equal(founderCategoryReplay.materialization.capabilityCount, 4); assert.equal(founderCategoryReplay.materialization.unexpectedlyLostEvidenceCount, 0);
-assert.deepEqual(founderCategoryReplay.mappings.capabilityIds, ["analytics-governance", "insight-synthesis", "people-leadership", "strategic-analysis"]);
+assert.equal(founderCategoryReplay.evidence.count, 15); assert.ok(founderCategoryReplay.signals.structuredCount >= 12); assert.equal(founderCategoryReplay.signals.unresolvedCount, 0); assert.equal(founderCategoryReplay.mappings.autoAdmittedCount, 6); assert.equal(founderCategoryReplay.materialization.capabilityCount, 5); assert.equal(founderCategoryReplay.materialization.unexpectedlyLostEvidenceCount, 0);
+assert.deepEqual(founderCategoryReplay.mappings.capabilityIds, ["analytics-governance", "insight-synthesis", "measurement-design", "people-leadership", "strategic-analysis"]);
 
 const safe = JSON.stringify({ mapped, unsupported, twoColumn, wrapped, crossFunctional, expandedDomains, headerFooter, founderCategoryReplay });
 assert.doesNotMatch(safe, /@|\+61|Example Co Ltd|Designed a research study|Built a dashboard|ArrayBuffer|Uint8Array|localStorage|supabase|fetch\(|openai|embedding/i);

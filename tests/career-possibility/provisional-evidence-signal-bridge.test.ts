@@ -86,6 +86,7 @@ async function main() {
     ["synthesised_executive_insight", "insight-synthesis"],
     ["established_analytics_governance", "analytics-governance"],
     ["led_analytics_team", "people-leadership"],
+    ["designed_measurement_framework", "measurement-design"],
   ]);
   for (const [id, text, token] of signalCases) {
     const result = await bridge(fixture(id, text)); assert.equal(result.status, "structured", id); if (result.status !== "structured") throw new Error(id);

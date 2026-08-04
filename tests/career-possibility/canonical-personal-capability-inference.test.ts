@@ -21,6 +21,7 @@ async function main() {
     ["executive-insight", [{ field: "action", value: "synthesised_executive_insight" }], "insight-synthesis", "direct_evidence"],
     ["analytics-governance", [{ field: "action", value: "established_analytics_governance" }], "analytics-governance", "direct_evidence"],
     ["people-leadership", [{ field: "action", value: "led_analytics_team" }], "people-leadership", "direct_evidence"],
+    ["measurement-design", [{ field: "action", value: "designed_measurement_framework" }], "measurement-design", "direct_evidence"],
   ] as const;
   for (const [id, signals, capabilityId, relationship] of cases) {
     const result = await infer(evidence(`evidence:${id}`, [...signals]));
@@ -47,7 +48,7 @@ async function main() {
   const unsupported = await infer(evidence("evidence:unsupported", [{ field: "scope", value: "cross_functional" }]));
   assert.equal(unsupported.disposition, "unsupported");
   if (unsupported.disposition === "unsupported") assert.equal(unsupported.unresolved.reason, "no_canonical_rule");
-  const deferred = ["designed_measurement_framework", "provided_analytics_business_advice", "owned_analytics_product", "performed_investigative_analysis", "enabled_analytics_workflow"];
+  const deferred = ["provided_analytics_business_advice", "owned_analytics_product", "performed_investigative_analysis", "enabled_analytics_workflow"];
   for (const token of deferred) {
     const result = await infer(evidence(`evidence:deferred:${token}`, [{ field: "action", value: token }]));
     assert.equal(result.disposition, "unsupported");
