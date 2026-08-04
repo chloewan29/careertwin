@@ -1,5 +1,6 @@
 import type { CanonicalCapabilityDefinition } from "./canonical-capability-library";
-import { inferCanonicalPersonalCapability, validateCanonicalInferencePolicy } from "./canonical-personal-capability-inference";
+import { inferCanonicalPersonalCapability, inferCanonicalPersonalCapabilities, validateCanonicalInferencePolicy } from "./canonical-personal-capability-inference";
+import type { CanonicalPluralCapabilityInferenceResult } from "./canonical-personal-capability-inference-contract";
 import type { CanonicalInferenceEvidence } from "./canonical-personal-capability-inference-contract";
 import {
   PROVISIONAL_RESUME_MAPPING_CONTRACT_VERSION,
@@ -49,4 +50,17 @@ export async function mapProvisionalResumeEvidence(input: { evidence: Provisiona
   const unresolved = result.unresolved;
   const legacy: ProvisionalUnresolvedMapping = Object.freeze({ contractVersion: PROVISIONAL_RESUME_MAPPING_CONTRACT_VERSION, evidenceId: unresolved.evidenceId, sourceExcerpt: unresolved.sourceExcerpt, sourceLocator: unresolved.sourceLocator, reviewStatus: "unreviewed", admissionStatus: "unresolved", reason: unresolved.reason, candidateCapabilityIds: unresolved.candidateCapabilityIds, candidateRelationships: unresolved.candidateRelationships, matchingRuleIds: unresolved.matchingRuleIds, explanation: unresolved.explanation, mappingPolicyVersion: unresolved.inferencePolicyVersion, capabilityDefinitionVersion: unresolved.capabilityRegistryVersion });
   return Object.freeze(result.disposition === "unsupported" ? { status: "unsupported", unresolved: legacy } : { status: "unresolved", unresolved: legacy });
+}
+
+export function projectPluralCanonicalInferenceToProvisionalMappingResults(result: CanonicalPluralCapabilityInferenceResult, evidence: ProvisionalMappingEvidence): readonly ProvisionalMappingResult[] {
+  const admitted = result.admittedProposals.map((proposal): ProvisionalMappingResult => Object.freeze({ status: "auto_admitted", mapping: Object.freeze({ contractVersion: PROVISIONAL_RESUME_MAPPING_CONTRACT_VERSION, mappingId: proposal.proposalId, evidenceId: proposal.evidenceId, capabilityId: proposal.capabilityId, relationship: proposal.relationship, reviewStatus: "unreviewed", admissionStatus: "auto_admitted", method: proposal.method, matchedRuleId: proposal.matchedRuleId, explanation: proposal.explanation, mappingPolicyVersion: proposal.inferencePolicyVersion, capabilityDefinitionVersion: proposal.capabilityRegistryVersion }) }));
+  const unresolved = result.unresolved.map((item): ProvisionalMappingResult => Object.freeze({ status: "unresolved", unresolved: Object.freeze({ contractVersion: PROVISIONAL_RESUME_MAPPING_CONTRACT_VERSION, evidenceId: item.evidenceId, sourceExcerpt: evidence.sourceExcerpt, sourceLocator: evidence.sourceLocator, reviewStatus: "unreviewed", admissionStatus: "unresolved", reason: item.reason, candidateCapabilityIds: Object.freeze(item.capabilityId ? [item.capabilityId] : []), candidateRelationships: item.candidateRelationships, matchingRuleIds: item.matchingRuleIds, explanation: item.explanation, mappingPolicyVersion: item.inferencePolicyVersion, capabilityDefinitionVersion: item.capabilityRegistryVersion }) }));
+  const unsupported = result.unsupportedResidue.map((): ProvisionalMappingResult => Object.freeze({ status: "unsupported", unresolved: Object.freeze({ contractVersion: PROVISIONAL_RESUME_MAPPING_CONTRACT_VERSION, evidenceId: evidence.evidenceId, sourceExcerpt: evidence.sourceExcerpt, sourceLocator: evidence.sourceLocator, reviewStatus: "unreviewed", admissionStatus: "unresolved", reason: "no_canonical_rule", candidateCapabilityIds: Object.freeze([]), candidateRelationships: Object.freeze([]), matchingRuleIds: Object.freeze([]), explanation: "No authored canonical mapping rule covers this evidence.", mappingPolicyVersion: result.inferencePolicyVersion, capabilityDefinitionVersion: result.capabilityRegistryVersion }) }));
+  return Object.freeze([...admitted, ...unresolved, ...unsupported]);
+}
+
+export async function mapProvisionalResumeEvidencePlural(input: { evidence: ProvisionalMappingEvidence; policy: ProvisionalMappingPolicy; capabilityDefinitions: readonly Pick<CanonicalCapabilityDefinition, "id">[]; capabilityDefinitionVersion: string }): Promise<readonly ProvisionalMappingResult[]> {
+  const canonicalEvidence: CanonicalInferenceEvidence = Object.freeze({ evidenceId: input.evidence?.evidenceId, sourceExcerpt: input.evidence?.sourceExcerpt, sourceLocator: input.evidence?.sourceLocator, sourceRevision: null, signals: input.evidence?.signals });
+  const result = await inferCanonicalPersonalCapabilities({ evidence: canonicalEvidence, policy: input.policy, capabilityDefinitions: input.capabilityDefinitions, capabilityRegistryVersion: input.capabilityDefinitionVersion });
+  return projectPluralCanonicalInferenceToProvisionalMappingResults(result, input.evidence);
 }

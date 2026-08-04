@@ -3,7 +3,7 @@ import type { ExtractResumeEvidenceFromTextInput } from "./resume-evidence-extra
 import { extractResumeEvidenceFromText } from "./resume-evidence-text-extractor";
 import { bridgeEvidenceToProvisionalSignals } from "./provisional-evidence-signal-bridge";
 import { provisionalEvidenceSignalPolicy } from "./provisional-evidence-signal-policy";
-import { mapProvisionalResumeEvidence } from "./provisional-resume-capability-mapper";
+import { mapProvisionalResumeEvidencePlural } from "./provisional-resume-capability-mapper";
 import { PROVISIONAL_RESUME_MAPPING_CONTRACT_VERSION, type ProvisionalMappingResult, type ProvisionalUnresolvedMapping } from "./provisional-resume-mapping-contract";
 import { provisionalResumeMappingPolicy } from "./provisional-resume-mapping-policy";
 import { materializeProvisionalCareerMap } from "./provisional-career-map-materializer";
@@ -47,7 +47,7 @@ export async function buildProvisionalCareerMapFromText(input: Input): Promise<P
       if (bridged.status === "structured") {
         structuredCount += 1;
         evidence.push(Object.freeze({ ...bridged.evidence, extractionVersion: input.versions.evidenceParserVersion }));
-        mappingResults.push(await mapProvisionalResumeEvidence({ evidence: bridged.evidence, policy: provisionalResumeMappingPolicy, capabilityDefinitions: input.capabilityDefinitions, capabilityDefinitionVersion: input.versions.capabilityDefinitionVersion }));
+        mappingResults.push(...await mapProvisionalResumeEvidencePlural({ evidence: bridged.evidence, policy: provisionalResumeMappingPolicy, capabilityDefinitions: input.capabilityDefinitions, capabilityDefinitionVersion: input.versions.capabilityDefinitionVersion }));
       } else {
         if (bridged.status === "unresolved") unresolvedCount += 1; else unsupportedCount += 1;
         evidence.push(Object.freeze({ evidenceId: bridged.unresolved.evidenceId, sourceExcerpt: bridged.unresolved.sourceExcerpt, sourceLocator: Object.freeze({ ...bridged.unresolved.sourceLocator }), signals: Object.freeze([]), reviewStatus: "unreviewed", extractionVersion: input.versions.evidenceParserVersion }));

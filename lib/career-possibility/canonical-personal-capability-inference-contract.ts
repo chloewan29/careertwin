@@ -1,4 +1,5 @@
 export const CANONICAL_PERSONAL_CAPABILITY_INFERENCE_CONTRACT_VERSION = "1.0.0" as const;
+export const CANONICAL_PERSONAL_CAPABILITY_INFERENCE_PLURAL_CONTRACT_VERSION = "2.0.0" as const;
 
 export type CanonicalCapabilityRelationship = "direct_evidence" | "transferable_signal";
 export type CanonicalSemanticSignalField = "action" | "context" | "outcome" | "ownership" | "scope";
@@ -70,5 +71,42 @@ export type CanonicalCapabilityInferenceResult =
   | Readonly<{ disposition: "admitted"; proposal: CanonicalCapabilityProposal }>
   | Readonly<{ disposition: "unresolved"; unresolved: CanonicalUnresolvedCapabilityProposal }>
   | Readonly<{ disposition: "unsupported"; unresolved: CanonicalUnresolvedCapabilityProposal }>;
+
+export type CanonicalPluralCapabilityProposal = CanonicalCapabilityProposal & Readonly<{
+  matchingRuleIds: readonly string[];
+}>;
+
+export type CanonicalCapabilityScopedInferenceIssue = Readonly<{
+  contractVersion: typeof CANONICAL_PERSONAL_CAPABILITY_INFERENCE_PLURAL_CONTRACT_VERSION;
+  unresolvedId: string;
+  evidenceId: string;
+  capabilityId: string | null;
+  sourceRevision: string | null;
+  reason: Exclude<CanonicalInferenceReason, "no_canonical_rule">;
+  candidateRelationships: readonly CanonicalCapabilityRelationship[];
+  matchingRuleIds: readonly string[];
+  explanation: string;
+  inferencePolicyVersion: string;
+  capabilityRegistryVersion: string;
+}>;
+
+export type CanonicalUnsupportedSemanticResidue = Readonly<{
+  residueId: string;
+  evidenceId: string;
+  sourceRevision: string | null;
+  reason: "no_canonical_rule";
+  signalKeys: readonly string[];
+}>;
+
+export type CanonicalPluralCapabilityInferenceResult = Readonly<{
+  contractVersion: typeof CANONICAL_PERSONAL_CAPABILITY_INFERENCE_PLURAL_CONTRACT_VERSION;
+  evidenceId: string;
+  sourceRevision: string | null;
+  inferencePolicyVersion: string;
+  capabilityRegistryVersion: string;
+  admittedProposals: readonly CanonicalPluralCapabilityProposal[];
+  unresolved: readonly CanonicalCapabilityScopedInferenceIssue[];
+  unsupportedResidue: readonly CanonicalUnsupportedSemanticResidue[];
+}>;
 
 export type CanonicalCapabilityInferenceIssue = Readonly<{ code: string; path: string; message: string }>;
