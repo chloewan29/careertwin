@@ -54,6 +54,11 @@ async function main() {
   const product = await expectTokens("product-multiple", "Owned a reporting product, its requirements and delivery quality.", ["governed_delivery_quality", "managed_requirements", "owned_product_or_service"]);
   assert.equal(product.status === "structured" && product.evidence.signals.length, 3);
   await expectTokens("priorities", "Prioritised the product roadmap and delivery sequencing.", ["prioritised_delivery"]);
+  await expectTokens("quality-manage-direct", "Manage delivery quality.", ["governed_delivery_quality"]);
+  await expectTokens("quality-manage-controls", "Manage quality controls for the service.", ["governed_delivery_quality"]);
+  await expectTokens("quality-manage-qa-controls", "Manage QA controls across delivery.", ["governed_delivery_quality"]);
+  await expectTokens("quality-manage-coordinated", "Manage requirements and delivery quality.", ["governed_delivery_quality"]);
+  await expectTokens("quality-manage-accountable", "Accountable to manage delivery quality for the product.", ["governed_delivery_quality"]);
   await expectTokens("investigation-multiple", "Identified behavioural patterns, anomalies and root causes.", ["diagnosed_root_cause", "investigated_anomaly", "isolated_meaningful_pattern"]);
   await expectTokens("tooling", "Built reusable tooling for finance planning.", ["built_reusable_tooling"]);
   await expectTokens("automation", "Automated a recurring reporting workflow.", ["automated_recurring_workflow"]);
@@ -95,6 +100,43 @@ async function main() {
   ] as const;
   for (const [id, text] of excludedFramingMorphology) assert.equal(tokens(await bridge(id, text)).includes("framed_business_problem"), false, id);
 
+  const excludedQualityManagement = [
+    ["quality-delegated-review", "Manage a team reviewing delivery quality."],
+    ["quality-delegated-checks", "Manage analysts performing quality checks."],
+    ["quality-delegated-support", "Manage staff supporting QA."],
+    ["quality-delegated-testing", "Manage vendors testing outputs."],
+    ["quality-delegated-process", "Manage a process that later reviews quality."],
+    ["quality-check", "Checked delivery quality."],
+    ["quality-improved", "Improved delivery quality."],
+    ["quality-high-output", "Delivered high-quality outputs."],
+    ["quality-support", "Supported QA."],
+    ["quality-testing", "Performed QA testing."],
+    ["quality-review", "Reviewed delivery quality."],
+    ["quality-worked", "Worked on quality improvement."],
+    ["quality-resolved", "Resolved quality issues."],
+    ["quality-responsible", "Responsible for high-quality work."],
+    ["quality-manage-alone", "Manage delivery."],
+    ["quality-object-alone", "Delivery quality and QA controls."],
+    ["quality-title", "Delivery Quality Manager."],
+    ["quality-skills", "Delivery quality, QA controls, management."],
+    ["quality-hypothetical", "Intended to manage delivery quality."],
+    ["quality-requirement", "Required to manage delivery quality."],
+    ["quality-manages", "Manages delivery quality."],
+    ["quality-managing", "Managing delivery quality."],
+    ["quality-govern", "Govern delivery quality."],
+    ["quality-governing", "Governing delivery quality."],
+    ["quality-period", "Manage requirements. Delivery quality."],
+    ["quality-semicolon", "Manage requirements; delivery quality."],
+  ] as const;
+  for (const [id, text] of excludedQualityManagement) assert.equal(tokens(await bridge(id, text)).includes("governed_delivery_quality"), false, id);
+
+  await expectTokens("quality-governed-existing", "Governed delivery quality.", ["governed_delivery_quality"]);
+  await expectTokens("quality-owned-existing", "Owned delivery quality.", ["governed_delivery_quality", "owned_delivery"]);
+  await expectTokens("quality-managed-existing", "Managed delivery quality.", ["governed_delivery_quality", "owned_delivery"]);
+  await expectTokens("quality-established-existing", "Established quality controls.", ["governed_delivery_quality"]);
+  assert.equal(tokens(await bridge("requirements-manage-preserved", "Manage requirements.")).includes("managed_requirements"), false);
+  assert.equal(tokens(await bridge("requirements-gathered-preserved", "Gathered requirements.")).includes("managed_requirements"), true);
+
   const crossRole = [
     ["business-delivery", "Framed an ambiguous operational problem for evidence and recommendations.", "framed_business_problem"],
     ["product-manager", "Owned a customer service, its requirements and delivery quality.", "owned_product_or_service"],
@@ -116,6 +158,9 @@ async function main() {
   ] as const;
   for (const [id, text] of infinitiveCrossRole) assert.equal(tokens(await bridge(id, text)).includes("framed_business_problem"), true, id);
 
+  const qualityCrossRole = ["Business Delivery", "Product", "Operations", "Finance", "Engineering", "Analytics"] as const;
+  for (const role of qualityCrossRole) assert.equal(tokens(await bridge(`quality-role-${role}`, `Manage delivery quality for ${role}.`)).includes("governed_delivery_quality"), true, role);
+
   const repeated = await bridge("deterministic", "Owned a reporting product, its requirements and delivery quality.");
   const repeatedAgain = await bridge("deterministic", "Owned a reporting product, its requirements and delivery quality.");
   assert.deepEqual(repeatedAgain, repeated);
@@ -125,7 +170,7 @@ async function main() {
   assert.equal(repeated.status === "structured" && moved.status === "structured" && repeated.evidence.signalIdentity !== moved.evidence.signalIdentity, true);
 
   const infinitive = await bridge("policy-version", "Translate ambiguous business questions into analysis and recommendations.");
-  const priorVersionPolicy: ProvisionalEvidenceSignalPolicy = { ...provisionalEvidenceSignalPolicy, policyVersion: "provisional-evidence-signal-policy/1.3.0" };
+  const priorVersionPolicy: ProvisionalEvidenceSignalPolicy = { ...provisionalEvidenceSignalPolicy, policyVersion: "provisional-evidence-signal-policy/1.4.0" };
   const priorVersion = await bridgeEvidenceToProvisionalSignals(fixture("policy-version", "Translate ambiguous business questions into analysis and recommendations."), priorVersionPolicy);
   assert.deepEqual(await bridge("policy-version", "Translate ambiguous business questions into analysis and recommendations."), infinitive);
   assert.equal(infinitive.status === "structured" && priorVersion.status === "structured" && infinitive.evidence.signalIdentities[0].signalId !== priorVersion.evidence.signalIdentities[0].signalId, true);
