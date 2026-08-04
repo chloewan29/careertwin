@@ -106,10 +106,10 @@ async function main() {
   if (similarA.status === "auto_admitted" && similarB.status === "auto_admitted") assert.notEqual(similarA.mapping.mappingId, similarB.mapping.mappingId);
 
   assert.equal(provisionalResumeMappingPolicy.policyVersion, PROVISIONAL_RESUME_MAPPING_POLICY_VERSION);
-  assert.equal(PROVISIONAL_RESUME_MAPPING_POLICY_VERSION, "provisional-resume-mapping-policy/1.2.0");
+  assert.equal(PROVISIONAL_RESUME_MAPPING_POLICY_VERSION, "provisional-resume-mapping-policy/1.3.0");
   assert.equal(provisionalResumeMappingPolicy.coverage, "bounded_non_exhaustive");
-  assert.equal(provisionalResumeMappingPolicy.rules.length, 10);
-  assert.equal(new Set(provisionalResumeMappingPolicy.rules.map((rule) => rule.ruleId)).size, 10);
+  assert.equal(provisionalResumeMappingPolicy.rules.length, 11);
+  assert.equal(new Set(provisionalResumeMappingPolicy.rules.map((rule) => rule.ruleId)).size, 11);
   assert.deepEqual(validateProvisionalMappingPolicy(provisionalResumeMappingPolicy, definitions), []);
   const mapperSource = readFileSync(new URL("../../lib/career-possibility/provisional-resume-capability-mapper.ts", import.meta.url), "utf8");
   const canonicalSource = readFileSync(new URL("../../lib/career-possibility/canonical-personal-capability-inference.ts", import.meta.url), "utf8");

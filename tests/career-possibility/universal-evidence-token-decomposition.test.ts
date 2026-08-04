@@ -22,7 +22,17 @@ async function expectTokens(id: string, text: string, expected: readonly Provisi
   assert.equal(result.evidence.signalIdentities.length, result.evidence.signals.length);
   assert.equal(new Set(result.evidence.signalIdentities.map((item) => item.signalId)).size, result.evidence.signals.length);
   const mapped = await mapProvisionalResumeEvidencePlural({ evidence: result.evidence, policy: provisionalResumeMappingPolicy, capabilityDefinitions: canonicalCapabilityLibrary.capabilities, capabilityDefinitionVersion: canonicalCapabilityLibrary.contentVersion });
-  assert.equal(mapped.every((item) => item.status === "unsupported"), true, `${id}: refined tokens remain unmapped`);
+  const reusableTooling = expected.length === 1 && expected[0] === "built_reusable_tooling";
+  if (reusableTooling) {
+    assert.equal(mapped.length, 1);
+    assert.equal(mapped[0].status, "auto_admitted");
+    if (mapped[0].status === "auto_admitted") {
+      assert.equal(mapped[0].mapping.capabilityId, "tooling-enablement");
+      assert.equal(mapped[0].mapping.relationship, "transferable_signal");
+    }
+  } else {
+    assert.equal(mapped.every((item) => item.status === "unsupported"), true, `${id}: deferred refined tokens remain unmapped`);
+  }
   return result;
 }
 
