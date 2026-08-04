@@ -91,6 +91,55 @@ assert.equal(canonical.bundle.employmentRecords[0].employerName, undefined);
 assert.equal(canonical.bundle.employmentRecords[0].roleTitle, undefined);
 assert.deepEqual(canonical.bundle.sourceSpans.filter((item) => /^span:document-session-a:\d+$/.test(item.id)).map((item) => item.bulletIndex), [0, 1, undefined]);
 
+const wrappedOneText = "WORK EXPERIENCE\n- Led deep-dive investigations into behavioural signals,\nanomalies and root causes across customer journeys.";
+const wrappedOne = success(wrappedOneText);
+assert.equal(wrappedOne.bundle.evidenceRecords.length, 1);
+assert.equal(wrappedOne.bundle.evidenceRecords[0].sourceText, "- Led deep-dive investigations into behavioural signals,\nanomalies and root causes across customer journeys.");
+const wrappedOneSpan = wrappedOne.bundle.sourceSpans.find((item) => item.id === wrappedOne.bundle.evidenceRecords[0].sourceSpanIds[0])!;
+assert.equal(wrappedOneSpan.startOffset, wrappedOneText.indexOf("-"));
+assert.equal(wrappedOneSpan.endOffset, wrappedOneText.length);
+assert.equal(wrappedOneText.slice(wrappedOneSpan.startOffset, wrappedOneSpan.endOffset), wrappedOneSpan.originalText);
+assert.match(wrappedOne.bundle.evidenceRecords[0].id, /^evidence:bundle-session-a:1:\d+-\d+:[a-f0-9]{8}$/);
+
+const wrappedTwo = success("WORK EXPERIENCE\n- Built a reusable reporting workflow,\nusing SQL and Python\nto reduce cycle time.");
+assert.equal(wrappedTwo.bundle.evidenceRecords.length, 1);
+assert.equal(wrappedTwo.bundle.evidenceRecords[0].sourceText, "- Built a reusable reporting workflow,\nusing SQL and Python\nto reduce cycle time.");
+const wrappedTwoAgain = success("WORK EXPERIENCE\n- Built a reusable reporting workflow,\nusing SQL and Python\nto reduce cycle time.");
+assert.equal(wrappedTwoAgain.bundle.evidenceRecords[0].id, wrappedTwo.bundle.evidenceRecords[0].id);
+const changedContinuation = success("WORK EXPERIENCE\n- Built a reusable reporting workflow,\nusing SQL and Python\nto reduce reporting cycle time.");
+assert.notEqual(changedContinuation.bundle.evidenceRecords[0].id, wrappedTwo.bundle.evidenceRecords[0].id);
+const movedContinuation = success("WORK EXPERIENCE\nINTRODUCTION\n- Built a reusable reporting workflow,\nusing SQL and Python\nto reduce cycle time.");
+assert.notEqual(movedContinuation.bundle.evidenceRecords.at(-1)!.id, wrappedTwo.bundle.evidenceRecords[0].id);
+const unjoinedVariant = success("WORK EXPERIENCE\n- Built a reusable reporting workflow.\nusing SQL and Python to reduce cycle time.");
+assert.notEqual(unjoinedVariant.bundle.evidenceRecords[0].id, wrappedTwo.bundle.evidenceRecords[0].id);
+
+const boundaries = [
+  ["new bullet", "WORK EXPERIENCE\n- First achievement\n* Second achievement", 2],
+  ["numbered item", "WORK EXPERIENCE\n- First achievement\n1) Second achievement", 2],
+  ["blank paragraph", "WORK EXPERIENCE\n- First achievement\n\nIndependent summary paragraph.", 2],
+  ["section heading", "WORK EXPERIENCE\n- First achievement\nEDUCATION", 2],
+  ["skills heading", "WORK EXPERIENCE\n- First achievement\nKEY SKILLS", 2],
+  ["role description", "WORK EXPERIENCE\n- First achievement\nResponsible for service delivery.", 2],
+  ["standalone summary", "WORK EXPERIENCE\n- First achievement\nSummary of independent experience.", 2],
+  ["short unrelated prose", "WORK EXPERIENCE\n- First achievement\nOverview follows.", 2],
+] as const;
+boundaries.forEach(([label, text, count]) => assert.equal(success(text).bundle.evidenceRecords.length, count, label));
+const roleBoundary = success("Example Company Ltd â€” Analyst | 2020 - 2022\n- First achievement\nSenior Manager | 2022 - 2025\n- Second achievement");
+assert.equal(roleBoundary.bundle.employmentRecords.length, 2);
+assert.equal(roleBoundary.bundle.evidenceRecords.length, 2);
+
+const typedContinuations = [
+  "- Coordinated delivery across teams,\nCustomer Operations completed the rollout.",
+  "- Coordinated delivery across teams,\nAPI governance reduced failure rates.",
+  "- Coordinated delivery across teams,\n2024 results exceeded the target.",
+  "- Coordinated delivery across teams,\nTableau adoption increased.",
+] as const;
+typedContinuations.forEach((value) => {
+  const result = success(`WORK EXPERIENCE\n${value}`);
+  assert.equal(result.bundle.evidenceRecords.length, 1);
+  assert.equal(result.bundle.evidenceRecords[0].sourceText, value);
+});
+
 const unix = success("WORK EXPERIENCE\n- Alpha\n- Beta");
 const windows = success("WORK EXPERIENCE\r\n- Alpha\r\n- Beta");
 const classic = success("WORK EXPERIENCE\r- Alpha\r- Beta");

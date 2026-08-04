@@ -16,7 +16,7 @@ import {
   type ResumeEvidenceExtractionResult,
 } from "./resume-evidence-extraction-contract";
 
-type Candidate = { startOffset: number; endOffset: number; text: string; bullet: boolean };
+type Candidate = { startOffset: number; endOffset: number; text: string; bullet: boolean; composed?: boolean };
 type EmploymentBoundary = {
   startOffset: number;
   contentStartOffset: number;
@@ -52,6 +52,34 @@ function hasEvidenceContent(text: string): boolean {
 function isHeadingLike(text: string): boolean {
   const value = text.trim();
   return !value.includes("\n") && value.length <= 80 && /\p{Lu}/u.test(value) && !/\p{Ll}/u.test(value);
+}
+
+function isStructuralBoundaryLine(text: string): boolean {
+  const value = text.trim();
+  if (!value) return true;
+  if (isHeadingLike(value) || workHistoryHeading.test(value) || dateRange.test(value)) return true;
+  if (/^(.+?)\s+[-â€“â€”]\s+(.+?)(?:\s*[|,]\s*(.+))?$/.test(value)) return true;
+  return /^.+?\s*[|,]\s*.+?(?:19|20)\d{2}\s*[-â€“â€”]/.test(value);
+}
+
+const standaloneProseStart = /^(?:responsible|accountable|reporting|role|summary|profile|overview|key responsibilities|selected achievements)\b/i;
+const continuationCue = /(?:[,â€“â€”\-/:([]|\b(?:and|or|with|across|through|using|including|into|for|to|of|the|a|an))\s*$/i;
+
+function canContinueBullet(currentText: string, nextLine: string): boolean {
+  const next = nextLine.trim();
+  if (!next || isBulletLine(nextLine) || isStructuralBoundaryLine(next) || standaloneProseStart.test(next)) return false;
+  const current = currentText.trimEnd();
+  if (/[.!?;]\s*$/.test(current)) return false;
+  return continuationCue.test(current) || /^\p{Ll}/u.test(next);
+}
+
+function stableCandidateFingerprint(value: string): string {
+  let hash = 0x811c9dc5;
+  for (let index = 0; index < value.length; index += 1) {
+    hash ^= value.charCodeAt(index);
+    hash = Math.imul(hash, 0x01000193);
+  }
+  return (hash >>> 0).toString(16).padStart(8, "0");
 }
 
 const workHistoryHeading = /^(?:work|professional|career|employment)\s+(?:experience|history)$|^experience$/i;
@@ -121,8 +149,14 @@ function segmentCandidates(text: string): Candidate[] {
   }
 
   const candidates: Candidate[] = [];
+  let bulletCandidate: Candidate | undefined;
   let paragraphStart: number | undefined;
   let paragraphEnd: number | undefined;
+  const flushBullet = () => {
+    if (!bulletCandidate) return;
+    candidates.push(bulletCandidate);
+    bulletCandidate = undefined;
+  };
   const flushParagraph = () => {
     if (paragraphStart === undefined || paragraphEnd === undefined) return;
     const value = text.slice(paragraphStart, paragraphEnd);
@@ -133,17 +167,27 @@ function segmentCandidates(text: string): Candidate[] {
 
   lines.forEach((line) => {
     if (!line.text.trim()) {
+      flushBullet();
       flushParagraph();
       return;
     }
     if (isBulletLine(line.text)) {
+      flushBullet();
       flushParagraph();
-      if (hasEvidenceContent(line.text)) candidates.push({ startOffset: line.start, endOffset: line.end, text: line.text, bullet: true });
+      if (hasEvidenceContent(line.text)) bulletCandidate = { startOffset: line.start, endOffset: line.end, text: line.text, bullet: true };
       return;
+    }
+    if (bulletCandidate) {
+      if (canContinueBullet(bulletCandidate.text, line.text)) {
+        bulletCandidate = { ...bulletCandidate, endOffset: line.end, text: text.slice(bulletCandidate.startOffset, line.end), composed: true };
+        return;
+      }
+      flushBullet();
     }
     paragraphStart ??= line.start;
     paragraphEnd = line.end;
   });
+  flushBullet();
   flushParagraph();
   return candidates;
 }
@@ -222,7 +266,9 @@ export function extractResumeEvidenceFromText(
       const index = evidenceRecords.length;
       const sequence = index + 1;
       const spanId = `span:${input.documentId}:${sequence}`;
-      const evidenceId = `evidence:${input.bundleId}:${sequence}`;
+      const evidenceId = candidate.composed
+        ? `evidence:${input.bundleId}:${sequence}:${candidate.startOffset}-${candidate.endOffset}:${stableCandidateFingerprint(candidate.text)}`
+        : `evidence:${input.bundleId}:${sequence}`;
       if (!reserveId(spanId) || !reserveId(evidenceId)) return { ok: false, issues: [issue("duplicate_generated_id", "error", `evidenceRecords[${index}]`, "A deterministic child ID collided with another identity.")] };
       if (canonicalText.slice(candidate.startOffset, candidate.endOffset) !== candidate.text) return { ok: false, issues: [issue("source_span_generation_failed", "error", `sourceSpans[${sequence}]`, "A deterministic source span could not be reproduced from canonical text.")] };
       sourceSpans.push({ id: spanId, documentId: input.documentId, sourceType: "resume_paste", employmentRecordId: employmentId, ...(candidate.bullet ? { bulletIndex: bulletIndex++ } : {}), startOffset: candidate.startOffset, endOffset: candidate.endOffset, originalText: candidate.text });
