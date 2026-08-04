@@ -68,12 +68,13 @@ Current mode:
 - `HOLD`
 
 Current task type:
-- founder-CV signal coverage repair closed / mapping admission audit pending
+- canonical personal-capability inference owner extraction closed / mapping governance pending
 
 Current active question:
-- Which structured founder-CV signals can truthfully enter the existing canonical capability library before any mapping-policy expansion is admitted?
+- Which obvious founder-signal mappings can be admitted after signal-to-library governance is confirmed?
 
 Completed Career Map milestone:
+- `CAREERTWIN_CANONICAL_PERSONAL_CAPABILITY_INFERENCE_OWNER_ESTABLISHED`
 - `CAREERTWIN_FOUNDER_CV_SIGNAL_COVERAGE_REPAIRED`
 - `CAREERTWIN_EVIDENCE_SIGNAL_COVERAGE_EXPANDED`
 - `CAREERTWIN_REAL_CV_INGESTION_DIAGNOSTIC_COMPLETE`
@@ -87,6 +88,12 @@ Completed Career Map milestone:
 - `CAREER_MAP_V1_LANDING_STATE_HANDOFF_REPAIRED`
 - `CAREERTWIN_V1_ROOT_INLINE_INTAKE_COMPLETE`
 - `CAREERTWIN_V1_ENTRY_RESULT_ROUTES_CORRECTED`
+- architecture reconciliation found two active role-independent inference authorities: the legacy server `inferCapabilities` owner and the direct-upload provisional mapper; Option C is accepted, with one canonical role-independent personal-capability inference owner and separate JD-conditioned Job Copilot retrieval/scoring
+- implementation `402f352307775dbc3e25bbd4726bc67550177b6e` (`refactor(career): establish canonical personal capability inference owner`) extracts trust-neutral semantic inference into `canonical-personal-capability-inference.ts`; the provisional mapper is now a compatibility wrapper
+- existing mapping identities, rule/provenance data, direct/transferable relationships, admitted/unresolved/unsupported behavior, and `unreviewed` wrapper output are preserved; trust/review remains outside canonical inference
+- no mapping/signal/capability expansion, Job Copilot/server migration, state/storage/materializer, API/Supabase/package, parser, or UI change was introduced
+- focused canonical and compatibility tests, the full Career Possibility suite, exact-file ESLint, TypeScript, production build, and `git diff --check` passed
+- next action: Hold after canonical inference extraction. Admit only the obvious canonical mapping group after founder-signal-to-library governance is confirmed.
 - accepted architecture: Model A (`browser-local CV parse -> provisional map -> optional review later`); Slice 2 is split into 2A (provisional mapping authority) and 2B (LocalCareerMapState v2 plus materialization)
 - Slice 2A is implemented at `6066027` (`feat(career): add provisional capability mapping contract`) with contract/policy version `1.0.0`, five authored rules covering four canonical capabilities, and deterministic IDs derived without timestamps or randomness
 - Slice 2A auto-admits only one exact authored structured-signal match; it keeps `direct_evidence` distinct from `transferable_signal`, routes conflicts and invalid inputs to `unresolved`, and returns no-rule cases as `unsupported`

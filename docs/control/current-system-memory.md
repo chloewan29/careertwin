@@ -166,6 +166,17 @@ Last updated: 2026-08-04
 - Parser/structure, mapping policy, capability library, materializer, state/storage, UI, API, Supabase, packages, Slice 4, and supplementation remain unchanged. Mode returned to `HOLD`.
 - Single next action: Hold after founder-CV signal repair. Audit structured signals against the existing canonical capability library before admitting mapping-policy expansion.
 
+### Canonical personal-capability inference owner (`CAREERTWIN_CANONICAL_PERSONAL_CAPABILITY_INFERENCE_OWNER_ESTABLISHED`)
+
+- Architecture reconciliation confirmed two active role-independent personal-capability inference authorities: legacy server `inferCapabilities` and the direct-upload provisional mapper. Option C is accepted: one canonical role-independent inference owner supplies personal capability truth, while Job Copilot remains a separate JD-conditioned retrieval/scoring owner.
+- The canonical trust-neutral owner is established at `402f352307775dbc3e25bbd4726bc67550177b6e` (`refactor(career): establish canonical personal capability inference owner`). `canonical-personal-capability-inference.ts` now exclusively owns structured semantic evidence -> canonical capability proposal behavior for the direct-upload path.
+- The owner accepts evidence identity, source reference/locator, explicit nullable source revision, normalized semantic signals, the existing authored policy, canonical definitions, and registry version. It emits canonical slug IDs, `direct_evidence` or `transferable_signal`, deterministic proposal identity, authored rule provenance, and admitted/unresolved/unsupported disposition.
+- Trust and review fields are absent from canonical input/output. `provisional-resume-capability-mapper.ts` is retained as the compatibility wrapper and alone restores `reviewStatus=unreviewed`, `admissionStatus=auto_admitted|unresolved`, and existing public field names.
+- The identity formula and legacy prefix remain unchanged, as do all five authored mapping rules, four capability targets, rule IDs/versions, explanations, conflict handling, fail-closed behavior, ordering, and downstream materializer/orchestration behavior.
+- The legacy server inference owner remains active but unchanged as a compatibility path. No server or Job Copilot migration, evidence-store reconciliation, API/Supabase work, mapping expansion, signal expansion, capability-library change, state/storage/materializer change, parser/UI/package change, Slice 4, or supplementation work started.
+- Focused canonical inference and provisional-equivalence tests, the full Career Possibility suite, exact-file ESLint, TypeScript, production build, and `git diff --check` passed. Mode returned to `HOLD`.
+- Single next action: Hold after canonical inference extraction. Admit only the obvious canonical mapping group after founder-signal-to-library governance is confirmed.
+
 ### Career Map V1 closure (`CAREER_MAP_V1_COMPLETE`, `CAREER_MAP_V1_LANDING_STATE_HANDOFF_REPAIRED`, `CAREERTWIN_V1_ROOT_INLINE_INTAKE_COMPLETE`, `CAREERTWIN_V1_ENTRY_RESULT_ROUTES_CORRECTED`)
 
 Current active line and mode:
