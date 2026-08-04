@@ -45,8 +45,8 @@ async function main() {
     ["led-program", "Led a cross-functional program.", ["action:coordinated_cross_functional_delivery", "ownership:owned_delivery", "scope:cross_functional"], "cross-functional-delivery", "direct_evidence"],
     ["supported-program", "Supported a cross-functional program.", ["scope:cross_functional"], "", ""],
     ["streamlined-reporting", "Streamlined the reporting workflow.", ["action:redesigned_process"], "process-improvement", "direct_evidence"],
-    ["standardised-measurement", "Standardised the measurement process.", ["action:redesigned_process"], "process-improvement", "direct_evidence"],
-    ["automated-reporting", "Automated recurring reporting.", ["action:redesigned_process"], "process-improvement", "direct_evidence"],
+    ["standardised-measurement", "Standardised the measurement process.", ["action:standardised_workflow"], "", ""],
+    ["automated-reporting", "Automated recurring reporting.", ["action:automated_recurring_workflow"], "", ""],
     ["governance-process", "Established a governance process.", ["action:redesigned_process"], "process-improvement", "direct_evidence"],
     ["operating-model", "Scaled a repeatable operating model.", ["action:redesigned_process"], "process-improvement", "direct_evidence"],
   ] as const;
@@ -68,18 +68,17 @@ async function main() {
     ["dashboard-governance", "Reviewed the dashboard portfolio for consolidation and governance.", "established_analytics_governance"],
     ["measurement-framework", "Designed a measurement framework for programme evaluation.", "designed_measurement_framework"],
     ["incrementality", "Created an incrementality methodology for campaign evaluation.", "designed_measurement_framework"],
-    ["business-framing", "Translated ambiguous business questions into analysis and recommendations.", "provided_analytics_business_advice"],
-    ["business-advice", "Advised commercial leaders using evidence and recommendations.", "provided_analytics_business_advice"],
-    ["product-owner", "Owned an analytics product, its requirements and delivery quality.", "owned_analytics_product"],
-    ["workflow-owner", "Managed a reporting workflow, requirements and delivery quality.", "owned_analytics_product"],
-    ["workflow-repeatable", "Standardised a repeatable analytical production workflow.", "enabled_analytics_workflow"],
+    ["business-framing", "Translated ambiguous business questions into analysis and recommendations.", "framed_business_problem"],
+    ["business-advice", "Advised commercial leaders using evidence and recommendations.", "advised_decision_maker"],
+    ["product-owner", "Owned an analytics product, its requirements and delivery quality.", "owned_product_or_service"],
+    ["workflow-owner", "Managed a reporting workflow, requirements and delivery quality.", "managed_requirements"],
+    ["workflow-repeatable", "Standardised a repeatable analytical production workflow.", "standardised_workflow"],
     ["people-led", "Led and mentored analysts across the function.", "led_analytics_team"],
     ["people-managed", "Managed a team of analysts.", "led_analytics_team"],
     ["people-coached", "Coached analysts to build analytical capability.", "led_analytics_team"],
-    ["investigative", "Identified behavioural patterns, anomalies and root causes.", "performed_investigative_analysis"],
-    ["signal-noise", "Isolated signal from noise during an analytical deep dive.", "performed_investigative_analysis"],
-    ["ai-reusable", "Built a reusable AI-assisted analytics workflow.", "enabled_analytics_workflow"],
-    ["ai-validated", "Used an AI-assisted analytical workflow with explicit human validation.", "enabled_analytics_workflow"],
+    ["investigative", "Identified behavioural patterns, anomalies and root causes.", "investigated_anomaly"],
+    ["signal-noise", "Isolated signal from noise during an analytical deep dive.", "isolated_meaningful_pattern"],
+    ["ai-reusable", "Built a reusable AI-assisted analytics workflow.", "designed_ai_assisted_workflow"],
   ] as const;
   const admittedGroupA = new Map([
     ["performed_strategic_analysis", "strategic-analysis"],
@@ -105,6 +104,7 @@ async function main() {
     ["lead-title", "Analytics Lead"], ["generic-analysis", "Analysed customer data."],
     ["risk-only", "Risk analytics"], ["ai-skills", "Skills: AI, LLM, Python, Codex, Gemini"],
     ["tool-names", "Python, Power BI, Tableau"], ["governance-only", "Analytics governance"],
+    ["ai-used", "Used an AI-assisted analytical workflow with explicit human validation."],
   ] as const;
   for (const [id, text] of guardedCases) assert.equal((await bridge(fixture(id, text))).status, "unsupported", id);
 
@@ -117,7 +117,7 @@ async function main() {
   const repeated = await bridge(fixture("research-direct", "Designed a research study for customer discovery.")); assert.deepEqual(repeated, direct);
   const differentId = await bridge(fixture("research-direct-2", "Designed a research study for customer discovery.", 100)); assert.equal(differentId.status, "structured"); if (differentId.status === "structured") assert.notEqual(differentId.evidence.signalIdentity, direct.evidence.signalIdentity);
   const changedPolicy = await bridge(fixture("research-direct", "Designed a research study for customer discovery."), { ...provisionalEvidenceSignalPolicy, policyVersion: "provisional-evidence-signal-policy/1.0.1" }); assert.equal(changedPolicy.status, "structured"); if (changedPolicy.status === "structured") assert.notEqual(changedPolicy.evidence.signalIdentity, direct.evidence.signalIdentity);
-  assert.equal(PROVISIONAL_EVIDENCE_SIGNAL_POLICY_VERSION, "provisional-evidence-signal-policy/1.2.0"); assert.equal(PROVISIONAL_EVIDENCE_SIGNAL_POLICY_VERSION, provisionalEvidenceSignalPolicy.policyVersion); assert.equal(provisionalEvidenceSignalPolicy.coverage, "bounded_non_exhaustive"); assert.equal(provisionalEvidenceSignalPolicy.vocabulary.length, 18); assert.equal(provisionalEvidenceSignalPolicy.rules.length, 45);
+  assert.equal(PROVISIONAL_EVIDENCE_SIGNAL_POLICY_VERSION, "provisional-evidence-signal-policy/1.3.0"); assert.equal(PROVISIONAL_EVIDENCE_SIGNAL_POLICY_VERSION, provisionalEvidenceSignalPolicy.policyVersion); assert.equal(provisionalEvidenceSignalPolicy.coverage, "bounded_non_exhaustive"); assert.equal(provisionalEvidenceSignalPolicy.vocabulary.length, 28); assert.equal(provisionalEvidenceSignalPolicy.rules.length, 48);
   assert.equal("capabilityId" in direct.evidence, false); assert.equal("mappingId" in direct.evidence, false);
   const source = ["provisional-evidence-signal-contract.ts", "provisional-evidence-signal-policy.ts", "provisional-evidence-signal-bridge.ts"].map((name) => readFileSync(new URL(`../../lib/career-possibility/${name}`, import.meta.url), "utf8")).join("\n"); assert.doesNotMatch(source, /\bfetch\s*\(|supabase|localStorage|indexedDB|openai|anthropic|embedding|fuzzy|react|next\//i);
 
