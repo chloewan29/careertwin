@@ -81,11 +81,19 @@ async function main() {
     ["ai-reusable", "Built a reusable AI-assisted analytics workflow.", "enabled_analytics_workflow"],
     ["ai-validated", "Used an AI-assisted analytical workflow with explicit human validation.", "enabled_analytics_workflow"],
   ] as const;
+  const admittedGroupA = new Map([
+    ["performed_strategic_analysis", "strategic-analysis"],
+    ["synthesised_executive_insight", "insight-synthesis"],
+    ["established_analytics_governance", "analytics-governance"],
+    ["led_analytics_team", "people-leadership"],
+  ]);
   for (const [id, text, token] of signalCases) {
     const result = await bridge(fixture(id, text)); assert.equal(result.status, "structured", id); if (result.status !== "structured") throw new Error(id);
     assert.equal(result.evidence.signals.some((item) => item.value === token), true, id);
     assert.equal(result.evidence.reviewStatus, "unreviewed", id); assert.equal("capabilityId" in result.evidence, false); assert.equal("mappingId" in result.evidence, false);
-    assert.equal((await map(result))?.status, "unsupported", `${id}: intentionally unmapped`);
+    const mapped = await map(result); const capabilityId = admittedGroupA.get(token);
+    if (capabilityId) { assert.equal(mapped?.status, "auto_admitted", id); if (mapped?.status === "auto_admitted") { assert.equal(mapped.mapping.capabilityId, capabilityId, id); assert.equal(mapped.mapping.relationship, "direct_evidence", id); } }
+    else { assert.equal(mapped?.status, "unsupported", `${id}: intentionally deferred`); if (mapped?.status === "unsupported") assert.equal(mapped.unresolved.reason, "no_canonical_rule", id); }
   }
   const guardedCases = [
     ["strategic-title", "Strategic leader"], ["commercial-skill", "Skills: commercial analytics"],

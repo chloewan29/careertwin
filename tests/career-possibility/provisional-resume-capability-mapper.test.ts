@@ -37,6 +37,20 @@ async function main() {
   const transferable = await map(evidence("evidence:transferable", [{ field: "action", value: "supported_research_delivery" }]));
   assert.equal(transferable.status, "auto_admitted");
   if (transferable.status === "auto_admitted") assert.equal(transferable.mapping.relationship, "transferable_signal");
+  const groupA = [
+    ["performed_strategic_analysis", "strategic-analysis"],
+    ["synthesised_executive_insight", "insight-synthesis"],
+    ["established_analytics_governance", "analytics-governance"],
+    ["led_analytics_team", "people-leadership"],
+  ] as const;
+  for (const [token, capabilityId] of groupA) {
+    const result = await map(evidence(`evidence:${token}`, [{ field: "action", value: token }]));
+    assert.equal(result.status, "auto_admitted");
+    if (result.status === "auto_admitted") { assert.equal(result.mapping.capabilityId, capabilityId); assert.equal(result.mapping.relationship, "direct_evidence"); assert.equal(result.mapping.reviewStatus, "unreviewed"); }
+  }
+  const duplicateInsight = await map(evidence("evidence:duplicate-insight", [{ field: "action", value: "synthesised_findings" }, { field: "outcome", value: "informed_decision" }, { field: "action", value: "synthesised_executive_insight" }]));
+  assert.equal(duplicateInsight.status, "auto_admitted");
+  if (duplicateInsight.status === "auto_admitted") assert.equal(duplicateInsight.mapping.capabilityId, "insight-synthesis");
 
   const repeated = await map(directEvidence);
   assert.deepEqual(repeated, direct);
@@ -89,8 +103,11 @@ async function main() {
   if (similarA.status === "auto_admitted" && similarB.status === "auto_admitted") assert.notEqual(similarA.mapping.mappingId, similarB.mapping.mappingId);
 
   assert.equal(provisionalResumeMappingPolicy.policyVersion, PROVISIONAL_RESUME_MAPPING_POLICY_VERSION);
+  assert.equal(PROVISIONAL_RESUME_MAPPING_POLICY_VERSION, "provisional-resume-mapping-policy/1.1.0");
   assert.equal(provisionalResumeMappingPolicy.coverage, "bounded_non_exhaustive");
-  assert.equal(provisionalResumeMappingPolicy.rules.length, 5);
+  assert.equal(provisionalResumeMappingPolicy.rules.length, 9);
+  assert.equal(new Set(provisionalResumeMappingPolicy.rules.map((rule) => rule.ruleId)).size, 9);
+  assert.deepEqual(validateProvisionalMappingPolicy(provisionalResumeMappingPolicy, definitions), []);
   const mapperSource = readFileSync(new URL("../../lib/career-possibility/provisional-resume-capability-mapper.ts", import.meta.url), "utf8");
   const canonicalSource = readFileSync(new URL("../../lib/career-possibility/canonical-personal-capability-inference.ts", import.meta.url), "utf8");
   const policySource = readFileSync(new URL("../../lib/career-possibility/provisional-resume-mapping-policy.ts", import.meta.url), "utf8");

@@ -17,6 +17,10 @@ async function main() {
     ["insight", [{ field: "action", value: "synthesised_findings" }, { field: "outcome", value: "informed_decision" }], "insight-synthesis", "direct_evidence"],
     ["cross-functional", [{ field: "action", value: "coordinated_cross_functional_delivery" }, { field: "ownership", value: "owned_delivery" }], "cross-functional-delivery", "direct_evidence"],
     ["process", [{ field: "action", value: "redesigned_process" }], "process-improvement", "direct_evidence"],
+    ["strategic-analysis", [{ field: "action", value: "performed_strategic_analysis" }], "strategic-analysis", "direct_evidence"],
+    ["executive-insight", [{ field: "action", value: "synthesised_executive_insight" }], "insight-synthesis", "direct_evidence"],
+    ["analytics-governance", [{ field: "action", value: "established_analytics_governance" }], "analytics-governance", "direct_evidence"],
+    ["people-leadership", [{ field: "action", value: "led_analytics_team" }], "people-leadership", "direct_evidence"],
   ] as const;
   for (const [id, signals, capabilityId, relationship] of cases) {
     const result = await infer(evidence(`evidence:${id}`, [...signals]));
@@ -43,6 +47,15 @@ async function main() {
   const unsupported = await infer(evidence("evidence:unsupported", [{ field: "scope", value: "cross_functional" }]));
   assert.equal(unsupported.disposition, "unsupported");
   if (unsupported.disposition === "unsupported") assert.equal(unsupported.unresolved.reason, "no_canonical_rule");
+  const deferred = ["designed_measurement_framework", "provided_analytics_business_advice", "owned_analytics_product", "performed_investigative_analysis", "enabled_analytics_workflow"];
+  for (const token of deferred) {
+    const result = await infer(evidence(`evidence:deferred:${token}`, [{ field: "action", value: token }]));
+    assert.equal(result.disposition, "unsupported");
+    if (result.disposition === "unsupported") assert.equal(result.unresolved.reason, "no_canonical_rule");
+  }
+  const duplicateInsight = await infer(evidence("evidence:duplicate-insight", [{ field: "action", value: "synthesised_findings" }, { field: "outcome", value: "informed_decision" }, { field: "action", value: "synthesised_executive_insight" }]));
+  assert.equal(duplicateInsight.disposition, "admitted");
+  if (duplicateInsight.disposition === "admitted") { assert.equal(duplicateInsight.proposal.capabilityId, "insight-synthesis"); assert.equal(duplicateInsight.proposal.matchedRuleId, "insight-synthesis/direct/synthesised-executive-insight"); }
   const conflict = await infer(evidence("evidence:conflict", [{ field: "action", value: "designed_research" }, { field: "action", value: "supported_research_delivery" }]));
   assert.equal(conflict.disposition, "unresolved");
   if (conflict.disposition === "unresolved") assert.equal(conflict.unresolved.reason, "relationship_conflict");
