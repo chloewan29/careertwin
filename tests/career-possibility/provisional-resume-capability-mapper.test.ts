@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { canonicalCapabilityLibrary } from "../../lib/career-possibility/canonical-capability-library";
+import { inferCanonicalPersonalCapability } from "../../lib/career-possibility/canonical-personal-capability-inference";
 import { mapProvisionalResumeEvidence, validateProvisionalAutoAdmittedMapping, validateProvisionalMappingPolicy, validateProvisionalUnresolvedMapping } from "../../lib/career-possibility/provisional-resume-capability-mapper";
 import type { ProvisionalMappingEvidence, ProvisionalMappingPolicy, ProvisionalMappingSignalField } from "../../lib/career-possibility/provisional-resume-mapping-contract";
 import { PROVISIONAL_RESUME_MAPPING_POLICY_VERSION, provisionalResumeMappingPolicy } from "../../lib/career-possibility/provisional-resume-mapping-policy";
@@ -23,6 +24,15 @@ async function main() {
   assert.equal(direct.mapping.method, "authored_deterministic");
   assert.ok(direct.mapping.explanation);
   assert.deepEqual(validateProvisionalAutoAdmittedMapping(direct.mapping, definitions), []);
+  const canonicalDirect = await inferCanonicalPersonalCapability({ evidence: { ...directEvidence, sourceRevision: null }, policy: provisionalResumeMappingPolicy, capabilityDefinitions: definitions, capabilityRegistryVersion: definitionVersion });
+  assert.equal(canonicalDirect.disposition, "admitted");
+  if (canonicalDirect.disposition === "admitted") {
+    assert.equal(canonicalDirect.proposal.proposalId, direct.mapping.mappingId);
+    assert.equal(canonicalDirect.proposal.capabilityId, direct.mapping.capabilityId);
+    assert.equal(canonicalDirect.proposal.relationship, direct.mapping.relationship);
+    assert.equal(canonicalDirect.proposal.matchedRuleId, direct.mapping.matchedRuleId);
+    assert.equal("reviewStatus" in canonicalDirect.proposal, false);
+  }
 
   const transferable = await map(evidence("evidence:transferable", [{ field: "action", value: "supported_research_delivery" }]));
   assert.equal(transferable.status, "auto_admitted");
@@ -82,9 +92,13 @@ async function main() {
   assert.equal(provisionalResumeMappingPolicy.coverage, "bounded_non_exhaustive");
   assert.equal(provisionalResumeMappingPolicy.rules.length, 5);
   const mapperSource = readFileSync(new URL("../../lib/career-possibility/provisional-resume-capability-mapper.ts", import.meta.url), "utf8");
+  const canonicalSource = readFileSync(new URL("../../lib/career-possibility/canonical-personal-capability-inference.ts", import.meta.url), "utf8");
   const policySource = readFileSync(new URL("../../lib/career-possibility/provisional-resume-mapping-policy.ts", import.meta.url), "utf8");
   assert.doesNotMatch(mapperSource + policySource, /\bfetch\s*\(|supabase|localStorage|indexedDB|confidence|embedding|openai|genai|llm/i);
   assert.doesNotMatch(mapperSource, /local-career-map-state|local-career-map-storage/);
+  assert.match(mapperSource, /inferCanonicalPersonalCapability/);
+  assert.doesNotMatch(mapperSource, /requiredSignals\.every|policy\.rules\.filter|sha256|multiple_candidates.*matched/);
+  assert.doesNotMatch(canonicalSource, /reviewStatus|trustStatus|auto_admitted/);
 
   console.table([
     { fixture: "direct", rule: direct.mapping.matchedRuleId, result: direct.status, capability: direct.mapping.capabilityId, relationship: direct.mapping.relationship, reason: "" },
