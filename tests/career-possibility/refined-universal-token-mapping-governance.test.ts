@@ -12,7 +12,7 @@ const decisions = {
   owned_product_or_service: "DEFER_ONTOLOGY_GAP",
   managed_requirements: "DEFER_ONTOLOGY_GAP",
   prioritised_delivery: "DEFER_SIGNAL_EVIDENCE_STANDARD",
-  governed_delivery_quality: "DEFER_ONTOLOGY_GAP",
+  governed_delivery_quality: "DEFER_COMPOSITE_EVIDENCE_STANDARD",
   investigated_anomaly: "DEFER_SIGNAL_EVIDENCE_STANDARD",
   diagnosed_root_cause: "DEFER_ONTOLOGY_GAP",
   isolated_meaningful_pattern: "DEFER_SIGNAL_EVIDENCE_STANDARD",
@@ -34,7 +34,7 @@ async function main() {
   assert.equal(Object.keys(decisions).length, 14);
   assert.equal(provisionalResumeMappingPolicy.policyVersion, "provisional-resume-mapping-policy/1.3.0");
   assert.equal(provisionalResumeMappingPolicy.rules.length, 11);
-  assert.equal(PROVISIONAL_EVIDENCE_SIGNAL_POLICY_VERSION, "provisional-evidence-signal-policy/1.5.0");
+  assert.equal(PROVISIONAL_EVIDENCE_SIGNAL_POLICY_VERSION, "provisional-evidence-signal-policy/1.6.0");
   assert.equal(provisionalEvidenceSignalPolicy.rules.length, 48);
 
   for (const [token, decision] of Object.entries(decisions)) {

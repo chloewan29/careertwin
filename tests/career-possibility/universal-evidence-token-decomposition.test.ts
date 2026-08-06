@@ -135,7 +135,26 @@ async function main() {
   await expectTokens("quality-managed-existing", "Managed delivery quality.", ["governed_delivery_quality", "owned_delivery"]);
   await expectTokens("quality-established-existing", "Established quality controls.", ["governed_delivery_quality"]);
   assert.equal(tokens(await bridge("requirements-manage-preserved", "Manage requirements.")).includes("managed_requirements"), false);
-  assert.equal(tokens(await bridge("requirements-gathered-preserved", "Gathered requirements.")).includes("managed_requirements"), true);
+  assert.equal(tokens(await bridge("requirements-gathered-preserved", "Gathered requirements.")).includes("managed_requirements"), false);
+  assert.equal(tokens(await bridge("requirements-collected-preserved", "Collected requirements.")).includes("managed_requirements"), false);
+  assert.equal(tokens(await bridge("requirements-documented-preserved", "Documented requirements.")).includes("managed_requirements"), false);
+  assert.equal(tokens(await bridge("requirements-delegated-consultants", "Managed consultants collecting requirements.")).includes("managed_requirements"), false);
+  assert.equal(tokens(await bridge("requirements-delegated-process", "Managed a process for requirements gathering.")).includes("managed_requirements"), false);
+  assert.equal(tokens(await bridge("requirements-delegated-team", "Managed a team gathering requirements.")).includes("managed_requirements"), false);
+  assert.equal(tokens(await bridge("requirements-delegated-analysts", "Managed analysts documenting requirements.")).includes("managed_requirements"), false);
+  assert.equal(tokens(await bridge("requirements-delegated-delivery", "Managed delivery while the team gathered requirements.")).includes("managed_requirements"), false);
+  assert.equal(tokens(await bridge("requirements-passive-defined", "Requirements were defined.")).includes("managed_requirements"), false);
+  assert.equal(tokens(await bridge("requirements-helped-define", "Helped define requirements.")).includes("managed_requirements"), false);
+  assert.equal(tokens(await bridge("requirements-supported", "Supported requirements management.")).includes("managed_requirements"), false);
+  assert.equal(tokens(await bridge("requirements-experience", "Requirements management experience.")).includes("managed_requirements"), false);
+  assert.equal(tokens(await bridge("requirements-skills", "Requirements management skills.")).includes("managed_requirements"), false);
+  assert.equal(tokens(await bridge("requirements-managed", "Managed requirements for the product.")).includes("managed_requirements"), true);
+  assert.equal(tokens(await bridge("requirements-defined-owned", "Defined and owned product requirements.")).includes("managed_requirements"), true);
+  assert.equal(tokens(await bridge("requirements-owned-platform", "Owned the platform requirements.")).includes("managed_requirements"), true);
+  assert.equal(tokens(await bridge("requirements-prioritised", "Prioritised requirements across releases.")).includes("managed_requirements"), true);
+  assert.equal(tokens(await bridge("requirements-prioritized", "Prioritized service requirements.")).includes("managed_requirements"), true);
+  assert.equal(tokens(await bridge("requirements-workflow-owner", "Managed a reporting workflow, requirements and delivery quality.")).includes("managed_requirements"), true);
+  assert.equal(tokens(await bridge("requirements-product-multiple", "Owned a reporting product, its requirements and delivery quality.")).includes("managed_requirements"), true);
 
   const crossRole = [
     ["business-delivery", "Framed an ambiguous operational problem for evidence and recommendations.", "framed_business_problem"],
