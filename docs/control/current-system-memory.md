@@ -1,6 +1,19 @@
 # Current System Memory
 
+### Managed requirements evidence standard repaired (`CAREERTWIN_MANAGED_REQUIREMENTS_EVIDENCE_STANDARD_REPAIRED`)
+
+- The over-broad `managed_requirements` evidence standard was audited and repaired. The prior rule incorrectly admitted `gathered requirements` as `managed_requirements`, over-claiming delegated requirements work.
+- Implementation `a9e7a06` (`fix(career): tighten managed requirements evidence`) tightens `signal/action/managed-requirements` from ruleVersion `1.3.0` to `1.4.0`. Signal policy advances from `1.5.0` to `1.6.0` with the vocabulary and 48-rule inventory unchanged.
+- `gathered` is removed from the performed-work alternatives; the rule now admits only `managed|defined|owned|prioritised|prioritized` requirements plus the owned product/platform/workflow/service requirements fallback.
+- New exclusion patterns reject delegated team/analyst/consultant/staff/vendor/engineer/developer/contractor/specialist gathering, documenting, collecting, defining, prioritising, or managing requirements, and reject process/workflow/programme-for-requirements-gathering/collection/management/definition phrasing.
+- Gathering, collection, documentation, facilitation, interviewing, workshops, passive-defined, helped-define, supported, contributed, reviewed, received, worked-with, responsible, experience, and skills phrasing no longer emit `managed_requirements`.
+- Valid management remains admitted: managed requirements, defined+owned product requirements, owned platform requirements, prioritised/prioritized requirements, and owned product/platform/workflow requirements with delivery-quality coordination.
+- The governance test now records `governed_delivery_quality` as `DEFER_COMPOSITE_EVIDENCE_STANDARD`, aligning the test with the already-accepted governance decision from `CAREERTWIN_DELIVERY_QUALITY_CANONICAL_MAPPING_GOVERNED`; no semantic behavior changed for that token.
+- No canonical capability, mapping rule, role profile, canonical inference, extractor, state/storage, materializer, UI, Job Copilot/server, API/Supabase/package, review, or supplementation behavior changed. Focused tests, all 42 Career Possibility tests, exact-file ESLint, TypeScript, production build, and `git diff --check` passed; mode returned to `HOLD`.
+- Single next action: Hold after managed-requirements evidence repair. Govern whether `managed_requirements` can map to an existing canonical building block before adding infinitive `manage`.
+
 ### Delivery-quality management infinitive signal repaired (`CAREERTWIN_DELIVERY_QUALITY_MANAGEMENT_INFINITIVE_SIGNAL_REPAIRED`)
+
 
 - Requirements and delivery-quality morphology were audited separately. Requirements repair remains deferred because its current rule already treats `gathered requirements` as `managed_requirements`; adding `manage` there would also over-claim delegated requirements work.
 - Implementation `9b5c80d` (`fix(career): admit infinitive delivery quality management`) adds one narrow relation-bound infinitive `manage` branch only to `signal/action/governed-delivery-quality`. Signal policy advances from `1.4.0` to `1.5.0` with the vocabulary and 48-rule inventory unchanged.
@@ -493,7 +506,8 @@ Completed evidence-field transition repair:
 - The prior evidence-field review replay/status-validation defect is closed; this line has no remaining active defect.
 
 Single main next action:
-- Hold after delivery-quality infinitive repair. Govern whether `governed_delivery_quality` can map to an existing canonical capability before repairing requirements evidence standards.
+- Hold after managed-requirements evidence repair. Govern whether `managed_requirements` can map to an existing canonical building block before adding infinitive `manage`.
+
 
 Explicit non-reopen boundaries:
 - Do not reopen the source revision producer, source identity manifest, review decision identity contract, review revision producer, `SharedCareerIngestionBundle` contract, browser shared-ingestion adapter, or browser shared-ingestion runtime architecture.

@@ -68,13 +68,24 @@ Current mode:
 - `HOLD`
 
 Current task type:
-- delivery-quality infinitive signal repair complete / canonical mapping governance pending
+- managed requirements evidence standard repair complete / canonical mapping governance pending
 
 Current active question:
-- Can `governed_delivery_quality` map truthfully to an existing canonical building block before requirements evidence standards are repaired?
+- Can `managed_requirements` map truthfully to an existing canonical building block before adding infinitive `manage`?
 
 Completed Career Map milestone:
+- `CAREERTWIN_MANAGED_REQUIREMENTS_EVIDENCE_STANDARD_REPAIRED`
+- implementation `a9e7a06` (`fix(career): tighten managed requirements evidence`) tightens `signal/action/managed-requirements` from ruleVersion `1.3.0` to `1.4.0` and advances signal policy from `1.5.0` to `1.6.0` while retaining 48 rules
+- `gathered` is removed from the performed-work alternatives; the rule now admits only `managed|defined|owned|prioritised|prioritized` requirements plus the owned product/platform/workflow/service requirements fallback
+- new exclusion patterns reject delegated team/analyst/consultant/staff/vendor/engineer/developer/contractor/specialist gathering, documenting, collecting, defining, prioritising, or managing requirements, and reject process/workflow/programme-for-requirements-gathering/collection/management/definition phrasing
+- gathering, collection, documentation, facilitation, interviewing, workshops, passive-defined, helped-define, supported, contributed, reviewed, received, worked-with, responsible, experience, and skills phrasing no longer emit `managed_requirements`
+- valid management remains admitted: managed requirements, defined+owned product requirements, owned platform requirements, prioritised/prioritized requirements, and owned product/platform/workflow requirements with delivery-quality coordination
+- the governance test now records `governed_delivery_quality` as `DEFER_COMPOSITE_EVIDENCE_STANDARD`, aligning the test with the already-accepted governance decision from `CAREERTWIN_DELIVERY_QUALITY_CANONICAL_MAPPING_GOVERNED`; no semantic behavior changed for that token
+- no canonical capability, mapping rule, role profile, canonical inference, extractor, state/storage, materializer, UI, Job Copilot/server, API/Supabase/package, review, or supplementation behavior changed
+- focused tests, all 42 Career Possibility tests, exact-file ESLint, TypeScript, production build, and `git diff --check` passed; mode returned to `HOLD`
+- next action: Hold after managed-requirements evidence repair. Govern whether `managed_requirements` can map to an existing canonical building block before adding infinitive `manage`.
 - `CAREERTWIN_DELIVERY_QUALITY_CANONICAL_MAPPING_GOVERNED`
+
 - final decision: `GOVERNED_NO_CHANGE`; final classification: `DEFER_COMPOSITE_EVIDENCE_STANDARD`; no mapping, ontology, signal, state, or UI change was made
 - the atomic `governed_delivery_quality` token was governed against the existing canonical capability library; no mapping was admitted and no file changed
 - the token alone does not safely prove any existing canonical capability: it is an atomic delivery-quality governance dimension that requires an additional independently emitted signal before it becomes capability evidence
@@ -312,7 +323,8 @@ Tailored CV flow closure note (2026-05-15):
 ## 3. One main next action
 
 Main next action:
-- Audit and repair the over-broad `managed_requirements` evidence standard, especially the incorrect admission of `gathered requirements`, before adding infinitive `manage`.
+- Hold after managed-requirements evidence repair. Govern whether `managed_requirements` can map to an existing canonical building block before adding infinitive `manage`.
+
 
 Not the next action:
 - do not treat the closed `stale_review_status` evidence-field defect as active
