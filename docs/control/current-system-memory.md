@@ -1,5 +1,20 @@
 # Current System Memory
 
+### Career Map graph projection foundation established (`CAREERTWIN_CAREER_MAP_GRAPH_PROJECTION_ESTABLISHED`)
+
+- Implementation commit `157df6f` (`feat(career): add career map graph projection`). Two new files only: `lib/career-possibility/career-map-graph-projection.ts` and `tests/career-possibility/career-map-graph-projection.test.ts`.
+- The projection is presentation-only and ephemeral. It derives a typed graph model from existing committed semantic owners and does not persist state, modify inference, or introduce new semantic concepts.
+- `groupPersonalCapabilitiesByFamily()` uses `canonicalCapabilityFamilyLibrary` as the authoritative family grouping. Only families with ≥1 admitted personal capability are emitted; families with zero personal evidence are silently absent.
+- `buildCareerMapGraphProjection()` accepts `PersonalCareerMapPresentation` and an optional `CareerMapRoleInput` (containing a pre-computed `PersonalTargetRoleComparison`). It produces typed `CareerMapGraphProjection` with six node kinds (user, capability_family, capability, evidence, role, role_requirement) and four edge types (user_has_family, family_contains_capability, capability_supported_by_evidence, role_requires_capability).
+- Evidence nodes use committed fields only: `text`, `relationship`, `evidenceId`, `sourceStart`, `sourceEnd`. No `employer` or `roleTitle` (HOLD-only provenance) is consumed or referenced.
+- Role requirement states come from `PersonalTargetRoleComparison.requirements[].outcome`: `directly_demonstrated`, `transferable_signal`, `evidence_not_yet_shown`. Governance states (`governance_deferred`, `governance_excluded`) are filtered from the graph.
+- Unsupported-requirement invariant: a role requirement for a capability absent from the user's personal set appears as a `role_requirement` node with `requirementState: "evidence_not_yet_shown"`. It is NEVER added to personal `capability` or `capability_family` nodes. Explicitly tested in test F.
+- No fitScore, fitLabel, rank, confidence score, strength field, employer/roleTitle provenance, Job Copilot semantics, or JD-specific logic was introduced.
+- All 8 focused tests (A–H) passed. All 42 career-possibility tests passed; 1 pre-existing failure in `resume-evidence-text-extractor.test.ts` is a pre-existing HOLD conflict (HOLD-modified extractor breaks committed test; not caused by this slice). ESLint clean, TypeScript clean, production build clean, `git diff --check` clean on new files.
+- No HOLD file was touched. All HOLD dirt preserved exactly untouched and unstaged. No UI graph implemented; no `app/career-map/page.tsx` or `CareerMapNeuralGraph.tsx` created.
+- canonical family library remains family authority. `PersonalCareerMapPresentation` remains personal capability state authority. `buildPersonalTargetRoleComparison()` remains role-requirement-state authority.
+- Single next action: Audit the cleanest runtime injection boundary for rendering the new graph projection from the existing real personal Career Map state without creating a parallel localStorage/state path or modifying provenance HOLD dirt (Phase 2 of the neural graph vertical slice).
+
 ### Managed requirements evidence standard repaired (`CAREERTWIN_MANAGED_REQUIREMENTS_EVIDENCE_STANDARD_REPAIRED`)
 
 - The over-broad `managed_requirements` evidence standard was audited and repaired. The prior rule incorrectly admitted `gathered requirements` as `managed_requirements`, over-claiming delegated requirements work.

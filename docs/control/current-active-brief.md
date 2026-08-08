@@ -68,12 +68,29 @@ Current mode:
 - `HOLD`
 
 Current task type:
-- managed requirements evidence standard repair complete / canonical mapping governance pending
+- Career Map neural graph — Phase 1 projection foundation complete / rendering injection boundary pending
 
 Current active question:
-- Can `managed_requirements` map truthfully to an existing canonical building block before adding infinitive `manage`?
+- What is the cleanest runtime injection boundary for rendering the new graph projection from the existing real personal Career Map state without creating a parallel localStorage/state path or modifying provenance HOLD dirt?
 
 Completed Career Map milestone:
+- `CAREERTWIN_CAREER_MAP_GRAPH_PROJECTION_ESTABLISHED`
+  - Implementation commit `157df6f` (`feat(career): add career map graph projection`)
+  - Two new files only: `lib/career-possibility/career-map-graph-projection.ts` and `tests/career-possibility/career-map-graph-projection.test.ts`
+  - Projection is presentation-only and ephemeral; it derives a typed graph model from existing committed owners
+  - `groupPersonalCapabilitiesByFamily()` uses `canonicalCapabilityFamilyLibrary` as the authoritative family grouping; only families with ≥1 admitted personal capability are emitted
+  - `buildCareerMapGraphProjection()` accepts `PersonalCareerMapPresentation` + optional `CareerMapRoleInput` (pre-computed `PersonalTargetRoleComparison`); produces typed nodes + edges for: user, capability_family, capability, evidence, role, role_requirement
+  - Evidence nodes use committed fields only (`text`, `relationship`, `evidenceId`, `sourceStart`/`sourceEnd`); no `employer`/`roleTitle` (HOLD-only provenance) consumed
+  - Role requirement states come from existing `buildPersonalTargetRoleComparison()` output: `directly_demonstrated`, `transferable_signal`, `evidence_not_yet_shown`; `governance_deferred`/`governance_excluded` filtered from graph
+  - Unsupported-requirement invariant enforced: a role requirement for a capability absent from the user's personal set appears as a `role_requirement` node with `evidence_not_yet_shown`; it is NEVER added to personal `capability` or `capability_family` nodes
+  - All 8 focused tests passed (A–H covering family grouping, evidence grounding, no fabricated capability, role states, unsupported invariant, no provenance dependency, role optional)
+  - All 42 career-possibility tests passed (1 pre-existing HOLD failure in `resume-evidence-text-extractor.test.ts` is caused by HOLD-modified extractor breaking committed test; not caused by this slice)
+  - ESLint clean, TypeScript clean, production build clean, `git diff --check` clean on new files
+  - No HOLD file was touched; all HOLD dirt preserved exactly untouched and unstaged
+  - No UI graph was implemented; no `app/career-map/page.tsx` was modified; no `CareerMapNeuralGraph.tsx` created
+  - No Job Copilot, fitScore, fitLabel, rank, or JD semantics introduced
+  - No employer/roleTitle provenance consumed
+  - canonical family library remains family authority; `PersonalCareerMapPresentation` remains personal capability state authority; `buildPersonalTargetRoleComparison()` remains role-requirement-state authority
 - `CAREERTWIN_MANAGED_REQUIREMENTS_EVIDENCE_STANDARD_REPAIRED`
 - implementation `a9e7a06` (`fix(career): tighten managed requirements evidence`) tightens `signal/action/managed-requirements` from ruleVersion `1.3.0` to `1.4.0` and advances signal policy from `1.5.0` to `1.6.0` while retaining 48 rules
 - `gathered` is removed from the performed-work alternatives; the rule now admits only `managed|defined|owned|prioritised|prioritized` requirements plus the owned product/platform/workflow/service requirements fallback
@@ -323,7 +340,7 @@ Tailored CV flow closure note (2026-05-15):
 ## 3. One main next action
 
 Main next action:
-- Hold after managed-requirements evidence repair. Govern whether `managed_requirements` can map to an existing canonical building block before adding infinitive `manage`.
+- Audit the cleanest runtime injection boundary for rendering the new graph projection from the existing real personal Career Map state without creating a parallel localStorage/state path or modifying provenance HOLD dirt. This is Phase 2 of the Career Map neural graph vertical slice.
 
 
 Not the next action:
