@@ -1,0 +1,356 @@
+/**
+ * Focused renderer invariant tests for CareerMapNeuralGraph.
+ *
+ * Uses only the existing Node test stack (node:assert).
+ * No React Testing Library, no jsdom, no new packages.
+ *
+ * Because the renderer is a React component, click-interaction tests
+ * are NOT supported by the current tooling. This limitation is noted
+ * explicitly in the test output.
+ *
+ * These tests instead verify the PROJECTION CONTRACT properties
+ * that the renderer depends on — ensuring the renderer's assumptions
+ * about the graph data it receives are always true.
+ *
+ * Test coverage:
+ *   A. Default graph includes user + evidenced family nodes + role node
+ *   B. Unsupported role requirement is never a personal capability node
+ *   C. Node IDs are unique across the full projection
+ *   D. No employer / roleTitle required on evidence nodes
+ *   E. CareerMapNeuralGraph module imports no localStorage/storage owner
+ *   F. CareerMapNeuralGraph module imports no Job Copilot / fitScore owner
+ */
+
+import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import { canonicalCapabilityFamilyLibrary } from "../../lib/career-possibility/canonical-capability-family-library";
+import {
+  buildCareerMapGraphProjection,
+  type CareerMapGraphProjection,
+} from "../../lib/career-possibility/career-map-graph-projection";
+import type { PersonalCareerMapPresentation } from "../../lib/career-possibility/local-career-map-presentation-adapter";
+import { PERSONAL_TARGET_ROLE_COMPARISON_VERSION, type PersonalTargetRoleComparison } from "../../lib/career-possibility/personal-target-role-comparison";
+
+// ---------------------------------------------------------------------------
+// Fixtures — shared across tests
+// ---------------------------------------------------------------------------
+
+function makeEvidence(
+  id: string,
+  evidenceId: string,
+  text: string,
+  relationship: "direct_evidence" | "transferable_signal",
+): PersonalCareerMapPresentation["capabilities"][number]["evidence"][number] {
+  return Object.freeze({
+    id,
+    evidenceId,
+    text,
+    relationship,
+    sourceStart: 0,
+    sourceEnd: text.length,
+    provisional: true as const,
+  });
+}
+
+function makePresentation(
+  capabilities: PersonalCareerMapPresentation["capabilities"],
+): PersonalCareerMapPresentation {
+  return Object.freeze({
+    mode: "personal" as const,
+    status: "provisional" as const,
+    mapTrustStatus: "provisional" as const,
+    unresolvedEvidenceCount: 0,
+    reviewedEvidenceCount: 0,
+    provisionalEvidenceCount: capabilities.reduce((sum, c) => sum + c.evidence.length, 0),
+    capabilities: Object.freeze(capabilities),
+    futurePaths: Object.freeze({ available: false as const, reason: "neural-graph-test" }),
+    roleLens: Object.freeze({ available: false as const, reason: "neural-graph-test" }),
+  });
+}
+
+function makeComparison(
+  roleId: string,
+  roleTitle: string,
+  requirements: PersonalTargetRoleComparison["requirements"],
+): PersonalTargetRoleComparison {
+  const count = (outcome: string) => requirements.filter((r) => r.outcome === outcome).length;
+  return Object.freeze({
+    version: PERSONAL_TARGET_ROLE_COMPARISON_VERSION,
+    role: Object.freeze({ roleId, title: roleTitle, domain: "test" }),
+    mapTrustStatus: "provisional" as const,
+    missingMeaning: "Not evidenced in your current CV-derived map." as const,
+    summary: Object.freeze({
+      totalRequirements: requirements.length,
+      directly_demonstrated: count("directly_demonstrated"),
+      transferable_signal: count("transferable_signal"),
+      evidence_not_yet_shown: count("evidence_not_yet_shown"),
+      governance_deferred: 0,
+      governance_excluded: 0,
+      unknown: 0,
+    }),
+    requirements: Object.freeze(requirements),
+  });
+}
+
+function nodesByType<T extends CareerMapGraphProjection["nodes"][number]["type"]>(
+  projection: CareerMapGraphProjection,
+  type: T,
+): Extract<CareerMapGraphProjection["nodes"][number], { type: T }>[] {
+  return projection.nodes.filter(
+    (n): n is Extract<CareerMapGraphProjection["nodes"][number], { type: T }> => n.type === type,
+  );
+}
+
+const RENDERER_SOURCE_PATH = "components/career-possibility/CareerMapNeuralGraph.tsx";
+
+// ---------------------------------------------------------------------------
+// Test A — Default graph includes user + family nodes + role node (if role provided)
+// ---------------------------------------------------------------------------
+
+async function testA_defaultGraphIncludes() {
+  const presentation = makePresentation([
+    Object.freeze({
+      id: "insight-synthesis",
+      label: "Insight Synthesis",
+      family: "Analytics & Insight",
+      evidence: [makeEvidence("m1", "ev1", "Synthesized findings into recommendations.", "direct_evidence")],
+    }),
+    Object.freeze({
+      id: "people-leadership",
+      label: "People Leadership",
+      family: "Leadership",
+      evidence: [makeEvidence("m2", "ev2", "Led a team of six analysts.", "direct_evidence")],
+    }),
+  ]);
+
+  const comparison = makeComparison("analytics-manager", "Analytics Manager", [
+    Object.freeze({
+      capabilityId: "measurement-design",
+      roleLabel: "Measurement Design",
+      canonicalLabel: "Measurement Design",
+      importance: "must" as const,
+      outcome: "evidence_not_yet_shown" as const,
+      evidence: Object.freeze([]),
+    }),
+  ]);
+
+  const projection = buildCareerMapGraphProjection({
+    presentation,
+    familyLibrary: canonicalCapabilityFamilyLibrary,
+    role: { roleProfile: { roleFamilyId: "analytics-manager", canonicalTitle: "Analytics Manager", domain: "analytics" } as never, comparison },
+  });
+
+  // User node must be present
+  const userNodes = nodesByType(projection, "user");
+  assert.equal(userNodes.length, 1, "A: exactly one user node");
+  assert.equal(userNodes[0].id, "user", "A: user node id must be 'user'");
+
+  // Family nodes must be present (2 families from presentation)
+  const familyNodes = nodesByType(projection, "capability_family");
+  assert.ok(familyNodes.length >= 1, "A: at least one family node");
+
+  // Role node must be present
+  const roleNodes = nodesByType(projection, "role");
+  assert.equal(roleNodes.length, 1, "A: one role node when role context provided");
+  assert.equal(roleNodes[0].id, "analytics-manager", "A: role node id matches roleFamilyId");
+
+  console.log("  A. Default graph includes user + family nodes + role node — PASSED");
+}
+
+// ---------------------------------------------------------------------------
+// Test B — Unsupported role requirement: role_requirement node exists,
+//           personal capability node does NOT exist for that capabilityId
+// ---------------------------------------------------------------------------
+
+async function testB_unsupportedRequirementIsNotPersonalCapability() {
+  // User has insight-synthesis only
+  const presentation = makePresentation([
+    Object.freeze({
+      id: "insight-synthesis",
+      label: "Insight Synthesis",
+      family: "Analytics & Insight",
+      evidence: [makeEvidence("m1", "ev1", "Synthesized research findings.", "direct_evidence")],
+    }),
+  ]);
+
+  // measurement-design is required by the role but NOT in user's personal set
+  const comparison = makeComparison("test-role", "Test Role", [
+    Object.freeze({
+      capabilityId: "measurement-design",
+      roleLabel: "Measurement Design",
+      canonicalLabel: "Measurement Design",
+      importance: "must" as const,
+      outcome: "evidence_not_yet_shown" as const,
+      evidence: Object.freeze([]),
+    }),
+  ]);
+
+  const projection = buildCareerMapGraphProjection({
+    presentation,
+    familyLibrary: canonicalCapabilityFamilyLibrary,
+    role: { roleProfile: { roleFamilyId: "test-role", canonicalTitle: "Test Role", domain: "test" } as never, comparison },
+  });
+
+  // role_requirement node must exist for measurement-design
+  const reqNodes = nodesByType(projection, "role_requirement");
+  const unsupportedReq = reqNodes.find((r) => r.capabilityId === "measurement-design");
+  assert.ok(unsupportedReq, "B: role_requirement node must exist for unsupported requirement");
+  assert.equal(unsupportedReq.requirementState, "evidence_not_yet_shown", "B: requirementState must be evidence_not_yet_shown");
+
+  // CRITICAL: measurement-design must NOT appear as a personal capability node
+  const capNodes = nodesByType(projection, "capability");
+  const fabricated = capNodes.find((c) => c.id === "measurement-design");
+  assert.equal(fabricated, undefined, "B: measurement-design must NOT be a personal capability node");
+
+  // CRITICAL: user_has_family and family_contains_capability edges must not reference measurement-design
+  const badEdge = projection.edges.find(
+    (e) => (e.type === "user_has_family" || e.type === "family_contains_capability") && e.toId === "measurement-design",
+  );
+  assert.equal(badEdge, undefined, "B: no personal graph edge must fabricate measurement-design");
+
+  // Personal capability graph must only contain insight-synthesis
+  assert.equal(capNodes.length, 1, "B: only 1 personal capability node");
+  assert.equal(capNodes[0].id, "insight-synthesis", "B: only insight-synthesis is personal");
+
+  console.log("  B. Unsupported requirement is not a personal capability — PASSED");
+}
+
+// ---------------------------------------------------------------------------
+// Test C — Node IDs are unique across the full projection
+// ---------------------------------------------------------------------------
+
+async function testC_nodeIdsAreUnique() {
+  const presentation = makePresentation([
+    Object.freeze({
+      id: "insight-synthesis",
+      label: "Insight Synthesis",
+      family: "Analytics & Insight",
+      evidence: [
+        makeEvidence("m1", "ev1", "Synthesized findings.", "direct_evidence"),
+        makeEvidence("m2", "ev2", "Translated analysis.", "transferable_signal"),
+      ],
+    }),
+    Object.freeze({
+      id: "strategic-analysis",
+      label: "Strategic Analysis",
+      family: "Strategy & Transformation",
+      evidence: [makeEvidence("m3", "ev3", "Developed strategic analysis.", "direct_evidence")],
+    }),
+  ]);
+
+  const comparison = makeComparison("analytics-manager", "Analytics Manager", [
+    Object.freeze({
+      capabilityId: "insight-synthesis",
+      roleLabel: "Insight Synthesis",
+      canonicalLabel: "Insight Synthesis",
+      importance: "must" as const,
+      outcome: "directly_demonstrated" as const,
+      evidence: Object.freeze([
+        Object.freeze({ mappingId: "m1", evidenceId: "ev1", text: "Synthesized findings.", relationship: "direct_evidence" as const }),
+      ]),
+    }),
+    Object.freeze({
+      capabilityId: "measurement-design",
+      roleLabel: "Measurement Design",
+      canonicalLabel: "Measurement Design",
+      importance: "must" as const,
+      outcome: "evidence_not_yet_shown" as const,
+      evidence: Object.freeze([]),
+    }),
+  ]);
+
+  const projection = buildCareerMapGraphProjection({
+    presentation,
+    familyLibrary: canonicalCapabilityFamilyLibrary,
+    role: { roleProfile: { roleFamilyId: "analytics-manager", canonicalTitle: "Analytics Manager", domain: "analytics" } as never, comparison },
+  });
+
+  const ids = projection.nodes.map((n) => n.id);
+  const uniqueIds = new Set(ids);
+  assert.equal(uniqueIds.size, ids.length, `C: node IDs must be unique — found ${ids.length - uniqueIds.size} duplicate(s)`);
+
+  console.log("  C. Node IDs are unique across projection — PASSED");
+}
+
+// ---------------------------------------------------------------------------
+// Test D — No employer / roleTitle required on evidence nodes
+// ---------------------------------------------------------------------------
+
+async function testD_noProvenanceRequired() {
+  // Evidence constructed with committed fields only — no employer, no roleTitle
+  const presentation = makePresentation([
+    Object.freeze({
+      id: "strategic-analysis",
+      label: "Strategic Analysis",
+      family: "Strategy & Transformation",
+      evidence: [makeEvidence("m1", "ev-no-prov", "Developed an evidence-based strategy document.", "direct_evidence")],
+    }),
+  ]);
+
+  const projection = buildCareerMapGraphProjection({ presentation, familyLibrary: canonicalCapabilityFamilyLibrary });
+
+  const evNodes = nodesByType(projection, "evidence");
+  assert.equal(evNodes.length, 1, "D: one evidence node");
+
+  const evNode = evNodes[0] as Record<string, unknown>;
+  assert.equal("employer" in evNode, false, "D: evidence node must not carry employer");
+  assert.equal("roleTitle" in evNode, false, "D: evidence node must not carry roleTitle");
+  assert.ok(evNode["text"], "D: evidence node must carry text");
+  assert.ok(evNode["relationship"], "D: evidence node must carry relationship");
+
+  console.log("  D. No employer / roleTitle required on evidence nodes — PASSED");
+}
+
+// ---------------------------------------------------------------------------
+// Test E — Renderer source imports no localStorage/storage owner
+// ---------------------------------------------------------------------------
+
+async function testE_noStorageImport() {
+  const source = readFileSync(RENDERER_SOURCE_PATH, "utf8");
+  // Check import statements — comments are allowed to mention these terms
+  assert.doesNotMatch(source, /from ['"].*local-career-map-storage/, "E: renderer must not import local-career-map-storage");
+  assert.doesNotMatch(source, /from ['"].*local-career-map-state['"]/, "E: renderer must not import local-career-map-state");
+  // Check direct API calls (not merely documentary comments)
+  assert.doesNotMatch(source, /readLocalCareerMapState\s*\(/, "E: renderer must not call readLocalCareerMapState");
+  assert.doesNotMatch(source, /writeLocalCareerMapState\s*\(/, "E: renderer must not call writeLocalCareerMapState");
+  assert.doesNotMatch(source, /window\.localStorage/, "E: renderer must not access window.localStorage");
+
+  console.log("  E. Renderer imports no localStorage/storage owner — PASSED");
+}
+
+// ---------------------------------------------------------------------------
+// Test F — Renderer source imports no Job Copilot / fitScore owner
+// ---------------------------------------------------------------------------
+
+async function testF_noJobCopilotImport() {
+  const source = readFileSync(RENDERER_SOURCE_PATH, "utf8");
+  // Check import statements — comments allowed
+  assert.doesNotMatch(source, /from ['"].*job-copilot/, "F: renderer must not import job-copilot");
+  assert.doesNotMatch(source, /from ['"].*career-map-explorer-view-model/, "F: renderer must not import career-map-explorer-view-model");
+  // Check forbidden property/variable references (not in comments)
+  assert.doesNotMatch(source, /\.fitScore/, "F: renderer must not reference .fitScore");
+  assert.doesNotMatch(source, /\.fitLabel/, "F: renderer must not reference .fitLabel");
+  // CapabilityExplorer import check
+  assert.doesNotMatch(source, /from ['"].*CapabilityExplorer/, "F: renderer must not import CapabilityExplorer");
+
+  console.log("  F. Renderer imports no Job Copilot / fitScore owner — PASSED");
+}
+
+// ---------------------------------------------------------------------------
+// Main
+// ---------------------------------------------------------------------------
+
+async function main() {
+  console.log("career-map-neural-graph.test.ts");
+  console.log("  NOTE: click-interaction tests are NOT supported by the current tooling (no jsdom/RTL).");
+  console.log("        Testing projection contract invariants and static source constraints instead.");
+  await testA_defaultGraphIncludes();
+  await testB_unsupportedRequirementIsNotPersonalCapability();
+  await testC_nodeIdsAreUnique();
+  await testD_noProvenanceRequired();
+  await testE_noStorageImport();
+  await testF_noJobCopilotImport();
+  console.log("All career-map-neural-graph renderer contract tests passed.");
+}
+
+main().catch((error) => { process.exitCode = 1; throw error; });

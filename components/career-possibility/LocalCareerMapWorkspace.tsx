@@ -10,17 +10,41 @@ import { TargetRoleCapabilityComparison } from "./TargetRoleCapabilityComparison
 import type { RoleCapabilityProfile } from "@/lib/career-possibility/role-capability-library";
 import type { CanonicalCapabilityLibrary } from "@/lib/career-possibility/canonical-capability-library";
 import type { CanonicalCapabilityGovernanceLibrary } from "@/lib/career-possibility/canonical-capability-governance-decisions";
+import { buildPersonalTargetRoleComparison } from "@/lib/career-possibility/personal-target-role-comparison";
+import { buildCareerMapGraphProjection } from "@/lib/career-possibility/career-map-graph-projection";
+import { canonicalCapabilityFamilyLibrary } from "@/lib/career-possibility/canonical-capability-family-library";
+import { CareerMapNeuralGraph } from "./CareerMapNeuralGraph";
 
 export function LocalCareerMapWorkspace({ definitions, definitionVersion, roles, canonicalLibrary, governance }: { definitions: readonly CareerMapCapabilityDefinition[]; definitionVersion: string; roles: readonly RoleCapabilityProfile[]; canonicalLibrary: CanonicalCapabilityLibrary; governance: CanonicalCapabilityGovernanceLibrary }) {
-  const [result, setResult] = useState<LocalCareerMapReadResult | null>(null); const [activeView, setActiveView] = useState<"map" | "role-lens">("map"); const refresh = useCallback(() => setResult(readLocalCareerMapState(definitions, definitionVersion)), [definitions, definitionVersion]);
+  const [result, setResult] = useState<LocalCareerMapReadResult | null>(null); const [activeView, setActiveView] = useState<"map" | "graph" | "role-lens">("map"); const refresh = useCallback(() => setResult(readLocalCareerMapState(definitions, definitionVersion)), [definitions, definitionVersion]);
   useEffect(() => { const id = window.setTimeout(refresh, 0); const visible = () => { if (document.visibilityState === "visible") refresh(); }; window.addEventListener("focus", refresh); window.addEventListener("pageshow", refresh); window.addEventListener("storage", refresh); document.addEventListener("visibilitychange", visible); return () => { window.clearTimeout(id); window.removeEventListener("focus", refresh); window.removeEventListener("pageshow", refresh); window.removeEventListener("storage", refresh); document.removeEventListener("visibilitychange", visible); }; }, [refresh]);
   function clear() { if (!window.confirm("Clear the Career Map stored in this browser?")) return; if (clearLocalCareerMapState().ok) setResult({ status: "absent" }); }
-  function selectView(view: "map" | "role-lens", focusId?: string) { setActiveView(view); if (focusId) document.getElementById(focusId)?.focus(); }
+  function selectView(view: "map" | "graph" | "role-lens", focusId?: string) { setActiveView(view); if (focusId) document.getElementById(focusId)?.focus(); }
   if (!result) return <div className="py-16 text-center text-sm text-cyan-50/45">Loading browser-local Career Map…</div>;
   if (result.status === "loaded") {
     const personal = buildPersonalCareerMapPresentation({ localState: result.state, canonicalDefinitions: definitions });
     if (!personal.ok) return <StateNotice title="Saved browser data could not be read" message={personal.issues[0].message} clear={clear} />;
     const provisional = result.state.schemaVersion === "2.0.0";
+    // --- Neural graph projection (additive, no second storage read) ---
+    // Use the stable representative analytics-manager role profile.
+    // roles prop is already RoleCapabilityProfile[] — no conversion needed.
+    const graphRoleProfile = roles.find((r) => r.roleFamilyId === "analytics-manager") ?? null;
+    const graphComparison = graphRoleProfile
+      ? buildPersonalTargetRoleComparison({
+          localCareerMapState: result.state,
+          targetRoleProfile: graphRoleProfile,
+          canonicalCapabilityLibrary: canonicalLibrary,
+          governanceDecisions: governance,
+          definitionVersion,
+        })
+      : null;
+    const graphProjection = buildCareerMapGraphProjection({
+      presentation: personal.presentation,
+      familyLibrary: canonicalCapabilityFamilyLibrary,
+      ...(graphComparison?.ok
+        ? { role: { roleProfile: graphRoleProfile!, comparison: graphComparison.comparison } }
+        : {}),
+    });
     return <section className="py-6 sm:py-7">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
@@ -36,11 +60,15 @@ export function LocalCareerMapWorkspace({ definitions, definitionVersion, roles,
         </details>
       </div>
       <div className="mt-5 flex gap-1 border-b border-white/[0.08]" role="tablist" aria-label="Career Map views">
-        <ViewTab id="career-map-tab" controls="career-map-panel" active={activeView === "map"} onClick={() => selectView("map")} onNext={() => selectView("role-lens", "role-lens-tab")}>Career Map</ViewTab>
-        <ViewTab id="role-lens-tab" controls="role-lens-panel" active={activeView === "role-lens"} onClick={() => selectView("role-lens")} onPrevious={() => selectView("map", "career-map-tab")}>Role Lens</ViewTab>
+        <ViewTab id="career-map-tab" controls="career-map-panel" active={activeView === "map"} onClick={() => selectView("map")} onNext={() => selectView("graph", "career-map-graph-tab")}>Career Map</ViewTab>
+        <ViewTab id="career-map-graph-tab" controls="career-map-graph-panel" active={activeView === "graph"} onClick={() => selectView("graph")} onPrevious={() => selectView("map", "career-map-tab")} onNext={() => selectView("role-lens", "role-lens-tab")}>Neural Graph</ViewTab>
+        <ViewTab id="role-lens-tab" controls="role-lens-panel" active={activeView === "role-lens"} onClick={() => selectView("role-lens")} onPrevious={() => selectView("graph", "career-map-graph-tab")}>Role Lens</ViewTab>
       </div>
       <div id="career-map-panel" role="tabpanel" aria-labelledby="career-map-tab" hidden={activeView !== "map"}>
         <PersonalCapabilityExplorer presentation={personal.presentation} />
+      </div>
+      <div id="career-map-graph-panel" role="tabpanel" aria-labelledby="career-map-graph-tab" hidden={activeView !== "graph"}>
+        {activeView === "graph" && <CareerMapNeuralGraph projection={graphProjection} />}
       </div>
       <div id="role-lens-panel" role="tabpanel" aria-labelledby="role-lens-tab" hidden={activeView !== "role-lens"}>
         {activeView === "role-lens" && <TargetRoleCapabilityComparison state={result.state} roles={roles} canonicalLibrary={canonicalLibrary} governance={governance} definitionVersion={definitionVersion} />}
