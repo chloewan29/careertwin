@@ -71,7 +71,7 @@ Current task type:
 - Career Map neural graph — Phase 2 renderer slice complete / visual validation pending
 
 Current active question:
-- Does the Neural Graph tab render correctly against real founder Career Map data, and what is the minimal change to make it the primary post-upload Career Map experience?
+- Can structured-LLM generation safely replace the deterministic signal requirement to bridge the coverage gap without inventing ungrounded personal capabilities?
 
 Completed Career Map milestones:
 - `CAREERTWIN_NEURAL_CAREER_MAP_RENDERER_SLICE_ESTABLISHED`
@@ -308,6 +308,16 @@ Completed Career Map milestones:
 - all 27 Career Possibility tests, targeted ESLint, TypeScript, production build, and browser QA at 1440×900, 768×1024, and 390×844 passed
 - TypeScript and production build verification ran sequentially to avoid the known `.next/types` race
 - shared ingestion and runtime failure handling remain complete and closed
+- `CAREERTWIN_CAREER_MAP_STRUCTURED_LLM_ARCHITECTURE_ADOPTED`
+- read-only architecture audit complete; no production implementation or file changes in this turn
+- verified founder baseline: schema 2.0.0 local state regenerated, 32 atomic evidence records, 1 auto-admitted capability (`insight-synthesis`), 31 unresolved evidence records
+- diagnosed root cause of coverage gap: mandatory deterministic signal requirement excludes valid implicit evidence
+- architectural decision: Job Copilot's `@google/genai` structured-output infrastructure and schema-validated contract pattern are reusable for Career Map
+- strict semantic separation enforced: Job Copilot JD ontologies, fitScore, ranking, and recommendation semantics MUST NOT be reused in Career Map
+- capability proposal model: the LLM will generate validated canonical capability proposals; it is a structured inference producer, NOT the truth owner
+- deterministic boundary: proposals must pass strict schema and canonical ID validation before being submitted to the existing `inferCanonicalPersonalCapabilities` logic
+- durable architecture guide written to `docs/architecture/career-map-architecture.md`
+- no HOLD dirt touched, unstaged files preserved exactly
 
 Secondary line status:
 - the former `JOB-COPILOT-SIDEPANEL-USER-READY-AUDIT` line is historical/non-active context; its user-exposure HOLD remains unchanged
@@ -350,7 +360,7 @@ Tailored CV flow closure note (2026-05-15):
 ## 3. One main next action
 
 Main next action:
-- Visual validation: upload a real CV, navigate to the Neural Graph tab, and confirm that family nodes, capability nodes, evidence disclosure, and role requirement context all render correctly. Then audit the minimum change to make the neural graph the primary (default tab) post-upload Career Map experience.
+- Implement the first semantic-inference experiment (5–8 evidence records → LLM → validated canonical assessments) as a non-production proof of concept using the reusable Job Copilot infrastructure. Repair the pre-existing HOLD failure in `resume-evidence-text-extractor.test.ts`.
 
 Not the next action:
 - do not treat the closed `stale_review_status` evidence-field defect as active

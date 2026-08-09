@@ -1,5 +1,17 @@
 # Current System Memory
 
+### Career Map structured LLM architecture adopted (`CAREERTWIN_CAREER_MAP_STRUCTURED_LLM_ARCHITECTURE_ADOPTED`)
+
+- The architecture reuse audit for Career Map structured LLM integration is complete. No production implementation or file modifications occurred during this cycle.
+- Established fresh authoritative founder baseline: schema 2.0.0 local state regenerated, yielding 32 atomic evidence records, 1 auto-admitted capability (`insight-synthesis`), and 31 unresolved evidence records.
+- Root cause diagnosis: The current pipeline's reliance on mandatory deterministic signals excludes valid implicit evidence, resulting in severe coverage gaps for the real founder Career Map.
+- Architectural decision: Job Copilot's low-level LLM infrastructure (`@google/genai` structured-output pattern) will be reused. However, Job Copilot's specific JD ontologies, fitScore, ranking, and recommendation semantics MUST NOT be reused.
+- Capability proposal model: The LLM will function as a structured inference producer generating validated canonical capability proposals. It is NOT the truth owner.
+- Deterministic boundary: All LLM proposals must pass strict schema validation and canonical ID verification before being admitted into the existing `inferCanonicalPersonalCapabilities` logic (or an adapted format).
+- Authored the durable architecture guide: `docs/architecture/career-map-architecture.md`.
+- All HOLD-dirty files remain untouched and unstaged.
+- Single next action: Implement the first semantic-inference experiment (5–8 evidence records → LLM → validated canonical assessments) as a non-production proof of concept using the reusable Job Copilot infrastructure.
+
 ### Neural Career Map renderer slice established (`CAREERTWIN_NEURAL_CAREER_MAP_RENDERER_SLICE_ESTABLISHED`)
 
 - Implementation commit `815b10f` (`feat(career): add neural career map renderer slice`). Three files: `components/career-possibility/CareerMapNeuralGraph.tsx` (CREATE), `components/career-possibility/LocalCareerMapWorkspace.tsx` (MODIFY — graph tab only), `tests/career-possibility/career-map-neural-graph.test.ts` (CREATE).
