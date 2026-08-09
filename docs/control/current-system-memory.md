@@ -1,5 +1,25 @@
 # Current System Memory
 
+### Neural Career Map renderer slice established (`CAREERTWIN_NEURAL_CAREER_MAP_RENDERER_SLICE_ESTABLISHED`)
+
+- Implementation commit `815b10f` (`feat(career): add neural career map renderer slice`). Three files: `components/career-possibility/CareerMapNeuralGraph.tsx` (CREATE), `components/career-possibility/LocalCareerMapWorkspace.tsx` (MODIFY — graph tab only), `tests/career-possibility/career-map-neural-graph.test.ts` (CREATE).
+- Runtime injection path: existing localStorage read → existing `result.state` → existing `buildPersonalCareerMapPresentation()` → existing `personal.presentation` → new `buildPersonalTargetRoleComparison()` call (stable `analytics-manager` profile only) → new `buildCareerMapGraphProjection()` call → `<CareerMapNeuralGraph projection={...} />`. No second localStorage read.
+- Representative role: `analytics-manager` located by stable `roleFamilyId` via `roles.find()` — not by array position. The `roles` prop already contains `RoleCapabilityProfile[]`; no conversion needed. If comparison returns `ok: false`, the personal graph still renders and role context is omitted.
+- `LocalCareerMapWorkspace` activeView widened from `"map" | "role-lens"` to `"map" | "graph" | "role-lens"`. A new "Neural Graph" tab and `career-map-graph-panel` tabpanel are inserted between the existing Career Map and Role Lens tabs. All existing tabs, panels, and the CapabilityExplorer remain intact.
+- `CareerMapNeuralGraph` is a `"use client"` React component accepting `projection: CareerMapGraphProjection` as its sole semantic input. It owns all layout geometry locally using a constrained responsive radial layout. It imports no localStorage owner, no Job Copilot module, no fitScore, no career-map-explorer-view-model, and no CapabilityExplorer.
+- Visual layout: You fixed at SVG center (CX=420, CY=340). Family nodes distributed on a first ring (radius 185, angle computed from count — no fixed-six assumption). Personal capability nodes expand locally from their owning family (hidden by default, revealed on family select or role-capability expand). Evidence nodes expand locally from the selected capability (hidden by default, revealed on capability select). Role node anchored at outer right (ROLE_X=840). Role requirement nodes distribute around the role on a local ring.
+- Progressive disclosure enforced: default view shows only You + family nodes + role node. Family select reveals that family's capabilities. Capability select reveals its evidence. Role select reveals requirement nodes and capability bridges.
+- Visible personal capabilities = selected-family capabilities UNION personal capabilities referenced by role requirements with non-unsupported state. This is presentation-only visibility logic; it does not alter semantic state.
+- Role requirement states rendered with distinct visual treatment: `directly_demonstrated` = solid teal stroke/fill; `transferable_signal` = blue stroke/fill + dashed edge; `evidence_not_yet_shown` = grey stroke + transparent fill + dashed. Shape and label text supplement color for accessibility.
+- Unsupported role requirements render as role-side `role_requirement` nodes only. They are never added to personal capability or family nodes. Critical invariant confirmed in test B.
+- No employer / roleTitle provenance consumed. No fitScore, fitLabel, rank, Future Paths rail geometry, amber growth area, RAIL_START_X, pathPositions, fixed-six layout, or demo fixture imported.
+- Mobile fallback list renders family buttons, capability list, evidence list, and role requirements using accessible button/div elements with `data-node-type` and `data-node-id` stable attributes.
+- Renderer tests (A–F) pass: default graph structure, unsupported-requirement invariant, node-ID uniqueness, no-provenance-requirement, no-storage-import, no-Job-Copilot-import. Click-interaction tests are NOT supported by the current tooling (no jsdom/RTL); documented in test output.
+- All 44 career-possibility tests pass; 1 pre-existing HOLD failure in `resume-evidence-text-extractor.test.ts` remains unchanged and reported separately.
+- ESLint clean, TypeScript clean, production build clean (`/career-map` static), `git diff --check` clean on admitted files (LF→CRLF warnings only).
+- No HOLD file touched. All 13 tracked HOLD-dirty files and all 21 untracked HOLD items preserved exactly untouched and unstaged.
+- Single next action: Validate the neural graph visually with real founder Career Map data and audit the minimum changes needed to make the neural graph the primary post-upload Career Map experience before expanding role discovery.
+
 ### Career Map graph projection foundation established (`CAREERTWIN_CAREER_MAP_GRAPH_PROJECTION_ESTABLISHED`)
 
 - Implementation commit `157df6f` (`feat(career): add career map graph projection`). Two new files only: `lib/career-possibility/career-map-graph-projection.ts` and `tests/career-possibility/career-map-graph-projection.test.ts`.

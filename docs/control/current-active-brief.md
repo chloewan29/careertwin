@@ -68,12 +68,22 @@ Current mode:
 - `HOLD`
 
 Current task type:
-- Career Map neural graph — Phase 1 projection foundation complete / rendering injection boundary pending
+- Career Map neural graph — Phase 2 renderer slice complete / visual validation pending
 
 Current active question:
-- What is the cleanest runtime injection boundary for rendering the new graph projection from the existing real personal Career Map state without creating a parallel localStorage/state path or modifying provenance HOLD dirt?
+- Does the Neural Graph tab render correctly against real founder Career Map data, and what is the minimal change to make it the primary post-upload Career Map experience?
 
-Completed Career Map milestone:
+Completed Career Map milestones:
+- `CAREERTWIN_NEURAL_CAREER_MAP_RENDERER_SLICE_ESTABLISHED`
+  - Implementation commit `815b10f` (`feat(career): add neural career map renderer slice`)
+  - Three files: `CareerMapNeuralGraph.tsx` (CREATE), `LocalCareerMapWorkspace.tsx` (MODIFY — graph tab only), `career-map-neural-graph.test.ts` (CREATE)
+  - Runtime injection: existing `personal.presentation` → `buildPersonalTargetRoleComparison()` (analytics-manager, stable `find()` by `roleFamilyId`) → `buildCareerMapGraphProjection()` → renderer. No second localStorage read.
+  - Progressive disclosure: You + families + role visible by default; capabilities revealed on family select; evidence revealed on capability select; requirements revealed on role select
+  - Unsupported role requirements appear as role-side `role_requirement` nodes only — never as personal capability nodes (tested in test B)
+  - No employer/roleTitle provenance, fitScore, fitLabel, rank, Future Paths rail, or demo fixture imported
+  - Renderer tests A–F passed; 44/44 career-possibility tests clean; 1 pre-existing HOLD failure unchanged
+  - ESLint clean, TypeScript clean, production build clean, `git diff --check` clean on admitted files
+  - No HOLD file touched; all 13 tracked HOLD-dirty and 21 untracked HOLD items preserved
 - `CAREERTWIN_CAREER_MAP_GRAPH_PROJECTION_ESTABLISHED`
   - Implementation commit `157df6f` (`feat(career): add career map graph projection`)
   - Two new files only: `lib/career-possibility/career-map-graph-projection.ts` and `tests/career-possibility/career-map-graph-projection.test.ts`
@@ -340,8 +350,7 @@ Tailored CV flow closure note (2026-05-15):
 ## 3. One main next action
 
 Main next action:
-- Audit the cleanest runtime injection boundary for rendering the new graph projection from the existing real personal Career Map state without creating a parallel localStorage/state path or modifying provenance HOLD dirt. This is Phase 2 of the Career Map neural graph vertical slice.
-
+- Visual validation: upload a real CV, navigate to the Neural Graph tab, and confirm that family nodes, capability nodes, evidence disclosure, and role requirement context all render correctly. Then audit the minimum change to make the neural graph the primary (default tab) post-upload Career Map experience.
 
 Not the next action:
 - do not treat the closed `stale_review_status` evidence-field defect as active
