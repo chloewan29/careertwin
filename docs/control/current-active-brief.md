@@ -360,7 +360,7 @@ Tailored CV flow closure note (2026-05-15):
 ## 3. One main next action
 
 Main next action:
-- Implement the first semantic-inference experiment (5–8 evidence records → LLM → validated canonical assessments) as a non-production proof of concept using the reusable Job Copilot infrastructure. Repair the pre-existing HOLD failure in `resume-evidence-text-extractor.test.ts`.
+- Await the decision on the Job Copilot structured-LLM reuse audit. Do not implement the semantic-inference experiment until the audit explicitly admits it.
 
 Not the next action:
 - do not treat the closed `stale_review_status` evidence-field defect as active

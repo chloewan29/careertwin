@@ -10,7 +10,7 @@
 - Deterministic boundary: All LLM proposals must pass strict schema validation and canonical ID verification before being admitted into the existing `inferCanonicalPersonalCapabilities` logic (or an adapted format).
 - Authored the durable architecture guide: `docs/architecture/career-map-architecture.md`.
 - All HOLD-dirty files remain untouched and unstaged.
-- Single next action: Implement the first semantic-inference experiment (5–8 evidence records → LLM → validated canonical assessments) as a non-production proof of concept using the reusable Job Copilot infrastructure.
+- Single next action: Complete the Job Copilot structured-LLM reuse audit before admitting any implementation experiment.
 
 ### Neural Career Map renderer slice established (`CAREERTWIN_NEURAL_CAREER_MAP_RENDERER_SLICE_ESTABLISHED`)
 
