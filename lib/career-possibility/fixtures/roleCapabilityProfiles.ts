@@ -5,16 +5,40 @@ type CapabilitySeed = [id: string, label: string];
 type GrowthSeed = [label: string, type: GrowthAreaType, proofToBuild: string];
 type RoleSeed = { id: string; title: string; aliases: [string, string, string]; domain: string; capabilities: [CapabilitySeed, CapabilitySeed, CapabilitySeed, CapabilitySeed]; growth: [GrowthSeed, GrowthSeed]; related: string[] };
 
-const requirement = ([capabilityId, label]: CapabilitySeed, index: number): RoleCapabilityRequirement => ({
-  capabilityId,
-  label,
-  importance: index < 2 ? "must" : "should",
-  expectedEvidence: index < 2 ? `A specific owned outcome demonstrating ${label.toLowerCase()}.` : `A concrete example showing applied ${label.toLowerCase()}.`,
-  minimumProofLevel: index === 0 ? "owned_outcome" : "demonstrated",
-});
+const relationshipSpecificExpectedEvidence: Record<string, Record<string, string>> = {
+  "hr-business-partner": {
+    "workforce-advisory": "Provided strategic workforce advice to business leadership resulting in a documented change to people practices.",
+    "organisation-design": "Designed an organisational structure or operating model change to support a defined business objective.",
+    "talent-planning": "Facilitated a talent review or succession planning cycle resulting in documented leadership development actions.",
+    "employee-relations": "Managed a complex employee relations case or grievance to a documented resolution.",
+  },
+  "sales-account-manager": {
+    "consultative-selling": "Diagnosed a client business problem and structured a tailored commercial solution to address it.",
+    "pipeline-management": "Managed a portfolio of sales opportunities through a structured pipeline to close.",
+    "commercial-negotiation": "Negotiated a commercial agreement or contract structure to a signed outcome.",
+    "account-growth": "Expanded revenue or product adoption within an existing account to meet a defined commercial target.",
+  },
+  "operations-manager": {
+    "operating-control": "Designed and operated a control framework that reduced a measurable operational risk or quality defect.",
+    "service-performance": "Monitored operational service performance metrics and executed an intervention to correct a delivery failure.",
+  }
+};
+
+const requirement = (roleId: string, [capabilityId, label]: CapabilitySeed, index: number): RoleCapabilityRequirement => {
+  const isMustHave = index < 2;
+  const defaultEvidence = isMustHave ? `A specific owned outcome demonstrating ${label.toLowerCase()}.` : `A concrete example showing applied ${label.toLowerCase()}.`;
+  const expectedEvidence = relationshipSpecificExpectedEvidence[roleId]?.[capabilityId] ?? defaultEvidence;
+  return {
+    capabilityId,
+    label,
+    importance: isMustHave ? "must" : "should",
+    expectedEvidence,
+    minimumProofLevel: index === 0 ? "owned_outcome" : "demonstrated",
+  };
+};
 
 function profile(seed: RoleSeed): RoleCapabilityProfile {
-  const requirements = seed.capabilities.map(requirement);
+  const requirements = seed.capabilities.map((cap, index) => requirement(seed.id, cap, index));
   return {
     roleFamilyId: seed.id,
     canonicalTitle: seed.title,
