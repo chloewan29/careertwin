@@ -1,6 +1,6 @@
 # Current System Memory
 
-### Career Map MVP vertical slice active; Task 2C decisions locked; Task 2C-B next (`CAREERTWIN_MVP_TASK_2C_ARCHITECTURE_DECISIONS_LOCKED`)
+### Career Map MVP vertical slice active; persisted structured mapping provenance authorised; Task 2C-B resumes next (`CAREERTWIN_MVP_TASK_2C_PERSISTED_MAPPING_PROVENANCE_LOCKED`)
 
 - The Founder neural-network Career Map model is the governing MVP product model. You is central; personal capabilities must be grounded in personal evidence; users and generic roles share canonical capability identity; unsupported role requirements remain role-only gaps; role proximity/radius will express meaningful capability overlap.
 - The active critical path is fixed unless Founder/EM explicitly reprioritises it:
@@ -9,10 +9,11 @@
   3. Task 2B - Provider-Neutral Structured Inference Foundation: `CLOSED`
   4. Task 2C-A - Production Integration Admission Audit: `CLOSED`
   5. Task 2C Architecture Decision Lock: `CLOSED BY CONTROL COMMIT`
-  6. Task 2C-B - Bounded Production Integration Implementation: `NEXT IMPLEMENTATION TASK / NOT STARTED`
-  7. Task 2D - Privacy-Safe / Founder-CV Capability Coverage Validation: `LATER / NOT AUTHORISED`
-  8. Task 3 - Neural-network personal + role graph: `LATER / NOT AUTHORISED`
-  9. Task 4 - Real-CV end-to-end visual validation: `LATER / NOT AUTHORISED`
+  6. Task 2C Persisted Mapping Provenance Decision Lock: `CLOSED BY CONTROL COMMIT`
+  7. Task 2C-B - Bounded Production Integration Implementation: `ACTIVE IMPLEMENTATION TASK / RESUME NEXT / NOT CLOSED`
+  8. Task 2D - Privacy-Safe / Founder-CV Capability Coverage Validation: `LATER / NOT AUTHORISED`
+  9. Task 3 - Neural-network personal + role graph: `LATER / NOT AUTHORISED`
+  10. Task 4 - Real-CV end-to-end visual validation: `LATER / NOT AUTHORISED`
 - Task 1 authoritative implementation commit: `b2ba34d18574f49ec22c852c99e640a1d306fad6` (`fix(career): preserve work evidence across resume sections`).
 - The admitted Task 1 boundary includes `nonEmploymentSectionHeading`, associated non-work boundary handling in `employmentBoundaries()`, correct transition/reset ordering, pending-work emission before reset, and exclusion of non-work boundaries from evidence production.
 - Verified Task 1 behavior: work evidence survives transitions into Education, Skills, and Qualifications; end-of-document work flush remains correct; employer/title remain provenance only; technology and self-declared skill lists remain excluded; no duplicate evidence is introduced. Focused extractor tests, three nearby regression tests, the six-case behavior matrix, and production build passed before admission; focused test and build passed again after push.
@@ -41,7 +42,14 @@
 - Cross-channel relationship identity is `evidenceId + canonicalCapabilityId`, and at most one personal relationship may be admitted for a pair. Deterministic and structured proposals with the same pair and support state deduplicate to one relationship.
 - For the same pair with different support states, retain the already-governed deterministic relationship and reject the conflicting structured proposal. Do not upgrade, downgrade, average, score, randomly choose, or duplicate. A structured conflict may emit an ephemeral diagnostic but does not require persistent state.
 - Deterministic inference is not a mandatory gateway. If no deterministic proposal exists for a pair, a valid structured proposal may still be admitted through the governed structured proposal path. `NO DETERMINISTIC SIGNAL != NO PERSONAL CAPABILITY` remains locked.
-- Structured/model-derived proposals must remain truthfully distinguishable from deterministic proposals at the proposal/admission boundary. Do not create `llm_matched`, `llm_supported`, a synthetic universal signal, or a fake deterministic `mappingRuleId`. If the existing contract cannot express truthful provenance, Task 2C-B may make only the smallest extension required and must not create a second mapping ontology. Persistent Career Map state schema must remain unchanged unless implementation proves provenance persistence is genuinely required.
+- The first Task 2C-B implementation attempt stopped safely before production edits because the persisted mapping surface required `method: "authored_deterministic"` and `matchedRuleId`, so a structured-only relationship could not persist truthfully. Founder/EM has resolved that state-provenance blocker.
+- The existing persisted mapping contract is authorised for the smallest additive discriminated extension: `method: "authored_deterministic"` or `method: "structured_inference"`. This is provider-neutral semantic provenance, not a provider/model label.
+- An authored deterministic mapping retains existing validation and must carry its real `matchedRuleId`. A structured inference mapping must originate from a Task 2B-validated relationship and must omit `matchedRuleId`; null, blank, provider-specific, or synthetic rule values are prohibited.
+- A structured-only relationship may persist truthfully in the existing Career Map mapping collection with exact evidence ID, canonical capability ID, and governed relationship state. No deterministic signal or mapping is required as a gateway.
+- For same-pair/same-support cross-channel output, persist one relationship and prefer the already-governed deterministic mapping. For conflicting support, persist deterministic and reject structured; any conflict diagnostic remains ephemeral.
+- Provider/model name, prompt, raw provider response, grounding rationale, validation issue envelope, model confidence, fake signal, fake mapping rule, and cross-channel conflict diagnostic are not required persisted state and must not be added for Task 2C.
+- Existing Career Map state and the existing materializer remain the only authoritative persistence/materialization owners. The provenance extension is additive and backward-compatible; existing deterministic records require no migration or rewrite.
+- State-schema versioning must follow existing repository policy. Task 2C-B may apply the smallest compatible version update if policy requires it; if that requires broad migration or unrelated persisted-state redesign, stop with `MVP_TASK2C_STATE_MIGRATION_REQUIRED`.
 - The Task 2B provider-neutral contract remains authoritative: maximum three assessments per atomic evidence result; more than three rejects the affected result without truncation; zero assessments is valid; unknown evidence/canonical IDs and duplicate/conflicting provider results fail closed; raw model output cannot mutate state.
 - Provider selection remains an adapter choice, not a new semantic dependency. Task 2C-B must reuse an already-configured server-safe provider/client pattern without a new package, client-side secret, or Job Copilot semantic reuse. If multiple configured providers are equally viable, prefer the pattern proven by the Career Map structured inference experiment. If none is usable, stop with `MVP_TASK2C_PROVIDER_CONFIGURATION_REQUIRED`.
 - Earlier browser-local-only Career Map V1/runtime statements remain historical implementation truth and are superseded only for authorised transmission of eligible minimized Task 2C evidence. All other privacy, local-state, and persistence boundaries remain in force.

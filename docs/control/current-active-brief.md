@@ -65,7 +65,7 @@ Primary active product priority:
 - `CAREER_MAP_MVP_VERTICAL_SLICE`
 
 Current mode:
-- `HOLD / TASK_2C_DECISIONS_LOCKED / TASK_2C-B_NEXT`
+- `HOLD / TASK_2C_PERSISTED_PROVENANCE_LOCKED / TASK_2C-B_RESUME_NEXT`
 
 Current task ledger:
 - Task 1 - Atomic Evidence Extraction: `CLOSED`
@@ -91,7 +91,10 @@ Current task ledger:
   - immutable audit artifact: `artifacts/career-possibility/career-map-mvp-task2c-production-integration-admission.md`
   - audit SHA256: `F55DBD9CD80CFD01FA6E60F87905ED7D205E78D4F3662B0740C8A2860EC40D5E`
 - Task 2C Architecture Decision Lock: `CLOSED BY CONTROL COMMIT`
-- Task 2C-B - Bounded Production Integration Implementation: `NEXT IMPLEMENTATION TASK / NOT STARTED`
+- Task 2C Persisted Mapping Provenance Decision Lock: `CLOSED BY THIS CONTROL COMMIT`
+- Task 2C-B - Bounded Production Integration Implementation: `ACTIVE IMPLEMENTATION TASK / RESUME NEXT / NOT CLOSED`
+  - the first implementation attempt stopped safely before code because persisted mappings could not truthfully represent structured-only inference without a fake deterministic method or `matchedRuleId`
+  - Founder/EM has authorised the smallest additive persisted mapping provenance extension; the state-provenance blocker is `RESOLVED`
 - Task 2D - Privacy-Safe / Founder-CV Capability Coverage Validation: `LATER / NOT AUTHORISED`
 - Task 3 - Neural-network personal + role graph: `LATER / NOT AUTHORISED`
 - Task 4 - Real-CV end-to-end visual validation: `LATER / NOT AUTHORISED`
@@ -117,6 +120,16 @@ Locked Task 2C Founder/EM decisions:
 - structured proposals must remain truthfully distinguishable from deterministic proposals; no fake deterministic signal, universal signal, or `mappingRuleId` may be invented, and only the smallest proposal/admission-boundary provenance extension is authorised if required
 - the Task 2B provider-neutral contract, fan-out maximum of three assessments per evidence, no-truncation rule, validation boundary, and fail-closed semantics remain authoritative
 - earlier browser-local-only V1/runtime statements are historical and superseded only for the authorised transmission of eligible minimized Task 2C evidence; all other privacy and persistence boundaries remain in force
+
+Locked Task 2C persisted mapping provenance decision:
+- the existing persisted mapping surface is authorised for the smallest additive discriminated extension supporting `method: "authored_deterministic"` and `method: "structured_inference"`
+- authored deterministic mappings retain all existing behavior and continue to require their real `matchedRuleId`
+- structured mappings represent only Task 2B-validated structured relationships and must omit `matchedRuleId`; null, blank, provider-specific, and synthetic rule IDs are prohibited
+- a structured-only relationship may persist in the existing Career Map state with its exact evidence ID, canonical capability ID, and governed relationship state
+- same-pair/same-support cross-channel output persists once, preferring the already-governed deterministic mapping; conflicting support also retains deterministic and rejects structured, with any conflict diagnostic remaining ephemeral
+- provider/model identity, prompt, raw response, grounding rationale, validation envelopes, confidence, fake signals, fake mapping rules, and conflict diagnostics do not enter persisted state
+- the existing Career Map state and materializer remain the only authoritative persistence/materialization owners; no second mapping ontology, state collection, or materializer is authorised
+- the extension is additive and backward-compatible; existing deterministic mappings require no migration, and any schema version change must follow repository policy without broad migration or unrelated redesign
 
 MVP sequencing boundaries:
 - the Founder neural-network Career Map model remains governing: You is central; personal evidence grounds personal capabilities; user and generic roles share canonical capability nodes; unsupported role requirements remain role-only gaps; role radius will express meaningful capability overlap
@@ -461,7 +474,7 @@ Tailored CV flow closure note (2026-05-15):
 ## 3. One main next action
 
 Main next action:
-- Begin the bounded Task 2C-B production integration implementation. Connect the already-validated Task 2B structured proposal boundary through the authorised same-origin/server-only provider path and governed cross-channel merge into the existing personal-capability pipeline without creating parallel extractor, canonical authority, inference, materializer, or state ownership.
+- Resume the bounded Task 2C-B production integration implementation. Connect the already-validated Task 2B structured proposal boundary through the authorised same-origin/server-only provider path, truthful persisted mapping provenance, and governed cross-channel merge into the existing personal-capability pipeline without creating parallel extractor, canonical authority, inference, materializer, or state ownership.
 
 Known Task 2C-B implementation boundaries:
 - `lib/career-possibility/build-provisional-career-map-from-text.ts` is tracked HOLD
