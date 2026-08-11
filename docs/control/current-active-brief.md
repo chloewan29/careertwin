@@ -65,7 +65,7 @@ Primary active product priority:
 - `CAREER_MAP_MVP_VERTICAL_SLICE`
 
 Current mode:
-- `HOLD / TASK_2D_PRIVACY_PREREQUISITE_CLOSED / TASK_2D_REPLAY_NEXT`
+- `HOLD / TASK_2D_PRIVACY_REPAIRS_CLOSED / TASK_2D_REPLAY_NEXT`
 
 Current task ledger:
 - Task 1 - Atomic Evidence Extraction: `CLOSED`
@@ -98,6 +98,9 @@ Current task ledger:
 - Task 2D prerequisite decorated-section privacy repair: `CLOSED`
   - authoritative implementation commit: `3f4e82ffb1e44c71524fae21f4d3d1fd14e75f69` (`fix(career): exclude decorated resume sections`)
   - privacy eligibility boundary: `RESTORED`
+- Task 2D prerequisite employment-metadata privacy repair: `CLOSED`
+  - authoritative implementation commit: `20d91d21920a66218421321786df671d06f0012f` (`fix(career): exclude employment metadata from evidence`)
+  - employment metadata: `PROVENANCE_ONLY`; role-title-only and employer-only evidence: `PROHIBITED`
 - Task 2D - Privacy-Safe / Founder-CV Capability Coverage Validation: `REPLAY NEXT / NOT COMPLETE`
 - Task 3 - Neural-network personal + role graph: `LATER / NOT AUTHORISED`
 - Task 4 - Real-CV end-to-end visual validation: `LATER / NOT AUTHORISED`
@@ -146,7 +149,7 @@ Task 2C-B durable production state:
 - the existing materializer and Career Map state remain authoritative; no parallel state or materializer exists, and the additive schema remains `2.0.0`
 - raw provider responses, provider/model identity, fake signals, and fake matched rule IDs are not persisted
 
-Task 2D prerequisite privacy-repair durable state:
+Task 2D prerequisite privacy repair #1 durable state:
 - first drift point: `ATOMIC_EVIDENCE_ELIGIBILITY`
 - root cause: `DECORATIVE_PREFIX_NOT_NORMALIZED`; the observed headings were `◇ Education` and `◇ Skills`
 - heading-only comparison normalization removes leading whitespace and non-semantic decorative glyphs before applying the existing exact known-heading semantics; stored evidence text is not rewritten and broad substring matching was not introduced
@@ -154,7 +157,19 @@ Task 2D prerequisite privacy-repair durable state:
 - the production privacy eligibility boundary is `RESTORED`; employer and title provenance also remain excluded from the provider payload
 - the first Task 2D real-CV run is `INVALID_FOR_CAPABILITY_COVERAGE_ASSESSMENT` because its structured-inference input was contaminated by Education and Skills content before the repair
 - no capability-count, coverage, over-inference, under-inference, or product-readiness conclusion may be derived from that run
-- the next Task 2D run establishes the first admissible post-repair baseline; this repair changed no inference, provider, validator, merge, materializer, state, ontology, Role Knowledge, graph, or rendering architecture
+- repair #1 remains `CLOSED`; decorated Education and Skills headings and their content remain excluded
+
+Task 2D prerequisite privacy repair #2 durable state:
+- authoritative implementation commit: `20d91d21920a66218421321786df671d06f0012f` (`fix(career): exclude employment metadata from evidence`)
+- first drift point: `employmentBoundaries()`; root cause: `FALLBACK_EVIDENCE_ADMISSION_AFTER_METADATA_CLASSIFICATION`
+- a multiline employer, role-title, and standalone-date header was not being assembled into an employment boundary, allowing fallback evidence handling to admit metadata as work evidence
+- `employmentBoundaries()` now reuses the existing `dateRange` and `companySuffix` employment/provenance semantics to construct the multiline boundary; evidence begins after the header
+- employment metadata is `PROVENANCE_ONLY`: role title may annotate evidence but role-title-only evidence is prohibited; employer may annotate evidence but employer-only evidence is prohibited
+- valid work bullets and supported fallback/prose work evidence remain eligible; no title dictionary, fuzzy title heuristic, downstream value-equality filter, provider filter, or new role-title ontology was introduced
+- structured-inference transport remains exactly `{ evidenceId, evidenceText }`; verified exclusions include role-title-only metadata, employer-only metadata, Education headings/content, and Skills headings/content
+- the second Task 2D attempt is `INVALID_FOR_CAPABILITY_COVERAGE_ASSESSMENT`; it stopped before provider transmission when role-title metadata was found in eligible producer input
+- no capability-count, inventory, coverage, over-inference, under-inference, or Task 3 readiness conclusion may be derived from either of the first two Task 2D attempts
+- the next Task 2D replay establishes the first admissible post-repair baseline; neither privacy repair changed inference, provider, validator, mapping, merge, materializer, state, ontology, Role Knowledge, graph, or rendering architecture
 
 MVP sequencing boundaries:
 - the Founder neural-network Career Map model remains governing: You is central; personal evidence grounds personal capabilities; user and generic roles share canonical capability nodes; unsupported role requirements remain role-only gaps; role radius will express meaningful capability overlap
@@ -505,7 +520,7 @@ Task 2D validation boundary:
 - measure extracted evidence, supported evidence, admitted canonical capabilities, deterministic/structured relationships, unsupported evidence, direct/transferable relationships, exact evidence traceability, and obvious over-inference
 - Task 2D is validation, not another inference architecture, prompt-optimization, ontology, Role Knowledge, graph, renderer, or presentation project
 - do not tune inference merely because coverage is imperfect; measure and diagnose first
-- do not use the invalid first Task 2D run for capability-count, coverage, over-inference, under-inference, or product-readiness conclusions
+- do not use either of the first two invalid Task 2D attempts for capability-count, inventory, coverage, over-inference, under-inference, product-readiness, or Task 3 readiness conclusions
 
 Not the next action:
 - do not reopen Task 1 extractor repair; Task 1 is closed at `b2ba34d18574f49ec22c852c99e640a1d306fad6`
