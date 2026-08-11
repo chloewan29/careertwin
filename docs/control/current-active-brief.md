@@ -62,16 +62,49 @@ Default do-not-read in light mode:
 ## 2. Current active line
 
 Primary active line:
-- `CAREER-MAP-V1-RELEASE`
+- `CAREER_MAP_MVP / ROLE_KNOWLEDGE_ENRICHMENT`
 
 Current mode:
-- `HOLD`
+- `HOLD / WAVE_2_CLOSED`
 
 Current task type:
-- Career Map neural graph — Phase 2 renderer slice complete / visual validation pending
+- Wave 2 Role Knowledge enrichment is closed; next semantic-phase choice is pending Founder/EM decision
 
 Current active question:
-- Can structured-LLM generation safely replace the deterministic signal requirement to bridge the coverage gap without inventing ungrounded personal capabilities?
+- Should the next authorized semantic phase expand source coverage across the remaining 17 ENRICHMENT capabilities, or triangulate the 16 WEAK/TARGETED capabilities with independent second-source evidence?
+
+Current Wave 2 closure:
+- Status: `CLOSED`
+- Implementation commit: `ecb77b52dc537b9aa958f23d7194689568fdea34` (`feat(career): enrich wave 2 role evidence semantics`)
+- Roles enriched: `fpa-manager`, `program-manager`, `education-program-lead`
+- Canonical capabilities enriched: `forecasting`, `variance-analysis`, `dependency-management`, `risk-controls`, `education-delivery`, `education-partnerships`
+- Measured movement: 6/6 `INSUFFICIENT -> WEAK` and 6/6 `ONTOLOGY_ENRICHMENT_REQUIRED -> TARGETED_REVIEW_CANDIDATE`
+- Target non-boilerplate expectedEvidence: 0 -> 6
+- Non-target source-state changes: 0
+- Existing AUTO regressions: 0
+- Pre-existing TARGETED regressions: 0
+- Structural conflict signals among the six: 0
+- Routing contradiction signals among the six: 0
+- Topology: unchanged
+- Canonical ontology, semantic policy, and compiler/scanner implementation: unchanged
+- Outstanding Wave 2 repair: none
+- The stale-current-state diagnostic test incident is closed. Historical fixture replay retains fixed history; current repository tests reconcile dynamically with current source, topology, classifier, and aggregate state.
+
+Current authoritative source census:
+- Sufficiency: `STRONG 8 / MODERATE 10 / WEAK 16 / INSUFFICIENT 17`
+- Routing: `AUTO 18 / TARGETED 16 / ENRICHMENT 17 / CONFLICT 0`
+- This supersedes the Wave 1 current-state census without rewriting the historical Wave 1 measurement.
+
+Next-state lanes:
+- Lane A - AUTO: 18 capabilities
+- Lane B - TARGETED: 16 capabilities; partial support requiring triangulation or second-source evidence before stronger confidence
+- Lane C - ENRICHMENT: 17 capabilities; still source-starved and eligible for governed Role Knowledge enrichment
+- Lane D - CONFLICT: 0 capabilities
+
+Decision boundary:
+- Wave 3 is not authorized.
+- Control closure does not choose between coverage expansion and triangulation.
+- `WEAK` is not canonical semantic admission, `TARGETED` is not `AUTO`, and one role source does not establish strong confidence or a universal semantic definition.
 
 Completed Career Map milestones:
 - `CAREERTWIN_NEURAL_CAREER_MAP_RENDERER_SLICE_ESTABLISHED`
@@ -360,9 +393,13 @@ Tailored CV flow closure note (2026-05-15):
 ## 3. One main next action
 
 Main next action:
-- Await the decision on the Job Copilot structured-LLM reuse audit. Do not implement the semantic-inference experiment until the audit explicitly admits it.
+- Founder/EM chooses exactly one next semantic direction: continue governed source coverage across the remaining 17 ENRICHMENT capabilities, or begin a bounded second-source/triangulation experiment across the 16 WEAK/TARGETED capabilities. Do not create or execute Wave 3 before that decision.
 
 Not the next action:
+- do not reopen Wave 2 semantic synthesis, source writing, measurement, or diagnostic infrastructure repair
+- do not treat `WEAK` as canonical semantic admission or `TARGETED` as `AUTO`
+- do not claim one role source proves strong confidence or universal semantic definitions
+- do not begin Wave 3 before the Founder/EM coverage-vs-triangulation decision
 - do not treat the closed `stale_review_status` evidence-field defect as active
 - do not reopen source revision, source identity, review identity/revision, `SharedCareerIngestionBundle`, browser adapter, or browser runtime architecture
 - do not promote persistence, server materialization, multi-document ingestion, automatic semantic edit hashing, Supabase, authentication, or package changes into mandatory next work

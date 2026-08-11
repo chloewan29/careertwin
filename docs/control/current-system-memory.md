@@ -1,5 +1,26 @@
 # Current System Memory
 
+### Wave 2 Role Knowledge enrichment closed (`CAREERTWIN_WAVE_2_ROLE_KNOWLEDGE_ENRICHMENT_CLOSED`)
+
+- Wave 2 is closed. Authoritative implementation commit: `ecb77b52dc537b9aa958f23d7194689568fdea34` (`feat(career): enrich wave 2 role evidence semantics`).
+- The three enriched roles are `fpa-manager`, `program-manager`, and `education-program-lead`.
+- The six enriched canonical capabilities are `forecasting`, `variance-analysis`, `dependency-management`, `risk-controls`, `education-delivery`, and `education-partnerships`.
+- All six moved from `INSUFFICIENT` to `WEAK` and from `ONTOLOGY_ENRICHMENT_REQUIRED` to `TARGETED_REVIEW_CANDIDATE` in the governed deterministic source census.
+- Across the six targets, non-boilerplate relationship-specific expectedEvidence increased from 0 to 6.
+- Non-target source-state changes: 0. Existing AUTO regressions: 0. Pre-existing TARGETED regressions: 0.
+- Structural conflict signals among the six: 0. Routing contradiction signals among the six: 0. Role topology remained unchanged.
+- No canonical ontology, semantic-policy, source-sufficiency policy, compiler/scanner implementation, or topology change was required.
+- Current post-Wave2 census supersedes the Wave 1 current-state census: `STRONG 8 / MODERATE 10 / WEAK 16 / INSUFFICIENT 17`; `AUTO 18 / TARGETED 16 / ENRICHMENT 17 / CONFLICT 0`. Historical Wave 1 measurements remain unchanged.
+- Wave 1 moved 10 previously source-starved canonical capabilities through governed role-specific expectedEvidence. Wave 2 replicated the same deterministic movement for 6 additional capabilities across Finance, Program, and Education. Cumulative replicated movement is 16 canonical capabilities across multiple role/domain areas.
+- Durable architectural conclusion: `ROLE_KNOWLEDGE_ENRICHMENT_TO_SOURCE_SUFFICIENCY_MOVEMENT = CROSS_DOMAIN_REPLICATION_VALIDATED`.
+- Interpretation boundary: governed non-boilerplate Role Knowledge can reproducibly move a source-starved capability into WEAK/TARGETED without ontology, policy, topology, or classifier-policy changes. `WEAK` is not canonical semantic admission; `TARGETED` is not `AUTO`; one rich Role Knowledge source is not strong semantic confidence; cross-domain source-enrichment replication is not proof that the canonical semantic compiler is fully validated.
+- The initial Wave 2 post-write test failure was a stale-current-state contract defect: permanent tests treated the Wave 1 repository snapshot as immutable current truth. That repair is closed. Frozen historical fixture replay may retain fixed expectations; current repository tests now use dynamic source, topology, classifier, aggregate, and compiler/scanner reconciliation. No fixed Wave 2 totals were added to permanent tests.
+- Current semantic lanes: AUTO 18; TARGETED 16; ENRICHMENT 17; CONFLICT 0. TARGETED is now large enough to make second-source triangulation a viable next-phase option.
+- The next strategic decision remains `OPEN`; control memory does not select either option.
+  - Option A - coverage expansion: continue governed Role Knowledge enrichment across the remaining 17 ENRICHMENT/INSUFFICIENT capabilities.
+  - Option B - triangulation/second-source validation: use the 16 WEAK/TARGETED capabilities to test whether independent semantic source evidence can move them toward stronger source sufficiency and/or AUTO eligibility.
+- Wave 3 is not authorized. No Wave 3 role selection, planning, candidate synthesis, enrichment, or source write is approved.
+
 ### Career Map structured LLM architecture adopted (`CAREERTWIN_CAREER_MAP_STRUCTURED_LLM_ARCHITECTURE_ADOPTED`)
 
 - The architecture reuse audit for Career Map structured LLM integration is complete. No production implementation or file modifications occurred during this cycle.
@@ -194,7 +215,7 @@ Use with:
 - `docs/control/policy-registry.md`
 - active line plan(s)
 
-Last updated: 2026-08-04
+Last updated: 2026-08-11
 
 ---
 
