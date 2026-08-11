@@ -1,6 +1,6 @@
 # Current System Memory
 
-### Career Map MVP vertical slice active; Task 2C-B production integration closed; Task 2D validation next (`CAREERTWIN_MVP_TASK_2C_PRODUCTION_INFERENCE_CONNECTED`)
+### Career Map MVP vertical slice active; Task 2D privacy prerequisite closed; Task 2D replay next (`CAREERTWIN_MVP_TASK_2D_PRIVACY_PREREQUISITE_CLOSED`)
 
 - The Founder neural-network Career Map model is the governing MVP product model. You is central; personal capabilities must be grounded in personal evidence; users and generic roles share canonical capability identity; unsupported role requirements remain role-only gaps; role proximity/radius will express meaningful capability overlap.
 - The active critical path is fixed unless Founder/EM explicitly reprioritises it:
@@ -11,9 +11,10 @@
   5. Task 2C Architecture Decision Lock: `CLOSED BY CONTROL COMMIT`
   6. Task 2C Persisted Mapping Provenance Decision Lock: `CLOSED BY CONTROL COMMIT`
   7. Task 2C-B - Production Structured Capability Inference Integration: `CLOSED`
-  8. Task 2D - Privacy-Safe / Founder-CV Capability Coverage Validation: `NEXT / NOT STARTED`
-  9. Task 3 - Neural-network personal + role graph: `LATER / NOT AUTHORISED`
-  10. Task 4 - Real-CV end-to-end visual validation: `LATER / NOT AUTHORISED`
+  8. Task 2D prerequisite decorated-section privacy repair: `CLOSED`
+  9. Task 2D - Privacy-Safe / Founder-CV Capability Coverage Validation: `REPLAY NEXT / NOT COMPLETE`
+  10. Task 3 - Neural-network personal + role graph: `LATER / NOT AUTHORISED`
+  11. Task 4 - Real-CV end-to-end visual validation: `LATER / NOT AUTHORISED`
 - Task 1 authoritative implementation commit: `b2ba34d18574f49ec22c852c99e640a1d306fad6` (`fix(career): preserve work evidence across resume sections`).
 - The admitted Task 1 boundary includes `nonEmploymentSectionHeading`, associated non-work boundary handling in `employmentBoundaries()`, correct transition/reset ordering, pending-work emission before reset, and exclusion of non-work boundaries from evidence production.
 - Verified Task 1 behavior: work evidence survives transitions into Education, Skills, and Qualifications; end-of-document work flush remains correct; employer/title remain provenance only; technology and self-declared skill lists remain excluded; no duplicate evidence is introduced. Focused extractor tests, three nearby regression tests, the six-case behavior matrix, and production build passed before admission; focused test and build passed again after push.
@@ -54,7 +55,12 @@
 - Structured provider unavailability, timeout, route failure, or malformed response admits zero structured mappings while existing deterministic inference and Career Map materialization may continue. Classification: `FAIL_CLOSED_DETERMINISTIC_CHANNEL_SURVIVES`.
 - Earlier browser-local-only Career Map V1/runtime statements remain historical implementation truth and are superseded only for authorised transmission of eligible minimized Task 2C evidence. All other privacy, local-state, and persistence boundaries remain in force.
 - Focused Task 2C-B verification passed for structured-only/no-signal admission, deterministic preservation, same-support dedupe, both conflict directions, invalid rejection, zero output, provider failure, exact evidence grounding, state provenance, minimized transport, server-only secret handling, route validation, and raw-response isolation. Existing regressions, TypeScript, targeted ESLint, and the production build passed.
-- Single next action: run Task 2D privacy-safe real-CV personal capability coverage validation. Task 2D must measure coverage, relationship mix, traceability, and over-inference before any repair; Task 3 and Task 4 remain later, and triangulation remains deferred.
+- The Task 2D prerequisite decorated-section privacy repair is closed at implementation commit `3f4e82ffb1e44c71524fae21f4d3d1fd14e75f69` (`fix(career): exclude decorated resume sections`). Its first drift point was `ATOMIC_EVIDENCE_ELIGIBILITY`, and its root cause was `DECORATIVE_PREFIX_NOT_NORMALIZED` for the observed `◇ Education` and `◇ Skills` headings.
+- The repair performs heading-only comparison normalization: leading whitespace and non-semantic decorative glyphs are removed before the existing exact known-heading semantics are applied. Stored evidence text is unchanged, and no broad substring matching was introduced.
+- Decorated known non-employment headings now terminate employment evidence boundaries while preserving preceding valid work evidence. Education and Skills-section content are not eligible evidence and cannot enter the structured-inference provider payload; employer/title provenance remains excluded. The production privacy eligibility boundary is `RESTORED`.
+- The first Task 2D real-CV run is `INVALID_FOR_CAPABILITY_COVERAGE_ASSESSMENT` because Education and Skills content contaminated its structured-inference input before the repair. All capability-count, coverage, over-inference, under-inference, and product-readiness conclusions from that run are discarded.
+- The repair restored the existing privacy architecture; it introduced no inference, provider, validator, merge, state, ontology, Role Knowledge, graph, or rendering architecture change.
+- Single next action: replay Task 2D once through the current production-equivalent pipeline to establish the first admissible post-repair baseline. Keep the current provider and prompt unchanged, measure before repairing, and retry only once for a clearly technical transient provider failure. Task 3 and Task 4 remain later, Role Knowledge remains `MVP_SUFFICIENT`, and triangulation remains `DEFERRED_POST_MVP_QUALITY_WORK`.
 
 ### Historical: Wave 2 Role Knowledge enrichment closed (`CAREERTWIN_WAVE_2_ROLE_KNOWLEDGE_ENRICHMENT_CLOSED`)
 

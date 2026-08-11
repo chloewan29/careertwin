@@ -65,7 +65,7 @@ Primary active product priority:
 - `CAREER_MAP_MVP_VERTICAL_SLICE`
 
 Current mode:
-- `HOLD / TASK_2C-B_CLOSED / TASK_2D_NEXT`
+- `HOLD / TASK_2D_PRIVACY_PREREQUISITE_CLOSED / TASK_2D_REPLAY_NEXT`
 
 Current task ledger:
 - Task 1 - Atomic Evidence Extraction: `CLOSED`
@@ -95,7 +95,10 @@ Current task ledger:
 - Task 2C-B - Production Structured Capability Inference Integration: `CLOSED`
   - authoritative implementation commit: `fb8ce5e4edcd4836bf87f1a59d697e482e69e7c9` (`feat(career): integrate structured capability inference`)
   - production structured inference, the no-signal path, truthful structured mappings, and deterministic/structured arbitration are connected through the existing materializer and state
-- Task 2D - Privacy-Safe / Founder-CV Capability Coverage Validation: `NEXT / NOT STARTED`
+- Task 2D prerequisite decorated-section privacy repair: `CLOSED`
+  - authoritative implementation commit: `3f4e82ffb1e44c71524fae21f4d3d1fd14e75f69` (`fix(career): exclude decorated resume sections`)
+  - privacy eligibility boundary: `RESTORED`
+- Task 2D - Privacy-Safe / Founder-CV Capability Coverage Validation: `REPLAY NEXT / NOT COMPLETE`
 - Task 3 - Neural-network personal + role graph: `LATER / NOT AUTHORISED`
 - Task 4 - Real-CV end-to-end visual validation: `LATER / NOT AUTHORISED`
 
@@ -142,6 +145,16 @@ Task 2C-B durable production state:
 - structured provider failure admits zero structured mappings while the deterministic channel and existing materialization may continue
 - the existing materializer and Career Map state remain authoritative; no parallel state or materializer exists, and the additive schema remains `2.0.0`
 - raw provider responses, provider/model identity, fake signals, and fake matched rule IDs are not persisted
+
+Task 2D prerequisite privacy-repair durable state:
+- first drift point: `ATOMIC_EVIDENCE_ELIGIBILITY`
+- root cause: `DECORATIVE_PREFIX_NOT_NORMALIZED`; the observed headings were `◇ Education` and `◇ Skills`
+- heading-only comparison normalization removes leading whitespace and non-semantic decorative glyphs before applying the existing exact known-heading semantics; stored evidence text is not rewritten and broad substring matching was not introduced
+- decorated known non-employment headings now terminate employment evidence boundaries while preserving preceding valid work evidence; Education and Skills-section content are not eligible evidence and cannot enter the structured-inference provider payload
+- the production privacy eligibility boundary is `RESTORED`; employer and title provenance also remain excluded from the provider payload
+- the first Task 2D real-CV run is `INVALID_FOR_CAPABILITY_COVERAGE_ASSESSMENT` because its structured-inference input was contaminated by Education and Skills content before the repair
+- no capability-count, coverage, over-inference, under-inference, or product-readiness conclusion may be derived from that run
+- the next Task 2D run establishes the first admissible post-repair baseline; this repair changed no inference, provider, validator, merge, materializer, state, ontology, Role Knowledge, graph, or rendering architecture
 
 MVP sequencing boundaries:
 - the Founder neural-network Career Map model remains governing: You is central; personal evidence grounds personal capabilities; user and generic roles share canonical capability nodes; unsupported role requirements remain role-only gaps; role radius will express meaningful capability overlap
@@ -486,12 +499,13 @@ Tailored CV flow closure note (2026-05-15):
 ## 3. One main next action
 
 Main next action:
-- Run Task 2D privacy-safe real-CV personal capability coverage validation against the connected production pipeline. Measure coverage and evidence traceability before considering any inference repair.
+- Replay Task 2D once against the current production-equivalent pipeline to establish the first admissible post-repair real-CV capability baseline. Keep the current provider and prompt unchanged, measure before repairing, and allow one retry only for a clearly technical transient provider failure.
 
 Task 2D validation boundary:
 - measure extracted evidence, supported evidence, admitted canonical capabilities, deterministic/structured relationships, unsupported evidence, direct/transferable relationships, exact evidence traceability, and obvious over-inference
 - Task 2D is validation, not another inference architecture, prompt-optimization, ontology, Role Knowledge, graph, renderer, or presentation project
 - do not tune inference merely because coverage is imperfect; measure and diagnose first
+- do not use the invalid first Task 2D run for capability-count, coverage, over-inference, under-inference, or product-readiness conclusions
 
 Not the next action:
 - do not reopen Task 1 extractor repair; Task 1 is closed at `b2ba34d18574f49ec22c852c99e640a1d306fad6`
