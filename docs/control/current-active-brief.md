@@ -65,7 +65,7 @@ Primary active product priority:
 - `CAREER_MAP_MVP_VERTICAL_SLICE`
 
 Current mode:
-- `HOLD / TASK_2C_PERSISTED_PROVENANCE_LOCKED / TASK_2C-B_RESUME_NEXT`
+- `HOLD / TASK_2C-B_CLOSED / TASK_2D_NEXT`
 
 Current task ledger:
 - Task 1 - Atomic Evidence Extraction: `CLOSED`
@@ -91,11 +91,11 @@ Current task ledger:
   - immutable audit artifact: `artifacts/career-possibility/career-map-mvp-task2c-production-integration-admission.md`
   - audit SHA256: `F55DBD9CD80CFD01FA6E60F87905ED7D205E78D4F3662B0740C8A2860EC40D5E`
 - Task 2C Architecture Decision Lock: `CLOSED BY CONTROL COMMIT`
-- Task 2C Persisted Mapping Provenance Decision Lock: `CLOSED BY THIS CONTROL COMMIT`
-- Task 2C-B - Bounded Production Integration Implementation: `ACTIVE IMPLEMENTATION TASK / RESUME NEXT / NOT CLOSED`
-  - the first implementation attempt stopped safely before code because persisted mappings could not truthfully represent structured-only inference without a fake deterministic method or `matchedRuleId`
-  - Founder/EM has authorised the smallest additive persisted mapping provenance extension; the state-provenance blocker is `RESOLVED`
-- Task 2D - Privacy-Safe / Founder-CV Capability Coverage Validation: `LATER / NOT AUTHORISED`
+- Task 2C Persisted Mapping Provenance Decision Lock: `CLOSED BY CONTROL COMMIT`
+- Task 2C-B - Production Structured Capability Inference Integration: `CLOSED`
+  - authoritative implementation commit: `fb8ce5e4edcd4836bf87f1a59d697e482e69e7c9` (`feat(career): integrate structured capability inference`)
+  - production structured inference, the no-signal path, truthful structured mappings, and deterministic/structured arbitration are connected through the existing materializer and state
+- Task 2D - Privacy-Safe / Founder-CV Capability Coverage Validation: `NEXT / NOT STARTED`
 - Task 3 - Neural-network personal + role graph: `LATER / NOT AUTHORISED`
 - Task 4 - Real-CV end-to-end visual validation: `LATER / NOT AUTHORISED`
 
@@ -130,6 +130,18 @@ Locked Task 2C persisted mapping provenance decision:
 - provider/model identity, prompt, raw response, grounding rationale, validation envelopes, confidence, fake signals, fake mapping rules, and conflict diagnostics do not enter persisted state
 - the existing Career Map state and materializer remain the only authoritative persistence/materialization owners; no second mapping ontology, state collection, or materializer is authorised
 - the extension is additive and backward-compatible; existing deterministic mappings require no migration, and any schema version change must follow repository policy without broad migration or unrelated redesign
+
+Task 2C-B durable production state:
+- structured inference is `CONNECTED` through `/api/career-map/capability-inference`, owned by `app/api/career-map/capability-inference/route.ts`
+- the server provider adapter is `lib/career-possibility/career-capability-structured-inference-gemini-provider.ts`; the current `GoogleGenAI` / `gemini-3.6-flash` selection is an implementation detail, not semantic authority
+- the browser producer is `lib/career-possibility/career-capability-structured-inference-api-producer.ts` and sends only `{ evidenceId, evidenceText }` through the same-origin server path; provider credentials remain server-only
+- `validateCareerCapabilityStructuredInferenceResponse()` remains authoritative before any structured assessment becomes a mapping; zero assessments remain valid and the fan-out maximum remains three without truncation
+- `adaptValidatedStructuredCapabilityMappings()` creates only truthful `method: "structured_inference"` mappings without `matchedRuleId`; `method: "authored_deterministic"` remains active and requires its real `matchedRuleId`
+- `mergeDeterministicAndStructuredMappings()` is the single cross-channel merge owner using `evidenceId + canonicalCapabilityId`; same-support output deduplicates to deterministic, and conflicts retain deterministic while rejecting structured
+- eligible evidence with no deterministic signal may now receive a validated structured canonical mapping in production; `NO DETERMINISTIC SIGNAL != NO PERSONAL CAPABILITY` is active
+- structured provider failure admits zero structured mappings while the deterministic channel and existing materialization may continue
+- the existing materializer and Career Map state remain authoritative; no parallel state or materializer exists, and the additive schema remains `2.0.0`
+- raw provider responses, provider/model identity, fake signals, and fake matched rule IDs are not persisted
 
 MVP sequencing boundaries:
 - the Founder neural-network Career Map model remains governing: You is central; personal evidence grounds personal capabilities; user and generic roles share canonical capability nodes; unsupported role requirements remain role-only gaps; role radius will express meaningful capability overlap
@@ -474,22 +486,19 @@ Tailored CV flow closure note (2026-05-15):
 ## 3. One main next action
 
 Main next action:
-- Resume the bounded Task 2C-B production integration implementation. Connect the already-validated Task 2B structured proposal boundary through the authorised same-origin/server-only provider path, truthful persisted mapping provenance, and governed cross-channel merge into the existing personal-capability pipeline without creating parallel extractor, canonical authority, inference, materializer, or state ownership.
+- Run Task 2D privacy-safe real-CV personal capability coverage validation against the connected production pipeline. Measure coverage and evidence traceability before considering any inference repair.
 
-Known Task 2C-B implementation boundaries:
-- `lib/career-possibility/build-provisional-career-map-from-text.ts` is tracked HOLD
-- `lib/career-possibility/provisional-resume-mapping-contract.ts` is tracked HOLD
-- `lib/career-possibility/local-career-map-state.ts` is tracked HOLD
-- `scripts/run-career-map-llm-experiment.ts` is untracked HOLD and experiment-only
-- deterministic + structured proposals merge by `evidenceId + canonicalCapabilityId` under the locked same-support dedupe and deterministic-retention conflict rules
-- preserve all unrelated provenance HOLD through surgical admission; do not stage whole HOLD files without independent authorisation for every hunk
+Task 2D validation boundary:
+- measure extracted evidence, supported evidence, admitted canonical capabilities, deterministic/structured relationships, unsupported evidence, direct/transferable relationships, exact evidence traceability, and obvious over-inference
+- Task 2D is validation, not another inference architecture, prompt-optimization, ontology, Role Knowledge, graph, renderer, or presentation project
+- do not tune inference merely because coverage is imperfect; measure and diagnose first
 
 Not the next action:
 - do not reopen Task 1 extractor repair; Task 1 is closed at `b2ba34d18574f49ec22c852c99e640a1d306fad6`
 - do not reopen Task 2A or Task 2B; both are closed
-- do not treat structured inference as already connected to production; that integration is Task 2C-B
+- do not reopen Task 2C-B; production structured inference is connected and Task 2C-B is closed
 - do not bypass the Task 2B validator or create a second personal-capability pipeline
-- do not begin Task 2D capability coverage validation before Task 2C is admitted and implemented
+- do not treat Task 2D as already completed; it is the next bounded validation task
 - do not begin Task 3 neural graph expansion or Task 4 real-CV visual validation
 - do not resume second-source triangulation before the MVP vertical slice is complete
 - do not treat further Role Knowledge enrichment as an MVP blocker
