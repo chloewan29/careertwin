@@ -50,6 +50,17 @@ function hasEvidenceContent(text: string): boolean {
   return /[\p{L}\p{N}]/u.test(text);
 }
 
+const performedResponsibilityProse = /^(?:(?:responsible|accountable)\s+(?:for|to)|reporting\s+(?:to|into|across|on))\b/i;
+const performedActionProse = /^\p{L}+(?:ed|ing)\b[\s\S]*\b(?:and|with|across|through|using|including|into|for|to|of|the|a|an)\b/iu;
+
+function qualifiesAsPerformedProfessionalEvidence(candidate: Candidate): boolean {
+  if (!hasEvidenceContent(candidate.text)) return false;
+  if (candidate.bullet) return true;
+  const firstLine = candidate.text.split("\n", 1)[0].trim();
+  if (isStructuralBoundaryLine(firstLine)) return false;
+  return performedResponsibilityProse.test(firstLine) || performedActionProse.test(firstLine);
+}
+
 function isHeadingLike(text: string): boolean {
   const value = text.trim();
   return !value.includes("\n") && value.length <= 80 && /\p{Lu}/u.test(value) && !/\p{Ll}/u.test(value);
@@ -302,6 +313,7 @@ export function extractResumeEvidenceFromText(
     });
     const localCandidates = segmentCandidates(canonicalText.slice(boundary.contentStartOffset, boundary.endOffset)).map((candidate) => ({ ...candidate, startOffset: candidate.startOffset + boundary.contentStartOffset, endOffset: candidate.endOffset + boundary.contentStartOffset }));
     for (const candidate of localCandidates) {
+      if (!qualifiesAsPerformedProfessionalEvidence(candidate)) continue;
       const index = evidenceRecords.length;
       const sequence = index + 1;
       const spanId = `span:${input.documentId}:${sequence}`;

@@ -85,11 +85,10 @@ canonical.bundle.sourceSpans.forEach((span) => {
 assert.deepEqual(canonical.bundle.evidenceRecords.map((item) => item.sourceText), [
   "- Bullet one",
   "1) Numbered item",
-  "2024 results",
 ]);
 assert.equal(canonical.bundle.employmentRecords[0].employerName, undefined);
 assert.equal(canonical.bundle.employmentRecords[0].roleTitle, undefined);
-assert.deepEqual(canonical.bundle.sourceSpans.filter((item) => /^span:document-session-a:\d+$/.test(item.id)).map((item) => item.bulletIndex), [0, 1, undefined]);
+assert.deepEqual(canonical.bundle.sourceSpans.filter((item) => /^span:document-session-a:\d+$/.test(item.id)).map((item) => item.bulletIndex), [0, 1]);
 
 const wrappedOneText = "WORK EXPERIENCE\n- Led deep-dive investigations into behavioural signals,\nanomalies and root causes across customer journeys.";
 const wrappedOne = success(wrappedOneText);
@@ -116,12 +115,12 @@ assert.notEqual(unjoinedVariant.bundle.evidenceRecords[0].id, wrappedTwo.bundle.
 const boundaries = [
   ["new bullet", "WORK EXPERIENCE\n- First achievement\n* Second achievement", 2],
   ["numbered item", "WORK EXPERIENCE\n- First achievement\n1) Second achievement", 2],
-  ["blank paragraph", "WORK EXPERIENCE\n- First achievement\n\nIndependent summary paragraph.", 2],
+  ["blank paragraph", "WORK EXPERIENCE\n- First achievement\n\nIndependent summary paragraph.", 1],
   ["section heading", "WORK EXPERIENCE\n- First achievement\nEDUCATION", 1],
   ["skills heading", "WORK EXPERIENCE\n- First achievement\nKEY SKILLS", 1],
   ["role description", "WORK EXPERIENCE\n- First achievement\nResponsible for service delivery.", 2],
-  ["standalone summary", "WORK EXPERIENCE\n- First achievement\nSummary of independent experience.", 2],
-  ["short unrelated prose", "WORK EXPERIENCE\n- First achievement\nOverview follows.", 2],
+  ["standalone summary", "WORK EXPERIENCE\n- First achievement\nSummary of independent experience.", 1],
+  ["short unrelated prose", "WORK EXPERIENCE\n- First achievement\nOverview follows.", 1],
 ] as const;
 boundaries.forEach(([label, text, count]) => assert.equal(success(text).bundle.evidenceRecords.length, count, label));
 const sectionTransitionText = "WORK EXPERIENCE\nExample Company Ltd — Operations Analyst | 2020 - 2022\n- First work achievement.\n- Second work achievement.\nEDUCATION\nBachelor of Example\nKEY SKILLS\nSQL\nTypeScript";
@@ -181,7 +180,7 @@ const cjk = success("构建客户反馈分类体系。\n推动跨团队协作。
 assert.equal(cjk.bundle.evidenceRecords.length, 0);
 
 const tabbed = success("WORK EXPERIENCE\nAction\twith\ttabs");
-assert.equal(tabbed.bundle.evidenceRecords[0].sourceText, "Action\twith\ttabs");
+assert.equal(tabbed.bundle.evidenceRecords.length, 0);
 failure("Safe\u0000unsafe", "invalid_control_character");
 failure("Safe\u000Bunsafe", "invalid_control_character");
 failure("x".repeat(DEFAULT_TEXT_RESUME_MAX_CHARACTERS + 1), "input_too_large");
@@ -256,6 +255,18 @@ assert.equal(multilineEmploymentMetadata.bundle.evidenceRecords.some((item) => /
 
 const fallbackProseEvidence = success("WORK EXPERIENCE\nDelivered a governed reporting transformation across seven business units.");
 assert.deepEqual(fallbackProseEvidence.bundle.evidenceRecords.map((item) => item.sourceText), ["Delivered a governed reporting transformation across seven business units."]);
+
+const structuralEligibilityText = "WORK EXPERIENCE\nExample Company Ltd\nOperations Steward\n2022 - 2026\n\n- Led a governed service rollout.\n\nDelivered a reporting transformation across seven business units.\n\nEnterprise Value Custodian\n\n◇ Education\nSynthetic degree\n◇ Skills\nSynthetic tool list\nQUALIFICATIONS\nSynthetic qualification";
+const structuralEligibility = success(structuralEligibilityText);
+assert.equal(structuralEligibility.bundle.employmentRecords.length, 1);
+assert.equal(structuralEligibility.bundle.employmentRecords[0].employerName?.value, "Example Company Ltd");
+assert.equal(structuralEligibility.bundle.employmentRecords[0].roleTitle?.value, "Operations Steward");
+assert.deepEqual(structuralEligibility.bundle.evidenceRecords.map((item) => item.sourceText), [
+  "- Led a governed service rollout.",
+  "Delivered a reporting transformation across seven business units.",
+]);
+assert.equal(structuralEligibility.bundle.evidenceRecords.some((item) => /Enterprise Value Custodian|Example Company|Operations Steward|2022 - 2026|Education|Synthetic degree|Skills|Synthetic tool|QUALIFICATIONS|Synthetic qualification/.test(item.sourceText)), false);
+assert.equal(new Set(structuralEligibility.bundle.evidenceRecords.map((item) => item.id)).size, structuralEligibility.bundle.evidenceRecords.length);
 
 const titleWordsInsideEvidence = success("WORK EXPERIENCE\n- Led analytics managers through a reporting transformation.");
 assert.deepEqual(titleWordsInsideEvidence.bundle.evidenceRecords.map((item) => item.sourceText), ["- Led analytics managers through a reporting transformation."]);
