@@ -21,6 +21,18 @@ const relationshipSpecificExpectedEvidence: Record<string, Record<string, string
   "operations-manager": {
     "operating-control": "Designed and operated a control framework that reduced a measurable operational risk or quality defect.",
     "service-performance": "Monitored operational service performance metrics and executed an intervention to correct a delivery failure.",
+  },
+  "fpa-manager": {
+    "forecasting": "Produced a forward-looking financial forecast from current performance and stated assumptions, and used forecast changes to make a documented planning decision.",
+    "variance-analysis": "Compared actual financial performance with plan, quantified variances, and explained the main drivers for review.",
+  },
+  "program-manager": {
+    "dependency-management": "Identified dependencies between program workstreams and coordinated their sequence and handoffs to support delivery.",
+    "risk-controls": "Identified a defined program risk and implemented or operated a control addressing that risk.",
+  },
+  "education-program-lead": {
+    "education-delivery": "Delivered or facilitated an education session or program.",
+    "education-partnerships": "Worked with an education partner to agree responsibilities, coordinate contributions, and enable delivery of a defined education activity or program.",
   }
 };
 

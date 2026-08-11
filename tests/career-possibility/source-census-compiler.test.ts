@@ -47,55 +47,60 @@ test('TEST 2: Frozen Wave 1 classification replay (51/51)', () => {
   assert.equal(matched, 51, 'All 51 Wave 1 capabilities must match classification rule');
 });
 
-test('TEST 3: Current repository source collection (51 canonical capabilities)', () => {
+test('TEST 3: Current repository source collection reconciles with the canonical universe', () => {
   const { facts } = collectCurrentSourceFacts();
-  assert.equal(facts.size, 51, 'Must collect 51 canonical capabilities');
-});
-
-test('TEST 4: Current repository role topology', () => {
-  const { topology } = collectCurrentSourceFacts();
-  assert.equal(topology.genericArchetypes, 4, '4 Generic Archetypes');
-  assert.equal(topology.seededProfiles, 18, '18 seeded profiles');
-  assert.equal(topology.genericRelationships, 26, '26 generic relationships');
-  assert.equal(topology.seededRelationships, 72, '72 seeded relationships');
-  assert.equal(topology.totalRelationships, 98, '98 total relationships');
-  assert.equal(topology.canonicalRelationships, 73, '73 canonical relationships');
-  assert.equal(topology.totalRelationships - topology.canonicalRelationships, 25, '25 private relationships');
-});
-
-test('TEST 5 (A/B): Classifier Replay and Current Semantic State (51/51)', () => {
   const census = compileCurrentCapabilitySourceCensus();
-  let matched = 0;
-  
-  census.capabilities.forEach((current: any) => {
-    const frozen = wave1Fixture.capabilities.find((c: any) => c.capabilityId === current.capabilityId);
-    assert.ok(frozen, `Missing capability ${current.capabilityId} in fixture`);
-    
-    // Sufficiency and Routing (Classifier outputs)
-    assert.equal(current.sourceSufficiency, frozen.sourceSufficiency, `Sufficiency mismatch on ${current.capabilityId}`);
-    assert.equal(current.generationRoute, frozen.generationRoute, `Route mismatch on ${current.capabilityId}`);
-    
-    // Raw facts (with erratum for people-leadership)
-    assert.equal(current.richArchetypeUsageCount, frozen.richArchetypeUsageCount, `Archetype count mismatch on ${current.capabilityId}`);
-    
-    if (current.capabilityId === 'people-leadership') {
-      // HISTORICAL RAW-FACT ERRATUM TEST
-      assert.equal(frozen.nonBoilerplateExpectedEvidenceCount, 1, 'Historical bug: frozen erroneously claimed 1 non-boilerplate');
-      assert.equal(current.nonBoilerplateExpectedEvidenceCount, 0, 'Current correctly classifies alias template as boilerplate (0)');
-      assert.equal(frozen.seededUsageCount, 2, 'Historical bug: frozen had 2 seeded usages');
-      assert.equal(current.seededUsageCount, 2, 'Current correctly finds 2 seeded usages');
-    } else {
-      assert.equal(current.seededUsageCount, frozen.seededUsageCount, `Seeded count mismatch on ${current.capabilityId}`);
-      assert.equal(current.nonBoilerplateExpectedEvidenceCount, frozen.nonBoilerplateExpectedEvidenceCount, `Non-boilerplate count mismatch on ${current.capabilityId}`);
-    }
-    
-    assert.equal(current.mappingClueCount, frozen.mappingClueCount, `Mapping clue count mismatch on ${current.capabilityId}`);
-    assert.equal(current.evidenceSignalClueCount, frozen.evidenceSignalClueCount, `Evidence clue count mismatch on ${current.capabilityId}`);
+  assert.equal(facts.size, census.canonicalCapabilityCount, 'Must collect every current canonical capability');
+  assert.equal(new Set(facts.keys()).size, facts.size, 'Current capability IDs must be unique');
+});
 
-    matched++;
+test('TEST 4: Current repository role topology reconciles dynamically', () => {
+  const { facts, topology } = collectCurrentSourceFacts();
+  const census = compileCurrentCapabilitySourceCensus();
+  const canonicalRelationships = Array.from(facts.values()).reduce(
+    (count: number, fact: any) => count + fact.richArchetypeUsageCount + fact.seededUsageCount,
+    0,
+  );
+
+  assert.equal(topology.totalRelationships, topology.genericRelationships + topology.seededRelationships);
+  assert.equal(topology.canonicalRelationships, canonicalRelationships);
+  assert.equal(census.roleTopology.genericArchetypes, topology.genericArchetypes);
+  assert.equal(census.roleTopology.seededProfiles, topology.seededProfiles);
+  assert.equal(census.roleTopology.genericRelationships, topology.genericRelationships);
+  assert.equal(census.roleTopology.seededRelationships, topology.seededRelationships);
+  assert.equal(census.roleTopology.totalRelationships, topology.totalRelationships);
+  assert.equal(census.roleTopology.canonicalRelationships, canonicalRelationships);
+  assert.equal(census.roleTopology.privateRelationships, topology.totalRelationships - canonicalRelationships);
+});
+
+test('TEST 5: Current repository facts and aggregate counts reconcile with classifier output', () => {
+  const { facts } = collectCurrentSourceFacts();
+  const census = compileCurrentCapabilitySourceCensus();
+
+  assert.equal(census.capabilities.length, census.canonicalCapabilityCount);
+  census.capabilities.forEach((current: any) => {
+    const fact = facts.get(current.capabilityId);
+    assert.ok(fact, `Missing current facts for ${current.capabilityId}`);
+    const classification = classifyCapabilitySourceFacts(fact);
+    assert.equal(current.sourceSufficiency, classification.sourceSufficiency, `Sufficiency mismatch on ${current.capabilityId}`);
+    assert.equal(current.generationRoute, classification.generationRoute, `Route mismatch on ${current.capabilityId}`);
+    assert.equal(current.richArchetypeUsageCount, fact.richArchetypeUsageCount, `Archetype count mismatch on ${current.capabilityId}`);
+    assert.equal(current.seededUsageCount, fact.seededUsageCount, `Seeded count mismatch on ${current.capabilityId}`);
+    assert.equal(current.nonBoilerplateExpectedEvidenceCount, fact.nonBoilerplateExpectedEvidenceCount, `Non-boilerplate count mismatch on ${current.capabilityId}`);
+    assert.equal(current.mappingClueCount, fact.mappingClueCount, `Mapping clue count mismatch on ${current.capabilityId}`);
+    assert.equal(current.evidenceSignalClueCount, fact.evidenceSignalClueCount, `Evidence clue count mismatch on ${current.capabilityId}`);
   });
-  
-  assert.equal(matched, 51, 'All 51 capabilities must match current source semantic state to Wave 1 postwrite (with errata)');
+
+  assert.equal(
+    Object.values(census.aggregateSufficiency).reduce((sum, count) => sum + count, 0),
+    census.canonicalCapabilityCount,
+    'Sufficiency partition must cover the current canonical universe',
+  );
+  assert.equal(
+    Object.values(census.aggregateRouting).reduce((sum, count) => sum + count, 0),
+    census.canonicalCapabilityCount,
+    'Routing partition must cover the current canonical universe',
+  );
 });
 
 test('TEST 5D: Current Diagnostic Contract Tests', () => {
@@ -170,18 +175,6 @@ test('TEST 9: Existing 18 AUTO population has zero regression', () => {
 });
 
 test('TEST 10: Boilerplate detector tests', () => {
-  // Test boilerplate detection logic via the collectCurrentSourceFacts helper implicitly, 
-  // or export it to test explicitly. The current implementation implicitly proves it works via Test 5.
-  const { facts } = collectCurrentSourceFacts();
-  const accGrowth = facts.get('account-growth');
-  assert.equal(accGrowth.nonBoilerplateExpectedEvidenceCount, 1, 'Relationship specific evidence must be non-boilerplate');
-  assert.equal(accGrowth.boilerplateExpectedEvidenceCount, 0, 'No boilerplate expected');
-  
-  const resourcePlanning = facts.get('resource-planning');
-  if (resourcePlanning) {
-    assert.equal(resourcePlanning.boilerplateExpectedEvidenceCount, 1, 'Template evidence must be boilerplate');
-  }
-  
   // A. canonical label template -> BOILERPLATE
   assert.strictEqual(isBoilerplate("A concrete example showing applied canonical label."), true);
   

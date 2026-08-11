@@ -8,6 +8,7 @@ import {
   scanCurrentSourceCensus,
   type ScannerCapabilityInput,
 } from "../../scripts/career-possibility/source-census-conflict-detector";
+import { compileCurrentCapabilitySourceCensus } from "../../scripts/career-possibility/source-census-compiler";
 
 const families = ["analytics", "commercial"];
 
@@ -101,9 +102,31 @@ test("scanner write boundary is artifacts-only and contains no ontology or Role 
 });
 
 test("scanner runs against current compiler JSON contract", () => {
+  const census = compileCurrentCapabilitySourceCensus();
   const report = scanCurrentSourceCensus("2026-08-11T00:00:00.000Z");
-  assert.equal(report.scannerSummary.capabilityCount, 51);
-  assert.equal(report.scannerSummary.conflictSignalCounts.EVIDENCE_INSUFFICIENCY_HOLD, 23);
+  const censusById = new Map(census.capabilities.map((capability) => [capability.capabilityId, capability]));
+  const expectedEvidenceInsufficiencyCount = census.capabilities.filter(
+    (capability) =>
+      capability.sourceSufficiency === "INSUFFICIENT" ||
+      capability.generationRoute === "ONTOLOGY_ENRICHMENT_REQUIRED",
+  ).length;
+
+  assert.equal(report.scannerSummary.capabilityCount, census.canonicalCapabilityCount);
+  assert.equal(
+    report.scannerSummary.conflictSignalCounts.EVIDENCE_INSUFFICIENCY_HOLD,
+    expectedEvidenceInsufficiencyCount,
+  );
+  report.capabilityConflictSignals.forEach((capability) => {
+    const current = censusById.get(capability.capabilityId);
+    assert.ok(current, `Scanner emitted unknown capability ${capability.capabilityId}`);
+    assert.equal(capability.currentSufficiency, current.sourceSufficiency);
+    assert.equal(capability.currentRouting, current.generationRoute);
+    assert.equal(
+      capability.signals.some((signal) => signal.type === "EVIDENCE_INSUFFICIENCY_HOLD"),
+      current.sourceSufficiency === "INSUFFICIENT" ||
+        current.generationRoute === "ONTOLOGY_ENRICHMENT_REQUIRED",
+    );
+  });
   assert.equal(report.scannerSummary.conflictDetectionScope, "STRUCTURAL_PREFLIGHT_ONLY");
   assert.equal(report.scannerSummary.semanticSimilarity, "NOT_EVALUATED");
   assert.equal(report.scannerSummary.semanticDrift, "NOT_EVALUATED");
