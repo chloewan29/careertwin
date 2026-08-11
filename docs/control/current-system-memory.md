@@ -1,6 +1,6 @@
 # Current System Memory
 
-### Career Map MVP vertical slice active; Task 2D paused; structural evidence eligibility repair next (`CAREERTWIN_MVP_TASK_2D_STRUCTURAL_EVIDENCE_ELIGIBILITY_LOCKED`)
+### Career Map MVP vertical slice active; structural eligibility repair closed; Task 2D replay next (`CAREERTWIN_MVP_TASK_2D_STRUCTURAL_EVIDENCE_ELIGIBILITY_CLOSED`)
 
 - The Founder neural-network Career Map model is the governing MVP product model. You is central; personal capabilities must be grounded in personal evidence; users and generic roles share canonical capability identity; unsupported role requirements remain role-only gaps; role proximity/radius will express meaningful capability overlap.
 - The active critical path is fixed unless Founder/EM explicitly reprioritises it:
@@ -14,10 +14,11 @@
   8. Task 2D prerequisite decorated-section privacy repair: `CLOSED`
   9. Task 2D prerequisite employment-metadata privacy repair: `CLOSED`
   10. Task 2D attempt #3 - Post-privacy-repair real-CV replay: `INVALID`; `UNCLASSIFIED_STANDALONE_EMPLOYMENT_ROLE_DESCRIPTOR` entered eligible evidence; provider calls `0`
-  11. Task 2D - Privacy-Safe / Founder-CV Capability Coverage Validation: `PAUSED / NOT COMPLETE`
-  12. Task 2D structural evidence eligibility repair: `NEXT`
-  13. Task 3 - Neural-network personal + role graph: `LATER / NOT AUTHORISED`
-  14. Task 4 - Real-CV end-to-end visual validation: `LATER / NOT AUTHORISED`
+  11. Task 2D structural evidence eligibility decision: `CLOSED`
+  12. Task 2D structural evidence eligibility repair: `CLOSED` at `b2e7d483328f35aecb203d8a5d008b128be2c817`
+  13. Task 2D - Privacy-Safe / Founder-CV Capability Coverage Validation: `REPLAY NEXT / NOT COMPLETE`
+  14. Task 3 - Neural-network personal + role graph: `LATER / NOT AUTHORISED`
+  15. Task 4 - Real-CV end-to-end visual validation: `LATER / NOT AUTHORISED`
 - Task 1 authoritative implementation commit: `b2ba34d18574f49ec22c852c99e640a1d306fad6` (`fix(career): preserve work evidence across resume sections`).
 - The admitted Task 1 boundary includes `nonEmploymentSectionHeading`, associated non-work boundary handling in `employmentBoundaries()`, correct transition/reset ordering, pending-work emission before reset, and exclusion of non-work boundaries from evidence production.
 - Verified Task 1 behavior: work evidence survives transitions into Education, Skills, and Qualifications; end-of-document work flush remains correct; employer/title remain provenance only; technology and self-declared skill lists remain excluded; no duplicate evidence is introduced. Focused extractor tests, three nearby regression tests, the six-case behavior matrix, and production build passed before admission; focused test and build passed again after push.
@@ -69,11 +70,12 @@
 - Structured-inference transport remains exactly `{ evidenceId, evidenceText }`. Synthetic production-path verification excluded role-title-only metadata, employer-only metadata, Education headings/content, and Skills headings/content while retaining performed-work evidence.
 - Task 2D attempt #1 and attempt #2 are both `INVALID_FOR_CAPABILITY_COVERAGE_ASSESSMENT`. Attempt #1 contained Education/Skills content before repair #1; attempt #2 exposed role-title metadata in eligible producer input and stopped before provider transmission. Neither attempt supports capability-count, inventory, coverage, over-inference, under-inference, product-readiness, or Task 3 readiness conclusions.
 - Both privacy repairs restored the existing evidence-eligibility architecture and changed no inference, provider, validator, mapping, merge, state, ontology, Role Knowledge, graph, or rendering architecture.
-- Task 2D attempt #3 is `INVALID_FOR_CAPABILITY_COVERAGE_ASSESSMENT`. Two one-line standalone employment-role descriptors entered eligible evidence after `employmentBoundaries()` did not classify them and `segmentCandidates()` fallback admitted them. First drift point: `ATOMIC_EVIDENCE_ELIGIBILITY`. Provider calls were `0`; no validation artifact or capability conclusion is admissible, and no admissible Task 2D baseline exists yet.
-- Structural evidence eligibility is now locked to positive admission: `NOT CLASSIFIED AS METADATA != VALID PROFESSIONAL EVIDENCE`. Metadata/provenance classification is terminal for evidence eligibility. An unclassified candidate must independently satisfy existing performed-professional-activity semantics before emission; ambiguous metadata-like standalone candidates fail closed to non-evidence.
-- The structural repair must preserve valid work bullets and legitimate supported fallback/prose performed-work evidence without rewriting admitted evidence text. It must not introduce title dictionaries, capitalization guesses, fuzzy title heuristics, LLM title classification, provider-side filters, value-equality filters, or one-off descriptor exceptions.
-- The structured producer remains downstream of and trusts upstream evidence eligibility; transport remains exactly `{ evidenceId, evidenceText }`. No inference, provider, validator, mapping, state, ontology, Role Knowledge, graph, or presentation change is authorised.
-- Single next action: implement one bounded Task 2D structural evidence eligibility repair in the extractor admission path, then close that repair before replaying Task 2D. Field-specific privacy repair #3 is not authorised. Task 3 and Task 4 remain later, Role Knowledge remains `MVP_SUFFICIENT`, and triangulation remains `DEFERRED_POST_MVP_QUALITY_WORK`.
+- Task 2D attempts #1, #2, and #3 are `INVALID_FOR_CAPABILITY_COVERAGE_ASSESSMENT`. Attempt #1 contained Education/Skills content; attempt #2 exposed role-title metadata; attempt #3 exposed `UNCLASSIFIED_STANDALONE_EMPLOYMENT_ROLE_DESCRIPTOR` through the former unguarded fallback and made `0` provider calls. None supports capability, coverage, network-breadth, or Task 3 readiness conclusions, and no admissible Task 2D baseline exists yet.
+- Structural evidence eligibility repair is closed at implementation commit `b2e7d483328f35aecb203d8a5d008b128be2c817` (`fix(career): require positive evidence admission`). The authoritative extractor-local owner is `qualifiesAsPerformedProfessionalEvidence()`, guarding the sole evidence-record emission path after `employmentBoundaries()` and `segmentCandidates()`.
+- Positive admission is active: `NOT CLASSIFIED AS METADATA != VALID PROFESSIONAL EVIDENCE`. Metadata/provenance classification is terminal; unclassified candidates are not automatically admitted; ambiguous metadata-like candidates fail closed to non-evidence. One prior unguarded fallback path was removed, leaving `0` employment-relevant unguarded fallback admission paths.
+- Valid work bullets and legitimate supported fallback/prose performed-work evidence remain eligible without evidence-text rewriting. No title dictionary, capitalization guess, fuzzy title heuristic, LLM classifier, provider-side filter, value-equality filter, word-count repair, or field-specific privacy repair #3 was introduced.
+- Synthetic extractor and production-transport regressions verified that valid performed-work evidence reaches the structured producer while employer/title/date metadata, decorated Education/Skills content, and an ambiguous standalone descriptor do not. Transport remains exactly `{ evidenceId, evidenceText }`.
+- Single next action: replay Task 2D once through the current unchanged production-equivalent pipeline, retaining the pre-provider privacy gate and measuring before any inference tuning. Task 3 and Task 4 remain later, Role Knowledge remains `MVP_SUFFICIENT`, and triangulation remains `DEFERRED_POST_MVP_QUALITY_WORK`.
 
 ### Historical: Wave 2 Role Knowledge enrichment closed (`CAREERTWIN_WAVE_2_ROLE_KNOWLEDGE_ENRICHMENT_CLOSED`)
 
