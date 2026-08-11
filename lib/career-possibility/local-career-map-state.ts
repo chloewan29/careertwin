@@ -91,7 +91,15 @@ export function validateProvisionalLocalCareerMapState(value: unknown, definitio
     if (!evidenceIds.has(item.evidenceId)) issues.push({ code: "cross_reference_mismatch", path: `${path}.evidenceId`, message: "Mapping evidence reference is missing." });
     if (!definitionIds.has(item.capabilityId)) issues.push({ code: "unknown_capability", path: `${path}.capabilityId`, message: "Mapping capability is not canonical." });
     if (!relationship(item.relationship)) issues.push({ code: "invalid_relationship", path: `${path}.relationship`, message: "Mapping relationship is invalid." });
-    if (item.reviewStatus !== "unreviewed" || item.admissionStatus !== "auto_admitted" || item.method !== "authored_deterministic") issues.push({ code: "invalid_admission_status", path, message: "Automatic mappings must remain unreviewed and auto-admitted." });
+    if (item.reviewStatus !== "unreviewed" || item.admissionStatus !== "auto_admitted") issues.push({ code: "invalid_admission_status", path, message: "Automatic mappings must remain unreviewed and auto-admitted." });
+    if (item.method === "authored_deterministic") {
+      if (!nonBlank(item.matchedRuleId)) issues.push({ code: "invalid_mapping_provenance", path: `${path}.matchedRuleId`, message: "Deterministic mappings require a real matched rule ID." });
+    } else if (item.method === "structured_inference") {
+      if ("matchedRuleId" in item) issues.push({ code: "invalid_mapping_provenance", path: `${path}.matchedRuleId`, message: "Structured inference mappings must not contain a matched rule ID." });
+    } else {
+      issues.push({ code: "invalid_mapping_provenance", path: `${path}.method`, message: "Mapping method is invalid." });
+    }
+    if (!nonBlank(item.explanation)) issues.push({ code: "invalid_mapping_provenance", path: `${path}.explanation`, message: "Mapping explanation is required." });
     if (item.mappingPolicyVersion !== state.versions?.mappingPolicyVersion || item.capabilityDefinitionVersion !== state.versions?.capabilityDefinitionVersion) issues.push({ code: "version_mismatch", path, message: "Mapping versions must match state versions." });
   });
   const capabilityIds = new Set<string>();

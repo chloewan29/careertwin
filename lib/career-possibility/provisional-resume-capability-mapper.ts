@@ -25,8 +25,15 @@ export function validateProvisionalAutoAdmittedMapping(value: ProvisionalAutoAdm
   if (!nonBlank(value?.mappingId) || !nonBlank(value?.evidenceId)) issues.push({ code: "invalid_mapping", path: "identity", message: "Mapping and evidence identities are required." });
   if (!capabilityIds.has(value?.capabilityId)) issues.push({ code: "unknown_capability", path: "capabilityId", message: "Mapping references an unknown canonical capability." });
   if (!relationship(value?.relationship)) issues.push({ code: "invalid_mapping", path: "relationship", message: "Mapping relationship is invalid." });
-  if (value?.reviewStatus !== "unreviewed" || value?.admissionStatus !== "auto_admitted" || value?.method !== "authored_deterministic") issues.push({ code: "review_status_promoted", path: "status", message: "Automatic mappings must remain unreviewed and deterministically auto-admitted." });
-  if (!nonBlank(value?.matchedRuleId) || !nonBlank(value?.explanation) || !nonBlank(value?.mappingPolicyVersion) || !nonBlank(value?.capabilityDefinitionVersion)) issues.push({ code: "invalid_mapping", path: "provenance", message: "Mapping explanation and version provenance are required." });
+  if (value?.reviewStatus !== "unreviewed" || value?.admissionStatus !== "auto_admitted") issues.push({ code: "review_status_promoted", path: "status", message: "Automatic mappings must remain unreviewed and auto-admitted." });
+  if (value?.method === "authored_deterministic") {
+    if (!nonBlank(value.matchedRuleId)) issues.push({ code: "invalid_mapping", path: "matchedRuleId", message: "Deterministic mappings require a real matched rule ID." });
+  } else if (value?.method === "structured_inference") {
+    if ("matchedRuleId" in value) issues.push({ code: "invalid_mapping", path: "matchedRuleId", message: "Structured inference mappings must not contain a matched rule ID." });
+  } else {
+    issues.push({ code: "invalid_mapping", path: "method", message: "Mapping method is invalid." });
+  }
+  if (!nonBlank(value?.explanation) || !nonBlank(value?.mappingPolicyVersion) || !nonBlank(value?.capabilityDefinitionVersion)) issues.push({ code: "invalid_mapping", path: "provenance", message: "Mapping explanation and version provenance are required." });
   return Object.freeze(issues);
 }
 

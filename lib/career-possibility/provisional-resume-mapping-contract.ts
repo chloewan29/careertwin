@@ -3,7 +3,7 @@ import type { EvidenceCapabilityRelationship, EvidenceReviewStatus } from "./res
 export const PROVISIONAL_RESUME_MAPPING_CONTRACT_VERSION = "1.0.0" as const;
 export type ProvisionalMappingRelationship = Exclude<EvidenceCapabilityRelationship, "possible">;
 export type ProvisionalMappingAdmissionStatus = "auto_admitted" | "unresolved" | "user_confirmed" | "user_edited" | "rejected";
-export type ProvisionalMappingMethod = "authored_deterministic";
+export type ProvisionalMappingMethod = "authored_deterministic" | "structured_inference";
 export type ProvisionalMappingSignalField = "action" | "context" | "outcome" | "ownership" | "scope";
 export type ProvisionalUnresolvedReason = "multiple_candidates" | "relationship_conflict" | "invalid_evidence" | "invalid_policy" | "no_canonical_rule" | "unexpected_mapping_failure";
 
@@ -17,7 +17,7 @@ export type ProvisionalMappingEvidence = Readonly<{
   toolSignals?: readonly string[];
 }>;
 
-export type ProvisionalAutoAdmittedMapping = Readonly<{
+type ProvisionalAutoAdmittedMappingBase = Readonly<{
   contractVersion: typeof PROVISIONAL_RESUME_MAPPING_CONTRACT_VERSION;
   mappingId: string;
   evidenceId: string;
@@ -25,12 +25,24 @@ export type ProvisionalAutoAdmittedMapping = Readonly<{
   relationship: ProvisionalMappingRelationship;
   reviewStatus: Extract<EvidenceReviewStatus, "unreviewed">;
   admissionStatus: Extract<ProvisionalMappingAdmissionStatus, "auto_admitted">;
-  method: ProvisionalMappingMethod;
-  matchedRuleId: string;
   explanation: string;
   mappingPolicyVersion: string;
   capabilityDefinitionVersion: string;
 }>;
+
+export type ProvisionalDeterministicAutoAdmittedMapping = ProvisionalAutoAdmittedMappingBase & Readonly<{
+  method: Extract<ProvisionalMappingMethod, "authored_deterministic">;
+  matchedRuleId: string;
+}>;
+
+export type ProvisionalStructuredAutoAdmittedMapping = ProvisionalAutoAdmittedMappingBase & Readonly<{
+  method: Extract<ProvisionalMappingMethod, "structured_inference">;
+  matchedRuleId?: never;
+}>;
+
+export type ProvisionalAutoAdmittedMapping =
+  | ProvisionalDeterministicAutoAdmittedMapping
+  | ProvisionalStructuredAutoAdmittedMapping;
 
 export type ProvisionalUnresolvedMapping = Readonly<{
   contractVersion: typeof PROVISIONAL_RESUME_MAPPING_CONTRACT_VERSION;
