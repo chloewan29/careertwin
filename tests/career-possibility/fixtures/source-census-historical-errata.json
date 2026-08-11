@@ -1,0 +1,21 @@
+{
+  "metadata": {
+    "schemaVersion": "1.0.0",
+    "purpose": "Records known historical diagnostic defects while preserving frozen history."
+  },
+  "errata": [
+    {
+      "artifact": "canonical-capability-51-source-census-v2.json",
+      "capabilityId": "people-leadership",
+      "field": "nonBoilerplateExpectedEvidenceCount",
+      "historicalValue": 1,
+      "correctedSourceTruth": 0,
+      "reason": "relationship-label alias evidence matched repository boilerplate structure and was incorrectly counted as non-boilerplate",
+      "semanticClassificationImpact": "NONE",
+      "sourceSufficiencyBefore": "MODERATE",
+      "sourceSufficiencyAfterCorrection": "MODERATE",
+      "generationRouteBefore": "AUTO_GENERATION_CANDIDATE",
+      "generationRouteAfterCorrection": "AUTO_GENERATION_CANDIDATE"
+    }
+  ]
+}
