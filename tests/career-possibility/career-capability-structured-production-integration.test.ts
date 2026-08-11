@@ -51,17 +51,19 @@ async function main() {
   const decoratedPrivacyProducer: CareerCapabilityStructuredInferenceProducer = {
     async produce(request) { decoratedPrivacyRequest = request; return responseFor(request); },
   };
-  const decoratedPrivacyInput = "WORK EXPERIENCE\nExample Company Ltd — Operations Analyst | 2020 - 2022\n- Performed professional work A.\n- Performed professional work B.\n\u25C7 Education\nPrivate degree content\n\u25C7 Skills\nSQL • Private technology list";
+  const decoratedPrivacyInput = "WORK EXPERIENCE\nExample Company Ltd\nAnalytics Lead\n2022 - 2026\n\n- Performed professional work A.\n- Performed professional work B.\n\u25C7 Education\nPrivate degree content\n\u25C7 Skills\nSQL • Private technology list";
   const decoratedPrivacy = await buildProvisionalCareerMapFromText(input(decoratedPrivacyInput, decoratedPrivacyProducer));
   assert.equal(decoratedPrivacy.status, "success");
   assert.deepEqual(decoratedPrivacyRequest!.eligibleEvidence.map(({ evidenceText }) => evidenceText), ["- Performed professional work A.", "- Performed professional work B."]);
   assert.equal(JSON.stringify(decoratedPrivacyRequest!.eligibleEvidence).includes("Example Company"), false);
-  assert.equal(JSON.stringify(decoratedPrivacyRequest!.eligibleEvidence).includes("Operations Analyst"), false);
+  assert.equal(JSON.stringify(decoratedPrivacyRequest!.eligibleEvidence).includes("Analytics Lead"), false);
+  assert.equal(JSON.stringify(decoratedPrivacyRequest!.eligibleEvidence).includes("2022 - 2026"), false);
   assert.equal(JSON.stringify(decoratedPrivacyRequest!.eligibleEvidence).includes("Education"), false);
   assert.equal(JSON.stringify(decoratedPrivacyRequest!.eligibleEvidence).includes("Private degree"), false);
   assert.equal(JSON.stringify(decoratedPrivacyRequest!.eligibleEvidence).includes("Skills"), false);
   assert.equal(JSON.stringify(decoratedPrivacyRequest!.eligibleEvidence).includes("Private technology"), false);
   assert.equal(JSON.stringify(decoratedPrivacyRequest!.eligibleEvidence).includes(decoratedPrivacyInput), false);
+  assert.equal(decoratedPrivacyRequest!.eligibleEvidence.every((item) => Object.keys(item).sort().join(",") === "evidenceId,evidenceText"), true);
 
   const pdfBytes = new Uint8Array([0x25, 0x50, 0x44, 0x46, 0x2d, 1]);
   const fileStructured = await buildProvisionalCareerMapFromFile({

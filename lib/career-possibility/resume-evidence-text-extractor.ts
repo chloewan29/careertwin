@@ -109,6 +109,16 @@ function sectionHeadingCandidate(value: string): string {
   return value.trimStart().replace(/^[^\p{L}\p{N}]+/u, "").trimStart();
 }
 
+function previousNonBlankLine(lines: ReturnType<typeof sourceLines>, beforeIndex: number, ordinal = 1) {
+  let remaining = ordinal;
+  for (let index = beforeIndex - 1; index >= 0; index -= 1) {
+    if (!lines[index].text.trim()) continue;
+    remaining -= 1;
+    if (remaining === 0) return lines[index];
+  }
+  return undefined;
+}
+
 /** Conservative structural boundaries only; values are copied from explicit headings. */
 function employmentBoundaries(text: string): EmploymentBoundary[] {
   const lines = sourceLines(text);
@@ -144,6 +154,18 @@ function employmentBoundaries(text: string): EmploymentBoundary[] {
       const previousValue = previous?.text.trim() ?? "";
       const explicitEmployer = previousValue && companySuffix.test(previousValue) && !workHistoryHeading.test(previousValue) ? previous : undefined;
       boundaries.push({ startOffset: explicitEmployer?.start ?? line.start, contentStartOffset: line.end < text.length ? line.end + 1 : line.end, evidenceEligible: true, ...(explicitEmployer ? { employer: previousValue } : {}), roleTitle: roleWithDates[1].trim(), startDate: dates[1], endDate: dates[2] });
+      continue;
+    }
+    const standaloneDates = dateRange.exec(value);
+    if (standaloneDates?.index === 0 && standaloneDates[0].length === value.length) {
+      const roleLine = previousNonBlankLine(lines, index);
+      const roleTitle = roleLine?.text.trim() ?? "";
+      if (roleLine && roleTitle && !isBulletLine(roleLine.text) && !workHistoryHeading.test(roleTitle) && !nonEmploymentSectionHeading.test(sectionHeadingCandidate(roleTitle)) && !dateRange.test(roleTitle)) {
+        const employerLine = previousNonBlankLine(lines, index, 2);
+        const employer = employerLine?.text.trim() ?? "";
+        const explicitEmployer = employerLine && companySuffix.test(employer) && !workHistoryHeading.test(employer) ? employerLine : undefined;
+        boundaries.push({ startOffset: explicitEmployer?.start ?? roleLine.start, contentStartOffset: line.end < text.length ? line.end + 1 : line.end, evidenceEligible: true, ...(explicitEmployer ? { employer } : {}), roleTitle, startDate: standaloneDates[1], endDate: standaloneDates[2] });
+      }
     }
   }
   if (workSectionStart !== undefined && !hasEligibleBoundaryFrom(workSectionStart)) boundaries.push({ startOffset: workSectionStart, contentStartOffset: workSectionStart, evidenceEligible: true });

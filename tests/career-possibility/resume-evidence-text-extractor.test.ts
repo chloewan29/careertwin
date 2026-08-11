@@ -245,6 +245,21 @@ const companyThenRole = success("Example Company Ltd\nOperations Manager | 2019 
 assert.equal(companyThenRole.bundle.employmentRecords[0].employerName?.value, "Example Company Ltd");
 assert.equal(companyThenRole.bundle.employmentRecords[0].roleTitle?.value, "Operations Manager");
 
+const multilineEmploymentMetadata = success("WORK EXPERIENCE\nExample Company Ltd\nAnalytics Lead\n2022 - 2026\n\n- Led a cross-functional analytics programme.\n- Built a governed reporting workflow.\n◇ Education\nExample degree content\n◇ Skills\nSQL, Power BI, Python");
+assert.equal(multilineEmploymentMetadata.bundle.employmentRecords[0].employerName?.value, "Example Company Ltd");
+assert.equal(multilineEmploymentMetadata.bundle.employmentRecords[0].roleTitle?.value, "Analytics Lead");
+assert.deepEqual(multilineEmploymentMetadata.bundle.evidenceRecords.map((item) => item.sourceText), [
+  "- Led a cross-functional analytics programme.",
+  "- Built a governed reporting workflow.",
+]);
+assert.equal(multilineEmploymentMetadata.bundle.evidenceRecords.some((item) => /Example Company|Analytics Lead|2022 - 2026|Education|Example degree|Skills|SQL, Power BI/.test(item.sourceText)), false);
+
+const fallbackProseEvidence = success("WORK EXPERIENCE\nDelivered a governed reporting transformation across seven business units.");
+assert.deepEqual(fallbackProseEvidence.bundle.evidenceRecords.map((item) => item.sourceText), ["Delivered a governed reporting transformation across seven business units."]);
+
+const titleWordsInsideEvidence = success("WORK EXPERIENCE\n- Led analytics managers through a reporting transformation.");
+assert.deepEqual(titleWordsInsideEvidence.bundle.evidenceRecords.map((item) => item.sourceText), ["- Led analytics managers through a reporting transformation."]);
+
 const unassigned = success("Built a reporting workflow without a trustworthy work-history boundary.");
 assert.equal(unassigned.bundle.employmentRecords.length, 0);
 assert.equal(unassigned.bundle.evidenceRecords.length, 0);
