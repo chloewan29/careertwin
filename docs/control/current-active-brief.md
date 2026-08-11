@@ -65,7 +65,7 @@ Primary active product priority:
 - `CAREER_MAP_MVP_VERTICAL_SLICE`
 
 Current mode:
-- `HOLD / TASK_1_CLOSED / TASK_2_NEXT`
+- `HOLD / TASK_2B_CLOSED / TASK_2C_NEXT`
 
 Current task ledger:
 - Task 1 - Atomic Evidence Extraction: `CLOSED`
@@ -75,7 +75,20 @@ Current task ledger:
   - end-of-document flush remains correct
   - employer/title remain provenance only; technology and self-declared skill lists remain excluded
   - the architecture-correct `WORK EXPERIENCE -> one work bullet -> EDUCATION` result is one professional evidence record, not two
-- Task 2 - Structured Evidence -> Canonical Capability Inference: `NEXT IMPLEMENTATION TASK / NOT STARTED`
+- Task 2A - Structured Inference Gap Audit: `CLOSED`
+  - first writable fault: `STRUCTURED_CONTRACT_MISSING`
+  - audit artifact: `artifacts/career-possibility/career-map-mvp-task2-structured-inference-gap-audit.md`
+  - audit SHA256: `9313BA0966C1D9FD25A6ABD7E11481069FDC19F12B7FFD505F0907DCDD70D3ED`
+- Task 2B - Provider-Neutral Structured Inference Foundation: `CLOSED`
+  - authoritative implementation commit: `a52466061489a747e5dfb1cc834cbbf2244a5c2c` (`feat(career): add structured capability inference contract`)
+  - provider-neutral contract and injectable producer boundary reuse existing canonical capability and atomic evidence identities
+  - deterministic validation accepts zero to three assessments per evidence result; more than three rejects that entire evidence result without truncation
+  - independently valid evidence results in the same batch survive another result's failure
+  - unknown evidence/capability IDs, blank rationales, duplicate results/assessments, conflicting support, and malformed output fail closed at the appropriate boundary
+  - support assessments are exactly `directly_supported` and `transferable_support`
+  - validator does not require a deterministic signal and raw provider output cannot mutate personal state
+- Task 2C - Production Structured Capability Inference Integration: `NEXT IMPLEMENTATION TASK / NOT STARTED`
+- Task 2D - Privacy-Safe / Founder-CV Capability Coverage Validation: `LATER / NOT AUTHORISED`
 - Task 3 - Neural-network personal + role graph: `LATER / NOT AUTHORISED`
 - Task 4 - Real-CV end-to-end visual validation: `LATER / NOT AUTHORISED`
 
@@ -431,10 +444,21 @@ Tailored CV flow closure note (2026-05-15):
 ## 3. One main next action
 
 Main next action:
-- Begin the bounded Task 2 implementation cycle for production structured atomic-evidence -> canonical-capability inference, starting with architecture-aligned diagnosis and first-writable-fault/allowed-file admission. Task 2 implementation has not started yet.
+- Begin Task 2C with a first-writable-fault / HOLD-safe integration admission. Connect the already-validated Task 2B structured proposal boundary into the existing production personal-capability pipeline without creating parallel extractor, canonical authority, inference, materializer, or state ownership.
+
+Known Task 2C admission risks:
+- `lib/career-possibility/build-provisional-career-map-from-text.ts` is tracked HOLD
+- `lib/career-possibility/provisional-resume-mapping-contract.ts` is tracked HOLD
+- `lib/career-possibility/local-career-map-state.ts` is tracked HOLD
+- `scripts/run-career-map-llm-experiment.ts` is untracked HOLD and experiment-only
+- the deterministic + structured proposal merge/dedupe owner was missing at Task 2A
 
 Not the next action:
 - do not reopen Task 1 extractor repair; Task 1 is closed at `b2ba34d18574f49ec22c852c99e640a1d306fad6`
+- do not reopen Task 2A or Task 2B; both are closed
+- do not treat structured inference as already connected to production; that integration is Task 2C
+- do not bypass the Task 2B validator or create a second personal-capability pipeline
+- do not begin Task 2D capability coverage validation before Task 2C is admitted and implemented
 - do not begin Task 3 neural graph expansion or Task 4 real-CV visual validation
 - do not resume second-source triangulation before the MVP vertical slice is complete
 - do not treat further Role Knowledge enrichment as an MVP blocker

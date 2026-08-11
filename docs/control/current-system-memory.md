@@ -1,18 +1,27 @@
 # Current System Memory
 
-### Career Map MVP vertical slice active; Task 1 closed (`CAREERTWIN_MVP_TASK_1_ATOMIC_EVIDENCE_EXTRACTION_CLOSED`)
+### Career Map MVP vertical slice active; Task 2B closed; Task 2C next (`CAREERTWIN_MVP_TASK_2B_STRUCTURED_INFERENCE_FOUNDATION_CLOSED`)
 
 - The Founder neural-network Career Map model is the governing MVP product model. You is central; personal capabilities must be grounded in personal evidence; users and generic roles share canonical capability identity; unsupported role requirements remain role-only gaps; role proximity/radius will express meaningful capability overlap.
 - The active critical path is fixed unless Founder/EM explicitly reprioritises it:
   1. Task 1 - Atomic Evidence Extraction: `CLOSED`
-  2. Task 2 - Structured Evidence -> Canonical Capability Inference: `NEXT IMPLEMENTATION TASK / NOT STARTED`
-  3. Task 3 - Neural-network personal + role graph: `LATER / NOT AUTHORISED`
-  4. Task 4 - Real-CV end-to-end visual validation: `LATER / NOT AUTHORISED`
+  2. Task 2A - Structured Inference Gap Audit: `CLOSED`
+  3. Task 2B - Provider-Neutral Structured Inference Foundation: `CLOSED`
+  4. Task 2C - Production Structured Capability Inference Integration: `NEXT IMPLEMENTATION TASK / NOT STARTED`
+  5. Task 2D - Privacy-Safe / Founder-CV Capability Coverage Validation: `LATER / NOT AUTHORISED`
+  6. Task 3 - Neural-network personal + role graph: `LATER / NOT AUTHORISED`
+  7. Task 4 - Real-CV end-to-end visual validation: `LATER / NOT AUTHORISED`
 - Task 1 authoritative implementation commit: `b2ba34d18574f49ec22c852c99e640a1d306fad6` (`fix(career): preserve work evidence across resume sections`).
 - The admitted Task 1 boundary includes `nonEmploymentSectionHeading`, associated non-work boundary handling in `employmentBoundaries()`, correct transition/reset ordering, pending-work emission before reset, and exclusion of non-work boundaries from evidence production.
 - Verified Task 1 behavior: work evidence survives transitions into Education, Skills, and Qualifications; end-of-document work flush remains correct; employer/title remain provenance only; technology and self-declared skill lists remain excluded; no duplicate evidence is introduced. Focused extractor tests, three nearby regression tests, the six-case behavior matrix, and production build passed before admission; focused test and build passed again after push.
 - Evidence eligibility interpretation: `WORK EXPERIENCE -> one work bullet -> EDUCATION` produces exactly one professional work evidence record. Education is a section boundary, not evidence. This strengthens rather than relaxes the evidence contract.
-- Task 2 is next because production still depends on `atomic evidence -> deterministic signal bridge -> deterministic canonical mapping`, causing severe personal-capability under-coverage. The structured Career Map LLM architecture is designed but not connected to production.
+- Task 2A is closed. Its first writable fault was `STRUCTURED_CONTRACT_MISSING`; the immutable audit artifact is `artifacts/career-possibility/career-map-mvp-task2-structured-inference-gap-audit.md` with SHA256 `9313BA0966C1D9FD25A6ABD7E11481069FDC19F12B7FFD505F0907DCDD70D3ED`.
+- Task 2B is closed at implementation commit `a52466061489a747e5dfb1cc834cbbf2244a5c2c` (`feat(career): add structured capability inference contract`). It created the provider-neutral contract, injectable producer boundary, strict deterministic validator, and focused validator tests without connecting production orchestration.
+- Task 2B reuses `lib/career-possibility/canonical-capability-library.ts` as canonical ID authority and `ResumeEvidenceRecord` identity/content as atomic evidence authority. It creates no parallel ontology, inference authority, materializer, or state.
+- The Task 2B support-assessment vocabulary is exactly `directly_supported | transferable_support`. Zero capability assessments is valid. Exact known evidence IDs and canonical capability IDs are required, and grounding rationale must be nonblank.
+- The locked MVP fan-out guardrail is a maximum of three capability assessments per atomic evidence result. Counts 0, 1, 2, and 3 are valid. More than three rejects the entire affected evidence result: no truncation, ranking, first-three retention, or partial salvage is permitted. Independently valid evidence results in the same provider batch remain eligible.
+- Unknown evidence/capability IDs, malformed results, duplicate evidence result objects, duplicate evidence/capability assessments, blank rationales, and conflicting direct/transferable assessments fail closed at the appropriate response or evidence-result boundary. Duplicate results do not merge, and conflicting support has no precedence heuristic.
+- Task 2B validation is proposal-only: raw provider output cannot write to personal state, and validation does not require a deterministic signal token. Existing deterministic inference remains a high-precision, exclusion/guardrail, QA/debug, and corroboration channel.
 - Intended Task 2 path: `CV -> Atomic Evidence Extraction -> Evidence Eligibility Boundary -> Career Capability LLM -> Career-Map-specific strict structured output -> deterministic schema/canonical-ID/evidence-link validation -> canonical capability proposals -> existing canonical personal capability inference or clean proposal boundary -> existing materializer/provisional personal state -> Career Map`.
 - Task 2 invariants: the LLM is a structured inference producer, not the truth owner; it may select only existing canonical capability IDs; every accepted proposal retains exact atomic evidence IDs; zero proposals is valid; raw model output cannot write directly to state; direct/transferable support remains deterministically governed; title, company, role/JD semantics, and unsupported role requirements cannot create personal capability.
 - Deterministic signals and mapping remain available as a high-precision channel, guardrail, QA/debug surface, and corroboration source, but are not the intended mandatory capability gateway. No deterministic signal does not mean no personal capability.
@@ -20,7 +29,9 @@
 - Role Knowledge is `MVP_SUFFICIENT`; further Role Knowledge enrichment is not currently required for MVP. No Wave 3 Role Knowledge work is authorised.
 - Second-source triangulation is `DEFERRED_POST_MVP_QUALITY_WORK`. Its audit history remains valid, but it is not on the active MVP critical path.
 - All milestone-local `single next action` statements below are retained as historical context and are superseded for current routing by this section.
-- Single next action: begin the bounded Task 2 implementation cycle with architecture-aligned diagnosis and explicit first-writable-fault, allowed-file, and validation admission. Do not begin Task 3 or Task 4.
+- Task 2C is narrowly defined as connecting the Task 2B validated structured proposal boundary into the existing production personal-capability pipeline. It must reuse the existing extractor, canonical authority, deterministic inference, Task 2B validator, canonical personal inference/proposal boundary where feasible, materializer, and local state; it must not create parallel ownership.
+- Known Task 2C integration risks are recorded without resolution: `build-provisional-career-map-from-text.ts`, `provisional-resume-mapping-contract.ts`, and `local-career-map-state.ts` are tracked HOLD; `scripts/run-career-map-llm-experiment.ts` is untracked HOLD and experiment-only; and the deterministic + structured proposal merge/dedupe owner was missing at Task 2A.
+- Single next action: begin Task 2C with first-writable-fault / HOLD-safe integration admission before any broad source change. Do not begin Task 2D, Task 3, or Task 4.
 
 ### Historical: Wave 2 Role Knowledge enrichment closed (`CAREERTWIN_WAVE_2_ROLE_KNOWLEDGE_ENRICHMENT_CLOSED`)
 
@@ -53,7 +64,7 @@
 - Deterministic boundary: All LLM proposals must pass strict schema validation and canonical ID verification before being admitted into the existing `inferCanonicalPersonalCapabilities` logic (or an adapted format).
 - Authored the durable architecture guide: `docs/architecture/career-map-architecture.md`.
 - All HOLD-dirty files remain untouched and unstaged.
-- Historical next action superseded: the reuse audit informed the accepted architecture; Task 2 production structured inference is now the next implementation task and has not started.
+- Historical next action superseded: the reuse audit informed the accepted architecture; Task 2B later established the structured contract/validator foundation, and the live routing section above now assigns Task 2C as next.
 
 ### Neural Career Map renderer slice established (`CAREERTWIN_NEURAL_CAREER_MAP_RENDERER_SLICE_ESTABLISHED`)
 
