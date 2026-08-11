@@ -65,7 +65,7 @@ Primary active product priority:
 - `CAREER_MAP_MVP_VERTICAL_SLICE`
 
 Current mode:
-- `HOLD / TASK_2B_CLOSED / TASK_2C_NEXT`
+- `HOLD / TASK_2C_DECISIONS_LOCKED / TASK_2C-B_NEXT`
 
 Current task ledger:
 - Task 1 - Atomic Evidence Extraction: `CLOSED`
@@ -87,7 +87,11 @@ Current task ledger:
   - unknown evidence/capability IDs, blank rationales, duplicate results/assessments, conflicting support, and malformed output fail closed at the appropriate boundary
   - support assessments are exactly `directly_supported` and `transferable_support`
   - validator does not require a deterministic signal and raw provider output cannot mutate personal state
-- Task 2C - Production Structured Capability Inference Integration: `NEXT IMPLEMENTATION TASK / NOT STARTED`
+- Task 2C-A - Production Integration Admission Audit: `CLOSED`
+  - immutable audit artifact: `artifacts/career-possibility/career-map-mvp-task2c-production-integration-admission.md`
+  - audit SHA256: `F55DBD9CD80CFD01FA6E60F87905ED7D205E78D4F3662B0740C8A2860EC40D5E`
+- Task 2C Architecture Decision Lock: `CLOSED BY CONTROL COMMIT`
+- Task 2C-B - Bounded Production Integration Implementation: `NEXT IMPLEMENTATION TASK / NOT STARTED`
 - Task 2D - Privacy-Safe / Founder-CV Capability Coverage Validation: `LATER / NOT AUTHORISED`
 - Task 3 - Neural-network personal + role graph: `LATER / NOT AUTHORISED`
 - Task 4 - Real-CV end-to-end visual validation: `LATER / NOT AUTHORISED`
@@ -100,6 +104,19 @@ Governing Task 2 boundary:
 - deterministic signals remain a high-precision, guardrail, QA/debug, and corroboration channel, but are not the mandatory capability gateway
 - company, title, role/JD semantics, and unsupported role requirements cannot create personal capability
 - existing canonical inference, materializer, and state owners must be reused
+
+Locked Task 2C Founder/EM decisions:
+- production execution is authorised as `browser -> CareerTwin same-origin server route -> server-only external model provider -> Task 2B deterministic validator -> validated proposals`; provider credentials must remain server-side
+- transmitted personal evidence is limited to `{ evidenceId, evidenceText }`; canonical context is limited to existing `{ id, label, family }` plus required contract/content versions
+- raw CV files, complete extracted CVs, employer names, job titles, education, qualifications, skills-section content, contact information, and unrelated résumé metadata are forbidden semantic model input
+- CareerTwin application code must not intentionally persist or log submitted evidence, constructed prompts containing evidence, or raw provider responses; ordinary evidence-free technical request metadata remains governed by existing infrastructure behavior
+- user-facing browser-only/device-only claims must be minimally corrected when Task 2C becomes active; no unverified zero-retention claim may be made about the external provider
+- cross-channel relationship identity is `evidenceId + canonicalCapabilityId`, with at most one admitted relationship per pair
+- same-pair/same-support proposals deduplicate to one relationship; same-pair/different-support proposals retain the governed deterministic relationship and reject the conflicting structured proposal, with only optional ephemeral diagnostics
+- deterministic inference is not a mandatory gateway: a valid structured proposal may be admitted when no deterministic proposal exists for that pair
+- structured proposals must remain truthfully distinguishable from deterministic proposals; no fake deterministic signal, universal signal, or `mappingRuleId` may be invented, and only the smallest proposal/admission-boundary provenance extension is authorised if required
+- the Task 2B provider-neutral contract, fan-out maximum of three assessments per evidence, no-truncation rule, validation boundary, and fail-closed semantics remain authoritative
+- earlier browser-local-only V1/runtime statements are historical and superseded only for the authorised transmission of eligible minimized Task 2C evidence; all other privacy and persistence boundaries remain in force
 
 MVP sequencing boundaries:
 - the Founder neural-network Career Map model remains governing: You is central; personal evidence grounds personal capabilities; user and generic roles share canonical capability nodes; unsupported role requirements remain role-only gaps; role radius will express meaningful capability overlap
@@ -444,19 +461,20 @@ Tailored CV flow closure note (2026-05-15):
 ## 3. One main next action
 
 Main next action:
-- Begin Task 2C with a first-writable-fault / HOLD-safe integration admission. Connect the already-validated Task 2B structured proposal boundary into the existing production personal-capability pipeline without creating parallel extractor, canonical authority, inference, materializer, or state ownership.
+- Begin the bounded Task 2C-B production integration implementation. Connect the already-validated Task 2B structured proposal boundary through the authorised same-origin/server-only provider path and governed cross-channel merge into the existing personal-capability pipeline without creating parallel extractor, canonical authority, inference, materializer, or state ownership.
 
-Known Task 2C admission risks:
+Known Task 2C-B implementation boundaries:
 - `lib/career-possibility/build-provisional-career-map-from-text.ts` is tracked HOLD
 - `lib/career-possibility/provisional-resume-mapping-contract.ts` is tracked HOLD
 - `lib/career-possibility/local-career-map-state.ts` is tracked HOLD
 - `scripts/run-career-map-llm-experiment.ts` is untracked HOLD and experiment-only
-- the deterministic + structured proposal merge/dedupe owner was missing at Task 2A
+- deterministic + structured proposals merge by `evidenceId + canonicalCapabilityId` under the locked same-support dedupe and deterministic-retention conflict rules
+- preserve all unrelated provenance HOLD through surgical admission; do not stage whole HOLD files without independent authorisation for every hunk
 
 Not the next action:
 - do not reopen Task 1 extractor repair; Task 1 is closed at `b2ba34d18574f49ec22c852c99e640a1d306fad6`
 - do not reopen Task 2A or Task 2B; both are closed
-- do not treat structured inference as already connected to production; that integration is Task 2C
+- do not treat structured inference as already connected to production; that integration is Task 2C-B
 - do not bypass the Task 2B validator or create a second personal-capability pipeline
 - do not begin Task 2D capability coverage validation before Task 2C is admitted and implemented
 - do not begin Task 3 neural graph expansion or Task 4 real-CV visual validation
