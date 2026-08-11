@@ -117,13 +117,22 @@ const boundaries = [
   ["new bullet", "WORK EXPERIENCE\n- First achievement\n* Second achievement", 2],
   ["numbered item", "WORK EXPERIENCE\n- First achievement\n1) Second achievement", 2],
   ["blank paragraph", "WORK EXPERIENCE\n- First achievement\n\nIndependent summary paragraph.", 2],
-  ["section heading", "WORK EXPERIENCE\n- First achievement\nEDUCATION", 2],
-  ["skills heading", "WORK EXPERIENCE\n- First achievement\nKEY SKILLS", 2],
+  ["section heading", "WORK EXPERIENCE\n- First achievement\nEDUCATION", 1],
+  ["skills heading", "WORK EXPERIENCE\n- First achievement\nKEY SKILLS", 1],
   ["role description", "WORK EXPERIENCE\n- First achievement\nResponsible for service delivery.", 2],
   ["standalone summary", "WORK EXPERIENCE\n- First achievement\nSummary of independent experience.", 2],
   ["short unrelated prose", "WORK EXPERIENCE\n- First achievement\nOverview follows.", 2],
 ] as const;
 boundaries.forEach(([label, text, count]) => assert.equal(success(text).bundle.evidenceRecords.length, count, label));
+const sectionTransitionText = "WORK EXPERIENCE\nExample Company Ltd — Operations Analyst | 2020 - 2022\n- First work achievement.\n- Second work achievement.\nEDUCATION\nBachelor of Example\nKEY SKILLS\nSQL\nTypeScript";
+const sectionTransition = success(sectionTransitionText);
+assert.deepEqual(sectionTransition.bundle.evidenceRecords.map((item) => item.sourceText), ["- First work achievement.", "- Second work achievement."]);
+assert.equal(sectionTransition.bundle.employmentRecords.length, 1);
+assert.equal(sectionTransition.bundle.employmentRecords[0].employerName?.value, "Example Company Ltd");
+assert.equal(sectionTransition.bundle.employmentRecords[0].roleTitle?.value, "Operations Analyst");
+assert.equal(new Set(sectionTransition.bundle.evidenceRecords.map((item) => item.id)).size, 2);
+assert.equal(sectionTransition.bundle.evidenceRecords[0].sourceSpanIds[0] < sectionTransition.bundle.evidenceRecords[1].sourceSpanIds[0], true);
+assert.equal(sectionTransition.bundle.evidenceRecords.some((item) => /EDUCATION|Bachelor|SKILLS|SQL|TypeScript|Example Company|Operations Analyst/.test(item.sourceText)), false);
 const roleBoundary = success("Example Company Ltd â€” Analyst | 2020 - 2022\n- First achievement\nSenior Manager | 2022 - 2025\n- Second achievement");
 assert.equal(roleBoundary.bundle.employmentRecords.length, 2);
 assert.equal(roleBoundary.bundle.evidenceRecords.length, 2);

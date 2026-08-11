@@ -21,6 +21,7 @@ type EmploymentBoundary = {
   startOffset: number;
   contentStartOffset: number;
   endOffset: number;
+  evidenceEligible: boolean;
   employer?: string;
   roleTitle?: string;
   startDate?: string;
@@ -83,6 +84,8 @@ function stableCandidateFingerprint(value: string): string {
 }
 
 const workHistoryHeading = /^(?:work|professional|career|employment)\s+(?:experience|history)$|^experience$/i;
+/** Non-employment sections must not inherit employment provenance; they get their own provenance-free boundary. */
+const nonEmploymentSectionHeading = /^(?:education|skills|key skills|technical skills|core skills|qualifications?|certifications|certificates|projects|awards|honors|honours|languages|interests|volunteering|volunteer|publications|activities|leadership|affiliations|memberships|references)$/i;
 const dateRange = /\b((?:(?:jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|jul(?:y)?|aug(?:ust)?|sep(?:tember)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?)\s+)?(?:19|20)\d{2})\s*[-–—]\s*((?:(?:jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|jul(?:y)?|aug(?:ust)?|sep(?:tember)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?)\s+)?(?:19|20)\d{2}|present|current)\b/i;
 const companySuffix = /\b(?:inc\.?|llc|ltd\.?|limited|corp\.?|corporation|company|co\.?|group|plc|pty\.?\s+ltd\.?)$/i;
 
@@ -106,6 +109,7 @@ function sourceLines(text: string) {
 function employmentBoundaries(text: string): EmploymentBoundary[] {
   const lines = sourceLines(text);
   const boundaries: Array<Omit<EmploymentBoundary, "endOffset">> = [];
+  const hasEligibleBoundaryFrom = (startOffset: number) => boundaries.some((boundary) => boundary.evidenceEligible && boundary.startOffset >= startOffset);
   let workSectionStart: number | undefined;
   for (let index = 0; index < lines.length; index += 1) {
     const line = lines[index];
@@ -115,10 +119,18 @@ function employmentBoundaries(text: string): EmploymentBoundary[] {
       workSectionStart = line.end < text.length ? line.end + 1 : line.end;
       continue;
     }
+    if (nonEmploymentSectionHeading.test(value)) {
+      if (workSectionStart !== undefined && !hasEligibleBoundaryFrom(workSectionStart)) {
+        boundaries.push({ startOffset: workSectionStart, contentStartOffset: workSectionStart, evidenceEligible: true });
+      }
+      boundaries.push({ startOffset: line.start, contentStartOffset: line.end < text.length ? line.end + 1 : line.end, evidenceEligible: false });
+      workSectionStart = undefined;
+      continue;
+    }
     const combined = /^(.+?)\s+[-–—]\s+(.+?)(?:\s*[|,]\s*(.+))?$/.exec(value);
     if (combined && (dateRange.test(combined[3] ?? "") || companySuffix.test(combined[1]))) {
       const dates = dateRange.exec(combined[3] ?? "");
-      boundaries.push({ startOffset: line.start, contentStartOffset: line.end < text.length ? line.end + 1 : line.end, employer: combined[1].trim(), roleTitle: combined[2].trim(), ...(dates ? { startDate: dates[1], endDate: dates[2] } : {}) });
+      boundaries.push({ startOffset: line.start, contentStartOffset: line.end < text.length ? line.end + 1 : line.end, evidenceEligible: true, employer: combined[1].trim(), roleTitle: combined[2].trim(), ...(dates ? { startDate: dates[1], endDate: dates[2] } : {}) });
       continue;
     }
     const roleWithDates = /^(.+?)\s*[|,]\s*(.+)$/.exec(value);
@@ -127,10 +139,10 @@ function employmentBoundaries(text: string): EmploymentBoundary[] {
       const previous = lines[index - 1];
       const previousValue = previous?.text.trim() ?? "";
       const explicitEmployer = previousValue && companySuffix.test(previousValue) && !workHistoryHeading.test(previousValue) ? previous : undefined;
-      boundaries.push({ startOffset: explicitEmployer?.start ?? line.start, contentStartOffset: line.end < text.length ? line.end + 1 : line.end, ...(explicitEmployer ? { employer: previousValue } : {}), roleTitle: roleWithDates[1].trim(), startDate: dates[1], endDate: dates[2] });
+      boundaries.push({ startOffset: explicitEmployer?.start ?? line.start, contentStartOffset: line.end < text.length ? line.end + 1 : line.end, evidenceEligible: true, ...(explicitEmployer ? { employer: previousValue } : {}), roleTitle: roleWithDates[1].trim(), startDate: dates[1], endDate: dates[2] });
     }
   }
-  if (boundaries.length === 0 && workSectionStart !== undefined) boundaries.push({ startOffset: workSectionStart, contentStartOffset: workSectionStart });
+  if (workSectionStart !== undefined && !hasEligibleBoundaryFrom(workSectionStart)) boundaries.push({ startOffset: workSectionStart, contentStartOffset: workSectionStart, evidenceEligible: true });
   return boundaries.map((boundary, index) => ({ ...boundary, endOffset: boundaries[index + 1]?.startOffset ?? text.length })).filter((boundary) => boundary.endOffset > boundary.contentStartOffset);
 }
 
@@ -246,6 +258,7 @@ export function extractResumeEvidenceFromText(
   let bulletIndex = 0;
 
   for (const boundary of boundaries) {
+    if (!boundary.evidenceEligible) continue;
     const employmentId = `employment:${input.bundleId}:${boundary.startOffset}`;
     const employmentSpanId = `span:${input.documentId}:employment:${boundary.startOffset}`;
     if (!reserveId(employmentId) || !reserveId(employmentSpanId)) return { ok: false, issues: [issue("duplicate_generated_id", "error", "employmentRecords", "A deterministic employment identity collided with another identity.")] };
