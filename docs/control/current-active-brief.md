@@ -61,16 +61,54 @@ Default do-not-read in light mode:
 
 ## 2. Current active line
 
-Primary active line:
-- `CAREER_MAP_MVP / ROLE_KNOWLEDGE_ENRICHMENT`
+Primary active product priority:
+- `CAREER_MAP_MVP_VERTICAL_SLICE`
 
 Current mode:
+- `HOLD / TASK_1_CLOSED / TASK_2_NEXT`
+
+Current task ledger:
+- Task 1 - Atomic Evidence Extraction: `CLOSED`
+  - authoritative implementation commit: `b2ba34d18574f49ec22c852c99e640a1d306fad6` (`fix(career): preserve work evidence across resume sections`)
+  - later non-work sections terminate work extraction without becoming evidence
+  - work evidence survives transitions into Education, Skills, and Qualifications
+  - end-of-document flush remains correct
+  - employer/title remain provenance only; technology and self-declared skill lists remain excluded
+  - the architecture-correct `WORK EXPERIENCE -> one work bullet -> EDUCATION` result is one professional evidence record, not two
+- Task 2 - Structured Evidence -> Canonical Capability Inference: `NEXT IMPLEMENTATION TASK / NOT STARTED`
+- Task 3 - Neural-network personal + role graph: `LATER / NOT AUTHORISED`
+- Task 4 - Real-CV end-to-end visual validation: `LATER / NOT AUTHORISED`
+
+Governing Task 2 boundary:
+- atomic evidence -> evidence eligibility boundary -> Career Capability LLM -> Career-Map-specific strict structured output -> deterministic schema/canonical-ID/evidence-link validation -> canonical capability proposals -> existing canonical personal capability inference/proposal boundary -> existing materializer and provisional personal state
+- the LLM is a structured inference producer, not the truth owner
+- accepted proposals use existing canonical capability IDs and exact atomic evidence IDs; zero proposals is valid
+- raw model output cannot write directly to personal state
+- deterministic signals remain a high-precision, guardrail, QA/debug, and corroboration channel, but are not the mandatory capability gateway
+- company, title, role/JD semantics, and unsupported role requirements cannot create personal capability
+- existing canonical inference, materializer, and state owners must be reused
+
+MVP sequencing boundaries:
+- the Founder neural-network Career Map model remains governing: You is central; personal evidence grounds personal capabilities; user and generic roles share canonical capability nodes; unsupported role requirements remain role-only gaps; role radius will express meaningful capability overlap
+- Role Knowledge is `MVP_SUFFICIENT`; further Role Knowledge enrichment is not currently required for MVP
+- second-source triangulation is `DEFERRED_POST_MVP_QUALITY_WORK`
+- no Wave 3 Role Knowledge work is authorised
+- no semantic or research lane supersedes this MVP vertical-slice path without explicit Founder/EM reprioritisation
+
+### Historical / superseded active-line context
+
+The following Wave 2 material is retained as accepted history. Its coverage-vs-triangulation question and milestone-local next actions do not govern the current MVP execution path.
+
+Historical primary line:
+- `CAREER_MAP_MVP / ROLE_KNOWLEDGE_ENRICHMENT`
+
+Historical mode:
 - `HOLD / WAVE_2_CLOSED`
 
-Current task type:
+Historical task type:
 - Wave 2 Role Knowledge enrichment is closed; next semantic-phase choice is pending Founder/EM decision
 
-Current active question:
+Historical open question (superseded for MVP routing):
 - Should the next authorized semantic phase expand source coverage across the remaining 17 ENRICHMENT capabilities, or triangulate the 16 WEAK/TARGETED capabilities with independent second-source evidence?
 
 Current Wave 2 closure:
@@ -393,13 +431,17 @@ Tailored CV flow closure note (2026-05-15):
 ## 3. One main next action
 
 Main next action:
-- Founder/EM chooses exactly one next semantic direction: continue governed source coverage across the remaining 17 ENRICHMENT capabilities, or begin a bounded second-source/triangulation experiment across the 16 WEAK/TARGETED capabilities. Do not create or execute Wave 3 before that decision.
+- Begin the bounded Task 2 implementation cycle for production structured atomic-evidence -> canonical-capability inference, starting with architecture-aligned diagnosis and first-writable-fault/allowed-file admission. Task 2 implementation has not started yet.
 
 Not the next action:
+- do not reopen Task 1 extractor repair; Task 1 is closed at `b2ba34d18574f49ec22c852c99e640a1d306fad6`
+- do not begin Task 3 neural graph expansion or Task 4 real-CV visual validation
+- do not resume second-source triangulation before the MVP vertical slice is complete
+- do not treat further Role Knowledge enrichment as an MVP blocker
 - do not reopen Wave 2 semantic synthesis, source writing, measurement, or diagnostic infrastructure repair
 - do not treat `WEAK` as canonical semantic admission or `TARGETED` as `AUTO`
 - do not claim one role source proves strong confidence or universal semantic definitions
-- do not begin Wave 3 before the Founder/EM coverage-vs-triangulation decision
+- do not begin Wave 3; it is not authorised and further Role Knowledge enrichment is not currently required for MVP
 - do not treat the closed `stale_review_status` evidence-field defect as active
 - do not reopen source revision, source identity, review identity/revision, `SharedCareerIngestionBundle`, browser adapter, or browser runtime architecture
 - do not promote persistence, server materialization, multi-document ingestion, automatic semantic edit hashing, Supabase, authentication, or package changes into mandatory next work

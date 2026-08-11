@@ -1,6 +1,28 @@
 # Current System Memory
 
-### Wave 2 Role Knowledge enrichment closed (`CAREERTWIN_WAVE_2_ROLE_KNOWLEDGE_ENRICHMENT_CLOSED`)
+### Career Map MVP vertical slice active; Task 1 closed (`CAREERTWIN_MVP_TASK_1_ATOMIC_EVIDENCE_EXTRACTION_CLOSED`)
+
+- The Founder neural-network Career Map model is the governing MVP product model. You is central; personal capabilities must be grounded in personal evidence; users and generic roles share canonical capability identity; unsupported role requirements remain role-only gaps; role proximity/radius will express meaningful capability overlap.
+- The active critical path is fixed unless Founder/EM explicitly reprioritises it:
+  1. Task 1 - Atomic Evidence Extraction: `CLOSED`
+  2. Task 2 - Structured Evidence -> Canonical Capability Inference: `NEXT IMPLEMENTATION TASK / NOT STARTED`
+  3. Task 3 - Neural-network personal + role graph: `LATER / NOT AUTHORISED`
+  4. Task 4 - Real-CV end-to-end visual validation: `LATER / NOT AUTHORISED`
+- Task 1 authoritative implementation commit: `b2ba34d18574f49ec22c852c99e640a1d306fad6` (`fix(career): preserve work evidence across resume sections`).
+- The admitted Task 1 boundary includes `nonEmploymentSectionHeading`, associated non-work boundary handling in `employmentBoundaries()`, correct transition/reset ordering, pending-work emission before reset, and exclusion of non-work boundaries from evidence production.
+- Verified Task 1 behavior: work evidence survives transitions into Education, Skills, and Qualifications; end-of-document work flush remains correct; employer/title remain provenance only; technology and self-declared skill lists remain excluded; no duplicate evidence is introduced. Focused extractor tests, three nearby regression tests, the six-case behavior matrix, and production build passed before admission; focused test and build passed again after push.
+- Evidence eligibility interpretation: `WORK EXPERIENCE -> one work bullet -> EDUCATION` produces exactly one professional work evidence record. Education is a section boundary, not evidence. This strengthens rather than relaxes the evidence contract.
+- Task 2 is next because production still depends on `atomic evidence -> deterministic signal bridge -> deterministic canonical mapping`, causing severe personal-capability under-coverage. The structured Career Map LLM architecture is designed but not connected to production.
+- Intended Task 2 path: `CV -> Atomic Evidence Extraction -> Evidence Eligibility Boundary -> Career Capability LLM -> Career-Map-specific strict structured output -> deterministic schema/canonical-ID/evidence-link validation -> canonical capability proposals -> existing canonical personal capability inference or clean proposal boundary -> existing materializer/provisional personal state -> Career Map`.
+- Task 2 invariants: the LLM is a structured inference producer, not the truth owner; it may select only existing canonical capability IDs; every accepted proposal retains exact atomic evidence IDs; zero proposals is valid; raw model output cannot write directly to state; direct/transferable support remains deterministically governed; title, company, role/JD semantics, and unsupported role requirements cannot create personal capability.
+- Deterministic signals and mapping remain available as a high-precision channel, guardrail, QA/debug surface, and corroboration source, but are not the intended mandatory capability gateway. No deterministic signal does not mean no personal capability.
+- Existing canonical inference, materializer, provisional personal-state, role-library, and graph-semantic owners remain authoritative. No parallel extractor, ontology, inference authority, personal-state authority, role system, or graph authority is admitted.
+- Role Knowledge is `MVP_SUFFICIENT`; further Role Knowledge enrichment is not currently required for MVP. No Wave 3 Role Knowledge work is authorised.
+- Second-source triangulation is `DEFERRED_POST_MVP_QUALITY_WORK`. Its audit history remains valid, but it is not on the active MVP critical path.
+- All milestone-local `single next action` statements below are retained as historical context and are superseded for current routing by this section.
+- Single next action: begin the bounded Task 2 implementation cycle with architecture-aligned diagnosis and explicit first-writable-fault, allowed-file, and validation admission. Do not begin Task 3 or Task 4.
+
+### Historical: Wave 2 Role Knowledge enrichment closed (`CAREERTWIN_WAVE_2_ROLE_KNOWLEDGE_ENRICHMENT_CLOSED`)
 
 - Wave 2 is closed. Authoritative implementation commit: `ecb77b52dc537b9aa958f23d7194689568fdea34` (`feat(career): enrich wave 2 role evidence semantics`).
 - The three enriched roles are `fpa-manager`, `program-manager`, and `education-program-lead`.
@@ -15,8 +37,8 @@
 - Durable architectural conclusion: `ROLE_KNOWLEDGE_ENRICHMENT_TO_SOURCE_SUFFICIENCY_MOVEMENT = CROSS_DOMAIN_REPLICATION_VALIDATED`.
 - Interpretation boundary: governed non-boilerplate Role Knowledge can reproducibly move a source-starved capability into WEAK/TARGETED without ontology, policy, topology, or classifier-policy changes. `WEAK` is not canonical semantic admission; `TARGETED` is not `AUTO`; one rich Role Knowledge source is not strong semantic confidence; cross-domain source-enrichment replication is not proof that the canonical semantic compiler is fully validated.
 - The initial Wave 2 post-write test failure was a stale-current-state contract defect: permanent tests treated the Wave 1 repository snapshot as immutable current truth. That repair is closed. Frozen historical fixture replay may retain fixed expectations; current repository tests now use dynamic source, topology, classifier, aggregate, and compiler/scanner reconciliation. No fixed Wave 2 totals were added to permanent tests.
-- Current semantic lanes: AUTO 18; TARGETED 16; ENRICHMENT 17; CONFLICT 0. TARGETED is now large enough to make second-source triangulation a viable next-phase option.
-- The next strategic decision remains `OPEN`; control memory does not select either option.
+- Historical post-Wave2 semantic lanes: AUTO 18; TARGETED 16; ENRICHMENT 17; CONFLICT 0. TARGETED was large enough to make second-source triangulation a viable future quality option.
+- The post-Wave2 strategic decision is retained as historical audit context and no longer controls the active MVP path. Triangulation is deferred post-MVP, and further coverage expansion is not currently required for MVP.
   - Option A - coverage expansion: continue governed Role Knowledge enrichment across the remaining 17 ENRICHMENT/INSUFFICIENT capabilities.
   - Option B - triangulation/second-source validation: use the 16 WEAK/TARGETED capabilities to test whether independent semantic source evidence can move them toward stronger source sufficiency and/or AUTO eligibility.
 - Wave 3 is not authorized. No Wave 3 role selection, planning, candidate synthesis, enrichment, or source write is approved.
@@ -31,7 +53,7 @@
 - Deterministic boundary: All LLM proposals must pass strict schema validation and canonical ID verification before being admitted into the existing `inferCanonicalPersonalCapabilities` logic (or an adapted format).
 - Authored the durable architecture guide: `docs/architecture/career-map-architecture.md`.
 - All HOLD-dirty files remain untouched and unstaged.
-- Single next action: Complete the Job Copilot structured-LLM reuse audit before admitting any implementation experiment.
+- Historical next action superseded: the reuse audit informed the accepted architecture; Task 2 production structured inference is now the next implementation task and has not started.
 
 ### Neural Career Map renderer slice established (`CAREERTWIN_NEURAL_CAREER_MAP_RENDERER_SLICE_ESTABLISHED`)
 
