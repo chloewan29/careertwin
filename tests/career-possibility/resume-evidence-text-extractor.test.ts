@@ -133,6 +133,13 @@ assert.equal(sectionTransition.bundle.employmentRecords[0].roleTitle?.value, "Op
 assert.equal(new Set(sectionTransition.bundle.evidenceRecords.map((item) => item.id)).size, 2);
 assert.equal(sectionTransition.bundle.evidenceRecords[0].sourceSpanIds[0] < sectionTransition.bundle.evidenceRecords[1].sourceSpanIds[0], true);
 assert.equal(sectionTransition.bundle.evidenceRecords.some((item) => /EDUCATION|Bachelor|SKILLS|SQL|TypeScript|Example Company|Operations Analyst/.test(item.sourceText)), false);
+const decoratedSectionTransitionText = "WORK EXPERIENCE\n- Designed an education analytics strategy for business stakeholders.\n- Skills uplift programme delivered across 12 teams.\n\u25C7 Education\nPrivate degree content\n\u25C7 Skills\nPrivate technology list";
+const decoratedSectionTransition = success(decoratedSectionTransitionText);
+assert.deepEqual(decoratedSectionTransition.bundle.evidenceRecords.map((item) => item.sourceText), [
+  "- Designed an education analytics strategy for business stakeholders.",
+  "- Skills uplift programme delivered across 12 teams.",
+]);
+assert.equal(decoratedSectionTransition.bundle.evidenceRecords.some((item) => /\u25C7 Education|Private degree|\u25C7 Skills|Private technology/.test(item.sourceText)), false);
 const roleBoundary = success("Example Company Ltd â€” Analyst | 2020 - 2022\n- First achievement\nSenior Manager | 2022 - 2025\n- Second achievement");
 assert.equal(roleBoundary.bundle.employmentRecords.length, 2);
 assert.equal(roleBoundary.bundle.evidenceRecords.length, 2);

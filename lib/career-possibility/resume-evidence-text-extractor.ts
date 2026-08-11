@@ -105,6 +105,10 @@ function sourceLines(text: string) {
   return lines;
 }
 
+function sectionHeadingCandidate(value: string): string {
+  return value.trimStart().replace(/^[^\p{L}\p{N}]+/u, "").trimStart();
+}
+
 /** Conservative structural boundaries only; values are copied from explicit headings. */
 function employmentBoundaries(text: string): EmploymentBoundary[] {
   const lines = sourceLines(text);
@@ -119,7 +123,7 @@ function employmentBoundaries(text: string): EmploymentBoundary[] {
       workSectionStart = line.end < text.length ? line.end + 1 : line.end;
       continue;
     }
-    if (nonEmploymentSectionHeading.test(value)) {
+    if (nonEmploymentSectionHeading.test(sectionHeadingCandidate(value))) {
       if (workSectionStart !== undefined && !hasEligibleBoundaryFrom(workSectionStart)) {
         boundaries.push({ startOffset: workSectionStart, contentStartOffset: workSectionStart, evidenceEligible: true });
       }
