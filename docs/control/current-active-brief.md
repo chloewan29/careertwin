@@ -65,7 +65,7 @@ Primary active product priority:
 - `CAREER_MAP_MVP_VERTICAL_SLICE`
 
 Current mode:
-- `HOLD / TASK_3_CLOSED / TASK_4_NEXT`
+- `HOLD / TASK_4_CURRENT / PROVIDER_RUNTIME_CLOSED / MATERIALIZATION_RETRY_NEXT`
 
 Current task ledger:
 - Task 1 - Atomic Evidence Extraction: `CLOSED`
@@ -159,7 +159,15 @@ Current task ledger:
   - empty/no-valid-state behavior is preserved; first-ring presentation remains unchanged
 - Task 3: `CLOSED`
   - personal canonical state is connected through generic role alignment and four-role graph projection to the active renderer
-- Task 4 - Real-CV end-to-end visual validation: `NEXT`
+- Task 4 - Real-CV materialization and end-to-end visual validation: `CURRENT`
+  - provider runtime diagnostic: `CLOSED`; decision `MVP_TASK4_PROVIDER_TIMEOUT_BOUNDARY_REQUIRED`; frozen diagnostic artifact `artifacts/career-possibility/career-map-mvp-task4-provider-runtime-diagnostic.md`, SHA256 `689C11E8B7C63162B99A44EC5F9B35ED3A1691FF69868AB99BF063E3DE48D902`
+  - provider runtime timeout repair: `CLOSED`; decision `MVP_TASK4_PROVIDER_TIMEOUT_BOUNDARY_REPAIRED`; implementation commit `8684b0d9a02bef979254225859bb8c497bef1cf5` (`fix(career): bound capability provider runtime`)
+  - provider owner: `geminiCareerCapabilityStructuredInferenceProducer` in `lib/career-possibility/career-capability-structured-inference-gemini-provider.ts`
+  - provider completion timeout: `ACTIVE`; installed `@google/genai` `1.44.0` mechanism `GenerateContentConfig.httpOptions.timeout`; owner `CAREER_CAPABILITY_PROVIDER_TIMEOUT_MS = 90_000`
+  - provider await: `BOUNDED`; timeout is a controlled provider failure that reuses existing Task 2C `FAIL_CLOSED_DETERMINISTIC_CHANNEL_SURVIVES` behavior
+  - automatic provider retry: `NONE`; model, prompt, structured inference semantics, validator, mapping, merge, materializer, and local state schema remain unchanged
+  - client `Request.signal`, route timeout, client timeout, and explicit provider `AbortSignal` were not added; remote Gemini service cancellation is not claimed
+  - next: retry one exact-Founder-CV production-equivalent materialization after the privacy gate, then continue immediately to visual validation if the result is admissible
   - inspect the actual validated real-CV Career Map before authorising any bounded presentation or renderer repair
 
 Governing Task 2 boundary:
@@ -587,7 +595,7 @@ Tailored CV flow closure note (2026-05-15):
 ## 3. One main next action
 
 Main next action:
-- Begin Task 4 real-CV end-to-end visual validation using the actual validated Career Map personal state and visible graph.
+- Retry Task 4 real-CV materialization once with the exact Founder CV and pre-provider privacy gate; if the result is semantically admissible, continue immediately in the same runtime/browser session into end-to-end visual validation.
 
 Task 4 boundary:
 - inspect the actual visible real-CV graph for center clarity, four-role distinction and proximity, shared connections, role-only gaps, evidence disclosure, first-ring readability, desktop/mobile layout, clipping, crowding, overlap, and non-semantic proxy clarity
