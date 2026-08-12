@@ -8,6 +8,15 @@ import {
 
 export const CAREER_CAPABILITY_STRUCTURED_INFERENCE_MODEL = "gemini-3.6-flash" as const;
 export const CAREER_CAPABILITY_STRUCTURED_INFERENCE_PROMPT_VERSION = "career-capability-inference-prompt/1.0.0" as const;
+export const CAREER_CAPABILITY_PROVIDER_TIMEOUT_MS = 90_000;
+
+type GenerateContent = GoogleGenAI["models"]["generateContent"];
+type CreateGenerateContent = (apiKey: string) => GenerateContent;
+
+const createGenerateContent: CreateGenerateContent = (apiKey) => {
+  const ai = new GoogleGenAI({ apiKey });
+  return ai.models.generateContent.bind(ai.models);
+};
 
 const responseSchema = {
   type: "OBJECT",
@@ -63,29 +72,37 @@ ELIGIBLE_ATOMIC_EVIDENCE_JSON:
 ${JSON.stringify(eligibleEvidence)}`;
 }
 
-export const geminiCareerCapabilityStructuredInferenceProducer: CareerCapabilityStructuredInferenceProducer = Object.freeze({
-  async produce(request: CareerCapabilityStructuredInferenceRequest): Promise<CareerCapabilityStructuredInferenceResponse> {
-    const apiKey = process.env.GEMINI_API_KEY;
-    if (!apiKey) throw new Error("Career capability inference provider is unavailable.");
+export function createGeminiCareerCapabilityStructuredInferenceProducer(
+  generateContentFactory: CreateGenerateContent = createGenerateContent,
+  readApiKey: () => string | undefined = () => process.env.GEMINI_API_KEY,
+): CareerCapabilityStructuredInferenceProducer {
+  return Object.freeze({
+    async produce(request: CareerCapabilityStructuredInferenceRequest): Promise<CareerCapabilityStructuredInferenceResponse> {
+      const apiKey = readApiKey();
+      if (!apiKey) throw new Error("Career capability inference provider is unavailable.");
 
-    const ai = new GoogleGenAI({ apiKey });
-    const response = await ai.models.generateContent({
-      model: CAREER_CAPABILITY_STRUCTURED_INFERENCE_MODEL,
-      contents: buildPrompt(request),
-      config: {
-        temperature: 0.1,
-        responseMimeType: "application/json",
-        responseSchema,
-      },
-    });
-    if (!response.text) throw new Error("Career capability inference provider returned no response.");
-    const parsed: unknown = JSON.parse(response.text);
-    const results = typeof parsed === "object" && parsed !== null && "results" in parsed
-      ? (parsed as { results: CareerCapabilityStructuredInferenceResponse["results"] }).results
-      : undefined;
-    return Object.freeze({
-      contractVersion: CAREER_CAPABILITY_STRUCTURED_INFERENCE_CONTRACT_VERSION,
-      results,
-    }) as CareerCapabilityStructuredInferenceResponse;
-  },
-});
+      const generateContent = generateContentFactory(apiKey);
+      const response = await generateContent({
+        model: CAREER_CAPABILITY_STRUCTURED_INFERENCE_MODEL,
+        contents: buildPrompt(request),
+        config: {
+          httpOptions: { timeout: CAREER_CAPABILITY_PROVIDER_TIMEOUT_MS },
+          temperature: 0.1,
+          responseMimeType: "application/json",
+          responseSchema,
+        },
+      });
+      if (!response.text) throw new Error("Career capability inference provider returned no response.");
+      const parsed: unknown = JSON.parse(response.text);
+      const results = typeof parsed === "object" && parsed !== null && "results" in parsed
+        ? (parsed as { results: CareerCapabilityStructuredInferenceResponse["results"] }).results
+        : undefined;
+      return Object.freeze({
+        contractVersion: CAREER_CAPABILITY_STRUCTURED_INFERENCE_CONTRACT_VERSION,
+        results,
+      }) as CareerCapabilityStructuredInferenceResponse;
+    },
+  });
+}
+
+export const geminiCareerCapabilityStructuredInferenceProducer = createGeminiCareerCapabilityStructuredInferenceProducer();
