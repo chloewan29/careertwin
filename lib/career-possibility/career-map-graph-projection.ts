@@ -19,6 +19,11 @@
  */
 
 import type { CanonicalCapabilityFamilyLibrary } from "./canonical-capability-family-library";
+import type {
+  AlignmentSection,
+  CanonicalCapabilityOwnershipSupport,
+  GenericCareerPathOwnershipAlignmentResult,
+} from "./generic-career-path-alignment";
 import type { PersonalCareerMapPresentation } from "./local-career-map-presentation-adapter";
 import type { PersonalTargetRoleComparison, RequirementOutcome } from "./personal-target-role-comparison";
 import type { RoleCapabilityProfile } from "./role-capability-library";
@@ -68,7 +73,13 @@ export type RoleGraphNode = {
   readonly type: "role";
   readonly id: string;
   readonly title: string;
-  readonly domain: string;
+  readonly domain?: string;
+  /** Presentation-only ordinal inherited from the upstream ordered role result. */
+  readonly proximityRank?: number;
+  /** Retained for explainability only; this projection never re-sorts or re-scores it. */
+  readonly orderingBasis?: readonly number[];
+  readonly primaryMandate?: string;
+  readonly primaryOwnership?: readonly string[];
 };
 
 /** The three role-requirement states the graph projection exposes. */
@@ -84,7 +95,9 @@ export type RoleRequirementGraphNode = {
   readonly roleId: string;
   readonly capabilityId: string;
   readonly capabilityLabel: string;
-  readonly importance: "must" | "should" | "differentiator";
+  readonly importance?: "must" | "should" | "differentiator";
+  /** Task 3B structural section, retained when projecting generic-role alignment. */
+  readonly alignmentSection?: AlignmentSection;
   /** Role-context state only — never a claim about the user's personal capability set. */
   readonly requirementState: RoleRequirementState;
 };
@@ -237,9 +250,28 @@ export function buildCareerMapGraphProjection(input: {
   readonly presentation: PersonalCareerMapPresentation;
   readonly familyLibrary: CanonicalCapabilityFamilyLibrary;
   readonly role?: CareerMapRoleInput;
+  /**
+   * Pre-computed, deterministically ordered Task 3B result.
+   * Array order is authoritative; this projection only assigns presentation rank.
+   */
+  readonly rankedRoleAlignment?: GenericCareerPathOwnershipAlignmentResult;
 }): CareerMapGraphProjection {
+  if (input.role && input.rankedRoleAlignment) {
+    throw new Error("Use either singular role comparison or ranked generic-role alignment, not both.");
+  }
+
   const nodes: CareerMapGraphNode[] = [];
   const edges: CareerMapGraphEdge[] = [];
+
+  // Semantic capability identity is always the literal canonical capability ID.
+  // Role-requirement nodes remain layout/context proxies that retain this ID.
+  const canonicalCapabilityRegistry = new Map<string, string>();
+  const canonicalCapabilityId = (id: string): string => {
+    const existing = canonicalCapabilityRegistry.get(id);
+    if (existing) return existing;
+    canonicalCapabilityRegistry.set(id, id);
+    return id;
+  };
 
   // --- User node -----------------------------------------------------------
   nodes.push(Object.freeze<UserGraphNode>({ type: "user", id: "user" }));
@@ -286,17 +318,18 @@ export function buildCareerMapGraphProjection(input: {
     edges.push(Object.freeze<CareerMapGraphEdge>({ type: "user_has_family", fromId: "user", toId: family.familyId }));
 
     for (const cap of family.capabilities) {
+      const capabilityId = canonicalCapabilityId(cap.id);
       nodes.push(Object.freeze<CapabilityGraphNode>({
         type: "capability",
-        id: cap.id,
+        id: capabilityId,
         label: cap.label,
         familyId: family.familyId,
         evidenceIds: Object.freeze([...cap.evidenceIds]),
       }));
-      edges.push(Object.freeze<CareerMapGraphEdge>({ type: "family_contains_capability", fromId: family.familyId, toId: cap.id }));
+      edges.push(Object.freeze<CareerMapGraphEdge>({ type: "family_contains_capability", fromId: family.familyId, toId: capabilityId }));
 
       for (const evidenceId of cap.evidenceIds) {
-        edges.push(Object.freeze<CareerMapGraphEdge>({ type: "capability_supported_by_evidence", fromId: cap.id, toId: evidenceId }));
+        edges.push(Object.freeze<CareerMapGraphEdge>({ type: "capability_supported_by_evidence", fromId: capabilityId, toId: evidenceId }));
       }
     }
   }
@@ -340,6 +373,69 @@ export function buildCareerMapGraphProjection(input: {
         requirementState: requirement.outcome,
       }));
       edges.push(Object.freeze<CareerMapGraphEdge>({ type: "role_requires_capability", fromId: roleId, toId: reqId }));
+    }
+  }
+
+  // --- Ranked generic-role nodes (Task 3C, optional) -----------------------
+  if (input.rankedRoleAlignment) {
+    const requirementState = (
+      supports: readonly CanonicalCapabilityOwnershipSupport[],
+    ): RoleRequirementState =>
+      supports.some((support) => support.relationship === "direct_evidence")
+        ? "directly_demonstrated"
+        : "transferable_signal";
+
+    for (const [proximityRank, role] of input.rankedRoleAlignment.roles.entries()) {
+      nodes.push(Object.freeze<RoleGraphNode>({
+        type: "role",
+        id: role.roleId,
+        title: role.title,
+        proximityRank,
+        orderingBasis: Object.freeze([...role.orderingBasis]),
+        primaryMandate: role.primaryMandate,
+        primaryOwnership: Object.freeze([...role.primaryOwnership]),
+      }));
+
+      const appendRequirement = (requirement: {
+        readonly canonicalCapabilityId: string;
+        readonly canonicalLabel: string;
+        readonly section: AlignmentSection;
+        readonly state: RoleRequirementState;
+      }) => {
+        const capabilityId = canonicalCapabilityId(requirement.canonicalCapabilityId);
+        const reqId = `role_req:${role.roleId}:${capabilityId}`;
+        nodes.push(Object.freeze<RoleRequirementGraphNode>({
+          type: "role_requirement",
+          id: reqId,
+          roleId: role.roleId,
+          capabilityId,
+          capabilityLabel: requirement.canonicalLabel,
+          alignmentSection: requirement.section,
+          requirementState: requirement.state,
+        }));
+        edges.push(Object.freeze<CareerMapGraphEdge>({
+          type: "role_requires_capability",
+          fromId: role.roleId,
+          toId: reqId,
+        }));
+      };
+
+      for (const capability of role.matchedCapabilities) {
+        appendRequirement({
+          canonicalCapabilityId: capability.canonicalCapabilityId,
+          canonicalLabel: capability.canonicalLabel,
+          section: capability.section,
+          state: requirementState(capability.supports),
+        });
+      }
+      for (const capability of role.missingCapabilities) {
+        appendRequirement({
+          canonicalCapabilityId: capability.canonicalCapabilityId,
+          canonicalLabel: capability.canonicalLabel,
+          section: capability.section,
+          state: "evidence_not_yet_shown",
+        });
+      }
     }
   }
 
