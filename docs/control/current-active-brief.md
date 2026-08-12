@@ -65,7 +65,7 @@ Primary active product priority:
 - `CAREER_MAP_MVP_VERTICAL_SLICE`
 
 Current mode:
-- `HOLD / TASK_3B_CLOSED / TASK_3C_NEXT`
+- `HOLD / TASK_3C_CLOSED / TASK_3D_NEXT`
 
 Current task ledger:
 - Task 1 - Atomic Evidence Extraction: `CLOSED`
@@ -138,11 +138,16 @@ Current task ledger:
   - all four `representativeGenericRoleArchetypes` produce deterministic ordered alignment output using the existing identity/core/supporting/differentiator priority and stable tie-breaks
   - unmatched canonical role requirements remain role-only requirements; roles cannot create personal capability
   - presentation grouping remains presentation-only and is not role-ranking authority
-- Task 3C - Ranked Multi-role Graph Projection and Role Proximity/Radius: `NEXT`
-  - consume the ordered four-role output from `buildPersonalGenericRoleAlignment()`
-  - extend the existing graph projection owner without creating a second ranking system, capability identity, or gap ontology
-  - derive proximity/radius presentationally from existing deterministic ordering/alignment information; do not add visible fit percentages or High/Adjacent/Stretch labels
-- Task 3D - Desktop/mobile renderer connection: `LATER`
+- Task 3C - Ranked Multi-role Graph Projection and Presentation-only Role Proximity: `CLOSED`
+  - decision: `MVP_TASK3C_MULTI_ROLE_PROJECTION_CONNECTED`
+  - authoritative implementation commit: `3657449e433ab778be085db1365d4e063e77f3a4` (`feat(career): project ranked generic roles`)
+  - `buildCareerMapGraphProjection()` remains the graph projection owner; its singular role path remains backward compatible and optional `rankedRoleAlignment` accepts the ordered Task 3B result
+  - all four current generic roles project in authoritative Task 3B order; the projection does not recalculate ranking and introduces no fit score
+  - `RoleGraphNode.proximityRank` is presentation-only ordinal metadata derived from role-array order; pixel radius is not implemented
+  - `canonicalCapabilityRegistry` keys semantic identity by canonical capability ID; shared owned capabilities and shared role-only gaps preserve one canonical identity
+  - role-requirement layout proxies remain non-semantic, roles cannot create personal ownership, and personal evidence is preserved without per-role duplication
+  - first-ring presentation and the renderer/active UI route are unchanged
+- Task 3D - Active desktop/mobile multi-role renderer connection: `NEXT`
 - Task 4 - Real-CV end-to-end visual validation: `LATER`
 
 Governing Task 2 boundary:
@@ -570,20 +575,19 @@ Tailored CV flow closure note (2026-05-15):
 ## 3. One main next action
 
 Main next action:
-- Begin Task 3C with a bounded admission/implementation of ranked multi-role graph projection and presentation-only role proximity/radius, consuming the ordered four-role output from `buildPersonalGenericRoleAlignment()`.
+- Begin Task 3D with a bounded connection of the Task 3C four-role projection to the active desktop/mobile Career Map renderer and UI route.
 
-Task 3C boundary:
-- preserve `YOU -> shared canonical capability <- generic role` as one semantic identity; unsupported role requirements remain role-only gaps
-- use existing deterministic `orderingBasis` and role order as the proximity source; do not create a second ranking or personal-strength system
-- role proximity/radius may express meaningful capability overlap, but no visible High overlap / Adjacent / Stretch labels or fit percentages are permitted
-- canonical capability families remain taxonomy authority but are not automatically the user-facing first ring; presentation grouping must not become a parallel semantic ontology
-- keep Task 3D renderer connection later; do not modify renderer unless Task 3C proves a minimal projection-contract dependency
-- do not reopen Task 2 inference, evidence eligibility, Task 3A, Task 3B, Role Knowledge, or triangulation
+Task 3D boundary:
+- consume the existing Task 3C projection containing YOU, personal capabilities/evidence, four ordered generic roles, `proximityRank`, shared canonical identity, role-only gaps, and non-semantic layout proxies
+- translate `proximityRank` into deterministic display geometry only; better upstream rank must display closer to YOU without renderer-side re-ranking or fit calculation
+- keep the renderer presentational: it must not decide semantic overlap, gap ownership, capability identity, or personal capability inference
+- do not add visible fit percentages or High / Adjacent / Stretch labels
+- preserve current first-ring presentation; do not reopen Task 2, Task 3A, Task 3B, Task 3C, Role Knowledge, or triangulation
 
 Not the next action:
 - do not reopen Task 3A; the integration boundary audit is closed
 - do not reopen Task 3B; real personal state is connected to the existing generic role ranker at `854a980bbebf29cce0333e56a88ca7c6d0b1cd5b`
-- do not begin Task 3D renderer integration before the Task 3C projection/data boundary is complete
+- do not reopen Task 3C; four-ranked-role projection is connected at `3657449e433ab778be085db1365d4e063e77f3a4`
 - do not reopen Task 1 extractor repair; Task 1 is closed at `b2ba34d18574f49ec22c852c99e640a1d306fad6`
 - do not reopen Task 2A or Task 2B; both are closed
 - do not reopen Task 2C-B; production structured inference is connected and Task 2C-B is closed

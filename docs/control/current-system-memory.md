@@ -1,6 +1,6 @@
 # Current System Memory
 
-### Career Map MVP Task 3B closed; Task 3C next (`CAREERTWIN_MVP_TASK_3B_CLOSED_TASK_3C_NEXT`)
+### Career Map MVP Task 3C closed; Task 3D next (`CAREERTWIN_MVP_TASK_3C_CLOSED_TASK_3D_NEXT`)
 
 - The Founder neural-network Career Map model is the governing MVP product model. You is central; personal capabilities must be grounded in personal evidence; users and generic roles share canonical capability identity; unsupported role requirements remain role-only gaps; role proximity/radius will express meaningful capability overlap.
 - The active critical path is fixed unless Founder/EM explicitly reprioritises it:
@@ -20,8 +20,8 @@
   14. Task 2: `CLOSED`; personal capability substrate `MVP_SUFFICIENT`
   15. Task 3A - Neural-network Career Map Integration Admission Audit: `CLOSED`; decision `MVP_TASK3_INTEGRATION_BOUNDARY_IDENTIFIED`
   16. Task 3B - Real Personal State to Generic Role Alignment: `CLOSED` at `854a980bbebf29cce0333e56a88ca7c6d0b1cd5b`
-  17. Task 3C - Ranked Multi-role Graph Projection and Role Proximity/Radius: `NEXT`
-  18. Task 3D - Desktop/mobile Renderer Connection: `LATER`
+  17. Task 3C - Ranked Multi-role Graph Projection and Presentation-only Role Proximity: `CLOSED` at `3657449e433ab778be085db1365d4e063e77f3a4`
+  18. Task 3D - Active Desktop/mobile Multi-role Renderer Connection: `NEXT`
   19. Task 4 - Real-CV End-to-end Visual Validation: `LATER`
 - Task 1 authoritative implementation commit: `b2ba34d18574f49ec22c852c99e640a1d306fad6` (`fix(career): preserve work evidence across resume sections`).
 - The admitted Task 1 boundary includes `nonEmploymentSectionHeading`, associated non-work boundary handling in `employmentBoundaries()`, correct transition/reset ordering, pending-work emission before reset, and exclusion of non-work boundaries from evidence production.
@@ -56,8 +56,15 @@
 - Multiple supporting evidence relationships remain provenance for one canonical semantic capability ownership. Role requirements cannot create personal capability, and unmatched canonical requirements remain role-only requirements for later projection.
 - All four current `representativeGenericRoleArchetypes` are evaluated in one deterministic flow. Existing identity/core/supporting/differentiator priority, `orderingBasis`, role order, and stable title/role-ID tie-breaks remain the ordering authority and are retained for Task 3C proximity/radius derivation.
 - `buildPersonalCareerMapPresentation()` and `groupPersonalCapabilitiesByFamily()` remain presentation-layer owners only. Presentation families do not create, remove, or rank canonical personal overlap. First-ring presentation remains partial but does not block Task 3.
-- Task 3C is next: consume the ordered four-role alignment output, extend the existing graph projection for multiple ranked roles, derive proximity/radius presentationally from existing deterministic ordering/alignment information, preserve shared canonical identity and role-only unmatched requirements, and prepare data for Task 3D. Do not create a second ranking system, visible fit percentages, or High/Adjacent/Stretch labels.
-- Task 3D remains later for desktop/mobile renderer connection. Task 4 remains later for real-CV end-to-end visual validation. Role Knowledge remains `MVP_SUFFICIENT`, and triangulation remains `DEFERRED_POST_MVP_QUALITY_WORK`.
+- Task 3C is closed at implementation commit `3657449e433ab778be085db1365d4e063e77f3a4` (`feat(career): project ranked generic roles`). Decision: `MVP_TASK3C_MULTI_ROLE_PROJECTION_CONNECTED`.
+- `buildCareerMapGraphProjection()` in `lib/career-possibility/career-map-graph-projection.ts` remains the authoritative ephemeral graph projection owner. Its existing singular `role` path is backward compatible, while optional `rankedRoleAlignment` accepts the authoritative ordered Task 3B `alignment.roles` result.
+- Four-ranked-role graph projection is active. Task 3B remains role-order authority through `ProvisionalLocalCareerMapState.mappings -> buildPersonalGenericRoleAlignment() -> buildGenericCareerPathAlignment()`; Task 3C preserves the returned array order and performs no ranking recalculation. New ranking logic: none. New fit score: none.
+- `RoleGraphNode.proximityRank` is presentation-only, rank-derived ordinal metadata: rank 0 is closest and rank 3 is furthest among the current four. It is not a percentage, confidence, probability, or semantic fit score. Pixel radius is not yet implemented; Task 3D may translate the ordinal into deterministic display geometry.
+- `canonicalCapabilityRegistry` inside `buildCareerMapGraphProjection()` keys semantic capability identity by canonical capability ID. Shared personally owned capabilities and shared role-only missing requirements preserve one canonical semantic identity. Role-requirement proxy IDs remain layout/context details and are not semantic authority.
+- Role-only gap support is preserved: a role requirement cannot create personal ownership, evidence, or support. Personal evidence relationships remain grounding for personal capabilities and are not duplicated per role.
+- First-ring presentation remains unchanged; `buildPersonalCareerMapPresentation()` and `groupPersonalCapabilitiesByFamily()` were not modified. The renderer and active UI route are also unchanged, so active multi-role UI connection is not yet connected.
+- Task 3D is next: connect the richer Task 3C projection to the existing active desktop/mobile renderer and UI route, translating `proximityRank` into presentation geometry without re-ranking roles or creating semantic fit. Task 4 remains later. Role Knowledge remains `MVP_SUFFICIENT`; triangulation remains `DEFERRED_POST_MVP_QUALITY_WORK`.
+- `STALE_HOLD_ONLY_TEST_EXPECTATION`: untracked `tests/career-possibility/career-map-provenance-chain.test.ts` expects Education evidence, but Education remains a section boundary rather than independent personal capability evidence. The test is not authoritative Task 3C baseline evidence and is not current cleanup work.
 - Task 2C-B is closed at implementation commit `fb8ce5e4edcd4836bf87f1a59d697e482e69e7c9` (`feat(career): integrate structured capability inference`). Production now runs `atomic eligible evidence -> CareerTwin same-origin server -> server-only Career Map provider adapter -> Task 2B provider-neutral response -> Task 2B validator -> validated structured mappings -> cross-channel merge -> existing materializer -> existing Career Map state`.
 - The production route is `/api/career-map/capability-inference`, owned by `app/api/career-map/capability-inference/route.ts`. The server adapter is `lib/career-possibility/career-capability-structured-inference-gemini-provider.ts`; the client producer is `lib/career-possibility/career-capability-structured-inference-api-producer.ts`.
 - The current provider implementation uses `GoogleGenAI` with `gemini-3.6-flash`. Provider/model choice is an implementation detail, not Career Map semantic authority; the Task 2B contract remains provider-neutral.
@@ -95,7 +102,7 @@
 - Positive admission is active: `NOT CLASSIFIED AS METADATA != VALID PROFESSIONAL EVIDENCE`. Metadata/provenance classification is terminal; unclassified candidates are not automatically admitted; ambiguous metadata-like candidates fail closed to non-evidence. One prior unguarded fallback path was removed, leaving `0` employment-relevant unguarded fallback admission paths.
 - Valid work bullets and legitimate supported fallback/prose performed-work evidence remain eligible without evidence-text rewriting. No title dictionary, capitalization guess, fuzzy title heuristic, LLM classifier, provider-side filter, value-equality filter, word-count repair, or field-specific privacy repair #3 was introduced.
 - Synthetic extractor and production-transport regressions verified that valid performed-work evidence reaches the structured producer while employer/title/date metadata, decorated Education/Skills content, and an ambiguous standalone descriptor do not. Transport remains exactly `{ evidenceId, evidenceText }`.
-- Single next action: begin Task 3C with a bounded ranked multi-role graph-projection and presentation-only proximity/radius slice consuming `buildPersonalGenericRoleAlignment()` output. Task 3D and Task 4 remain later; Role Knowledge remains `MVP_SUFFICIENT`; triangulation remains `DEFERRED_POST_MVP_QUALITY_WORK`.
+- Single next action: begin Task 3D with a bounded active desktop/mobile renderer and UI-route connection consuming the Task 3C four-role projection. Task 4 remains later; Role Knowledge remains `MVP_SUFFICIENT`; triangulation remains `DEFERRED_POST_MVP_QUALITY_WORK`.
 
 ### Historical: Wave 2 Role Knowledge enrichment closed (`CAREERTWIN_WAVE_2_ROLE_KNOWLEDGE_ENRICHMENT_CLOSED`)
 
