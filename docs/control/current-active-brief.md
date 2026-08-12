@@ -65,7 +65,7 @@ Primary active product priority:
 - `CAREER_MAP_MVP_VERTICAL_SLICE`
 
 Current mode:
-- `HOLD / STRUCTURAL_EVIDENCE_ELIGIBILITY_REPAIR_CLOSED / TASK_2D_REPLAY_NEXT`
+- `HOLD / TASK_2_CLOSED / TASK_3_NEXT`
 
 Current task ledger:
 - Task 1 - Atomic Evidence Extraction: `CLOSED`
@@ -111,9 +111,21 @@ Current task ledger:
   - authoritative implementation commit: `b2e7d483328f35aecb203d8a5d008b128be2c817` (`fix(career): require positive evidence admission`)
   - positive admission owner: `qualifiesAsPerformedProfessionalEvidence()`
   - one prior unguarded fallback admission path removed; employment-relevant unguarded fallback paths remaining: `0`
-- Task 2D - Privacy-Safe / Founder-CV Capability Coverage Validation: `REPLAY NEXT / NOT COMPLETE`
-- Task 3 - Neural-network personal + role graph: `LATER / NOT AUTHORISED`
-- Task 4 - Real-CV end-to-end visual validation: `LATER / NOT AUTHORISED`
+- Task 2D - Privacy-Safe / Founder-CV Capability Coverage Validation: `CLOSED`
+  - decision: `MVP_TASK2D_PERSONAL_CAPABILITY_COVERAGE_VALIDATED`
+  - authoritative measurement artifact: `artifacts/career-possibility/career-map-mvp-task2d-real-cv-capability-validation-measurement-replay.md`
+  - artifact SHA256: `3C5CC27611C5171F619C9AA1C58F9896374DB221353E570D2C46D3F586A4FB05`
+  - privacy gate `PASS`; 14 eligible performed-work evidence records; 0 metadata contamination
+  - 14/14 evidence records mapped to 13 canonical capabilities through 25 unique evidence/capability relationships
+  - channel composition: 3 `authored_deterministic`, 22 `structured_inference`; relationship composition: 25 direct, 0 transferable
+  - grounding `PASS`; cross-channel duplicates 0; breadth `SUFFICIENT`; no bounded Task 2 repair required
+  - all-direct output and minor spam/over-inference remain non-blocking calibration observations, not an MVP defect or permanent coverage threshold
+- Task 2: `CLOSED`
+  - the personal capability substrate is `MVP_SUFFICIENT` for graph work
+- Task 3 - Neural-network personal + role graph: `NEXT`
+  - begin with a bounded admission/audit of existing personal projection, presentation adapter, generic-role, alignment/ranking, graph-projection, renderer, and evidence-disclosure owners
+  - reuse shared canonical capability identity; do not create parallel graph, role, capability, evidence, or ranking authorities
+- Task 4 - Real-CV end-to-end visual validation: `LATER`
 
 Governing Task 2 boundary:
 - atomic evidence -> evidence eligibility boundary -> Career Capability LLM -> Career-Map-specific strict structured output -> deterministic schema/canonical-ID/evidence-link validation -> canonical capability proposals -> existing canonical personal capability inference/proposal boundary -> existing materializer and provisional personal state
@@ -194,8 +206,8 @@ Task 2D structural evidence eligibility durable state:
 - `qualifiesAsPerformedProfessionalEvidence()` is the authoritative extractor-local admission gate; it guards the sole evidence-record emission path after `employmentBoundaries()` and `segmentCandidates()`
 - one prior unguarded fallback admission path was removed; employment-relevant unguarded fallback admission paths remaining: `0`
 - synthetic extractor and production-transport regressions verified that valid bullets and supported prose survive while employer/title/date metadata, decorated Education/Skills content, and an ambiguous standalone descriptor do not reach the structured producer
-- Task 2D attempts #1, #2, and #3 are invalid; attempt #3 made `0` provider calls; no admissible Task 2D capability baseline exists yet
-- the structural eligibility repair is `CLOSED`; field-specific privacy repair #3 was not used; Task 2D replay is next
+- Task 2D attempts #1, #2, and #3 remain invalid historical attempts; a later privacy-valid production run failed only in its temporary measurement harness, not production inference
+- the final measurement-harness-verified replay is the admissible Task 2D baseline and closes Task 2; the structural eligibility repair remains active and field-specific privacy repair #3 was not used
 
 MVP sequencing boundaries:
 - the Founder neural-network Career Map model remains governing: You is central; personal evidence grounds personal capabilities; user and generic roles share canonical capability nodes; unsupported role requirements remain role-only gaps; role radius will express meaningful capability overlap
@@ -540,22 +552,21 @@ Tailored CV flow closure note (2026-05-15):
 ## 3. One main next action
 
 Main next action:
-- Replay Task 2D once against the current production-equivalent pipeline to establish the first admissible real-CV capability baseline, keeping the provider, prompt, validator, mapping, merge, materializer, and state unchanged.
+- Begin Task 3 with a bounded admission/audit of the existing personal-capability projection, presentation adapter, generic role profiles/archetypes, role-capability alignment/ranking, graph projection, renderer, and evidence-disclosure owners; then identify the smallest missing integration boundary.
 
-Task 2D validation boundary:
-- perform the pre-provider privacy gate against the active positive-admission invariant; if it holds, proceed with one primary semantic run
-- measure extracted evidence, supported evidence, admitted canonical capabilities, deterministic/structured relationships, unsupported evidence, direct/transferable relationships, exact evidence traceability, and obvious over-inference
-- Task 2D is validation, not another inference architecture, prompt-optimization, ontology, Role Knowledge, graph, renderer, or presentation project
-- do not tune inference merely because coverage is imperfect; measure and diagnose first
-- do not use any of the first three invalid Task 2D attempts for capability-count, inventory, coverage, over-inference, under-inference, product-readiness, or Task 3 readiness conclusions
+Task 3 admission boundary:
+- preserve `YOU -> shared canonical capability <- generic role` as one semantic identity; unsupported role requirements remain role-only gaps
+- role proximity/radius may express meaningful capability overlap, but no visible High overlap / Adjacent / Stretch labels or fit percentages are required
+- canonical capability families remain taxonomy authority but are not automatically the user-facing first ring; presentation grouping must not become a parallel semantic ontology
+- reuse existing owners before admitting any new implementation; do not reopen Task 2 inference, evidence eligibility, Role Knowledge, or triangulation
 
 Not the next action:
 - do not reopen Task 1 extractor repair; Task 1 is closed at `b2ba34d18574f49ec22c852c99e640a1d306fad6`
 - do not reopen Task 2A or Task 2B; both are closed
 - do not reopen Task 2C-B; production structured inference is connected and Task 2C-B is closed
 - do not bypass the Task 2B validator or create a second personal-capability pipeline
-- do not treat Task 2D as already completed; it is the next bounded validation task
-- do not begin Task 3 neural graph expansion or Task 4 real-CV visual validation
+- do not reopen Task 2 or Task 2D; both are closed and no further inference or support-semantics repair is required before Task 3
+- do not begin Task 4 real-CV visual validation before the bounded Task 3 integration work is complete
 - do not resume second-source triangulation before the MVP vertical slice is complete
 - do not treat further Role Knowledge enrichment as an MVP blocker
 - do not reopen Wave 2 semantic synthesis, source writing, measurement, or diagnostic infrastructure repair
