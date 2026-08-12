@@ -1,5 +1,19 @@
 # Current System Memory
 
+### Career Map MVP Task 4 API contract repaired; materialization retry next (`CAREERTWIN_MVP_TASK4_API_CONTRACT_REPAIRED`)
+
+- diagnostic classification: `STRUCTURED_INFERENCE_API_CONTRACT_DRIFT`
+- implementation commit: `29cfe09a9cb7a879e2165b900f19faf332608842`
+- client registry version authority: `buildCareerMapCapabilityDefinitionsFromCanonicalLibrary().definitionVersion`
+- server registry version authority: same existing authoritative definitionVersion owner
+- strict fail-closed validation preserved
+- stale registry version rejected before provider
+- no parallel version composer
+- no semantic architecture changes
+- browser/CDP validation environment available
+- current Task 4 CV hash: `D5F627CF6294A208354D587609F0B2A8104305ACE49E4D5A5DA53868B4EBAB6A`
+- Task 4 browser retry NEXT
+
 ### Career Map MVP Task 4 provider runtime closed; materialization retry next (`CAREERTWIN_MVP_TASK4_PROVIDER_RUNTIME_CLOSED_RETRY_NEXT`)
 
 - The Founder neural-network Career Map model is the governing MVP product model. You is central; personal capabilities must be grounded in personal evidence; users and generic roles share canonical capability identity; unsupported role requirements remain role-only gaps; role proximity/radius will express meaningful capability overlap.

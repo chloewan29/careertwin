@@ -65,7 +65,7 @@ Primary active product priority:
 - `CAREER_MAP_MVP_VERTICAL_SLICE`
 
 Current mode:
-- `HOLD / TASK_4_CURRENT / PROVIDER_RUNTIME_CLOSED / MATERIALIZATION_RETRY_NEXT`
+- `HOLD / TASK_4_CURRENT / API_CONTRACT_REPAIRED / MATERIALIZATION_RETRY_NEXT`
 
 Current task ledger:
 - Task 1 - Atomic Evidence Extraction: `CLOSED`
@@ -167,7 +167,14 @@ Current task ledger:
   - provider await: `BOUNDED`; timeout is a controlled provider failure that reuses existing Task 2C `FAIL_CLOSED_DETERMINISTIC_CHANNEL_SURVIVES` behavior
   - automatic provider retry: `NONE`; model, prompt, structured inference semantics, validator, mapping, merge, materializer, and local state schema remain unchanged
   - client `Request.signal`, route timeout, client timeout, and explicit provider `AbortSignal` were not added; remote Gemini service cancellation is not claimed
-  - next: retry one exact-Founder-CV production-equivalent materialization after the privacy gate, then continue immediately to visual validation if the result is admissible
+  - API contract diagnostic: `CLOSED`; decision `MVP_TASK4_API_CONTRACT_MISMATCH_IDENTIFIED`; frozen diagnostic artifact `artifacts/career-possibility/career-map-mvp-task4-api-contract-mismatch-diagnostic.md`, SHA256 `451BBABB7386F86CEE941DC1D5BDA5CA4B36BE0EF3902DE21F95730FD48A7FA0`
+  - API contract repair: `CLOSED`; decision `MVP_TASK4_API_CONTRACT_REPAIRED`; implementation commit `29cfe09a9cb7a879e2165b900f19faf332608842` (`fix(career): align capability inference registry version`)
+  - client registry version authority: `buildCareerMapCapabilityDefinitionsFromCanonicalLibrary().definitionVersion`
+  - server registry version authority: same existing authoritative definitionVersion owner
+  - strict fail-closed validation preserved; stale registry version rejected before provider invocation
+  - no parallel version composer, composite hardcode, fuzzy match, or semantic architecture changes introduced
+  - browser/CDP validation environment: `AVAILABLE`
+  - next: `TASK 4 ACTIVE-BROWSER REAL-CV VISUAL VALIDATION RETRY` using authoritative CV `D5F627CF6294A208354D587609F0B2A8104305ACE49E4D5A5DA53868B4EBAB6A`
   - inspect the actual validated real-CV Career Map before authorising any bounded presentation or renderer repair
 
 Governing Task 2 boundary:
