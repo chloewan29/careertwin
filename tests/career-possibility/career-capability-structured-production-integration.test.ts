@@ -4,6 +4,8 @@ import { createCareerCapabilityInferencePostHandler } from "../../app/api/career
 import { buildProvisionalCareerMapFromFile } from "../../lib/career-possibility/build-provisional-career-map-from-file";
 import { buildProvisionalCareerMapFromText } from "../../lib/career-possibility/build-provisional-career-map-from-text";
 import { canonicalCapabilityLibrary } from "../../lib/career-possibility/canonical-capability-library";
+import { canonicalCapabilityFamilyLibrary } from "../../lib/career-possibility/canonical-capability-family-library";
+import { buildCareerMapCapabilityDefinitionsFromCanonicalLibrary } from "../../lib/career-possibility/canonical-capability-definition-adapter";
 import { createCareerCapabilityStructuredInferenceApiProducer, CAREER_CAPABILITY_STRUCTURED_INFERENCE_API_PATH } from "../../lib/career-possibility/career-capability-structured-inference-api-producer";
 import {
   CAREER_CAPABILITY_STRUCTURED_INFERENCE_CONTRACT_VERSION,
@@ -11,8 +13,13 @@ import {
   type CareerCapabilityStructuredInferenceRequest,
 } from "../../lib/career-possibility/career-capability-structured-inference-contract";
 
-const definitions = canonicalCapabilityLibrary.capabilities;
-const definitionVersion = canonicalCapabilityLibrary.contentVersion;
+const capabilityDefinitionsResult = buildCareerMapCapabilityDefinitionsFromCanonicalLibrary({
+  capabilityLibrary: canonicalCapabilityLibrary,
+  familyLibrary: canonicalCapabilityFamilyLibrary,
+});
+if (!capabilityDefinitionsResult.ok) throw new Error("Invalid library");
+const definitions = capabilityDefinitionsResult.definitions;
+const definitionVersion = capabilityDefinitionsResult.definitionVersion;
 const input = (text: string, producer?: CareerCapabilityStructuredInferenceProducer) => ({
   extractedText: text,
   sourceMetadata: { fileName: "synthetic.pdf", mediaType: "application/pdf", byteSize: 100, sourceRevision: "source/task2c" },
@@ -143,6 +150,13 @@ async function main() {
     body: JSON.stringify({ contractVersion: CAREER_CAPABILITY_STRUCTURED_INFERENCE_CONTRACT_VERSION, eligibleEvidence: [{ evidenceId: "e-route", evidenceText: "Synthetic evidence.", employer: "Forbidden" }], capabilityRegistryVersion: definitionVersion }),
   }));
   assert.equal(forbiddenRouteResponse.status, 400);
+
+  const staleVersionRouteResponse = await handler(new Request("http://localhost/api/career-map/capability-inference", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ contractVersion: CAREER_CAPABILITY_STRUCTURED_INFERENCE_CONTRACT_VERSION, eligibleEvidence: [{ evidenceId: "e-route", evidenceText: "Synthetic evidence." }], capabilityRegistryVersion: "stale-version-1.0.0" }),
+  }));
+  assert.equal(staleVersionRouteResponse.status, 400);
 
   const unavailableHandler = createCareerCapabilityInferencePostHandler(failingProducer);
   const unavailable = await unavailableHandler(new Request("http://localhost/api/career-map/capability-inference", {

@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import { canonicalCapabilityLibrary } from "@/lib/career-possibility/canonical-capability-library";
+import { canonicalCapabilityFamilyLibrary } from "@/lib/career-possibility/canonical-capability-family-library";
+import { buildCareerMapCapabilityDefinitionsFromCanonicalLibrary } from "@/lib/career-possibility/canonical-capability-definition-adapter";
 import {
   CAREER_CAPABILITY_STRUCTURED_INFERENCE_CONTRACT_VERSION,
   type CareerCapabilityStructuredInferenceEvidence,
@@ -12,6 +14,12 @@ import { validateCareerCapabilityStructuredInferenceResponse } from "@/lib/caree
 const requestKeys = new Set(["contractVersion", "eligibleEvidence", "capabilityRegistryVersion"]);
 const evidenceKeys = new Set(["evidenceId", "evidenceText"]);
 
+const capabilityDefinitions = buildCareerMapCapabilityDefinitionsFromCanonicalLibrary({
+  capabilityLibrary: canonicalCapabilityLibrary,
+  familyLibrary: canonicalCapabilityFamilyLibrary,
+});
+if (!capabilityDefinitions.ok) throw new Error("Invalid canonical capability library");
+const expectedRegistryVersion = capabilityDefinitions.definitionVersion;
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
@@ -23,7 +31,7 @@ function hasExactKeys(value: Record<string, unknown>, allowed: ReadonlySet<strin
 function parseRequest(value: unknown): Pick<CareerCapabilityStructuredInferenceRequest, "contractVersion" | "eligibleEvidence" | "capabilityRegistryVersion"> | null {
   if (!isRecord(value) || !hasExactKeys(value, requestKeys)) return null;
   if (value.contractVersion !== CAREER_CAPABILITY_STRUCTURED_INFERENCE_CONTRACT_VERSION) return null;
-  if (value.capabilityRegistryVersion !== canonicalCapabilityLibrary.contentVersion) return null;
+  if (value.capabilityRegistryVersion !== expectedRegistryVersion) return null;
   if (!Array.isArray(value.eligibleEvidence) || value.eligibleEvidence.length === 0) return null;
 
   const evidence: CareerCapabilityStructuredInferenceEvidence[] = [];
@@ -38,7 +46,7 @@ function parseRequest(value: unknown): Pick<CareerCapabilityStructuredInferenceR
   return Object.freeze({
     contractVersion: CAREER_CAPABILITY_STRUCTURED_INFERENCE_CONTRACT_VERSION,
     eligibleEvidence: Object.freeze(evidence),
-    capabilityRegistryVersion: canonicalCapabilityLibrary.contentVersion,
+    capabilityRegistryVersion: expectedRegistryVersion,
   });
 }
 
