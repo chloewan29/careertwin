@@ -10,8 +10,8 @@ import { TargetRoleCapabilityComparison } from "./TargetRoleCapabilityComparison
 import type { RoleCapabilityProfile } from "@/lib/career-possibility/role-capability-library";
 import type { CanonicalCapabilityLibrary } from "@/lib/career-possibility/canonical-capability-library";
 import type { CanonicalCapabilityGovernanceLibrary } from "@/lib/career-possibility/canonical-capability-governance-decisions";
-import { buildPersonalTargetRoleComparison } from "@/lib/career-possibility/personal-target-role-comparison";
 import { buildCareerMapGraphProjection } from "@/lib/career-possibility/career-map-graph-projection";
+import { buildPersonalGenericRoleAlignment } from "@/lib/career-possibility/personal-generic-role-alignment-adapter";
 import { canonicalCapabilityFamilyLibrary } from "@/lib/career-possibility/canonical-capability-family-library";
 import { CareerMapNeuralGraph } from "./CareerMapNeuralGraph";
 
@@ -25,25 +25,16 @@ export function LocalCareerMapWorkspace({ definitions, definitionVersion, roles,
     const personal = buildPersonalCareerMapPresentation({ localState: result.state, canonicalDefinitions: definitions });
     if (!personal.ok) return <StateNotice title="Saved browser data could not be read" message={personal.issues[0].message} clear={clear} />;
     const provisional = result.state.schemaVersion === "2.0.0";
-    // --- Neural graph projection (additive, no second storage read) ---
-    // Use the stable representative analytics-manager role profile.
-    // roles prop is already RoleCapabilityProfile[] — no conversion needed.
-    const graphRoleProfile = roles.find((r) => r.roleFamilyId === "analytics-manager") ?? null;
-    const graphComparison = graphRoleProfile
-      ? buildPersonalTargetRoleComparison({
-          localCareerMapState: result.state,
-          targetRoleProfile: graphRoleProfile,
-          canonicalCapabilityLibrary: canonicalLibrary,
-          governanceDecisions: governance,
-          definitionVersion,
-        })
-      : null;
+    // --- Neural graph projection (real state, no second storage read) ---
+    // Task 3B owns role ordering; this route only hands its result to Task 3C.
+    const graphAlignment =
+      result.state.schemaVersion === "2.0.0" && result.state.mappings.length > 0
+        ? buildPersonalGenericRoleAlignment({ personalState: result.state })
+        : null;
     const graphProjection = buildCareerMapGraphProjection({
       presentation: personal.presentation,
       familyLibrary: canonicalCapabilityFamilyLibrary,
-      ...(graphComparison?.ok
-        ? { role: { roleProfile: graphRoleProfile!, comparison: graphComparison.comparison } }
-        : {}),
+      ...(graphAlignment?.ok ? { rankedRoleAlignment: graphAlignment.result.alignment } : {}),
     });
     return <section className="py-6 sm:py-7">
       <div className="flex flex-wrap items-start justify-between gap-4">

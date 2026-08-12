@@ -54,10 +54,11 @@ const FAMILY_RING_R = 185;
 const CAPABILITY_RING_OFFSET = 70; // offset from family center outward
 const EVIDENCE_RING_OFFSET = 68;
 
-/** Role anchor — fixed to the right side */
-const ROLE_X = 840;
-const ROLE_Y = 340;
+/** Role requirement orbit and rank-derived role radii. */
 const ROLE_REQ_RING_R = 72;
+const ROLE_BASE_RADIUS = 250;
+const ROLE_RADIUS_STEP = 25;
+const ROLE_ANGLES = [90, 20, 200, 145] as const;
 
 // ---------------------------------------------------------------------------
 // Geometry helpers
@@ -106,11 +107,18 @@ function evidenceOffsetPositions(
   );
 }
 
-function roleReqPositions(count: number): { x: number; y: number }[] {
+export function rolePosition(role: RoleGraphNode, roleIndex: number): { x: number; y: number; radius: number } {
+  const proximityRank = role.proximityRank ?? roleIndex;
+  const radius = ROLE_BASE_RADIUS + proximityRank * ROLE_RADIUS_STEP;
+  const angle = ROLE_ANGLES[roleIndex % ROLE_ANGLES.length] ?? 90;
+  return { ...radialPoint(CX, CY, radius, angle), radius };
+}
+
+function roleReqPositions(roleX: number, roleY: number, count: number): { x: number; y: number }[] {
   if (count === 0) return [];
   return Array.from({ length: count }, (_, i) => {
     const angle = ((360 / count) * i - 90) * (Math.PI / 180);
-    return { x: ROLE_X + ROLE_REQ_RING_R * Math.cos(angle), y: ROLE_Y + ROLE_REQ_RING_R * Math.sin(angle) };
+    return { x: roleX + ROLE_REQ_RING_R * Math.cos(angle), y: roleY + ROLE_REQ_RING_R * Math.sin(angle) };
   });
 }
 
@@ -165,7 +173,7 @@ const reqStateConfig = {
 export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) {
   const [selectedFamilyId, setSelectedFamilyId] = useState<string | null>(null);
   const [selectedCapabilityId, setSelectedCapabilityId] = useState<string | null>(null);
-  const [roleSelected, setRoleSelected] = useState(false);
+  const [selectedRoleId, setSelectedRoleId] = useState<string | null>(null);
 
   // --- Derived node lists ------------------------------------------------
   const familyNodes = useMemo(() => nodesByType(projection, "capability_family") as CapabilityFamilyGraphNode[], [projection]);
@@ -174,7 +182,15 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
   const roleNodes = useMemo(() => nodesByType(projection, "role") as RoleGraphNode[], [projection]);
   const requirementNodes = useMemo(() => nodesByType(projection, "role_requirement") as RoleRequirementGraphNode[], [projection]);
 
-  const roleNode = roleNodes[0] ?? null;
+  const selectedRole = roleNodes.find((role) => role.id === selectedRoleId) ?? null;
+  const selectedRoleRequirements = useMemo(
+    () => requirementNodes.filter((requirement) => requirement.roleId === selectedRoleId),
+    [requirementNodes, selectedRoleId],
+  );
+  const rolePositions = useMemo(
+    () => new Map(roleNodes.map((role, index) => [role.id, rolePosition(role, index)])),
+    [roleNodes],
+  );
 
   // --- Computed positions ------------------------------------------------
   const angles = useMemo(() => familyAngles(familyNodes.length), [familyNodes.length]);
@@ -197,15 +213,15 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
   // This is presentation-only — no semantic state is mutated.
 
   const roleReferencedCapabilityIds = useMemo<Set<string>>(() => {
-    if (!roleSelected) return new Set();
+    if (!selectedRole) return new Set();
     const ids = new Set<string>();
-    for (const req of requirementNodes) {
+    for (const req of selectedRoleRequirements) {
       if (req.requirementState !== "evidence_not_yet_shown") {
         ids.add(req.capabilityId);
       }
     }
     return ids;
-  }, [roleSelected, requirementNodes]);
+  }, [selectedRole, selectedRoleRequirements]);
 
   const selectedFamilyCapabilityIds = useMemo<Set<string>>(() => {
     if (!selectedFamilyId) return new Set();
@@ -273,13 +289,15 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
   // --- Role requirement positions ----------------------------------------
   const reqPositions = useMemo<Map<string, { x: number; y: number }>>(() => {
     const map = new Map<string, { x: number; y: number }>();
-    if (!roleSelected) return map;
-    const positions = roleReqPositions(requirementNodes.length);
-    requirementNodes.forEach((req, i) => {
+    if (!selectedRole) return map;
+    const selectedRolePosition = rolePositions.get(selectedRole.id);
+    if (!selectedRolePosition) return map;
+    const positions = roleReqPositions(selectedRolePosition.x, selectedRolePosition.y, selectedRoleRequirements.length);
+    selectedRoleRequirements.forEach((req, i) => {
       if (positions[i]) map.set(req.id, positions[i]!);
     });
     return map;
-  }, [roleSelected, requirementNodes]);
+  }, [selectedRole, selectedRoleRequirements, rolePositions]);
 
   // --- Event handlers ---------------------------------------------------
   function selectFamily(id: string) {
@@ -291,8 +309,8 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
     setSelectedCapabilityId((current) => (current === id ? null : id));
   }
 
-  function toggleRole() {
-    setRoleSelected((v) => !v);
+  function toggleRole(roleId: string) {
+    setSelectedRoleId((current) => (current === roleId ? null : roleId));
     setSelectedCapabilityId(null);
   }
 
@@ -313,7 +331,7 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
   // Render
   // ---------------------------------------------------------------------------
 
-  const hasRole = Boolean(roleNode);
+  const hasRole = roleNodes.length > 0;
 
   return (
     <section
@@ -364,8 +382,8 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
           })}
 
           {/* Role → requirement edges + requirement → personal capability bridges */}
-          {roleSelected && roleNode &&
-            requirementNodes.map((req) => {
+          {selectedRole &&
+            selectedRoleRequirements.map((req) => {
               const rp = reqPositions.get(req.id);
               if (!rp) return null;
               const cfg = reqStateConfig[req.requirementState];
@@ -375,7 +393,7 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
               const showBridge = cp !== undefined && visibleCapabilityIds.has(req.capabilityId);
               return (
                 <React.Fragment key={`edges-req-${req.id}`}>
-                  <line x1={ROLE_X} y1={ROLE_Y} x2={rp.x} y2={rp.y} stroke={cfg.edgeStroke} strokeOpacity={0.45} strokeWidth={1.2} strokeDasharray={cfg.edgeDash} />
+                  <line x1={rolePositions.get(selectedRole.id)?.x} y1={rolePositions.get(selectedRole.id)?.y} x2={rp.x} y2={rp.y} stroke={cfg.edgeStroke} strokeOpacity={0.45} strokeWidth={1.2} strokeDasharray={cfg.edgeDash} />
                   {showBridge && cp && (
                     <line x1={rp.x} y1={rp.y} x2={cp.x} y2={cp.y} stroke={cfg.edgeStroke} strokeOpacity={0.35} strokeWidth={1.1} strokeDasharray={cfg.edgeDash} />
                   )}
@@ -430,9 +448,9 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
           if (!cp) return null;
           const isSelected = cap.id === selectedCapabilityId;
           const isRoleReferenced = roleReferencedCapabilityIds.has(cap.id);
-          const reqForCap = requirementNodes.find((r) => r.capabilityId === cap.id);
+          const reqForCap = selectedRoleRequirements.find((r) => r.capabilityId === cap.id);
           const reqState = reqForCap?.requirementState;
-          const roleHighlight = roleSelected && isRoleReferenced && reqState && reqState !== "evidence_not_yet_shown";
+          const roleHighlight = Boolean(selectedRole && isRoleReferenced && reqState && reqState !== "evidence_not_yet_shown");
           return (
             <button
               key={cap.id}
@@ -446,9 +464,9 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
               className={`absolute z-30 w-36 -translate-x-1/2 -translate-y-1/2 rounded-2xl border px-3 py-2.5 text-left transition-[border-color,background-color,box-shadow,opacity] duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-200 ${
                 isSelected
                   ? "border-cyan-100/65 bg-[#12313b] text-white shadow-[0_0_24px_rgba(34,211,238,0.2)]"
-                  : reqState === "directly_demonstrated" && roleSelected
+                  : reqState === "directly_demonstrated" && selectedRole
                   ? "border-teal-200/55 bg-[#0e2e2b] text-white shadow-[0_0_16px_rgba(94,234,212,0.12)]"
-                  : reqState === "transferable_signal" && roleSelected
+                  : reqState === "transferable_signal" && selectedRole
                   ? "border-blue-300/45 bg-[#0e1e36] text-blue-50"
                   : "border-cyan-100/18 bg-[#0b1826] text-slate-300 hover:border-cyan-200/30"
               }`}
@@ -456,13 +474,13 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
               <span className="block text-[8px] uppercase tracking-wider text-cyan-300/60">{cap.familyId.replace(/-/g, " ")}</span>
               <span className="block text-xs font-semibold leading-4 text-slate-100">{cap.label}</span>
               <span className={`mt-1 flex items-center gap-1 text-[9px] uppercase tracking-wider ${
-                reqState === "directly_demonstrated" && roleSelected ? "text-teal-300" :
-                reqState === "transferable_signal" && roleSelected ? "text-blue-300" :
+                reqState === "directly_demonstrated" && selectedRole ? "text-teal-300" :
+                reqState === "transferable_signal" && selectedRole ? "text-blue-300" :
                 "text-cyan-200/60"
               }`}>
                 <span className={`h-1.5 w-1.5 rounded-full ${
-                  reqState === "directly_demonstrated" && roleSelected ? "bg-teal-300" :
-                  reqState === "transferable_signal" && roleSelected ? "bg-blue-300" :
+                  reqState === "directly_demonstrated" && selectedRole ? "bg-teal-300" :
+                  reqState === "transferable_signal" && selectedRole ? "bg-blue-300" :
                   "bg-cyan-300/50"
                 }`} />
                 {cap.evidenceIds.length} {cap.evidenceIds.length === 1 ? "evidence" : "evidence items"}
@@ -497,29 +515,36 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
         })}
 
         {/* ── Role node ─────────────────────────────────────────────── */}
-        {hasRole && roleNode && (
-          <button
-            type="button"
-            onClick={toggleRole}
-            aria-pressed={roleSelected}
-            aria-label={`${roleNode.title} role — ${roleSelected ? "hide" : "show"} requirements`}
-            data-node-type="role"
-            data-node-id={roleNode.id}
-            style={{ left: ROLE_X, top: ROLE_Y, transform: "translate(-50%,-50%)" }}
-            className={`absolute z-20 w-40 -translate-x-1/2 -translate-y-1/2 rounded-r-full rounded-l-xl border px-4 py-3 text-left transition-[border-color,background-color,box-shadow] duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-200 ${
-              roleSelected
-                ? "border-cyan-200/45 bg-[#102b37] shadow-[0_0_24px_rgba(56,189,248,0.14)]"
-                : "border-blue-200/20 bg-[#0b1725] hover:border-blue-200/35"
-            }`}
-          >
-            <span className="block text-[9px] font-semibold uppercase tracking-wider text-blue-300">Representative role</span>
-            <span className="mt-0.5 block text-xs font-semibold leading-4 text-slate-100">{roleNode.title}</span>
-            <span className="mt-1 block text-[9px] text-slate-400">{roleSelected ? "Hide requirements" : "Show requirements"}</span>
-          </button>
-        )}
+        {hasRole && roleNodes.map((role, index) => {
+          const position = rolePositions.get(role.id);
+          if (!position) return null;
+          const isSelected = role.id === selectedRoleId;
+          return (
+            <button
+              key={role.id}
+              type="button"
+              onClick={() => toggleRole(role.id)}
+              aria-pressed={isSelected}
+              aria-label={`${role.title} role — ${isSelected ? "hide" : "show"} requirements`}
+              data-node-type="role"
+              data-node-id={role.id}
+              data-proximity-rank={role.proximityRank ?? index}
+              data-display-radius={position.radius}
+              style={{ left: position.x, top: position.y, transform: "translate(-50%,-50%)" }}
+              className={`absolute z-20 w-36 -translate-x-1/2 -translate-y-1/2 rounded-2xl border px-3 py-2.5 text-left transition-[border-color,background-color,box-shadow] duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-200 ${
+                isSelected
+                  ? "border-cyan-200/45 bg-[#102b37] shadow-[0_0_24px_rgba(56,189,248,0.14)]"
+                  : "border-blue-200/20 bg-[#0b1725] hover:border-blue-200/35"
+              }`}
+            >
+              <span className="block text-[8px] font-semibold uppercase tracking-wider text-blue-300">Generic role</span>
+              <span className="mt-0.5 block text-[11px] font-semibold leading-4 text-slate-100">{role.title}</span>
+            </button>
+          );
+        })}
 
         {/* ── Role requirement nodes ─────────────────────────────────── */}
-        {roleSelected && requirementNodes.map((req) => {
+        {selectedRole && selectedRoleRequirements.map((req) => {
           const rp = reqPositions.get(req.id);
           if (!rp) return null;
           const cfg = reqStateConfig[req.requirementState];
@@ -629,25 +654,34 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
           </div>
         )}
 
-        {hasRole && roleNode && (
+        {hasRole && (
           <div className="border-t border-white/[0.06] p-4">
-            <p className="text-[10px] font-semibold uppercase tracking-wider text-blue-300">Representative role</p>
-            <button
-              type="button"
-              onClick={toggleRole}
-              aria-pressed={roleSelected}
-              data-node-type="role"
-              data-node-id={roleNode.id}
-              className={`mt-2 w-full rounded-xl border px-3 py-2.5 text-left text-xs transition-colors ${
-                roleSelected ? "border-cyan-200/40 bg-[#102b37]" : "border-blue-200/20 bg-blue-300/[0.035]"
-              }`}
-            >
-              <span className="block font-semibold text-slate-100">{roleNode.title}</span>
-              <span className="mt-0.5 block text-[10px] text-slate-400">{roleSelected ? "Tap to hide requirements" : "Tap to see requirements"}</span>
-            </button>
-            {roleSelected && requirementNodes.length > 0 && (
+            <p className="text-[10px] font-semibold uppercase tracking-wider text-blue-300">Generic roles</p>
+            <div className="mt-2 grid gap-2">
+              {roleNodes.map((role, index) => {
+                const isSelected = role.id === selectedRoleId;
+                return (
+                  <button
+                    key={role.id}
+                    type="button"
+                    onClick={() => toggleRole(role.id)}
+                    aria-pressed={isSelected}
+                    data-node-type="role"
+                    data-node-id={role.id}
+                    data-proximity-rank={role.proximityRank ?? index}
+                    className={`w-full rounded-xl border px-3 py-2.5 text-left text-xs transition-colors ${
+                      isSelected ? "border-cyan-200/40 bg-[#102b37]" : "border-blue-200/20 bg-blue-300/[0.035]"
+                    }`}
+                  >
+                    <span className="block font-semibold text-slate-100">{role.title}</span>
+                    <span className="mt-0.5 block text-[10px] text-slate-400">{isSelected ? "Tap to hide requirements" : "Tap to see requirements"}</span>
+                  </button>
+                );
+              })}
+            </div>
+            {selectedRole && selectedRoleRequirements.length > 0 && (
               <div className="mt-3 grid gap-2">
-                {requirementNodes.map((req) => {
+                {selectedRoleRequirements.map((req) => {
                   const cfg = reqStateConfig[req.requirementState];
                   return (
                     <div
