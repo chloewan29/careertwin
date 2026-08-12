@@ -65,7 +65,7 @@ Primary active product priority:
 - `CAREER_MAP_MVP_VERTICAL_SLICE`
 
 Current mode:
-- `HOLD / TASK_3C_CLOSED / TASK_3D_NEXT`
+- `HOLD / TASK_3_CLOSED / TASK_4_NEXT`
 
 Current task ledger:
 - Task 1 - Atomic Evidence Extraction: `CLOSED`
@@ -143,12 +143,24 @@ Current task ledger:
   - authoritative implementation commit: `3657449e433ab778be085db1365d4e063e77f3a4` (`feat(career): project ranked generic roles`)
   - `buildCareerMapGraphProjection()` remains the graph projection owner; its singular role path remains backward compatible and optional `rankedRoleAlignment` accepts the ordered Task 3B result
   - all four current generic roles project in authoritative Task 3B order; the projection does not recalculate ranking and introduces no fit score
-  - `RoleGraphNode.proximityRank` is presentation-only ordinal metadata derived from role-array order; pixel radius is not implemented
+  - `RoleGraphNode.proximityRank` is presentation-only ordinal metadata derived from role-array order
   - `canonicalCapabilityRegistry` keys semantic identity by canonical capability ID; shared owned capabilities and shared role-only gaps preserve one canonical identity
   - role-requirement layout proxies remain non-semantic, roles cannot create personal ownership, and personal evidence is preserved without per-role duplication
-  - first-ring presentation and the renderer/active UI route are unchanged
-- Task 3D - Active desktop/mobile multi-role renderer connection: `NEXT`
-- Task 4 - Real-CV end-to-end visual validation: `LATER`
+  - first-ring presentation remains unchanged
+- Task 3D - Active desktop/mobile multi-role renderer connection: `CLOSED`
+  - decision: `MVP_TASK3D_MULTI_ROLE_RENDERER_CONNECTED`
+  - authoritative implementation commit: `0cfd2be4095d637c36f38c3a94fef826aac12b3c` (`feat(career): connect multi-role career map renderer`)
+  - active route owner: `LocalCareerMapWorkspace`; renderer owner: `CareerMapNeuralGraph`
+  - active real-state route is `local v2 Career Map state -> personal presentation -> buildPersonalGenericRoleAlignment() -> rankedRoleAlignment -> buildCareerMapGraphProjection() -> CareerMapNeuralGraph`
+  - the hard-coded singular Analytics Manager active semantic dependency is removed; all four current generic roles render on desktop and mobile
+  - `rolePosition()` translates `RoleGraphNode.proximityRank` into deterministic presentation geometry using radius `250 + proximityRank * 25`; role ordering still belongs upstream
+  - renderer-side role ranking, overlap inference, gap inference, and canonical capability inference are `NONE`; no fit score or role-fit label was introduced
+  - shared canonical identity, role-only gaps, and personal evidence disclosure are preserved; role-requirement layout proxies remain non-semantic and personal evidence is not duplicated per role
+  - empty/no-valid-state behavior is preserved; first-ring presentation remains unchanged
+- Task 3: `CLOSED`
+  - personal canonical state is connected through generic role alignment and four-role graph projection to the active renderer
+- Task 4 - Real-CV end-to-end visual validation: `NEXT`
+  - inspect the actual validated real-CV Career Map before authorising any bounded presentation or renderer repair
 
 Governing Task 2 boundary:
 - atomic evidence -> evidence eligibility boundary -> Career Capability LLM -> Career-Map-specific strict structured output -> deterministic schema/canonical-ID/evidence-link validation -> canonical capability proposals -> existing canonical personal capability inference/proposal boundary -> existing materializer and provisional personal state
@@ -233,7 +245,7 @@ Task 2D structural evidence eligibility durable state:
 - the final measurement-harness-verified replay is the admissible Task 2D baseline and closes Task 2; the structural eligibility repair remains active and field-specific privacy repair #3 was not used
 
 MVP sequencing boundaries:
-- the Founder neural-network Career Map model remains governing: You is central; personal evidence grounds personal capabilities; user and generic roles share canonical capability nodes; unsupported role requirements remain role-only gaps; role radius will express meaningful capability overlap
+- the Founder neural-network Career Map model remains governing: You is central; personal evidence grounds personal capabilities; user and generic roles share canonical capability nodes; unsupported role requirements remain role-only gaps; rank-derived role radius expresses presentation proximity without becoming semantic fit
 - Role Knowledge is `MVP_SUFFICIENT`; further Role Knowledge enrichment is not currently required for MVP
 - second-source triangulation is `DEFERRED_POST_MVP_QUALITY_WORK`
 - no Wave 3 Role Knowledge work is authorised
@@ -575,14 +587,13 @@ Tailored CV flow closure note (2026-05-15):
 ## 3. One main next action
 
 Main next action:
-- Begin Task 3D with a bounded connection of the Task 3C four-role projection to the active desktop/mobile Career Map renderer and UI route.
+- Begin Task 4 real-CV end-to-end visual validation using the actual validated Career Map personal state and visible graph.
 
-Task 3D boundary:
-- consume the existing Task 3C projection containing YOU, personal capabilities/evidence, four ordered generic roles, `proximityRank`, shared canonical identity, role-only gaps, and non-semantic layout proxies
-- translate `proximityRank` into deterministic display geometry only; better upstream rank must display closer to YOU without renderer-side re-ranking or fit calculation
-- keep the renderer presentational: it must not decide semantic overlap, gap ownership, capability identity, or personal capability inference
-- do not add visible fit percentages or High / Adjacent / Stretch labels
-- preserve current first-ring presentation; do not reopen Task 2, Task 3A, Task 3B, Task 3C, Role Knowledge, or triangulation
+Task 4 boundary:
+- inspect the actual visible real-CV graph for center clarity, four-role distinction and proximity, shared connections, role-only gaps, evidence disclosure, first-ring readability, desktop/mobile layout, clipping, crowding, overlap, and non-semantic proxy clarity
+- authorise bounded presentation or renderer repair only when the real-CV visual evidence proves it necessary
+- preserve semantic owners: the renderer must not decide role ranking, overlap semantics, gap ownership, canonical identity, or personal capability inference
+- do not pre-decide that first-ring grouping or renderer geometry needs repair
 
 Not the next action:
 - do not reopen Task 3A; the integration boundary audit is closed
@@ -593,7 +604,7 @@ Not the next action:
 - do not reopen Task 2C-B; production structured inference is connected and Task 2C-B is closed
 - do not bypass the Task 2B validator or create a second personal-capability pipeline
 - do not reopen Task 2 or Task 2D; both are closed and no further inference or support-semantics repair is required before Task 3
-- do not begin Task 4 real-CV visual validation before the bounded Task 3 integration work is complete
+- do not reopen Task 3D; the active desktop/mobile multi-role renderer connection is closed at `0cfd2be4095d637c36f38c3a94fef826aac12b3c`
 - do not resume second-source triangulation before the MVP vertical slice is complete
 - do not treat further Role Knowledge enrichment as an MVP blocker
 - do not reopen Wave 2 semantic synthesis, source writing, measurement, or diagnostic infrastructure repair
