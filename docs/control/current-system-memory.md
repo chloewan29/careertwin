@@ -1,5 +1,26 @@
 # Current System Memory
 
+### Career Map MVP Closed and Validated (`CAREERTWIN_MVP_CLOSED_VALIDATED`)
+
+- Task 1 through Task 4: CLOSED.
+- Final Task 4 decision: MVP_TASK4_REAL_CV_VISUAL_VALIDATED.
+- Final product judgment: MVP_VISUALLY_READY.
+- Current Task 4 CV hash: D5F627CF6294A208354D587609F0B2A8104305ACE49E4D5A5DA53868B4EBAB6A.
+- Admitted browser-state hash: 2702B9E025E3D5069C8BCA04D6709DD8E016113132FDFAF85FD90115B68B22DD.
+- Semantic aggregate result: 13 eligible evidence -> 9 unique canonical capabilities -> 20 direct relationships (1 deterministic, 19 structured).
+- 4-role rendered validation: Active real-state Career Map connected, projecting Analytics Manager, Data Product Manager, Customer Insights Lead, and Marketing Analytics Lead.
+- Monotonic proximity: PASS (rank 0 < rank 1 < rank 2 < rank 3 distances).
+- Desktop/mobile evidence interaction: PASS.
+- Overflow/collision/runtime errors: PASS (None).
+- Validation artifact: artifacts/career-possibility/career-map-mvp-task4-real-cv-visual-validation-browser-retry.md (SHA256: 7D2711A285FAAE0951E0FA57E8ED0D683C1A86F22BB3AAC7C2C7221AA0102303).
+- Screenshot hashes: 1440x1000 (FAACB480D31A83CE848C21411A689FB71448E27CD35E51DDDFA781CB48AF17B1), 1280x800 (690539F05BD1677B9F0E289040F4A0317C0B1BF9C5567D174C6F2D56966AF520), 390x844 (EEBDA98C8C6676A2D3B18D5585D38A5DDF8D79EABD1D1DB3F98D32460E8A449E).
+- Raw state snapshot (`state.json`): DELETED.
+- Provider timeout repair: Durable state ACTIVE (bounded await, no automatic retry).
+- API registry-version repair: Durable state ALIGNED (strict fail-closed version validation preserved).
+- Role Knowledge: MVP_SUFFICIENT.
+- Triangulation: DEFERRED_POST_MVP_QUALITY_WORK.
+- Next Career Map MVP task: NONE (no further MVP task; future work requires explicit post-MVP admission).
+
 ### Career Map MVP Task 4 API contract repaired; materialization retry next (`CAREERTWIN_MVP_TASK4_API_CONTRACT_REPAIRED`)
 
 - diagnostic classification: `STRUCTURED_INFERENCE_API_CONTRACT_DRIFT`
@@ -12,7 +33,7 @@
 - no semantic architecture changes
 - browser/CDP validation environment available
 - current Task 4 CV hash: `D5F627CF6294A208354D587609F0B2A8104305ACE49E4D5A5DA53868B4EBAB6A`
-- Task 4 browser retry NEXT
+- Task 4 browser retry CLOSED
 
 ### Career Map MVP Task 4 provider runtime closed; materialization retry next (`CAREERTWIN_MVP_TASK4_PROVIDER_RUNTIME_CLOSED_RETRY_NEXT`)
 
@@ -37,7 +58,7 @@
   17. Task 3C - Ranked Multi-role Graph Projection and Presentation-only Role Proximity: `CLOSED` at `3657449e433ab778be085db1365d4e063e77f3a4`
   18. Task 3D - Active Desktop/mobile Multi-role Renderer Connection: `CLOSED` at `0cfd2be4095d637c36f38c3a94fef826aac12b3c`
   19. Task 3: `CLOSED`
-  20. Task 4 - Real-CV Materialization and End-to-end Visual Validation: `CURRENT`; provider runtime diagnostic and timeout repair `CLOSED`; materialization retry `NEXT`
+  20. Task 4 - Real-CV Materialization and End-to-end Visual Validation: `CLOSED`; provider runtime diagnostic and timeout repair `CLOSED`; materialization retry `CLOSED`
 - Task 1 authoritative implementation commit: `b2ba34d18574f49ec22c852c99e640a1d306fad6` (`fix(career): preserve work evidence across resume sections`).
 - The admitted Task 1 boundary includes `nonEmploymentSectionHeading`, associated non-work boundary handling in `employmentBoundaries()`, correct transition/reset ordering, pending-work emission before reset, and exclusion of non-work boundaries from evidence production.
 - Verified Task 1 behavior: work evidence survives transitions into Education, Skills, and Qualifications; end-of-document work flush remains correct; employer/title remain provenance only; technology and self-declared skill lists remain excluded; no duplicate evidence is introduced. Focused extractor tests, three nearby regression tests, the six-case behavior matrix, and production build passed before admission; focused test and build passed again after push.
@@ -86,7 +107,7 @@
 - Personal evidence disclosure remains preserved and is not duplicated per role. Empty/no-valid-state behavior is preserved.
 - First-ring presentation remains unchanged; `buildPersonalCareerMapPresentation()` and `groupPersonalCapabilitiesByFamily()` were not modified.
 - Task 3 is `CLOSED`: personal canonical state now connects through generic role alignment and four-role graph projection to the active renderer.
-- Task 4 is `CURRENT`: retry real-CV materialization, then perform end-to-end visual validation and authorise only bounded presentation or renderer repair demonstrated necessary by actual visual evidence. Role Knowledge remains `MVP_SUFFICIENT`; triangulation remains `DEFERRED_POST_MVP_QUALITY_WORK`.
+- Task 4 is `CURRENT`: [HISTORICAL] retry real-CV materialization and authorise only bounded presentation or renderer repair demonstrated necessary by actual visual evidence. Role Knowledge remains `MVP_SUFFICIENT`; triangulation remains `DEFERRED_POST_MVP_QUALITY_WORK`.
 - The Task 4 provider runtime diagnostic is `CLOSED`. Its decision was `MVP_TASK4_PROVIDER_TIMEOUT_BOUNDARY_REQUIRED`; the frozen non-canonical artifact is `artifacts/career-possibility/career-map-mvp-task4-provider-runtime-diagnostic.md`, SHA256 `689C11E8B7C63162B99A44EC5F9B35ED3A1691FF69868AB99BF063E3DE48D902`.
 - The Task 4 provider runtime timeout repair is `CLOSED` at implementation commit `8684b0d9a02bef979254225859bb8c497bef1cf5` (`fix(career): bound capability provider runtime`), decision `MVP_TASK4_PROVIDER_TIMEOUT_BOUNDARY_REPAIRED`.
 - The authoritative provider owner remains `geminiCareerCapabilityStructuredInferenceProducer` in `lib/career-possibility/career-capability-structured-inference-gemini-provider.ts`. With installed `@google/genai` `1.44.0`, `CAREER_CAPABILITY_PROVIDER_TIMEOUT_MS = 90_000` is applied through SDK-native `GenerateContentConfig.httpOptions.timeout`. The provider await is `BOUNDED`; normal success or timeout settles the provider promise and lets existing route/provider-failure handling complete the CareerTwin request.

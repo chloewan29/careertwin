@@ -61,11 +61,72 @@ Default do-not-read in light mode:
 
 ## 2. Current active line
 
+CAREER MAP MVP:
+CLOSED / MVP VALIDATED
+
+TASK 1:
+CLOSED
+
+TASK 2:
+CLOSED
+
+TASK 3:
+CLOSED
+
+TASK 4:
+CLOSED
+
+TASK 4 DECISION:
+MVP_TASK4_REAL_CV_VISUAL_VALIDATED
+
+PRODUCT JUDGMENT:
+MVP_VISUALLY_READY
+
+ACTIVE REAL-STATE CAREER MAP:
+CONNECTED
+
+FOUR-ROLE RENDERING:
+ACTIVE
+
+ROLE PROXIMITY:
+PRESENTATION_ONLY / RANK_DERIVED / VALIDATED
+
+SHARED CANONICAL IDENTITY:
+PRESERVED
+
+ROLE-ONLY REQUIREMENTS:
+PRESERVED WITHOUT FALSE OWNERSHIP
+
+PERSONAL EVIDENCE:
+PRESERVED
+
+PROVIDER AWAIT:
+BOUNDED
+
+STRUCTURED INFERENCE API CONTRACT:
+ALIGNED
+
+ROLE KNOWLEDGE:
+MVP_SUFFICIENT
+
+TRIANGULATION:
+DEFERRED_POST_MVP_QUALITY_WORK
+
+NEXT:
+NO CAREER MAP MVP TASK
+
+Any future work requires explicit post-MVP admission.
+
+### Historical / superseded active-line context
+
+#### Historical MVP State
+
+
 Primary active product priority:
 - `CAREER_MAP_MVP_VERTICAL_SLICE`
 
 Current mode:
-- `HOLD / TASK_4_CURRENT / API_CONTRACT_REPAIRED / MATERIALIZATION_RETRY_NEXT`
+- `HOLD / TASK_4_CLOSED / API_CONTRACT_REPAIRED / `
 
 Current task ledger:
 - Task 1 - Atomic Evidence Extraction: `CLOSED`
@@ -159,7 +220,7 @@ Current task ledger:
   - empty/no-valid-state behavior is preserved; first-ring presentation remains unchanged
 - Task 3: `CLOSED`
   - personal canonical state is connected through generic role alignment and four-role graph projection to the active renderer
-- Task 4 - Real-CV materialization and end-to-end visual validation: `CURRENT`
+- Task 4 - Real-CV materialization and end-to-end visual validation: `CLOSED`
   - provider runtime diagnostic: `CLOSED`; decision `MVP_TASK4_PROVIDER_TIMEOUT_BOUNDARY_REQUIRED`; frozen diagnostic artifact `artifacts/career-possibility/career-map-mvp-task4-provider-runtime-diagnostic.md`, SHA256 `689C11E8B7C63162B99A44EC5F9B35ED3A1691FF69868AB99BF063E3DE48D902`
   - provider runtime timeout repair: `CLOSED`; decision `MVP_TASK4_PROVIDER_TIMEOUT_BOUNDARY_REPAIRED`; implementation commit `8684b0d9a02bef979254225859bb8c497bef1cf5` (`fix(career): bound capability provider runtime`)
   - provider owner: `geminiCareerCapabilityStructuredInferenceProducer` in `lib/career-possibility/career-capability-structured-inference-gemini-provider.ts`
@@ -174,7 +235,7 @@ Current task ledger:
   - strict fail-closed validation preserved; stale registry version rejected before provider invocation
   - no parallel version composer, composite hardcode, fuzzy match, or semantic architecture changes introduced
   - browser/CDP validation environment: `AVAILABLE`
-  - next: `TASK 4 ACTIVE-BROWSER REAL-CV VISUAL VALIDATION RETRY` using authoritative CV `D5F627CF6294A208354D587609F0B2A8104305ACE49E4D5A5DA53868B4EBAB6A`
+  - next: `NONE` using authoritative CV `D5F627CF6294A208354D587609F0B2A8104305ACE49E4D5A5DA53868B4EBAB6A`
   - inspect the actual validated real-CV Career Map before authorising any bounded presentation or renderer repair
 
 Governing Task 2 boundary:
@@ -266,7 +327,8 @@ MVP sequencing boundaries:
 - no Wave 3 Role Knowledge work is authorised
 - no semantic or research lane supersedes this MVP vertical-slice path without explicit Founder/EM reprioritisation
 
-### Historical / superseded active-line context
+
+
 
 The following Wave 2 material is retained as accepted history. Its coverage-vs-triangulation question and milestone-local next actions do not govern the current MVP execution path.
 
