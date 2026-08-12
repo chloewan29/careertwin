@@ -65,7 +65,7 @@ Primary active product priority:
 - `CAREER_MAP_MVP_VERTICAL_SLICE`
 
 Current mode:
-- `HOLD / TASK_2_CLOSED / TASK_3_NEXT`
+- `HOLD / TASK_3B_CLOSED / TASK_3C_NEXT`
 
 Current task ledger:
 - Task 1 - Atomic Evidence Extraction: `CLOSED`
@@ -122,9 +122,27 @@ Current task ledger:
   - all-direct output and minor spam/over-inference remain non-blocking calibration observations, not an MVP defect or permanent coverage threshold
 - Task 2: `CLOSED`
   - the personal capability substrate is `MVP_SUFFICIENT` for graph work
-- Task 3 - Neural-network personal + role graph: `NEXT`
-  - begin with a bounded admission/audit of existing personal projection, presentation adapter, generic-role, alignment/ranking, graph-projection, renderer, and evidence-disclosure owners
-  - reuse shared canonical capability identity; do not create parallel graph, role, capability, evidence, or ranking authorities
+- Task 3A - Neural-network Career Map integration admission audit: `CLOSED`
+  - decision: `MVP_TASK3_INTEGRATION_BOUNDARY_IDENTIFIED`
+  - first missing boundary: `REAL_PERSONAL_STATE_TO_GENERIC_ROLE_ALIGNMENT_ADAPTER`
+  - frozen audit artifact: `artifacts/career-possibility/career-map-mvp-task3-integration-admission-audit.md`
+  - artifact SHA256: `75386F8DD60AA28C63C60A53692D18BCBCEC434985C82964AD68664AB89D0F2C`
+- Task 3B - Real Personal State to Generic Role Alignment: `CLOSED`
+  - decision: `MVP_TASK3B_REAL_STATE_ROLE_ALIGNMENT_CONNECTED`
+  - authoritative implementation commit: `854a980bbebf29cce0333e56a88ca7c6d0b1cd5b` (`feat(career): connect personal state to role alignment`)
+  - personal semantic source: `ProvisionalLocalCareerMapState.mappings`
+  - adapter owner: `buildPersonalGenericRoleAlignment()` in `lib/career-possibility/personal-generic-role-alignment-adapter.ts`
+  - authoritative ranker remains `buildGenericCareerPathAlignment()`; its legacy branch and ranking algorithm are preserved
+  - canonical ownership is deduplicated by capability ID while mapping/evidence identity, direct/transferable support, and deterministic/structured provenance remain available for inspection
+  - no personal strength, support weight, or signal provenance is fabricated; a deterministic signal is not required
+  - all four `representativeGenericRoleArchetypes` produce deterministic ordered alignment output using the existing identity/core/supporting/differentiator priority and stable tie-breaks
+  - unmatched canonical role requirements remain role-only requirements; roles cannot create personal capability
+  - presentation grouping remains presentation-only and is not role-ranking authority
+- Task 3C - Ranked Multi-role Graph Projection and Role Proximity/Radius: `NEXT`
+  - consume the ordered four-role output from `buildPersonalGenericRoleAlignment()`
+  - extend the existing graph projection owner without creating a second ranking system, capability identity, or gap ontology
+  - derive proximity/radius presentationally from existing deterministic ordering/alignment information; do not add visible fit percentages or High/Adjacent/Stretch labels
+- Task 3D - Desktop/mobile renderer connection: `LATER`
 - Task 4 - Real-CV end-to-end visual validation: `LATER`
 
 Governing Task 2 boundary:
@@ -552,15 +570,20 @@ Tailored CV flow closure note (2026-05-15):
 ## 3. One main next action
 
 Main next action:
-- Begin Task 3 with a bounded admission/audit of the existing personal-capability projection, presentation adapter, generic role profiles/archetypes, role-capability alignment/ranking, graph projection, renderer, and evidence-disclosure owners; then identify the smallest missing integration boundary.
+- Begin Task 3C with a bounded admission/implementation of ranked multi-role graph projection and presentation-only role proximity/radius, consuming the ordered four-role output from `buildPersonalGenericRoleAlignment()`.
 
-Task 3 admission boundary:
+Task 3C boundary:
 - preserve `YOU -> shared canonical capability <- generic role` as one semantic identity; unsupported role requirements remain role-only gaps
-- role proximity/radius may express meaningful capability overlap, but no visible High overlap / Adjacent / Stretch labels or fit percentages are required
+- use existing deterministic `orderingBasis` and role order as the proximity source; do not create a second ranking or personal-strength system
+- role proximity/radius may express meaningful capability overlap, but no visible High overlap / Adjacent / Stretch labels or fit percentages are permitted
 - canonical capability families remain taxonomy authority but are not automatically the user-facing first ring; presentation grouping must not become a parallel semantic ontology
-- reuse existing owners before admitting any new implementation; do not reopen Task 2 inference, evidence eligibility, Role Knowledge, or triangulation
+- keep Task 3D renderer connection later; do not modify renderer unless Task 3C proves a minimal projection-contract dependency
+- do not reopen Task 2 inference, evidence eligibility, Task 3A, Task 3B, Role Knowledge, or triangulation
 
 Not the next action:
+- do not reopen Task 3A; the integration boundary audit is closed
+- do not reopen Task 3B; real personal state is connected to the existing generic role ranker at `854a980bbebf29cce0333e56a88ca7c6d0b1cd5b`
+- do not begin Task 3D renderer integration before the Task 3C projection/data boundary is complete
 - do not reopen Task 1 extractor repair; Task 1 is closed at `b2ba34d18574f49ec22c852c99e640a1d306fad6`
 - do not reopen Task 2A or Task 2B; both are closed
 - do not reopen Task 2C-B; production structured inference is connected and Task 2C-B is closed
