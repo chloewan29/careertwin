@@ -1,9 +1,11 @@
 import type { CapabilityStrengthProfileItem } from "../career-engine/capability/candidate-baseline";
 import type { CanonicalCapabilityDefinition } from "./canonical-capability-library";
 import type { ArchetypeCapability, GenericRoleArchetype } from "./generic-role-archetype";
+import type { ProvisionalMappingMethod, ProvisionalMappingRelationship } from "./provisional-resume-mapping-contract";
 
 export const GENERIC_CAREER_PATH_ALIGNMENT_SCHEMA_VERSION = "1.0.0" as const;
 export const GENERIC_CAREER_PATH_ALIGNMENT_MODEL_VERSION = "1.0.0" as const;
+export const GENERIC_CAREER_PATH_OWNERSHIP_ALIGNMENT_MODEL_VERSION = "canonical-ownership/1.0.0" as const;
 export type CandidateCapabilityIdentityMapping = { readonly candidateCapabilityId: string; readonly canonicalCapabilityId: string };
 export type AlignmentSection = "identity_defining" | "core_enabler" | "supporting" | "differentiator";
 export type MatchedAlignmentCapability = { readonly candidateCapabilityId: string; readonly canonicalCapabilityId: string; readonly canonicalLabel: string; readonly canonicalFamily: string; readonly section: AlignmentSection; readonly strengthScore: number; readonly weightedSignalScore: number; readonly signalCount: number; readonly supportingEvidence: readonly { readonly evidenceSignalId: string; readonly evidencePieceId: string; readonly text: string; readonly ownership: string | null; readonly scope: string | null; readonly impact: string | null }[] };
@@ -11,10 +13,52 @@ export type SectionAlignment = { readonly totalCapabilities: number; readonly ev
 export type GenericRoleAlignment = { readonly roleId: string; readonly title: string; readonly primaryMandate: string; readonly primaryOwnership: readonly string[]; readonly calibrated: true; readonly identityDefining: SectionAlignment; readonly coreEnablers: SectionAlignment; readonly supporting: SectionAlignment; readonly differentiators: SectionAlignment; readonly matchedCapabilities: readonly MatchedAlignmentCapability[]; readonly missingEvidenceCapabilities: readonly { readonly canonicalCapabilityId: string; readonly canonicalLabel: string; readonly section: AlignmentSection; readonly wording: "Evidence not represented in the current candidate baseline" }[]; readonly orderingBasis: readonly number[]; readonly explanation: string };
 export type GenericCareerPathAlignmentResult = { readonly schemaVersion: "1.0.0"; readonly modelVersion: "1.0.0"; readonly roles: readonly GenericRoleAlignment[]; readonly unresolvedCandidateCapabilities: readonly { readonly candidateCapabilityId: string; readonly displayName: string; readonly strengthScore: number; readonly reason: "No explicit admitted canonical identity mapping" }[] };
 export type BuildGenericCareerPathAlignmentInput = { readonly candidateBaseline: readonly CapabilityStrengthProfileItem[]; readonly candidateCapabilityIdentityMap: readonly CandidateCapabilityIdentityMapping[]; readonly genericRoleArchetypes: readonly GenericRoleArchetype[]; readonly canonicalDefinitions: readonly CanonicalCapabilityDefinition[] };
+export type CanonicalCapabilityOwnershipSupport = { readonly mappingId: string; readonly evidenceId: string; readonly relationship: ProvisionalMappingRelationship; readonly method: ProvisionalMappingMethod };
+export type CanonicalCapabilityOwnership = { readonly canonicalCapabilityId: string; readonly supports: readonly CanonicalCapabilityOwnershipSupport[] };
+export type BuildGenericCareerPathOwnershipAlignmentInput = { readonly canonicalCapabilityOwnership: readonly CanonicalCapabilityOwnership[]; readonly genericRoleArchetypes: readonly GenericRoleArchetype[]; readonly canonicalDefinitions: readonly CanonicalCapabilityDefinition[] };
+export type CanonicalOwnershipSectionAlignment = { readonly totalCapabilities: number; readonly evidencedCapabilities: number };
+export type CanonicalOwnershipMatchedAlignmentCapability = { readonly canonicalCapabilityId: string; readonly canonicalLabel: string; readonly canonicalFamily: string; readonly section: AlignmentSection; readonly supports: readonly CanonicalCapabilityOwnershipSupport[] };
+export type GenericRoleCanonicalOwnershipAlignment = { readonly roleId: string; readonly title: string; readonly primaryMandate: string; readonly primaryOwnership: readonly string[]; readonly calibrated: true; readonly alignmentBasis: "canonical_capability_ownership"; readonly identityDefining: CanonicalOwnershipSectionAlignment; readonly coreEnablers: CanonicalOwnershipSectionAlignment; readonly supporting: CanonicalOwnershipSectionAlignment; readonly differentiators: CanonicalOwnershipSectionAlignment; readonly matchedCapabilities: readonly CanonicalOwnershipMatchedAlignmentCapability[]; readonly missingCapabilities: readonly { readonly canonicalCapabilityId: string; readonly canonicalLabel: string; readonly section: AlignmentSection; readonly wording: "Canonical capability not owned in the current personal Career Map state" }[]; readonly orderingBasis: readonly number[]; readonly explanation: string };
+export type GenericCareerPathOwnershipAlignmentResult = { readonly schemaVersion: "1.0.0"; readonly modelVersion: typeof GENERIC_CAREER_PATH_OWNERSHIP_ALIGNMENT_MODEL_VERSION; readonly alignmentBasis: "canonical_capability_ownership"; readonly roles: readonly GenericRoleCanonicalOwnershipAlignment[] };
 const round = (value: number) => Math.round(value * 10000) / 10000;
 const deepFreeze = <T>(value: T): T => { if (value && typeof value === "object" && !Object.isFrozen(value)) { Object.freeze(value); Object.values(value as Record<string, unknown>).forEach(deepFreeze); } return value; };
 
-export function buildGenericCareerPathAlignment(input: BuildGenericCareerPathAlignmentInput): GenericCareerPathAlignmentResult {
+function buildCanonicalOwnershipAlignment(input: BuildGenericCareerPathOwnershipAlignmentInput): GenericCareerPathOwnershipAlignmentResult {
+  const canonical = new Map(input.canonicalDefinitions.map((item) => [item.id, item]));
+  const ownershipByCanonical = new Map<string, CanonicalCapabilityOwnership>();
+  for (const ownership of input.canonicalCapabilityOwnership) {
+    if (!canonical.has(ownership.canonicalCapabilityId)) throw new Error(`Unknown canonical capability ownership: ${ownership.canonicalCapabilityId}`);
+    if (ownershipByCanonical.has(ownership.canonicalCapabilityId)) throw new Error(`Duplicate canonical capability ownership: ${ownership.canonicalCapabilityId}`);
+    ownershipByCanonical.set(ownership.canonicalCapabilityId, ownership);
+  }
+  const roles = input.genericRoleArchetypes.map((role) => {
+    const sections: readonly [AlignmentSection, readonly ArchetypeCapability[]][] = [["identity_defining", role.identityDefiningCapabilities], ["core_enabler", role.coreEnablers], ["supporting", role.supportingCapabilities], ["differentiator", role.differentiators]];
+    const matched: CanonicalOwnershipMatchedAlignmentCapability[] = [];
+    const missing: GenericRoleCanonicalOwnershipAlignment["missingCapabilities"][number][] = [];
+    const summaries = new Map<AlignmentSection, CanonicalOwnershipSectionAlignment>();
+    for (const [section, requirements] of sections) {
+      let evidencedCapabilities = 0;
+      for (const requirement of requirements) {
+        const definition = canonical.get(requirement.capabilityId);
+        if (!definition || definition.label !== requirement.label || definition.family !== requirement.canonicalFamily) throw new Error(`Archetype canonical identity drift: ${role.roleFamilyId}/${requirement.capabilityId}`);
+        const ownership = ownershipByCanonical.get(requirement.capabilityId);
+        if (!ownership) { missing.push({ canonicalCapabilityId: definition.id, canonicalLabel: definition.label, section, wording: "Canonical capability not owned in the current personal Career Map state" }); continue; }
+        evidencedCapabilities += 1;
+        matched.push({ canonicalCapabilityId: definition.id, canonicalLabel: definition.label, canonicalFamily: definition.family, section, supports: ownership.supports.map((item) => ({ ...item })) });
+      }
+      summaries.set(section, { totalCapabilities: requirements.length, evidencedCapabilities });
+    }
+    const identity = summaries.get("identity_defining")!; const core = summaries.get("core_enabler")!; const support = summaries.get("supporting")!; const differentiator = summaries.get("differentiator")!;
+    const orderingBasis = [identity.evidencedCapabilities, core.evidencedCapabilities, support.evidencedCapabilities, differentiator.evidencedCapabilities];
+    return { roleId: role.roleFamilyId, title: role.canonicalTitle, primaryMandate: role.primaryMandate, primaryOwnership: [...role.primaryOwnership], calibrated: true as const, alignmentBasis: "canonical_capability_ownership" as const, identityDefining: identity, coreEnablers: core, supporting: support, differentiators: differentiator, matchedCapabilities: matched, missingCapabilities: missing, orderingBasis, explanation: identity.evidencedCapabilities ? `Canonical ownership overlaps ${identity.evidencedCapabilities} identity-defining capability${identity.evidencedCapabilities === 1 ? "" : "ies"}.` : "Identity-defining canonical capability ownership is not represented in the current personal Career Map state." };
+  }).sort((a, b) => { for (let index = 0; index < a.orderingBasis.length; index += 1) { if (a.orderingBasis[index] !== b.orderingBasis[index]) return b.orderingBasis[index] - a.orderingBasis[index]; } return a.title.localeCompare(b.title, "en") || a.roleId.localeCompare(b.roleId, "en"); });
+  return deepFreeze({ schemaVersion: GENERIC_CAREER_PATH_ALIGNMENT_SCHEMA_VERSION, modelVersion: GENERIC_CAREER_PATH_OWNERSHIP_ALIGNMENT_MODEL_VERSION, alignmentBasis: "canonical_capability_ownership", roles });
+}
+
+export function buildGenericCareerPathAlignment(input: BuildGenericCareerPathAlignmentInput): GenericCareerPathAlignmentResult;
+export function buildGenericCareerPathAlignment(input: BuildGenericCareerPathOwnershipAlignmentInput): GenericCareerPathOwnershipAlignmentResult;
+export function buildGenericCareerPathAlignment(input: BuildGenericCareerPathAlignmentInput | BuildGenericCareerPathOwnershipAlignmentInput): GenericCareerPathAlignmentResult | GenericCareerPathOwnershipAlignmentResult {
+  if ("canonicalCapabilityOwnership" in input) return buildCanonicalOwnershipAlignment(input);
   const canonical = new Map(input.canonicalDefinitions.map((item) => [item.id, item])); const mapping = new Map(input.candidateCapabilityIdentityMap.map((item) => [item.candidateCapabilityId, item.canonicalCapabilityId]));
   const candidateByCanonical = new Map<string, CapabilityStrengthProfileItem>(); const unresolved: GenericCareerPathAlignmentResult["unresolvedCandidateCapabilities"][number][] = [];
   for (const item of input.candidateBaseline) { const canonicalId = mapping.get(item.capability_id); const definition = canonicalId ? canonical.get(canonicalId) : undefined; if (!definition) { unresolved.push({ candidateCapabilityId: item.capability_id, displayName: item.display_name, strengthScore: item.strength_score, reason: "No explicit admitted canonical identity mapping" }); continue; } if (!candidateByCanonical.has(definition.id)) candidateByCanonical.set(definition.id, item); }
