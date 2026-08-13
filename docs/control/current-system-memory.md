@@ -1,5 +1,22 @@
 # Current System Memory
 
+### Post-MVP Task A: Unified Career Map Surface Closed (`POST_MVP_TASK_A_CLOSED`)
+
+- Task A motivation: remove fragmented Career Map / Neural Graph / Role Lens modes
+- one unified Career Map surface
+- family → canonical capability two-layer presentation
+- four future roles on same surface
+- family nodes presentation-only
+- canonical semantic identity unchanged
+- role ranking unchanged
+- evidence semantics unchanged
+- responsive validation PASS
+- final implementation commit: 81fd16cf7accb4e93e4cf5ce14f85fdeda8c2ffe
+- final visual artifact/hash: 63CBA96B59B3398F899E50C8EDE2357B40279BA08F744FF3F8CD4730BAC704CA
+- semantic regression carry-forward PASS
+- Task A CLOSED
+- no automatic next post-MVP task
+
 ### Career Map MVP Closed and Validated (`CAREERTWIN_MVP_CLOSED_VALIDATED`)
 
 - Task 1 through Task 4: CLOSED.
