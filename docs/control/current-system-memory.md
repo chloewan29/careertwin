@@ -1,5 +1,24 @@
 # Current System Memory
 
+### Post-MVP Task A.1: Real-CV Unified Graph Layout Repair Closed (`POST_MVP_TASK_A1_REAL_CV_LAYOUT_REPAIRED`)
+
+- Career Map MVP remains `CLOSED / MVP VALIDATED`; historical Post-MVP Task A remains `CLOSED`.
+- Founder real-CV dogfooding exposed a renderer-only geometry defect in the unified Career Map. Task A.1 is `CLOSED` with product judgment `REAL_CV_UNIFIED_MAP_VISUALLY_READY`.
+- The privacy-sensitive validation input was the Founder-exported exact browser Career Map state. SHA256: `0A9043BA497E7C1F3B05E74F14937B6E9C309F0F1B0DC59BCCB134B8EB5E9C8D`; schema `2.0.0`; admission result `STATE_ADMISSIBLE`.
+- Privacy-safe state aggregates: 13 evidence records, 11 canonical personal capabilities, 23 mappings, 23 direct, 0 transferable, 0 duplicate pairs, and 0 capabilities without evidence.
+- Exact-state rehydration was confirmed. Structured-inference calls, live provider calls, and CV uploads were all 0. Temporary raw-state copies were removed; the original Founder Downloads copy is not repository-owned and was not committed.
+- Primary presentation fault: `MIXED_COORDINATE_SYSTEMS`. Graph projection semantic defect: `NO`. Renderer presentation defect: `YES / CLOSED`. First writable owner: `components/career-possibility/CareerMapNeuralGraph.tsx`.
+- Historical broken geometry: YOU `(449.00, 700.00)`; 7 families; 0 canonical capabilities initially visible and 11 reachable; 4 roles rendered; ghost-center delta `206.53px`; Analytics Manager overlapped Operations & Delivery; two roles were clipped; family/role balance left a large unused canvas region.
+- Accepted geometry: YOU `(575.80, 670.00)` is the real visual anchor; 7 family nodes occupy the active first layer at `165.00–222.95px` from YOU; all 11 canonical capabilities are initially visible as the active second layer; capability collisions are 0.
+- Four future roles remain on the same surface: 4 projected, 4 rendered, 4 in bounds, 4 unobstructed, and 4 mobile reachable. Real-state role distances are `533.08`, `608.93`, `653.88`, and `657.97px`; role-family overlaps are 0.
+- Ghost-center delta is `0.00px`; ghost center is `ABSENT`. Canvas balance, node collision, label collision, and edge readability all pass. Two-layer classification is `CLEAR_TWO_LAYER`; Founder 10-second result is `A`.
+- Responsive real-state validation passed at `1440×1000`, `1280×800`, and `390×844`.
+- Shared canonical identity, role-only non-ownership, evidence semantics, upstream role ranking, canonical ontology, graph projection semantics, provider, and API remain preserved/unchanged. The repair remained presentation-only.
+- Task A.1 supersedes historical Task 3D display-radius and progressive-visibility presentation details only; Task 3B role-order authority and Task 3C projection semantics remain authoritative and unchanged.
+- Implementation commit: `6cfad0eba2003c264a0b11f54cf0f5944455c17e` (`fix(career): correct real-state career map layout`).
+- Validation artifact: `artifacts/career-possibility/post-mvp-task-a1-real-cv-layout-repair.md`, SHA256 `C4D8DA584ED12A8A0CDE6DFCDF6FF7E8AEDFD093A39C69582334A4A9CEE79451`. Real-state before/after screenshots remain untracked validation evidence.
+- Task A.1 is `CLOSED`. No automatic next post-MVP task exists; future product work requires explicit Founder / EM admission.
+
 ### Post-MVP Task A: Unified Career Map Surface Closed (`POST_MVP_TASK_A_CLOSED`)
 
 - Task A motivation: remove fragmented Career Map / Neural Graph / Role Lens modes
