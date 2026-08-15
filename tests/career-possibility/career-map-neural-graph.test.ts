@@ -19,6 +19,8 @@
  *   D. No employer / roleTitle required on evidence nodes
  *   E. CareerMapNeuralGraph module imports no localStorage/storage owner
  *   F. CareerMapNeuralGraph module imports no Job Copilot / fitScore owner
+ *   G. SVG edges and HTML nodes share one responsive coordinate system
+ *   H. Initial desktop rendering keeps all personal capabilities visible
  */
 
 import assert from "node:assert/strict";
@@ -337,6 +339,33 @@ async function testF_noJobCopilotImport() {
 }
 
 // ---------------------------------------------------------------------------
+// Tests G/H — Presentation geometry and initial two-layer visibility
+// ---------------------------------------------------------------------------
+
+async function testG_coherentResponsiveCoordinates() {
+  const source = readFileSync(RENDERER_SOURCE_PATH, "utf8");
+  assert.match(source, /function positionStyle\(/, "G: renderer must use one position adapter for HTML nodes");
+  assert.match(source, /left: `\$\{\(point\.x \/ VB_W\) \* 100\}%`/, "G: horizontal positions must use the SVG viewBox domain");
+  assert.match(source, /top: `\$\{\(point\.y \/ VB_H\) \* 100\}%`/, "G: vertical positions must use the SVG viewBox domain");
+  assert.match(source, /preserveAspectRatio="none"/, "G: SVG mapping must match percentage-positioned HTML nodes");
+  assert.doesNotMatch(source, /style=\{\{ left: CX, top: CY/, "G: user node must not use raw CSS pixels");
+
+  console.log("  G. SVG edges and HTML nodes share one responsive coordinate system — PASSED");
+}
+
+async function testH_initialCapabilitiesRemainVisible() {
+  const source = readFileSync(RENDERER_SOURCE_PATH, "utf8");
+  assert.match(
+    source,
+    /new Set\(capabilityNodes\.map\(\(capability\) => capability\.id\)\)/,
+    "H: every projected personal capability must be visible before interaction",
+  );
+  assert.doesNotMatch(source, /for \(const id of selectedFamilyCapabilityIds\) ids\.add\(id\)/, "H: family selection must not gate initial capability visibility");
+
+  console.log("  H. Initial personal capabilities remain visible — PASSED");
+}
+
+// ---------------------------------------------------------------------------
 // Main
 // ---------------------------------------------------------------------------
 
@@ -350,6 +379,8 @@ async function main() {
   await testD_noProvenanceRequired();
   await testE_noStorageImport();
   await testF_noJobCopilotImport();
+  await testG_coherentResponsiveCoordinates();
+  await testH_initialCapabilitiesRemainVisible();
   console.log("All career-map-neural-graph renderer contract tests passed.");
 }
 

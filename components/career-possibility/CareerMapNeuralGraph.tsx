@@ -13,7 +13,7 @@ import React from "react";
  * - Does NOT import employer / roleTitle provenance.
  * - Does NOT import CapabilityExplorer or career-map-explorer-view-model.
  * - Unsupported role requirements never appear as personal capability nodes.
- * - Families are progressive: capabilities are revealed only on family selection.
+ * - Families and their canonical capabilities remain visible as two presentation layers.
  * - Capabilities are progressive: evidence is revealed only on capability selection.
  * - Layout is fully computed from projection node count — no fixed-six geometry.
  */
@@ -43,22 +43,22 @@ export type CareerMapNeuralGraphProps = {
 
 /** SVG viewBox dimensions */
 const VB_W = 1000;
-const VB_H = 680;
+const VB_H = 620;
 
 /** Center of the "You" node in SVG units */
-const CX = 420;
-const CY = 340;
+const CX = 400;
+const CY = 310;
 
 /** Radii for each ring */
-const FAMILY_RING_R = 185;
-const CAPABILITY_RING_OFFSET = 70; // offset from family center outward
+const FAMILY_RING_R = 165;
+const CAPABILITY_RING_R = 260;
 const EVIDENCE_RING_OFFSET = 68;
 
 /** Role requirement orbit and rank-derived role radii. */
 const ROLE_REQ_RING_R = 72;
-const ROLE_BASE_RADIUS = 250;
-const ROLE_RADIUS_STEP = 25;
-const ROLE_ANGLES = [90, 20, 200, 145] as const;
+const ROLE_BASE_RADIUS = 420;
+const ROLE_RADIUS_STEP = 30;
+const ROLE_ANGLES = [57, 78, 97, 119] as const;
 
 // ---------------------------------------------------------------------------
 // Geometry helpers
@@ -74,22 +74,12 @@ function familyAngles(count: number): number[] {
   return Array.from({ length: count }, (_, i) => (360 / count) * i);
 }
 
-function capabilityOffsetPositions(
-  familyX: number,
-  familyY: number,
-  count: number,
-  angleDeg: number,
-): { x: number; y: number }[] {
-  if (count === 0) return [];
-  if (count === 1) {
-    const out = radialPoint(familyX, familyY, CAPABILITY_RING_OFFSET, angleDeg);
-    return [out];
-  }
-  const spread = Math.min(50, (80 / count) * 1.2);
-  const start = angleDeg - ((count - 1) / 2) * spread;
-  return Array.from({ length: count }, (_, i) =>
-    radialPoint(familyX, familyY, CAPABILITY_RING_OFFSET, start + i * spread),
-  );
+function positionStyle(point: { x: number; y: number }): React.CSSProperties {
+  return {
+    left: `${(point.x / VB_W) * 100}%`,
+    top: `${(point.y / VB_H) * 100}%`,
+    transform: "translate(-50%,-50%)",
+  };
 }
 
 function evidenceOffsetPositions(
@@ -206,9 +196,9 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
 
   // --- Visibility logic (presentation-only) -----------------------------
   //
-  // Visible personal capabilities =
-  //   selected-family capabilities
-  //   UNION personal capabilities referenced by selected role requirements (if role selected)
+  // All personal capabilities remain visible so the initial map reads
+  // You -> family -> specific capability. Selection changes emphasis and
+  // evidence disclosure only; it never changes semantic membership.
   //
   // This is presentation-only — no semantic state is mutated.
 
@@ -230,11 +220,8 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
   }, [selectedFamilyId, familyNodes]);
 
   const visibleCapabilityIds = useMemo<Set<string>>(() => {
-    const ids = new Set<string>();
-    for (const id of selectedFamilyCapabilityIds) ids.add(id);
-    for (const id of roleReferencedCapabilityIds) ids.add(id);
-    return ids;
-  }, [selectedFamilyCapabilityIds, roleReferencedCapabilityIds]);
+    return new Set(capabilityNodes.map((capability) => capability.id));
+  }, [capabilityNodes]);
 
   const visibleCapabilities = useMemo(
     () => capabilityNodes.filter((c) => visibleCapabilityIds.has(c.id)),
@@ -256,17 +243,14 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
   // --- Capability positions (placed around their owning family) ----------
   const capabilityPositions = useMemo<Map<string, { x: number; y: number }>>(() => {
     const map = new Map<string, { x: number; y: number }>();
-    familyNodes.forEach((fam, fi) => {
-      const fp = familyPositions[fi]!;
-      const angle = angles[fi]!;
-      const caps = capabilityNodes.filter((c) => c.familyId === fam.id);
-      const positions = capabilityOffsetPositions(fp.x, fp.y, caps.length, angle);
-      caps.forEach((c, ci) => {
-        if (positions[ci]) map.set(c.id, positions[ci]!);
-      });
+    const orderedCapabilities = familyNodes.flatMap((family) =>
+      capabilityNodes.filter((capability) => capability.familyId === family.id),
+    );
+    orderedCapabilities.forEach((capability, index) => {
+      map.set(capability.id, radialPoint(CX, CY, CAPABILITY_RING_R, (360 / orderedCapabilities.length) * index));
     });
     return map;
-  }, [familyNodes, familyPositions, angles, capabilityNodes]);
+  }, [familyNodes, capabilityNodes]);
 
   // --- Evidence positions (placed around the selected capability) --------
   const evidencePositions = useMemo<Map<string, { x: number; y: number }>>(() => {
@@ -351,10 +335,10 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
       </header>
 
       {/* ── Desktop SVG graph ─────────────────────────────────────────── */}
-      <div className="relative hidden overflow-hidden md:block" style={{ height: 560 }}>
+      <div className="relative hidden overflow-hidden md:block" style={{ height: VB_H }}>
         <svg
           viewBox={`0 0 ${VB_W} ${VB_H}`}
-          preserveAspectRatio="xMidYMid meet"
+          preserveAspectRatio="none"
           className="absolute inset-0 h-full w-full"
           aria-hidden="true"
         >
@@ -405,7 +389,7 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
 
         {/* ── You node ──────────────────────────────────────────────── */}
         <div
-          style={{ left: CX, top: CY, transform: "translate(-50%,-50%)" }}
+          style={positionStyle({ x: CX, y: CY })}
           className="absolute z-10 flex h-28 w-28 flex-col items-center justify-center rounded-full border border-cyan-100/35 bg-[#0a202c]/95 text-center shadow-[0_0_42px_rgba(34,211,238,0.16)]"
           aria-label="You — your experience core"
           data-node-type="user"
@@ -428,8 +412,8 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
               aria-label={`${fam.label} capability family${isSelected ? " — selected" : ""}`}
               data-node-type="capability_family"
               data-node-id={fam.id}
-              style={{ left: fp.x, top: fp.y, transform: "translate(-50%,-50%)" }}
-              className={`absolute z-20 w-36 -translate-x-1/2 -translate-y-1/2 rounded-2xl border px-3 py-2.5 text-left transition-[border-color,background-color,box-shadow] duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-200 ${
+              style={positionStyle(fp)}
+              className={`absolute z-20 w-36 rounded-2xl border px-3 py-2.5 text-left transition-[border-color,background-color,box-shadow] duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-200 ${
                 isSelected
                   ? "border-cyan-200/70 bg-[#0e2832] shadow-[0_0_28px_rgba(34,211,238,0.22)]"
                   : "border-cyan-100/20 bg-[#0b1826] text-slate-300 hover:border-cyan-200/35"
@@ -460,8 +444,9 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
               aria-label={`${cap.label} capability${isSelected ? " — selected" : ""}${roleHighlight ? `, ${reqState === "directly_demonstrated" ? "directly demonstrated" : "transferable signal"} for role` : ""}`}
               data-node-type="capability"
               data-node-id={cap.id}
-              style={{ left: cp.x, top: cp.y, transform: "translate(-50%,-50%)" }}
-              className={`absolute z-30 w-36 -translate-x-1/2 -translate-y-1/2 rounded-2xl border px-3 py-2.5 text-left transition-[border-color,background-color,box-shadow,opacity] duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-200 ${
+              data-family-id={cap.familyId}
+              style={positionStyle(cp)}
+              className={`absolute z-30 w-28 rounded-2xl border px-2.5 py-2 text-left transition-[border-color,background-color,box-shadow,opacity] duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-200 ${
                 isSelected
                   ? "border-cyan-100/65 bg-[#12313b] text-white shadow-[0_0_24px_rgba(34,211,238,0.2)]"
                   : reqState === "directly_demonstrated" && selectedRole
@@ -499,8 +484,8 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
               key={ev.id}
               data-node-type="evidence"
               data-node-id={ev.id}
-              style={{ left: ep.x, top: ep.y, transform: "translate(-50%,-50%)" }}
-              className={`absolute z-40 w-40 -translate-x-1/2 -translate-y-1/2 rounded-xl border px-3 py-2 text-left ${
+              style={positionStyle(ep)}
+              className={`absolute z-40 w-40 rounded-xl border px-3 py-2 text-left ${
                 isTransferable
                   ? "border-blue-300/35 bg-[#0e1e36] text-blue-50"
                   : "border-violet-300/35 bg-[#13121d]/95 text-slate-100"
@@ -530,8 +515,8 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
               data-node-id={role.id}
               data-proximity-rank={role.proximityRank ?? index}
               data-display-radius={position.radius}
-              style={{ left: position.x, top: position.y, transform: "translate(-50%,-50%)" }}
-              className={`absolute z-20 w-36 -translate-x-1/2 -translate-y-1/2 rounded-2xl border px-3 py-2.5 text-left transition-[border-color,background-color,box-shadow] duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-200 ${
+              style={positionStyle(position)}
+              className={`absolute z-20 w-36 rounded-2xl border px-3 py-2.5 text-left transition-[border-color,background-color,box-shadow] duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-200 ${
                 isSelected
                   ? "border-cyan-200/45 bg-[#102b37] shadow-[0_0_24px_rgba(56,189,248,0.14)]"
                   : "border-blue-200/20 bg-[#0b1725] hover:border-blue-200/35"
@@ -556,13 +541,11 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
               data-node-id={req.id}
               data-requirement-state={req.requirementState}
               style={{
-                left: rp.x,
-                top: rp.y,
-                transform: "translate(-50%,-50%)",
+                ...positionStyle(rp),
                 border: `1px solid ${cfg.stroke}`,
                 background: isUnsupported ? "transparent" : cfg.fill,
               }}
-              className="absolute z-30 w-32 -translate-x-1/2 -translate-y-1/2 rounded-xl px-2.5 py-2 text-left"
+              className="absolute z-30 w-32 rounded-xl px-2.5 py-2 text-left"
             >
               <span className="block text-[8px] font-semibold uppercase tracking-wider" style={{ color: cfg.textColor }}>{cfg.badge}</span>
               <span className="mt-0.5 block text-[10px] font-medium leading-3 text-slate-200">{req.capabilityLabel}</span>
@@ -575,10 +558,21 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
       {/* ── Mobile list fallback ───────────────────────────────────── */}
       <div className="border-t border-white/[0.06] md:hidden">
         <div className="p-4">
+          <div
+            className="mb-4 rounded-2xl border border-cyan-100/25 bg-[#0a202c] px-4 py-3 text-center"
+            aria-label="You — your experience core"
+            data-node-type="user"
+            data-node-id="user"
+          >
+            <span className="block text-[9px] font-semibold uppercase tracking-[0.2em] text-cyan-300">Your career</span>
+            <span className="mt-1 block text-sm font-semibold text-slate-100">You</span>
+            <span className="mt-1 block text-[10px] text-slate-400">Your evidence-backed capability areas</span>
+          </div>
           <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-500">Explore a capability family</p>
-          <div className="mt-3 flex flex-wrap gap-2">
+          <div className="mt-3 grid gap-2">
             {familyNodes.map((fam) => {
               const isSelected = fam.id === selectedFamilyId;
+              const familyCapabilities = capabilityNodes.filter((capability) => capability.familyId === fam.id);
               return (
                 <button
                   key={fam.id}
@@ -587,12 +581,15 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
                   aria-pressed={isSelected}
                   data-node-type="capability_family"
                   data-node-id={fam.id}
-                  className={`rounded-xl border px-3 py-2 text-left text-xs transition-colors ${
+                  className={`w-full rounded-xl border px-3 py-2.5 text-left text-xs transition-colors ${
                     isSelected ? "border-cyan-200 bg-cyan-300 text-[#061018]" : "border-white/10 bg-white/[0.03] text-slate-300"
                   }`}
                 >
                   <span className="block font-medium">{fam.label}</span>
                   <span className="mt-0.5 block text-[10px] opacity-70">{fam.capabilityIds.length} {fam.capabilityIds.length === 1 ? "capability" : "capabilities"}</span>
+                  <span className="mt-1.5 block text-[10px] leading-4 opacity-80">
+                    {familyCapabilities.map((capability) => capability.label).join(" · ")}
+                  </span>
                 </button>
               );
             })}
