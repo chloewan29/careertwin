@@ -1,5 +1,28 @@
 # Current System Memory
 
+### Post-MVP Task B0: Graph Engine Selection Closed (`POST_MVP_TASK_B0_CLOSED_ENGINE_SELECTED`)
+
+- Career Map MVP remains `CLOSED / MVP VALIDATED`; Post-MVP Task A and Task A.1 remain `CLOSED`.
+- B0 was an isolated product/technical bake-off prompted by the Founder direction to evolve the current card/radial architecture diagram toward an organic, multi-scale, interactive career knowledge graph whose first impression is “This is my career capability universe.”
+- The two evaluated candidates were `react-force-graph-2d` and `Sigma.js + Graphology + ForceAtlas2`.
+- Selected presentation engine: `react-force-graph-2d` 1.29.1 with direct force dependency `d3-force` 3.0.0; license `MIT`; Founder visual result `A — CAREER UNIVERSE / KNOWLEDGE GRAPH`; comparative score `75 / 85`.
+- Runner-up: `Sigma.js + Graphology + ForceAtlas2`; Founder visual result `B — STILL FEELS LIKE A DIAGRAM`; comparative score `55 / 85`. Sigma demonstrated stronger raw large-graph performance headroom, but CareerTwin currently places greater weight on organic Founder visual fit, semantic force control, React integration, custom node rendering, interaction simplicity, and lower production integration complexity.
+- Directional selected-engine evidence: the current real graph was supported; approximately 100 nodes were smooth; approximately 500 nodes remained responsive with visible simulation cost; approximately 1,000 nodes were usable after settling with about 36.4 MB observed heap. This is spike evidence, not a production SLO.
+- Recommended production architecture: existing CareerTwin semantic state → existing graph projection → thin presentation-only `CareerGraphVisualAdapter` → `react-force-graph-2d` → CareerTwin interaction/detail layer.
+- `CareerMapNeuralGraph.tsx` future disposition: `REPLACE_RENDERING_INTERNALS_KEEP_PUBLIC_OWNER`. Do not create a second production Career Map route or parallel semantic system.
+- Semantic graph projection change required: `NO`. Production Task B must first adapt existing projection truth; any later missing presentation data must be reported as a boundary conflict before semantic projection changes.
+- CareerTwin remains authoritative for evidence truth, canonical capability identity, capability families, personal ownership, role requirements, role-only non-ownership, shared canonical identity, role ranking/proximity, structured inference, and materialization. The graph engine may own physics, rendering, Canvas drawing, collision, viewport transforms, zoom, pan, drag, hover, and selection mechanics only.
+- Presentation direction: You is the primary hub; families are medium cluster hubs; canonical capabilities are smaller semantic nodes; atomic evidence may appear as anonymous tiny satellites; future roles remain distinct outer hubs on the same Career Map; role-only capabilities remain muted/hollow and non-owned. Raw evidence text is not a permanent graph label; evidence detail stays CareerTwin-owned.
+- Shared canonical capabilities may visually bridge personal and future-role clusters. No visible fit percentage and no High / Adjacent / Stretch classification are admitted; role ranking remains upstream CareerTwin authority.
+- Engine selected: `YES`. Production dependency admitted: `NOT YET`. Production package install completed: `NO`. `package.json` and `package-lock.json` remained unchanged by B0; Task B admission must explicitly authorise any production dependency change.
+- B0 used the exact Founder-exported real Career Map state, SHA256 `0A9043BA497E7C1F3B05E74F14937B6E9C309F0F1B0DC59BCCB134B8EB5E9C8D`. Privacy-safe state aggregates: 13 evidence, 11 personal capabilities, 23 mappings, 23 direct, 0 transferable, 0 duplicates, and 0 capabilities without evidence; provider calls 0; CV uploads 0; raw evidence text exposed `NO`.
+- Neutral spike-only topology: 45 nodes (You 1, family 7, capability 11, anonymous evidence 13, role 4, role-only capability 9) and 67 edges (user-family 7, family-capability 11, capability-evidence 23, role-owned-capability 14, role-only-capability 12). This is not a production ontology.
+- Bake-off artifact: `artifacts/career-possibility/post-mvp-task-b0-graph-engine-bakeoff.md`, SHA256 `11BC71093A42AB392332689C30FFDE7F1C5D2AC00ABDB163D173CAB89F7FB4DD`; six screenshots remain untracked validation evidence.
+- Post-MVP Task B0 is `CLOSED` with decision `REACT_FORCE_GRAPH_SELECTED`.
+- Post-MVP Task B is `NOT YET IMPLEMENTED`. Next task: `POST-MVP TASK B — CAREER GRAPH FIELD PRODUCTION IMPLEMENTATION ADMISSION`, requiring explicit Founder / EM admission.
+- `memory_sync_required: yes`
+- `memory_sync_targets: [docs/control/current-active-brief.md, docs/control/current-system-memory.md]`
+
 ### Post-MVP Task A.1: Real-CV Unified Graph Layout Repair Closed (`POST_MVP_TASK_A1_REAL_CV_LAYOUT_REPAIRED`)
 
 - Career Map MVP remains `CLOSED / MVP VALIDATED`; historical Post-MVP Task A remains `CLOSED`.
@@ -17,7 +40,7 @@
 - Task A.1 supersedes historical Task 3D display-radius and progressive-visibility presentation details only; Task 3B role-order authority and Task 3C projection semantics remain authoritative and unchanged.
 - Implementation commit: `6cfad0eba2003c264a0b11f54cf0f5944455c17e` (`fix(career): correct real-state career map layout`).
 - Validation artifact: `artifacts/career-possibility/post-mvp-task-a1-real-cv-layout-repair.md`, SHA256 `C4D8DA584ED12A8A0CDE6DFCDF6FF7E8AEDFD093A39C69582334A4A9CEE79451`. Real-state before/after screenshots remain untracked validation evidence.
-- Task A.1 is `CLOSED`. No automatic next post-MVP task exists; future product work requires explicit Founder / EM admission.
+- Task A.1 is `CLOSED`. Historical A.1 closure state had no automatic next post-MVP task; that routing statement is superseded by the B0 closure above, while explicit Founder / EM admission remains required for Task B.
 
 ### Post-MVP Task A: Unified Career Map Surface Closed (`POST_MVP_TASK_A_CLOSED`)
 
@@ -34,7 +57,7 @@
 - final visual artifact/hash: 63CBA96B59B3398F899E50C8EDE2357B40279BA08F744FF3F8CD4730BAC704CA
 - semantic regression carry-forward PASS
 - Task A CLOSED
-- no automatic next post-MVP task
+- historical Task A closure state: no automatic next post-MVP task (superseded by the B0 closure above)
 
 ### Career Map MVP Closed and Validated (`CAREERTWIN_MVP_CLOSED_VALIDATED`)
 
