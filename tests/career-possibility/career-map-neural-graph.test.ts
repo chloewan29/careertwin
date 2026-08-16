@@ -19,8 +19,8 @@
  *   D. No employer / roleTitle required on evidence nodes
  *   E. CareerMapNeuralGraph module imports no localStorage/storage owner
  *   F. CareerMapNeuralGraph module imports no Job Copilot / fitScore owner
- *   G. SVG edges and HTML nodes share one responsive coordinate system
- *   H. Initial desktop rendering keeps all personal capabilities visible
+ *   G. The selected force graph owns responsive geometry and interaction
+ *   H. The adapter supplies the complete default graph field
  */
 
 import assert from "node:assert/strict";
@@ -344,25 +344,24 @@ async function testF_noJobCopilotImport() {
 
 async function testG_coherentResponsiveCoordinates() {
   const source = readFileSync(RENDERER_SOURCE_PATH, "utf8");
-  assert.match(source, /function positionStyle\(/, "G: renderer must use one position adapter for HTML nodes");
-  assert.match(source, /left: `\$\{\(point\.x \/ VB_W\) \* 100\}%`/, "G: horizontal positions must use the SVG viewBox domain");
-  assert.match(source, /top: `\$\{\(point\.y \/ VB_H\) \* 100\}%`/, "G: vertical positions must use the SVG viewBox domain");
-  assert.match(source, /preserveAspectRatio="none"/, "G: SVG mapping must match percentage-positioned HTML nodes");
-  assert.doesNotMatch(source, /style=\{\{ left: CX, top: CY/, "G: user node must not use raw CSS pixels");
+  assert.match(source, /from "react-force-graph-2d"/, "G: selected engine must own graph rendering");
+  assert.match(source, /enablePanInteraction/, "G: engine pan interaction must be enabled");
+  assert.match(source, /enableZoomInteraction/, "G: engine zoom interaction must be enabled");
+  assert.match(source, /enableNodeDrag/, "G: engine drag interaction must be enabled");
+  assert.match(source, /ResizeObserver/, "G: graph viewport must respond to container size");
+  assert.doesNotMatch(source, /familyPosition|rolePosition|ROLE_ANGLES|FAMILY_RING_R/, "G: retired radial geometry must not remain active");
 
-  console.log("  G. SVG edges and HTML nodes share one responsive coordinate system — PASSED");
+  console.log("  G. Force graph owns responsive geometry and interaction — PASSED");
 }
 
 async function testH_initialCapabilitiesRemainVisible() {
   const source = readFileSync(RENDERER_SOURCE_PATH, "utf8");
-  assert.match(
-    source,
-    /new Set\(capabilityNodes\.map\(\(capability\) => capability\.id\)\)/,
-    "H: every projected personal capability must be visible before interaction",
-  );
-  assert.doesNotMatch(source, /for \(const id of selectedFamilyCapabilityIds\) ids\.add\(id\)/, "H: family selection must not gate initial capability visibility");
+  assert.match(source, /buildCareerGraphVisualModel\(projection\)/, "H: renderer must consume the full visual adapter output");
+  assert.match(source, /graphData=\{graphData\}/, "H: the complete graph data must enter the engine");
+  assert.match(source, /buildCareerGraphFocusSet/, "H: selection changes emphasis rather than membership");
+  assert.doesNotMatch(source, /visibleCapabilityIds|visibleEvidenceIds/, "H: selection must not gate node membership");
 
-  console.log("  H. Initial personal capabilities remain visible — PASSED");
+  console.log("  H. Adapter supplies the complete default graph field — PASSED");
 }
 
 // ---------------------------------------------------------------------------

@@ -28,8 +28,8 @@ assert.doesNotMatch(workspaceSource, /buildPersonalTargetRoleComparison/);
 
 // Renderer remains a projection consumer and has no singular role path or UI ranking.
 assert.doesNotMatch(rendererSource, /roleNodes\[0\]/);
-assert.match(rendererSource, /roleNodes\.map\(\(role, index\)/);
-assert.match(rendererSource, /requirement\.roleId === selectedRoleId/);
+assert.match(rendererSource, /buildCareerGraphVisualModel\(projection\)/);
+assert.match(rendererSource, /roleRequirements = requirements\.filter\(\(item\) => item\.roleId === selected\.semanticId\)/);
 assert.doesNotMatch(rendererSource, /\.sort\(|matchedCapabilities|Math\.random/);
 assert.doesNotMatch(rendererSource, /from ["'][^"']*(job-copilot|candidate-baseline|generic-career-path-alignment)[^"']*["']/i);
 
@@ -92,16 +92,17 @@ assert.equal(projectedRoles.length, 4);
 assert.deepEqual(projectedRoles.map((role) => role.id), roles.map(([roleId]) => roleId));
 assert.deepEqual(projectedRoles.map((role) => role.proximityRank), [0, 1, 2, 3]);
 
-// The renderer's presentation-only radius contract is deterministic and monotonic.
+// The renderer's deterministic seed carries upstream order without reranking.
 const displayRadii = projectedRoles.map(
-  (role, index) => 250 + (role.proximityRank ?? index) * 25,
+  (role, index) => 455 + (role.proximityRank ?? index) * 28,
 );
-assert.deepEqual(displayRadii, [250, 275, 300, 325]);
+assert.deepEqual(displayRadii, [455, 483, 511, 539]);
 assert.equal(displayRadii.every((radius, index) => index === 0 || displayRadii[index - 1] < radius), true);
-assert.match(rendererSource, /ROLE_BASE_RADIUS \+ proximityRank \* ROLE_RADIUS_STEP/);
+assert.match(rendererSource, /455 \+ \(node\.proximityRank \?\? index\) \* 28/);
 
-// Both desktop and mobile paths iterate the same full projected role collection.
-assert.equal((rendererSource.match(/roleNodes\.map\(\(role, index\)/g) ?? []).length >= 2, true);
+// Desktop Canvas and the mobile-accessible navigator consume one visual model.
+assert.match(rendererSource, /visualModel\.nodes\.filter\(\(node\) => node\.nodeType === nodeType\)/);
+assert.match(rendererSource, /Accessible graph navigator/);
 
 // Production-equivalent smoke: valid local v2 state -> Task 3B -> Task 3C -> renderer contract.
 const localState: ProvisionalLocalCareerMapState = {

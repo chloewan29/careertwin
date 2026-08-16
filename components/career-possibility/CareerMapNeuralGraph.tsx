@@ -1,24 +1,18 @@
 "use client";
-import React from "react";
 
-/**
- * CareerMapNeuralGraph — Slice 1 visual renderer.
- *
- * Accepts a CareerMapGraphProjection as its sole semantic input.
- * Owns all layout geometry locally. No coordinates in the projection.
- *
- * Invariants (Slice 1):
- * - Does NOT read localStorage.
- * - Does NOT import any Job Copilot, fitScore, rank, or JD module.
- * - Does NOT import employer / roleTitle provenance.
- * - Does NOT import CapabilityExplorer or career-map-explorer-view-model.
- * - Unsupported role requirements never appear as personal capability nodes.
- * - Families and their canonical capabilities remain visible as two presentation layers.
- * - Capabilities are progressive: evidence is revealed only on capability selection.
- * - Layout is fully computed from projection node count — no fixed-six geometry.
- */
-
-import { useMemo, useState } from "react";
+import dynamic from "next/dynamic";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import type {
+  LinkObject,
+  NodeObject,
+} from "react-force-graph-2d";
+import type { CareerMapForceGraphHandle } from "./CareerMapForceGraph";
 import type {
   CareerMapGraphProjection,
   CapabilityFamilyGraphNode,
@@ -27,684 +21,583 @@ import type {
   RoleGraphNode,
   RoleRequirementGraphNode,
 } from "@/lib/career-possibility/career-map-graph-projection";
+import {
+  buildCareerGraphFocusSet,
+  buildCareerGraphVisualModel,
+  type CareerGraphVisualLink,
+  type CareerGraphVisualNode,
+  type CareerGraphVisualNodeType,
+} from "@/lib/career-possibility/career-graph-visual-adapter";
 
-// ---------------------------------------------------------------------------
-// Props
-// ---------------------------------------------------------------------------
+const CareerMapForceGraph = dynamic(
+  () => import("./CareerMapForceGraph").then((module) => module.CareerMapForceGraph),
+  { ssr: false },
+);
 
 export type CareerMapNeuralGraphProps = {
-  /** The graph projection — the sole semantic input to this renderer. */
   readonly projection: CareerMapGraphProjection;
 };
 
-// ---------------------------------------------------------------------------
-// Layout constants — local to this renderer
-// ---------------------------------------------------------------------------
+type RenderNode = NodeObject<CareerGraphVisualNode> & {
+  seedX: number;
+  seedY: number;
+};
+type RenderLink = LinkObject<CareerGraphVisualNode, CareerGraphVisualLink>;
 
-/** SVG viewBox dimensions */
-const VB_W = 1000;
-const VB_H = 620;
+const palette: Record<CareerGraphVisualNodeType, string> = {
+  YOU: "#eaffff",
+  FAMILY: "#55d6d0",
+  CAPABILITY: "#94e7b7",
+  EVIDENCE: "#a78bfa",
+  ROLE: "#ffb46d",
+  ROLE_ONLY_CAPABILITY: "#8a99aa",
+};
 
-/** Center of the "You" node in SVG units */
-const CX = 400;
-const CY = 310;
+const nodeRadius: Record<CareerGraphVisualNodeType, number> = {
+  YOU: 15,
+  FAMILY: 8.5,
+  CAPABILITY: 5.4,
+  EVIDENCE: 2,
+  ROLE: 9.5,
+  ROLE_ONLY_CAPABILITY: 3.8,
+};
 
-/** Radii for each ring */
-const FAMILY_RING_R = 165;
-const CAPABILITY_RING_R = 260;
-const EVIDENCE_RING_OFFSET = 68;
+const normallyLabelled = new Set<CareerGraphVisualNodeType>([
+  "YOU",
+  "FAMILY",
+  "ROLE",
+]);
 
-/** Role requirement orbit and rank-derived role radii. */
-const ROLE_REQ_RING_R = 72;
-const ROLE_BASE_RADIUS = 420;
-const ROLE_RADIUS_STEP = 30;
-const ROLE_ANGLES = [57, 78, 97, 119] as const;
-
-// ---------------------------------------------------------------------------
-// Geometry helpers
-// ---------------------------------------------------------------------------
-
-function radialPoint(cx: number, cy: number, r: number, angleDeg: number) {
-  const rad = ((angleDeg - 90) * Math.PI) / 180;
-  return { x: cx + r * Math.cos(rad), y: cy + r * Math.sin(rad) };
+function stableUnit(id: string): number {
+  let hash = 2166136261;
+  for (let index = 0; index < id.length; index += 1) {
+    hash ^= id.charCodeAt(index);
+    hash = Math.imul(hash, 16777619);
+  }
+  return (hash >>> 0) / 4294967295;
 }
 
-function familyAngles(count: number): number[] {
-  if (count === 0) return [];
-  return Array.from({ length: count }, (_, i) => (360 / count) * i);
+function pointAt(angle: number, radius: number) {
+  return { x: Math.cos(angle) * radius, y: Math.sin(angle) * radius };
 }
 
-function positionStyle(point: { x: number; y: number }): React.CSSProperties {
-  return {
-    left: `${(point.x / VB_W) * 100}%`,
-    top: `${(point.y / VB_H) * 100}%`,
-    transform: "translate(-50%,-50%)",
-  };
-}
+function seedCareerGraphNodes(
+  nodes: readonly CareerGraphVisualNode[],
+  links: readonly CareerGraphVisualLink[],
+): RenderNode[] {
+  const seeded = nodes.map((node) => ({ ...node, seedX: 0, seedY: 0 })) as RenderNode[];
+  const byId = new Map(seeded.map((node) => [node.id, node]));
+  const families = seeded.filter((node) => node.nodeType === "FAMILY");
+  const roles = seeded.filter((node) => node.nodeType === "ROLE");
 
-function evidenceOffsetPositions(
-  capX: number,
-  capY: number,
-  count: number,
-  capAngle: number,
-): { x: number; y: number }[] {
-  if (count === 0) return [];
-  if (count === 1) return [radialPoint(capX, capY, EVIDENCE_RING_OFFSET, capAngle)];
-  const spread = Math.min(45, 70 / count);
-  const start = capAngle - ((count - 1) / 2) * spread;
-  return Array.from({ length: count }, (_, i) =>
-    radialPoint(capX, capY, EVIDENCE_RING_OFFSET, start + i * spread),
-  );
-}
-
-export function rolePosition(role: RoleGraphNode, roleIndex: number): { x: number; y: number; radius: number } {
-  const proximityRank = role.proximityRank ?? roleIndex;
-  const radius = ROLE_BASE_RADIUS + proximityRank * ROLE_RADIUS_STEP;
-  const angle = ROLE_ANGLES[roleIndex % ROLE_ANGLES.length] ?? 90;
-  return { ...radialPoint(CX, CY, radius, angle), radius };
-}
-
-function roleReqPositions(roleX: number, roleY: number, count: number): { x: number; y: number }[] {
-  if (count === 0) return [];
-  return Array.from({ length: count }, (_, i) => {
-    const angle = ((360 / count) * i - 90) * (Math.PI / 180);
-    return { x: roleX + ROLE_REQ_RING_R * Math.cos(angle), y: roleY + ROLE_REQ_RING_R * Math.sin(angle) };
+  seeded.forEach((node) => {
+    if (node.nodeType === "YOU") {
+      node.x = 0;
+      node.y = 0;
+      node.fx = 0;
+      node.fy = 0;
+      return;
+    }
+    if (node.nodeType === "FAMILY") {
+      const index = families.indexOf(node);
+      const point = pointAt(-1.35 + (Math.PI * 2 * index) / Math.max(families.length, 1), 205);
+      node.x = point.x;
+      node.y = point.y;
+      node.seedX = point.x;
+      node.seedY = point.y;
+      return;
+    }
+    if (node.nodeType === "ROLE") {
+      const index = roles.indexOf(node);
+      const radius = 455 + (node.proximityRank ?? index) * 28;
+      const point = pointAt(0.2 + (Math.PI * 2 * index) / Math.max(roles.length, 1), radius);
+      node.x = point.x;
+      node.y = point.y;
+      node.seedX = point.x;
+      node.seedY = point.y;
+    }
   });
+
+  const parentId = (id: string): string | undefined =>
+    links.find((link) => link.target === id)?.source;
+
+  seeded.forEach((node) => {
+    if (node.nodeType === "YOU" || node.nodeType === "FAMILY" || node.nodeType === "ROLE") return;
+    const parent = byId.get(parentId(node.id) ?? "");
+    const baseAngle = parent ? Math.atan2(parent.y ?? 0, parent.x ?? 1) : stableUnit(node.id) * Math.PI * 2;
+    const spread = (stableUnit(`${node.nodeType}:${node.id}`) - 0.5) * 1.25;
+    const distance = node.nodeType === "EVIDENCE" ? 34 : node.nodeType === "ROLE_ONLY_CAPABILITY" ? 74 : 78;
+    const point = pointAt(baseAngle + spread, distance);
+    node.x = (parent?.x ?? 0) + point.x;
+    node.y = (parent?.y ?? 0) + point.y;
+    node.seedX = node.x;
+    node.seedY = node.y;
+  });
+
+  return seeded;
 }
 
-// ---------------------------------------------------------------------------
-// Node type helpers
-// ---------------------------------------------------------------------------
+function endpointId(endpoint: unknown): string {
+  if (typeof endpoint === "object" && endpoint !== null && "id" in endpoint) {
+    return String(endpoint.id);
+  }
+  return String(endpoint);
+}
 
-function nodesByType<T extends CareerMapGraphProjection["nodes"][number]["type"]>(
-  projection: CareerMapGraphProjection,
-  type: T,
-): Extract<CareerMapGraphProjection["nodes"][number], { type: T }>[] {
-  return projection.nodes.filter(
-    (n): n is Extract<CareerMapGraphProjection["nodes"][number], { type: T }> => n.type === type,
+function projectionNodeType(nodeType: CareerGraphVisualNodeType): string {
+  if (nodeType === "YOU") return "user";
+  if (nodeType === "FAMILY") return "capability_family";
+  if (nodeType === "ROLE_ONLY_CAPABILITY") return "role_requirement";
+  return nodeType.toLowerCase();
+}
+
+function typeName(nodeType: CareerGraphVisualNodeType): string {
+  if (nodeType === "YOU") return "Career core";
+  if (nodeType === "ROLE_ONLY_CAPABILITY") return "Capability beyond your current evidence";
+  return nodeType.charAt(0) + nodeType.slice(1).toLowerCase();
+}
+
+function nodeLabel(node: CareerGraphVisualNode): string {
+  return node.label ?? (node.nodeType === "EVIDENCE" ? "Evidence signal" : node.semanticId);
+}
+
+function splitCanvasLabel(label: string, compact = false): readonly string[] {
+  const singleLineLimit = compact ? 13 : 18;
+  if (label.length <= singleLineLimit) return [label];
+  const words = label.split(" ");
+  const first: string[] = [];
+  const second: string[] = [];
+  for (const word of words) {
+    const destination = first.join(" ").length < (compact ? 9 : 13) ? first : second;
+    destination.push(word);
+  }
+  return second.length > 0 ? [first.join(" "), second.join(" ")] : [label];
+}
+
+function SelectedNodeDetail({
+  projection,
+  selected,
+  onSelect,
+}: {
+  projection: CareerMapGraphProjection;
+  selected: CareerGraphVisualNode | null;
+  onSelect: (id: string) => void;
+}) {
+  const families = projection.nodes.filter(
+    (node): node is CapabilityFamilyGraphNode => node.type === "capability_family",
+  );
+  const capabilities = projection.nodes.filter(
+    (node): node is CapabilityGraphNode => node.type === "capability",
+  );
+  const evidence = projection.nodes.filter(
+    (node): node is EvidenceGraphNode => node.type === "evidence",
+  );
+  const roles = projection.nodes.filter(
+    (node): node is RoleGraphNode => node.type === "role",
+  );
+  const requirements = projection.nodes.filter(
+    (node): node is RoleRequirementGraphNode => node.type === "role_requirement",
+  );
+
+  if (!selected) {
+    return (
+      <div className="max-w-xl py-5">
+        <p className="text-sm leading-6 text-cyan-50/70">
+          Select a family, capability, evidence signal, or future role to hold its connections and read the detail here.
+        </p>
+      </div>
+    );
+  }
+
+  if (selected.nodeType === "FAMILY") {
+    const family = families.find((item) => item.id === selected.semanticId);
+    const familyCapabilities = capabilities.filter((item) => item.familyId === selected.semanticId);
+    return (
+      <div className="py-5">
+        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-teal-300">Capability family</p>
+        <h3 className="mt-2 text-xl font-semibold tracking-[-0.02em] text-cyan-50">{family?.label}</h3>
+        <div className="mt-4 flex flex-wrap gap-2">
+          {familyCapabilities.map((capability) => (
+            <button key={capability.id} type="button" onClick={() => onSelect(capability.id)} className="min-h-11 rounded-full border border-emerald-200/20 px-4 text-sm text-emerald-50 transition-colors hover:border-emerald-200/50 hover:bg-emerald-200/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-200">
+              {capability.label}
+            </button>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (selected.nodeType === "CAPABILITY") {
+    const capability = capabilities.find((item) => item.id === selected.semanticId);
+    const family = families.find((item) => item.id === capability?.familyId);
+    const supportingEvidence = evidence.filter((item) => capability?.evidenceIds.includes(item.id));
+    return (
+      <div className="py-5">
+        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-emerald-300">{family?.label ?? "Capability"}</p>
+        <h3 className="mt-2 text-xl font-semibold tracking-[-0.02em] text-cyan-50">{capability?.label}</h3>
+        <p className="mt-2 text-sm text-cyan-50/65">{supportingEvidence.length} supporting evidence {supportingEvidence.length === 1 ? "signal" : "signals"}</p>
+        <div className="mt-4 grid gap-2 sm:grid-cols-2">
+          {supportingEvidence.map((item, index) => (
+            <button key={item.id} type="button" onClick={() => onSelect(item.id)} className="min-h-11 rounded-xl bg-white/[0.045] px-4 py-3 text-left text-sm text-cyan-50/80 transition-colors hover:bg-white/[0.08] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-200">
+              Evidence {index + 1} · {item.relationship === "direct_evidence" ? "direct" : "transferable"}
+            </button>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (selected.nodeType === "EVIDENCE") {
+    const item = evidence.find((node) => node.id === selected.semanticId);
+    return (
+      <div className="max-w-3xl py-5">
+        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-violet-300">Evidence detail</p>
+        <p className="mt-3 text-base leading-7 text-cyan-50/90">{item?.text}</p>
+        <p className="mt-3 text-sm text-violet-100/65">{item?.relationship === "direct_evidence" ? "Direct evidence" : "Transferable signal"}</p>
+      </div>
+    );
+  }
+
+  if (selected.nodeType === "ROLE") {
+    const role = roles.find((item) => item.id === selected.semanticId);
+    const roleRequirements = requirements.filter((item) => item.roleId === selected.semanticId);
+    const owned = roleRequirements.filter((item) => item.requirementState !== "evidence_not_yet_shown");
+    const beyond = roleRequirements.filter((item) => item.requirementState === "evidence_not_yet_shown");
+    return (
+      <div className="py-5">
+        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-orange-300">Future role · path {typeof role?.proximityRank === "number" ? role.proximityRank + 1 : ""}</p>
+        <h3 className="mt-2 text-xl font-semibold tracking-[-0.02em] text-cyan-50">{role?.title}</h3>
+        <div className="mt-5 grid gap-6 md:grid-cols-2">
+          <div>
+            <p className="text-sm font-semibold text-emerald-200">What you already bring</p>
+            <div className="mt-2 flex flex-wrap gap-2">
+              {owned.map((item) => <button key={item.id} type="button" onClick={() => onSelect(item.capabilityId)} className="min-h-11 rounded-full bg-emerald-200/10 px-4 text-sm text-emerald-50 hover:bg-emerald-200/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-200">{item.capabilityLabel}</button>)}
+            </div>
+          </div>
+          <div>
+            <p className="text-sm font-semibold text-slate-200">What this role requires beyond you</p>
+            <div className="mt-2 flex flex-wrap gap-2">
+              {beyond.map((item) => <button key={item.id} type="button" onClick={() => onSelect(item.capabilityId)} className="min-h-11 rounded-full border border-dashed border-slate-300/30 px-4 text-sm text-slate-100 hover:border-slate-200/60 hover:bg-white/[0.05] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-200">{item.capabilityLabel}</button>)}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const relatedRoles = roles.filter((role) => selected.roleIds?.includes(role.id));
+  return (
+    <div className="py-5">
+      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-300">Beyond your current evidence</p>
+      <h3 className="mt-2 text-xl font-semibold tracking-[-0.02em] text-cyan-50">{selected.label}</h3>
+      <p className="mt-3 text-sm text-cyan-50/65">Required by {relatedRoles.map((role) => role.title).join(", ")}.</p>
+    </div>
   );
 }
-
-// ---------------------------------------------------------------------------
-// Requirement state colours / labels
-// ---------------------------------------------------------------------------
-
-const reqStateConfig = {
-  directly_demonstrated: {
-    stroke: "#5eead4",
-    fill: "#0e2e2b",
-    textColor: "#5eead4",
-    edgeStroke: "#5eead4",
-    edgeDash: undefined as string | undefined,
-    badge: "Direct",
-  },
-  transferable_signal: {
-    stroke: "#60a5fa",
-    fill: "#0e1e36",
-    textColor: "#60a5fa",
-    edgeStroke: "#60a5fa",
-    edgeDash: "6 4",
-    badge: "Transferable",
-  },
-  evidence_not_yet_shown: {
-    stroke: "#94a3b8",
-    fill: "transparent",
-    textColor: "#94a3b8",
-    edgeStroke: "#94a3b8",
-    edgeDash: "3 6",
-    badge: "Not yet shown",
-  },
-} as const;
-
-// ---------------------------------------------------------------------------
-// Main component
-// ---------------------------------------------------------------------------
 
 export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) {
-  const [selectedFamilyId, setSelectedFamilyId] = useState<string | null>(null);
-  const [selectedCapabilityId, setSelectedCapabilityId] = useState<string | null>(null);
-  const [selectedRoleId, setSelectedRoleId] = useState<string | null>(null);
-
-  // --- Derived node lists ------------------------------------------------
-  const familyNodes = useMemo(() => nodesByType(projection, "capability_family") as CapabilityFamilyGraphNode[], [projection]);
-  const capabilityNodes = useMemo(() => nodesByType(projection, "capability") as CapabilityGraphNode[], [projection]);
-  const evidenceNodes = useMemo(() => nodesByType(projection, "evidence") as EvidenceGraphNode[], [projection]);
-  const roleNodes = useMemo(() => nodesByType(projection, "role") as RoleGraphNode[], [projection]);
-  const requirementNodes = useMemo(() => nodesByType(projection, "role_requirement") as RoleRequirementGraphNode[], [projection]);
-
-  const selectedRole = roleNodes.find((role) => role.id === selectedRoleId) ?? null;
-  const selectedRoleRequirements = useMemo(
-    () => requirementNodes.filter((requirement) => requirement.roleId === selectedRoleId),
-    [requirementNodes, selectedRoleId],
+  const visualModel = useMemo(() => buildCareerGraphVisualModel(projection), [projection]);
+  const [layoutRevision, setLayoutRevision] = useState(0);
+  const graphData = useMemo(
+    () => {
+      void layoutRevision;
+      return {
+        nodes: seedCareerGraphNodes(visualModel.nodes, visualModel.links),
+        links: visualModel.links.map((link) => ({ ...link })) as RenderLink[],
+      };
+    },
+    [visualModel, layoutRevision],
   );
-  const rolePositions = useMemo(
-    () => new Map(roleNodes.map((role, index) => [role.id, rolePosition(role, index)])),
-    [roleNodes],
+  const graphRef = useRef<CareerMapForceGraphHandle | null>(null);
+  const fieldRef = useRef<HTMLDivElement | null>(null);
+  const [dimensions, setDimensions] = useState({ width: 900, height: 650 });
+  const [hoveredId, setHoveredId] = useState<string | null>(null);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [settled, setSettled] = useState(false);
+  const [zoom, setZoom] = useState(1);
+
+  const focusId = hoveredId ?? selectedId;
+  const focusSet = useMemo(
+    () => buildCareerGraphFocusSet(visualModel, focusId),
+    [visualModel, focusId],
   );
+  const selectedNode = visualModel.nodes.find((node) => node.id === selectedId) ?? null;
+  const hasRole = visualModel.nodes.some((node) => node.nodeType === "ROLE");
 
-  // --- Computed positions ------------------------------------------------
-  const angles = useMemo(() => familyAngles(familyNodes.length), [familyNodes.length]);
+  useEffect(() => {
+    const field = fieldRef.current;
+    if (!field) return;
+    const observer = new ResizeObserver(([entry]) => {
+      if (!entry) return;
+      setDimensions({
+        width: Math.max(320, Math.floor(entry.contentRect.width)),
+        height: Math.max(520, Math.floor(entry.contentRect.height)),
+      });
+    });
+    observer.observe(field);
+    return () => observer.disconnect();
+  }, []);
 
-  const familyPositions = useMemo(
-    () =>
-      familyNodes.map((_, i) => {
-        const a = angles[i]!;
-        return radialPoint(CX, CY, FAMILY_RING_R, a);
-      }),
-    [familyNodes, angles],
-  );
+  useEffect(() => {
+    const graph = graphRef.current;
+    if (!graph) return;
 
-  // --- Visibility logic (presentation-only) -----------------------------
-  //
-  // All personal capabilities remain visible so the initial map reads
-  // You -> family -> specific capability. Selection changes emphasis and
-  // evidence disclosure only; it never changes semantic membership.
-  //
-  // This is presentation-only — no semantic state is mutated.
+    const charge = graph.d3Force("charge") as
+      | { strength: (value: (node: RenderNode) => number) => unknown }
+      | undefined;
+    charge?.strength((node) => {
+      if (node.nodeType === "YOU") return -280;
+      if (node.nodeType === "EVIDENCE") return -14;
+      if (node.nodeType === "ROLE_ONLY_CAPABILITY") return -34;
+      return -92;
+    });
 
-  const roleReferencedCapabilityIds = useMemo<Set<string>>(() => {
-    if (!selectedRole) return new Set();
-    const ids = new Set<string>();
-    for (const req of selectedRoleRequirements) {
-      if (req.requirementState !== "evidence_not_yet_shown") {
-        ids.add(req.capabilityId);
+    const linkForce = graph.d3Force("link") as
+      | {
+          distance: (value: (link: RenderLink) => number) => unknown;
+          strength: (value: (link: RenderLink) => number) => unknown;
+        }
+      | undefined;
+    linkForce
+      ?.distance((link) => {
+        if (link.linkType === "CAPABILITY_EVIDENCE") return 34;
+        if (link.linkType === "ROLE_OWNED_CAPABILITY") return 168;
+        if (link.linkType === "ROLE_ONLY_CAPABILITY") return 76;
+        return 82;
+      });
+    linkForce
+      ?.strength((link) => {
+        if (link.linkType === "CAPABILITY_EVIDENCE") return 0.9;
+        if (link.linkType === "ROLE_ONLY_CAPABILITY") return 0.62;
+        if (link.linkType === "ROLE_OWNED_CAPABILITY") return 0.14;
+        return 0.5;
+      });
+
+    let forceNodes: RenderNode[] = [];
+    const semanticForce = (alpha: number) => {
+      for (const node of forceNodes) {
+        if (node.nodeType === "YOU") continue;
+        const attraction = node.nodeType === "ROLE" ? 0.19 : node.nodeType === "FAMILY" ? 0.13 : 0.05;
+        node.vx = (node.vx ?? 0) + (node.seedX - (node.x ?? 0)) * attraction * alpha;
+        node.vy = (node.vy ?? 0) + (node.seedY - (node.y ?? 0)) * attraction * alpha;
       }
+    };
+    semanticForce.initialize = (nodes: NodeObject<CareerGraphVisualNode>[]) => {
+      forceNodes = nodes as RenderNode[];
+    };
+    graph.d3Force("career-semantic-bias", semanticForce);
+    graph.d3ReheatSimulation();
+
+    return () => {
+      graph.d3Force("career-semantic-bias", null);
+    };
+  }, [graphData]);
+
+  const selectNode = useCallback((id: string) => {
+    setSelectedId((current) => current === id ? null : id);
+    const node = graphData.nodes.find((candidate) => candidate.id === id);
+    if (node?.x !== undefined && node.y !== undefined) {
+      graphRef.current?.centerAt(node.x, node.y, 420);
+      if ((graphRef.current?.zoom() ?? 1) < 1.35) graphRef.current?.zoom(1.35, 420);
     }
-    return ids;
-  }, [selectedRole, selectedRoleRequirements]);
+  }, [graphData.nodes]);
 
-  const selectedFamilyCapabilityIds = useMemo<Set<string>>(() => {
-    if (!selectedFamilyId) return new Set();
-    const fam = familyNodes.find((f) => f.id === selectedFamilyId);
-    return new Set(fam?.capabilityIds ?? []);
-  }, [selectedFamilyId, familyNodes]);
+  const resetGraph = useCallback(() => {
+    setSelectedId(null);
+    setHoveredId(null);
+    setSettled(false);
+    setLayoutRevision((revision) => revision + 1);
+  }, []);
 
-  const visibleCapabilityIds = useMemo<Set<string>>(() => {
-    return new Set(capabilityNodes.map((capability) => capability.id));
-  }, [capabilityNodes]);
+  const drawNode = useCallback((
+    node: NodeObject<CareerGraphVisualNode>,
+    context: CanvasRenderingContext2D,
+    globalScale: number,
+  ) => {
+    const active = !focusSet || focusSet.has(node.id as string);
+    const radius = nodeRadius[node.nodeType];
+    const selected = node.id === selectedId;
+    const hovered = node.id === hoveredId;
+    context.save();
+    context.globalAlpha = active ? 1 : 0.12;
+    context.shadowColor = selected || hovered ? palette[node.nodeType] : "transparent";
+    context.shadowBlur = selected || hovered ? 16 : 0;
+    context.beginPath();
+    context.arc(node.x ?? 0, node.y ?? 0, radius, 0, Math.PI * 2);
+    if (node.nodeType === "ROLE_ONLY_CAPABILITY" || (node.nodeType === "EVIDENCE" && node.relationship === "transferable_signal")) {
+      context.strokeStyle = palette[node.nodeType];
+      context.lineWidth = node.nodeType === "ROLE_ONLY_CAPABILITY" ? 1.5 : 1.1;
+      context.stroke();
+    } else {
+      context.fillStyle = palette[node.nodeType];
+      context.fill();
+    }
 
-  const visibleCapabilities = useMemo(
-    () => capabilityNodes.filter((c) => visibleCapabilityIds.has(c.id)),
-    [capabilityNodes, visibleCapabilityIds],
-  );
+    if (node.nodeType === "YOU" || node.nodeType === "ROLE" || selected) {
+      context.beginPath();
+      context.arc(node.x ?? 0, node.y ?? 0, radius + (node.nodeType === "YOU" ? 7 : 4.5), 0, Math.PI * 2);
+      context.strokeStyle = `${palette[node.nodeType]}66`;
+      context.lineWidth = node.nodeType === "YOU" ? 2.2 : 1.4;
+      context.stroke();
+    }
 
-  // Evidence visible only when capability selected
-  const visibleEvidenceIds = useMemo<Set<string>>(() => {
-    if (!selectedCapabilityId) return new Set();
-    const cap = capabilityNodes.find((c) => c.id === selectedCapabilityId);
-    return new Set(cap?.evidenceIds ?? []);
-  }, [selectedCapabilityId, capabilityNodes]);
+    const compact = dimensions.width < 600;
+    const showLabel = (normallyLabelled.has(node.nodeType) && (!compact || node.nodeType !== "FAMILY"))
+      || selected
+      || hovered
+      || (node.nodeType === "CAPABILITY" && globalScale > 2.15)
+      || (node.nodeType === "ROLE_ONLY_CAPABILITY" && globalScale > 3.2);
+    if (showLabel && node.label) {
+      const screenFontSize = compact ? 9.5 : node.nodeType === "YOU" ? 13 : node.nodeType === "FAMILY" || node.nodeType === "ROLE" ? 11 : 9.5;
+      const fontSize = screenFontSize / globalScale;
+      context.font = `600 ${fontSize}px ui-sans-serif, system-ui, sans-serif`;
+      const outward = !compact && (node.nodeType === "FAMILY" || node.nodeType === "ROLE");
+      const rightSide = (node.x ?? 0) >= 0;
+      context.textAlign = outward ? rightSide ? "left" : "right" : "center";
+      context.textBaseline = outward ? "middle" : "top";
+      context.fillStyle = active ? "#e7f7f6" : "#53686a";
+      const labelLines = splitCanvasLabel(node.label, compact);
+      labelLines.forEach((line, index) => {
+        const labelX = (node.x ?? 0) + (outward ? (rightSide ? radius + 7 : -radius - 7) : 0);
+        const labelY = outward
+          ? (node.y ?? 0) + (index - (labelLines.length - 1) / 2) * (fontSize + 2)
+          : (node.y ?? 0) + radius + 6 + index * (fontSize + 2);
+        context.fillText(line, labelX, labelY);
+      });
+    }
+    context.restore();
+  }, [dimensions.width, focusSet, hoveredId, selectedId]);
 
-  const visibleEvidence = useMemo(
-    () => evidenceNodes.filter((e) => visibleEvidenceIds.has(e.id)),
-    [evidenceNodes, visibleEvidenceIds],
-  );
-
-  // --- Capability positions (placed around their owning family) ----------
-  const capabilityPositions = useMemo<Map<string, { x: number; y: number }>>(() => {
-    const map = new Map<string, { x: number; y: number }>();
-    const orderedCapabilities = familyNodes.flatMap((family) =>
-      capabilityNodes.filter((capability) => capability.familyId === family.id),
-    );
-    orderedCapabilities.forEach((capability, index) => {
-      map.set(capability.id, radialPoint(CX, CY, CAPABILITY_RING_R, (360 / orderedCapabilities.length) * index));
-    });
-    return map;
-  }, [familyNodes, capabilityNodes]);
-
-  // --- Evidence positions (placed around the selected capability) --------
-  const evidencePositions = useMemo<Map<string, { x: number; y: number }>>(() => {
-    const map = new Map<string, { x: number; y: number }>();
-    if (!selectedCapabilityId) return map;
-    const capPos = capabilityPositions.get(selectedCapabilityId);
-    if (!capPos) return map;
-    // Compute angle from center to capability for outward extension
-    const dx = capPos.x - CX;
-    const dy = capPos.y - CY;
-    const angleRad = Math.atan2(dy, dx);
-    const angleDeg = (angleRad * 180) / Math.PI + 90;
-    const positions = evidenceOffsetPositions(capPos.x, capPos.y, visibleEvidence.length, angleDeg);
-    visibleEvidence.forEach((e, i) => {
-      if (positions[i]) map.set(e.id, positions[i]!);
-    });
-    return map;
-  }, [selectedCapabilityId, capabilityPositions, visibleEvidence]);
-
-  // --- Role requirement positions ----------------------------------------
-  const reqPositions = useMemo<Map<string, { x: number; y: number }>>(() => {
-    const map = new Map<string, { x: number; y: number }>();
-    if (!selectedRole) return map;
-    const selectedRolePosition = rolePositions.get(selectedRole.id);
-    if (!selectedRolePosition) return map;
-    const positions = roleReqPositions(selectedRolePosition.x, selectedRolePosition.y, selectedRoleRequirements.length);
-    selectedRoleRequirements.forEach((req, i) => {
-      if (positions[i]) map.set(req.id, positions[i]!);
-    });
-    return map;
-  }, [selectedRole, selectedRoleRequirements, rolePositions]);
-
-  // --- Event handlers ---------------------------------------------------
-  function selectFamily(id: string) {
-    setSelectedCapabilityId(null);
-    setSelectedFamilyId((current) => (current === id ? null : id));
-  }
-
-  function selectCapability(id: string) {
-    setSelectedCapabilityId((current) => (current === id ? null : id));
-  }
-
-  function toggleRole(roleId: string) {
-    setSelectedRoleId((current) => (current === roleId ? null : roleId));
-    setSelectedCapabilityId(null);
-  }
-
-  // --- SVG edge helpers -------------------------------------------------
-  function line(x1: number, y1: number, x2: number, y2: number, stroke: string, opacity: number, dash?: string) {
-    return (
-      <line
-        x1={x1} y1={y1} x2={x2} y2={y2}
-        stroke={stroke}
-        strokeOpacity={opacity}
-        strokeWidth={1.4}
-        strokeDasharray={dash}
-      />
-    );
-  }
-
-  // ---------------------------------------------------------------------------
-  // Render
-  // ---------------------------------------------------------------------------
-
-  const hasRole = roleNodes.length > 0;
+  const paintPointerArea = useCallback((
+    node: NodeObject<CareerGraphVisualNode>,
+    color: string,
+    context: CanvasRenderingContext2D,
+  ) => {
+    context.fillStyle = color;
+    context.beginPath();
+    context.arc(node.x ?? 0, node.y ?? 0, Math.max(7, nodeRadius[node.nodeType]), 0, Math.PI * 2);
+    context.fill();
+  }, []);
 
   return (
     <section
-      aria-label="Career Map neural graph"
-      className="overflow-hidden rounded-[2rem] border border-cyan-100/10 bg-[#07101c]/90 shadow-[0_30px_140px_rgba(6,182,212,0.08)] backdrop-blur"
+      aria-label="Interactive Career Map capability universe"
+      className="overflow-hidden rounded-2xl bg-[#061012] text-cyan-50 shadow-[0_32px_100px_-50px_rgba(45,212,191,0.55)]"
+      data-graph-node-count={visualModel.nodes.length}
+      data-graph-link-count={visualModel.links.length}
+      data-graph-status={settled ? "settled" : "forming"}
     >
-      <header className="flex flex-col justify-between gap-3 border-b border-cyan-100/[0.08] px-5 py-4 sm:flex-row sm:items-center sm:px-7">
+      <header className="flex flex-col gap-4 border-b border-cyan-100/10 px-5 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-7">
         <div>
-          <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-cyan-300">Career capability network</p>
-          <h2 className="mt-1 text-lg font-semibold text-slate-100">Your evidence map</h2>
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-teal-300">Career capability universe</p>
+          <h2 className="mt-1 text-xl font-semibold tracking-[-0.025em] text-cyan-50">Your experience, connected</h2>
         </div>
-        <div className="flex flex-wrap gap-3 text-[10px] uppercase tracking-wider">
-          <span className="text-teal-300"><span aria-hidden="true">●</span> Direct evidence</span>
-          <span className="text-blue-300"><span aria-hidden="true">◑</span> Transferable</span>
-          <span className="text-slate-400"><span aria-hidden="true">○</span> Not yet shown</span>
+        <div className="flex items-center gap-3">
+          <span className="flex items-center gap-2 text-xs text-cyan-50/65" aria-live="polite">
+            <i className={`h-2 w-2 rounded-full ${settled ? "bg-teal-300" : "animate-pulse bg-orange-300"}`} aria-hidden="true" />
+            {settled ? "Map settled" : "Map forming"}
+          </span>
+          <button type="button" onClick={resetGraph} className="min-h-11 rounded-full border border-cyan-100/20 px-4 text-sm font-medium text-cyan-50 transition-colors hover:border-cyan-100/45 hover:bg-white/[0.06] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-200">
+            Reset view
+          </button>
         </div>
       </header>
 
-      {/* ── Desktop SVG graph ─────────────────────────────────────────── */}
-      <div className="relative hidden overflow-hidden md:block" style={{ height: VB_H }}>
-        <svg
-          viewBox={`0 0 ${VB_W} ${VB_H}`}
-          preserveAspectRatio="none"
-          className="absolute inset-0 h-full w-full"
-          aria-hidden="true"
-        >
-          {/* Center → family edges */}
-          {familyNodes.map((fam, fi) => {
-            const fp = familyPositions[fi]!;
-            return <line key={`edge-user-${fam.id}`} x1={CX} y1={CY} x2={fp.x} y2={fp.y} stroke="#67e8f9" strokeOpacity={0.18} strokeWidth={1.2} />;
-          })}
+      <div
+        ref={fieldRef}
+        role="application"
+        aria-label="Career Map graph. Pan and zoom the field, or use the accessible navigator below."
+        className="relative h-[68vh] min-h-[560px] max-h-[780px] overflow-hidden bg-[radial-gradient(circle_at_50%_48%,rgba(20,91,88,0.18),transparent_44%),linear-gradient(180deg,#071416_0%,#061012_100%)] md:h-[72vh] md:min-h-[640px]"
+      >
+        <CareerMapForceGraph
+          ref={graphRef}
+          width={dimensions.width}
+          height={dimensions.height}
+          graphData={graphData}
+          backgroundColor="rgba(0,0,0,0)"
+          nodeCanvasObject={drawNode}
+          nodePointerAreaPaint={paintPointerArea}
+          nodeLabel={(node) => nodeLabel(node)}
+          linkColor={(link) => {
+            const source = endpointId(link.source);
+            const target = endpointId(link.target);
+            const active = !focusSet || (focusSet.has(source) && focusSet.has(target));
+            if (!active) return "rgba(116,148,148,0.025)";
+            if (link.linkType === "ROLE_OWNED_CAPABILITY") return "rgba(255,180,109,0.34)";
+            if (link.linkType === "ROLE_ONLY_CAPABILITY") return "rgba(148,163,184,0.32)";
+            if (link.linkType === "CAPABILITY_EVIDENCE") return "rgba(167,139,250,0.25)";
+            return "rgba(105,220,204,0.22)";
+          }}
+          linkLineDash={(link) => link.linkType === "ROLE_ONLY_CAPABILITY" || link.requirementState === "transferable_signal" ? [4, 4] : null}
+          linkWidth={(link) => link.linkType.startsWith("ROLE_") ? 1.15 : 0.72}
+          onNodeHover={(node) => setHoveredId(node ? String(node.id) : null)}
+          onNodeClick={(node) => selectNode(String(node.id))}
+          onBackgroundClick={() => setSelectedId(null)}
+          onNodeDragEnd={(node) => {
+            if (node.nodeType === "YOU") return;
+            node.fx = node.x;
+            node.fy = node.y;
+          }}
+          onZoom={({ k }) => setZoom(k)}
+          onEngineStop={() => {
+            setSettled(true);
+            graphRef.current?.zoomToFit(600, dimensions.width < 600 ? 28 : 72);
+          }}
+          enableNodeDrag
+          enablePanInteraction
+          enableZoomInteraction
+          minZoom={0.3}
+          maxZoom={7}
+          cooldownTicks={190}
+          cooldownTime={5200}
+          d3AlphaDecay={0.028}
+          d3VelocityDecay={0.34}
+        />
 
-          {/* Family → capability edges */}
-          {visibleCapabilities.map((cap) => {
-            const fp = familyPositions[familyNodes.findIndex((f) => f.id === cap.familyId)]!;
-            const cp = capabilityPositions.get(cap.id);
-            if (!fp || !cp) return null;
-            return <line key={`edge-fam-cap-${cap.id}`} x1={fp.x} y1={fp.y} x2={cp.x} y2={cp.y} stroke="#67e8f9" strokeOpacity={0.28} strokeWidth={1.2} />;
-          })}
-
-          {/* Capability → evidence edges */}
-          {visibleEvidence.map((ev) => {
-            const cp = capabilityPositions.get(selectedCapabilityId ?? "");
-            const ep = evidencePositions.get(ev.id);
-            if (!cp || !ep) return null;
-            const isTransferable = ev.relationship === "transferable_signal";
-            return line(cp.x, cp.y, ep.x, ep.y, isTransferable ? "#60a5fa" : "#5eead4", 0.5, isTransferable ? "5 4" : undefined);
-          })}
-
-          {/* Role → requirement edges + requirement → personal capability bridges */}
-          {selectedRole &&
-            selectedRoleRequirements.map((req) => {
-              const rp = reqPositions.get(req.id);
-              if (!rp) return null;
-              const cfg = reqStateConfig[req.requirementState];
-              const cp = req.requirementState !== "evidence_not_yet_shown"
-                ? capabilityPositions.get(req.capabilityId)
-                : undefined;
-              const showBridge = cp !== undefined && visibleCapabilityIds.has(req.capabilityId);
-              return (
-                <React.Fragment key={`edges-req-${req.id}`}>
-                  <line x1={rolePositions.get(selectedRole.id)?.x} y1={rolePositions.get(selectedRole.id)?.y} x2={rp.x} y2={rp.y} stroke={cfg.edgeStroke} strokeOpacity={0.45} strokeWidth={1.2} strokeDasharray={cfg.edgeDash} />
-                  {showBridge && cp && (
-                    <line x1={rp.x} y1={rp.y} x2={cp.x} y2={cp.y} stroke={cfg.edgeStroke} strokeOpacity={0.35} strokeWidth={1.1} strokeDasharray={cfg.edgeDash} />
-                  )}
-                </React.Fragment>
-              );
-            })
-          }
-        </svg>
-
-        {/* ── You node ──────────────────────────────────────────────── */}
-        <div
-          style={positionStyle({ x: CX, y: CY })}
-          className="absolute z-10 flex h-28 w-28 flex-col items-center justify-center rounded-full border border-cyan-100/35 bg-[#0a202c]/95 text-center shadow-[0_0_42px_rgba(34,211,238,0.16)]"
-          aria-label="You — your experience core"
-          data-node-type="user"
-          data-node-id="user"
-        >
-          <span className="text-[8px] font-semibold uppercase tracking-[0.22em] text-cyan-300">Your career</span>
-          <span className="mt-1 text-sm font-semibold text-slate-100">You</span>
+        <div className="pointer-events-none absolute bottom-4 left-4 right-4 flex items-end justify-between gap-3 sm:bottom-5 sm:left-6 sm:right-6">
+          <div className="max-w-[75%]">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.15em] text-cyan-100/45">{focusId ? typeName(visualModel.nodes.find((node) => node.id === focusId)?.nodeType ?? "YOU") : "Explore"}</p>
+            <p className="mt-1 truncate text-sm font-medium text-cyan-50/85">{focusId ? nodeLabel(visualModel.nodes.find((node) => node.id === focusId) ?? visualModel.nodes[0]!) : "Move through your career universe"}</p>
+          </div>
+          <span className="rounded-full bg-black/30 px-3 py-1.5 text-xs tabular-nums text-cyan-50/55">{Math.round(zoom * 100)}%</span>
         </div>
-
-        {/* ── Family nodes ──────────────────────────────────────────── */}
-        {familyNodes.map((fam, fi) => {
-          const fp = familyPositions[fi]!;
-          const isSelected = fam.id === selectedFamilyId;
-          return (
-            <button
-              key={fam.id}
-              type="button"
-              onClick={() => selectFamily(fam.id)}
-              aria-pressed={isSelected}
-              aria-label={`${fam.label} capability family${isSelected ? " — selected" : ""}`}
-              data-node-type="capability_family"
-              data-node-id={fam.id}
-              style={positionStyle(fp)}
-              className={`absolute z-20 w-36 rounded-2xl border px-3 py-2.5 text-left transition-[border-color,background-color,box-shadow] duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-200 ${
-                isSelected
-                  ? "border-cyan-200/70 bg-[#0e2832] shadow-[0_0_28px_rgba(34,211,238,0.22)]"
-                  : "border-cyan-100/20 bg-[#0b1826] text-slate-300 hover:border-cyan-200/35"
-              }`}
-            >
-              <span className="block text-[8px] font-semibold uppercase tracking-wider text-cyan-300/70">Family</span>
-              <span className="mt-0.5 block text-xs font-semibold leading-4 text-slate-100">{fam.label}</span>
-              <span className="mt-1 block text-[9px] text-cyan-200/60">{fam.capabilityIds.length} {fam.capabilityIds.length === 1 ? "capability" : "capabilities"}</span>
-            </button>
-          );
-        })}
-
-        {/* ── Visible personal capability nodes ─────────────────────── */}
-        {visibleCapabilities.map((cap) => {
-          const cp = capabilityPositions.get(cap.id);
-          if (!cp) return null;
-          const isSelected = cap.id === selectedCapabilityId;
-          const isRoleReferenced = roleReferencedCapabilityIds.has(cap.id);
-          const reqForCap = selectedRoleRequirements.find((r) => r.capabilityId === cap.id);
-          const reqState = reqForCap?.requirementState;
-          const roleHighlight = Boolean(selectedRole && isRoleReferenced && reqState && reqState !== "evidence_not_yet_shown");
-          return (
-            <button
-              key={cap.id}
-              type="button"
-              onClick={() => selectCapability(cap.id)}
-              aria-pressed={isSelected}
-              aria-label={`${cap.label} capability${isSelected ? " — selected" : ""}${roleHighlight ? `, ${reqState === "directly_demonstrated" ? "directly demonstrated" : "transferable signal"} for role` : ""}`}
-              data-node-type="capability"
-              data-node-id={cap.id}
-              data-family-id={cap.familyId}
-              style={positionStyle(cp)}
-              className={`absolute z-30 w-28 rounded-2xl border px-2.5 py-2 text-left transition-[border-color,background-color,box-shadow,opacity] duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-200 ${
-                isSelected
-                  ? "border-cyan-100/65 bg-[#12313b] text-white shadow-[0_0_24px_rgba(34,211,238,0.2)]"
-                  : reqState === "directly_demonstrated" && selectedRole
-                  ? "border-teal-200/55 bg-[#0e2e2b] text-white shadow-[0_0_16px_rgba(94,234,212,0.12)]"
-                  : reqState === "transferable_signal" && selectedRole
-                  ? "border-blue-300/45 bg-[#0e1e36] text-blue-50"
-                  : "border-cyan-100/18 bg-[#0b1826] text-slate-300 hover:border-cyan-200/30"
-              }`}
-            >
-              <span className="block text-[8px] uppercase tracking-wider text-cyan-300/60">{cap.familyId.replace(/-/g, " ")}</span>
-              <span className="block text-xs font-semibold leading-4 text-slate-100">{cap.label}</span>
-              <span className={`mt-1 flex items-center gap-1 text-[9px] uppercase tracking-wider ${
-                reqState === "directly_demonstrated" && selectedRole ? "text-teal-300" :
-                reqState === "transferable_signal" && selectedRole ? "text-blue-300" :
-                "text-cyan-200/60"
-              }`}>
-                <span className={`h-1.5 w-1.5 rounded-full ${
-                  reqState === "directly_demonstrated" && selectedRole ? "bg-teal-300" :
-                  reqState === "transferable_signal" && selectedRole ? "bg-blue-300" :
-                  "bg-cyan-300/50"
-                }`} />
-                {cap.evidenceIds.length} {cap.evidenceIds.length === 1 ? "evidence" : "evidence items"}
-              </span>
-            </button>
-          );
-        })}
-
-        {/* ── Evidence nodes ────────────────────────────────────────── */}
-        {visibleEvidence.map((ev) => {
-          const ep = evidencePositions.get(ev.id);
-          if (!ep) return null;
-          const isTransferable = ev.relationship === "transferable_signal";
-          return (
-            <div
-              key={ev.id}
-              data-node-type="evidence"
-              data-node-id={ev.id}
-              style={positionStyle(ep)}
-              className={`absolute z-40 w-40 rounded-xl border px-3 py-2 text-left ${
-                isTransferable
-                  ? "border-blue-300/35 bg-[#0e1e36] text-blue-50"
-                  : "border-violet-300/35 bg-[#13121d]/95 text-slate-100"
-              }`}
-            >
-              <span className={`block text-[8px] font-semibold uppercase tracking-wider ${isTransferable ? "text-blue-300" : "text-violet-300"}`}>
-                {isTransferable ? "Transferable signal" : "Direct evidence"}
-              </span>
-              <p className="mt-1 line-clamp-3 text-[10px] leading-4 text-slate-200">{ev.text}</p>
-            </div>
-          );
-        })}
-
-        {/* ── Role node ─────────────────────────────────────────────── */}
-        {hasRole && roleNodes.map((role, index) => {
-          const position = rolePositions.get(role.id);
-          if (!position) return null;
-          const isSelected = role.id === selectedRoleId;
-          return (
-            <button
-              key={role.id}
-              type="button"
-              onClick={() => toggleRole(role.id)}
-              aria-pressed={isSelected}
-              aria-label={`${role.title} role — ${isSelected ? "hide" : "show"} requirements`}
-              data-node-type="role"
-              data-node-id={role.id}
-              data-proximity-rank={role.proximityRank ?? index}
-              data-display-radius={position.radius}
-              style={positionStyle(position)}
-              className={`absolute z-20 w-36 rounded-2xl border px-3 py-2.5 text-left transition-[border-color,background-color,box-shadow] duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-200 ${
-                isSelected
-                  ? "border-cyan-200/45 bg-[#102b37] shadow-[0_0_24px_rgba(56,189,248,0.14)]"
-                  : "border-blue-200/20 bg-[#0b1725] hover:border-blue-200/35"
-              }`}
-            >
-              <span className="block text-[8px] font-semibold uppercase tracking-wider text-blue-300">Generic role</span>
-              <span className="mt-0.5 block text-[11px] font-semibold leading-4 text-slate-100">{role.title}</span>
-            </button>
-          );
-        })}
-
-        {/* ── Role requirement nodes ─────────────────────────────────── */}
-        {selectedRole && selectedRoleRequirements.map((req) => {
-          const rp = reqPositions.get(req.id);
-          if (!rp) return null;
-          const cfg = reqStateConfig[req.requirementState];
-          const isUnsupported = req.requirementState === "evidence_not_yet_shown";
-          return (
-            <div
-              key={req.id}
-              data-node-type="role_requirement"
-              data-node-id={req.id}
-              data-requirement-state={req.requirementState}
-              style={{
-                ...positionStyle(rp),
-                border: `1px solid ${cfg.stroke}`,
-                background: isUnsupported ? "transparent" : cfg.fill,
-              }}
-              className="absolute z-30 w-32 rounded-xl px-2.5 py-2 text-left"
-            >
-              <span className="block text-[8px] font-semibold uppercase tracking-wider" style={{ color: cfg.textColor }}>{cfg.badge}</span>
-              <span className="mt-0.5 block text-[10px] font-medium leading-3 text-slate-200">{req.capabilityLabel}</span>
-              <span className="mt-1 block text-[8px] uppercase tracking-wider text-slate-500">{req.importance}</span>
-            </div>
-          );
-        })}
       </div>
 
-      {/* ── Mobile list fallback ───────────────────────────────────── */}
-      <div className="border-t border-white/[0.06] md:hidden">
-        <div className="p-4">
-          <div
-            className="mb-4 rounded-2xl border border-cyan-100/25 bg-[#0a202c] px-4 py-3 text-center"
-            aria-label="You — your experience core"
-            data-node-type="user"
-            data-node-id="user"
-          >
-            <span className="block text-[9px] font-semibold uppercase tracking-[0.2em] text-cyan-300">Your career</span>
-            <span className="mt-1 block text-sm font-semibold text-slate-100">You</span>
-            <span className="mt-1 block text-[10px] text-slate-400">Your evidence-backed capability areas</span>
-          </div>
-          <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-500">Explore a capability family</p>
-          <div className="mt-3 grid gap-2">
-            {familyNodes.map((fam) => {
-              const isSelected = fam.id === selectedFamilyId;
-              const familyCapabilities = capabilityNodes.filter((capability) => capability.familyId === fam.id);
-              return (
-                <button
-                  key={fam.id}
-                  type="button"
-                  onClick={() => selectFamily(fam.id)}
-                  aria-pressed={isSelected}
-                  data-node-type="capability_family"
-                  data-node-id={fam.id}
-                  className={`w-full rounded-xl border px-3 py-2.5 text-left text-xs transition-colors ${
-                    isSelected ? "border-cyan-200 bg-cyan-300 text-[#061018]" : "border-white/10 bg-white/[0.03] text-slate-300"
-                  }`}
-                >
-                  <span className="block font-medium">{fam.label}</span>
-                  <span className="mt-0.5 block text-[10px] opacity-70">{fam.capabilityIds.length} {fam.capabilityIds.length === 1 ? "capability" : "capabilities"}</span>
-                  <span className="mt-1.5 block text-[10px] leading-4 opacity-80">
-                    {familyCapabilities.map((capability) => capability.label).join(" · ")}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-        </div>
+      <div className="border-t border-cyan-100/10 px-5 sm:px-7">
+        <SelectedNodeDetail projection={projection} selected={selectedNode} onSelect={selectNode} />
+      </div>
 
-        {selectedFamilyId && visibleCapabilities.filter((c) => selectedFamilyCapabilityIds.has(c.id)).length > 0 && (
-          <div className="border-t border-white/[0.06] p-4">
-            <p className="text-[10px] font-semibold uppercase tracking-wider text-cyan-300">Capabilities in this family</p>
-            <div className="mt-3 grid gap-2">
-              {visibleCapabilities
-                .filter((c) => selectedFamilyCapabilityIds.has(c.id))
-                .map((cap) => {
-                  const isSelected = cap.id === selectedCapabilityId;
-                  return (
+      <details className="border-t border-cyan-100/10 px-5 py-4 sm:px-7">
+        <summary className="cursor-pointer select-none text-sm font-medium text-cyan-50/75 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-200">Accessible graph navigator</summary>
+        <div className="mt-4 grid max-h-72 gap-5 overflow-y-auto pb-2 sm:grid-cols-2 lg:grid-cols-3">
+          {(["FAMILY", "CAPABILITY", "ROLE", "EVIDENCE", "ROLE_ONLY_CAPABILITY"] as const).map((nodeType) => {
+            const nodes = visualModel.nodes.filter((node) => node.nodeType === nodeType);
+            if (nodes.length === 0) return null;
+            return (
+              <div key={nodeType}>
+                <p className="text-xs font-semibold uppercase tracking-[0.14em] text-cyan-100/45">{typeName(nodeType)}</p>
+                <div className="mt-2 grid gap-1">
+                  {nodes.map((node, index) => (
                     <button
-                      key={cap.id}
+                      key={node.id}
                       type="button"
-                      onClick={() => selectCapability(cap.id)}
-                      aria-pressed={isSelected}
-                      data-node-type="capability"
-                      data-node-id={cap.id}
-                      className={`rounded-xl border px-3 py-2.5 text-left text-xs transition-colors ${
-                        isSelected ? "border-cyan-200/60 bg-[#12313b] text-white" : "border-white/10 bg-white/[0.03] text-slate-300"
-                      }`}
+                      onClick={() => selectNode(node.id)}
+                      aria-pressed={selectedId === node.id}
+                      data-node-type={projectionNodeType(node.nodeType)}
+                      data-node-id={node.id}
+                      data-requirement-state={node.nodeType === "ROLE_ONLY_CAPABILITY" ? node.requirementStates?.[0] : undefined}
+                      className="min-h-11 rounded-lg px-3 py-2 text-left text-sm text-cyan-50/75 transition-colors hover:bg-white/[0.06] hover:text-cyan-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-200 aria-pressed:bg-cyan-100/10 aria-pressed:text-cyan-50"
                     >
-                      <span className="block font-medium">{cap.label}</span>
-                      <span className="mt-0.5 block text-[10px] opacity-70">{cap.evidenceIds.length} supporting {cap.evidenceIds.length === 1 ? "item" : "items"}</span>
+                      {node.nodeType === "EVIDENCE" ? `Evidence ${index + 1}` : nodeLabel(node)}
                     </button>
-                  );
-                })}
-            </div>
-          </div>
-        )}
-
-        {selectedCapabilityId && visibleEvidence.length > 0 && (
-          <div className="border-t border-white/[0.06] p-4">
-            <p className="text-[10px] font-semibold uppercase tracking-wider text-violet-300">Supporting evidence</p>
-            <div className="mt-3 grid gap-2">
-              {visibleEvidence.map((ev) => {
-                const isTransferable = ev.relationship === "transferable_signal";
-                return (
-                  <div
-                    key={ev.id}
-                    data-node-type="evidence"
-                    data-node-id={ev.id}
-                    className={`rounded-xl border px-3 py-2.5 text-xs ${
-                      isTransferable ? "border-blue-300/30 bg-blue-300/[0.04]" : "border-violet-300/25 bg-violet-300/[0.04]"
-                    }`}
-                  >
-                    <span className={`block text-[9px] font-semibold uppercase tracking-wider ${isTransferable ? "text-blue-300" : "text-violet-300"}`}>
-                      {isTransferable ? "Transferable" : "Direct evidence"}
-                    </span>
-                    <p className="mt-1 leading-5 text-slate-200">{ev.text}</p>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        )}
-
-        {hasRole && (
-          <div className="border-t border-white/[0.06] p-4">
-            <p className="text-[10px] font-semibold uppercase tracking-wider text-blue-300">Generic roles</p>
-            <div className="mt-2 grid gap-2">
-              {roleNodes.map((role, index) => {
-                const isSelected = role.id === selectedRoleId;
-                return (
-                  <button
-                    key={role.id}
-                    type="button"
-                    onClick={() => toggleRole(role.id)}
-                    aria-pressed={isSelected}
-                    data-node-type="role"
-                    data-node-id={role.id}
-                    data-proximity-rank={role.proximityRank ?? index}
-                    className={`w-full rounded-xl border px-3 py-2.5 text-left text-xs transition-colors ${
-                      isSelected ? "border-cyan-200/40 bg-[#102b37]" : "border-blue-200/20 bg-blue-300/[0.035]"
-                    }`}
-                  >
-                    <span className="block font-semibold text-slate-100">{role.title}</span>
-                    <span className="mt-0.5 block text-[10px] text-slate-400">{isSelected ? "Tap to hide requirements" : "Tap to see requirements"}</span>
-                  </button>
-                );
-              })}
-            </div>
-            {selectedRole && selectedRoleRequirements.length > 0 && (
-              <div className="mt-3 grid gap-2">
-                {selectedRoleRequirements.map((req) => {
-                  const cfg = reqStateConfig[req.requirementState];
-                  return (
-                    <div
-                      key={req.id}
-                      data-node-type="role_requirement"
-                      data-node-id={req.id}
-                      data-requirement-state={req.requirementState}
-                      className="rounded-xl border px-3 py-2 text-xs"
-                      style={{ borderColor: cfg.stroke, background: req.requirementState === "evidence_not_yet_shown" ? "transparent" : cfg.fill }}
-                    >
-                      <span className="block text-[9px] font-semibold uppercase tracking-wider" style={{ color: cfg.textColor }}>{cfg.badge}</span>
-                      <span className="mt-0.5 block font-medium text-slate-100">{req.capabilityLabel}</span>
-                      <span className="block text-[9px] uppercase tracking-wider text-slate-500">{req.importance}</span>
-                    </div>
-                  );
-                })}
+                  ))}
+                </div>
               </div>
-            )}
-          </div>
-        )}
-      </div>
-
-      {/* Hint footer */}
-      <div className="border-t border-white/[0.06] px-5 py-3 text-[10px] text-slate-600">
-        Select a family to explore capabilities · Select a capability to reveal evidence · Select the role to see requirement context
-      </div>
+            );
+          })}
+        </div>
+      </details>
+      <span className="sr-only">{hasRole ? "Future role paths are available in this map." : "No future role paths are available."}</span>
     </section>
   );
 }
