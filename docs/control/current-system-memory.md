@@ -1,5 +1,26 @@
 # Current System Memory
 
+### Post-MVP Task C: Hero Career Graph + Layered Cluster Field Closed (`POST_MVP_TASK_C_CLOSED`)
+
+- Career Map MVP remains `CLOSED / MVP VALIDATED`; Post-MVP Task A, Task A.1, and Task B remain `CLOSED`.
+- Task C name: `POST-MVP TASK C — HERO CAREER GRAPH + LAYERED CLUSTER FIELD`.
+- Task C status: `CLOSED`. Implementation is verified; final implementation decision is `POST_MVP_TASK_C_HERO_CLUSTER_GRAPH_IMPLEMENTED`; product judgment is `TASK_C_HERO_CLUSTER_GRAPH_READY_WITH_MINOR_ISSUES`; material blockers are `NONE`.
+- Implementation commit: `e30204ac91c6c649307352b21d14b3f76168bf6f` (`feat(career): refine layered career graph experience`).
+- Founder dogfood identified excessive graph chrome, mixed presentation layers, abstract evidence interaction, roles too close to the personal core, and insufficient cluster constraint. The graph is now the primary page hero; the redundant heading stack is compressed; the persistent lower instruction block is removed; selected detail and controls are non-blocking overlays.
+- The complete semantic DOM navigator is preserved behind the visible, keyboard-accessible `Browse map` disclosure. Canvas hover and DOM focus surface concise verbatim excerpts of existing concrete work/action evidence near the interaction; generic `Evidence Signal` is not the primary label and no evidence is fabricated.
+- Active presentation hierarchy: YOU center/origin anchor → presentation-only family cluster anchors → semantic evidence-backed canonical capabilities → supporting concrete experience/evidence, with four future roles in the outermost career-possibility domain. This is presentation hierarchy only and creates no ontology or semantic ownership change.
+- Represented family clusters are Analytics & Insight, Leadership, Data & Technology, Operations & Delivery, Customer & Market, Governance & Risk, and Learning & Development. Each is `ACCEPTABLE_CLUSTER`; overall graph classification is `ACCEPTABLE_CLUSTER`; no represented family is `BROKEN_CLUSTER`.
+- Active graph engine remains authorised `react-force-graph-2d@1.29.1`. Presentation behavior is a constrained clustered force field: YOU anchoring, family attractors, capability-family affinity, evidence-parent affinity, outer-role targeting, collision pressure, cross-cluster separation, and deterministic asymmetry. No fixed radial-ring ontology and no direct `d3-force` dependency were introduced.
+- Semantic guarantees remain preserved: canonical capability ontology and capability-family authority are unchanged; shared canonical identity and role-only non-ownership are preserved; personal evidence semantics and role knowledge are unchanged; role ranking stays upstream; renderer reranking is absent; graph projection remains semantic authority; provider/API, inference, materializer, persistence, and Job Copilot are unchanged.
+- Real-Founder-state acceptance used SHA256 `0A9043BA497E7C1F3B05E74F14937B6E9C309F0F1B0DC59BCCB134B8EB5E9C8D`, not synthetic state. Provider calls were `0`; CV uploads were `0`; Founder hierarchy test was `A`; all four projected roles were rendered and reachable on desktop and mobile.
+- Responsive acceptance: 1440×1000 `PASS` with 864px graph field; 1280×800 `PASS` with 680px graph field; 390×844 `PASS WITH MINOR ISSUE` with 708px graph field; no destructive horizontal overflow; graph remains primary.
+- Verification: focused Task C tests `PASS — 4/4`; critical Career Map semantic regressions `PASS — 5/5`; shared canonical identity, role-only non-ownership, evidence semantics, and ranking/projection `PASS`; TypeScript, targeted ESLint, and fresh production build `PASS`.
+- Validation artifact: `artifacts/career-possibility/post-mvp-task-c-hero-layered-cluster-graph.md`, SHA256 `7AF5587B95149A580D78479D612C9C7D756B59872D34D02F93D70E6344088AE7`.
+- Known non-blocking issues are deferred: mobile central-label density and naturally long outer-role bridge edges. They do not reopen or block Task C and do not automatically admit follow-on work.
+- Next post-MVP task: `NONE`. Any further Career Map work requires new Founder / EM product review and explicit admission; do not invent Task D or an automatic polish task.
+- `memory_sync_required: no`
+- `memory_sync_targets: []`
+
 ### Post-MVP Task B: Career Graph Field Production Implementation Closed (`POST_MVP_TASK_B_CLOSED`)
 
 - Career Map MVP remains `CLOSED / MVP VALIDATED`; Post-MVP Task A and Task A.1 remain `CLOSED`.
@@ -17,8 +38,8 @@
 - Final visual acceptance used the real Founder-exported Career Map state, not synthetic final acceptance; provider inference calls were `0` and CV uploads were `0`. Verified evidence: 1440×1000 `6EF7BF099E0C25E2135661BDAA440C25B0438D8FEA0BC11B42DA6CCDE0A41AB1`; 1280×800 `58AA07A48C1E81646FE492FEBE092A0BA6DF64DDCFC3C0F435B18DC7DCCCD398`; 390×844 `31AA81AF079517CEAF7B202F74A0EB97203B7083D13D51C26F861C23913F730D`.
 - Final product state: unified Career Map and force-directed Career Graph field `ACTIVE`; YOU anchor, family hierarchy, canonical capability layer, four future roles, graph field/Canvas, node collision, edge readability, and evidence interaction `PASS`; Founder product test `A`; 1440 and 1280 `PASS`; 390 `MINOR`; responsive acceptance `PASS WITH MINOR ISSUES`.
 - Final verification: focused Task B tests `PASS — 4/4`; critical semantic carry-forward regressions `PASS — 5/5`; shared canonical identity, role-only non-ownership, evidence semantics, and ranking/graph projection `PASS`; TypeScript, targeted ESLint, and fresh production build `PASS`; Impeccable detector `ZERO FINDINGS`; visual audit `15/20 — GOOD`; P0/P1 `NONE`.
-- Known non-blocking issues: mobile label crowding and local color-token drift. They are deferred, do not reopen Task B, do not block acceptance, and do not automatically create a new post-MVP task.
-- Next post-MVP task: `NONE`. Any future Career Map work requires new Founder / EM product prioritisation and explicit task admission; do not automatically create Task C or a mobile/color-token polish task.
+- Historical Task B non-blocking issues were mobile label crowding and local color-token drift; this Task B state is superseded by the Task C closure above.
+- Historical Task B next-task state was `NONE`; it was superseded by the explicitly admitted and now-closed Task C above.
 - `memory_sync_required: no`
 - `memory_sync_targets: []`
 
