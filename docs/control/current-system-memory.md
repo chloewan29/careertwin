@@ -1,5 +1,24 @@
 # Current System Memory
 
+### Post-MVP Task B: Career Graph Field Production Implementation Retrospectively Ratified (`POST_MVP_TASK_B_CANONICALLY_RATIFIED`)
+
+- Career Map MVP remains `CLOSED / MVP VALIDATED`; Post-MVP Task A and Task A.1 remain `CLOSED`.
+- Task B name: `POST-MVP TASK B — CAREER GRAPH FIELD PRODUCTION IMPLEMENTATION`.
+- Current Task B status: `IMPLEMENTED / RETROSPECTIVELY RATIFIED / POST-PUSH FINAL VERIFICATION PENDING`. Task B is **not closed**.
+- B0 selected `REACT_FORCE_GRAPH_SELECTED`, choosing `react-force-graph-2d` for the organic Career Graph field direction. Production implementation then landed before a canonical admission record existed; the retrospective audit found the existing implementation ratifiable with an explicit package boundary.
+- Canonical architecture: existing Career Map semantic projection → presentation-only visual adapter → force-directed graph engine → interactive Career Map renderer. `CareerMapNeuralGraph.tsx` remains the public renderer owner; `CareerMapForceGraph.tsx` is presentation-engine-only; `career-graph-visual-adapter.ts` is presentation-only.
+- Exact ratified production boundary: `components/career-possibility/CareerMapForceGraph.tsx`, `components/career-possibility/CareerMapNeuralGraph.tsx`, and `lib/career-possibility/career-graph-visual-adapter.ts`.
+- Exact ratified test boundary: `tests/career-possibility/active-multi-role-career-map-renderer.test.ts`, `tests/career-possibility/career-graph-visual-adapter.test.ts`, `tests/career-possibility/career-map-neural-graph.test.ts`, and `tests/career-possibility/unified-career-map-surface.test.ts`. Test weakening found: `NO`.
+- Exact ratified package boundary: `package.json` and `package-lock.json` for one top-level production dependency, `react-force-graph-2d@1.29.1`, plus only its required lockfile transitive graph. A direct top-level `d3-force` addition and unrelated package movement are not authorised. Package lock classification: `DEPENDENCY_LOCK_COHERENT`; unrelated package drift: `NONE FOUND`; package boundary: `RATIFIED`.
+- Semantic authority remains upstream and unchanged: YOU remains the personal anchor; atomic evidence remains personal truth; canonical capability identity, capability-family presentation grouping, shared canonical identity, role-only non-ownership, evidence semantics, upstream generic-role ranking, graph projection, provider/API, structured inference, materializer, persistence semantics, route topology, and Career Map / Job Copilot separation are preserved.
+- Retrospectively ratified implementation commit: `7c55d5632bc95707f36fdd072b86adcbf8729f6f` (`feat(career): adopt force-directed career graph`).
+- Retrospective audit artifact: `artifacts/career-possibility/post-mvp-task-b-retrospective-admission-audit.md`, SHA256 `D785D61AD91CDE9B60F1F457C8B1E9E67FA53FE6159EF402BD088AFB945E7A35`.
+- Existing non-canonical implementation evidence: `artifacts/career-possibility/post-mvp-task-b-career-graph-field-production.md`, SHA256 `DFBC722F9EE586CC5BBDADA4A01EBAC8B413B13B9AEE5E7FED0B2A3BA0CB1B55`.
+- Existing real Founder-exported Career Map state visual evidence: 1440×1000 `6EF7BF099E0C25E2135661BDAA440C25B0438D8FEA0BC11B42DA6CCDE0A41AB1`; 1280×800 `58AA07A48C1E81646FE492FEBE092A0BA6DF64DDCFC3C0F435B18DC7DCCCD398`; 390×844 `31AA81AF079517CEAF7B202F74A0EB97203B7083D13D51C26F861C23913F730D`. This evidence supports retrospective admission but does not replace post-push verification.
+- Next task: `TASK B POST-PUSH FINAL VERIFICATION`, covering the exact commit boundary, focused Task B tests, semantic carry-forward regressions, TypeScript, targeted ESLint, fresh production build, existing real-state evidence readback, and remote/index/HOLD safety. Do not implement more product changes before this measurement.
+- `memory_sync_required: no`
+- `memory_sync_targets: []`
+
 ### Post-MVP Task B0: Graph Engine Selection Closed (`POST_MVP_TASK_B0_CLOSED_ENGINE_SELECTED`)
 
 - Career Map MVP remains `CLOSED / MVP VALIDATED`; Post-MVP Task A and Task A.1 remain `CLOSED`.
@@ -14,12 +33,12 @@
 - CareerTwin remains authoritative for evidence truth, canonical capability identity, capability families, personal ownership, role requirements, role-only non-ownership, shared canonical identity, role ranking/proximity, structured inference, and materialization. The graph engine may own physics, rendering, Canvas drawing, collision, viewport transforms, zoom, pan, drag, hover, and selection mechanics only.
 - Presentation direction: You is the primary hub; families are medium cluster hubs; canonical capabilities are smaller semantic nodes; atomic evidence may appear as anonymous tiny satellites; future roles remain distinct outer hubs on the same Career Map; role-only capabilities remain muted/hollow and non-owned. Raw evidence text is not a permanent graph label; evidence detail stays CareerTwin-owned.
 - Shared canonical capabilities may visually bridge personal and future-role clusters. No visible fit percentage and no High / Adjacent / Stretch classification are admitted; role ranking remains upstream CareerTwin authority.
-- Engine selected: `YES`. Production dependency admitted: `NOT YET`. Production package install completed: `NO`. `package.json` and `package-lock.json` remained unchanged by B0; Task B admission must explicitly authorise any production dependency change.
+- Historical B0 closure state (superseded by the Task B ratification above): engine selected `YES`; production dependency admitted `NOT YET`; production package install completed `NO`. `package.json` and `package-lock.json` remained unchanged by B0, and later Task B ratification explicitly authorised the exact package boundary.
 - B0 used the exact Founder-exported real Career Map state, SHA256 `0A9043BA497E7C1F3B05E74F14937B6E9C309F0F1B0DC59BCCB134B8EB5E9C8D`. Privacy-safe state aggregates: 13 evidence, 11 personal capabilities, 23 mappings, 23 direct, 0 transferable, 0 duplicates, and 0 capabilities without evidence; provider calls 0; CV uploads 0; raw evidence text exposed `NO`.
 - Neutral spike-only topology: 45 nodes (You 1, family 7, capability 11, anonymous evidence 13, role 4, role-only capability 9) and 67 edges (user-family 7, family-capability 11, capability-evidence 23, role-owned-capability 14, role-only-capability 12). This is not a production ontology.
 - Bake-off artifact: `artifacts/career-possibility/post-mvp-task-b0-graph-engine-bakeoff.md`, SHA256 `11BC71093A42AB392332689C30FFDE7F1C5D2AC00ABDB163D173CAB89F7FB4DD`; six screenshots remain untracked validation evidence.
 - Post-MVP Task B0 is `CLOSED` with decision `REACT_FORCE_GRAPH_SELECTED`.
-- Post-MVP Task B is `NOT YET IMPLEMENTED`. Next task: `POST-MVP TASK B — CAREER GRAPH FIELD PRODUCTION IMPLEMENTATION ADMISSION`, requiring explicit Founder / EM admission.
+- Historical B0 next-task state (superseded by the Task B ratification above): Post-MVP Task B was `NOT YET IMPLEMENTED` and required explicit Founder / EM admission.
 - `memory_sync_required: yes`
 - `memory_sync_targets: [docs/control/current-active-brief.md, docs/control/current-system-memory.md]`
 
