@@ -350,6 +350,7 @@ async function testG_coherentResponsiveCoordinates() {
   assert.match(source, /enableNodeDrag/, "G: engine drag interaction must be enabled");
   assert.match(source, /ResizeObserver/, "G: graph viewport must respond to container size");
   assert.match(source, /engineReady/, "G: presentation forces must configure after the client engine mounts");
+  assert.match(source, /buildCareerGraphTopologySeeds/, "G: role geometry must consume topology-derived presentation seeds");
   assert.doesNotMatch(source, /familyPosition|rolePosition|ROLE_ANGLES|FAMILY_RING_R/, "G: retired radial geometry must not remain active");
 
   console.log("  G. Force graph owns responsive geometry and interaction — PASSED");
@@ -360,6 +361,8 @@ async function testH_initialCapabilitiesRemainVisible() {
   assert.match(source, /buildCareerGraphVisualModel\(projection\)/, "H: renderer must consume the full visual adapter output");
   assert.match(source, /graphData=\{graphData\}/, "H: the complete graph data must enter the engine");
   assert.match(source, /buildCareerGraphFocusSet/, "H: selection changes emphasis rather than membership");
+  assert.match(source, /buildCareerGraphRoleFocusState/, "H: one role click must derive the complete owned/gap focus state");
+  assert.match(source, /gap-required-not-owned/, "H: accessible role-gap state must be explicit");
   assert.doesNotMatch(source, /visibleCapabilityIds|visibleEvidenceIds/, "H: selection must not gate node membership");
 
   console.log("  H. Adapter supplies the complete default graph field — PASSED");

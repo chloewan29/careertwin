@@ -19,6 +19,10 @@ const rendererSource = readFileSync(
   "components/career-possibility/CareerMapNeuralGraph.tsx",
   "utf8",
 );
+const visualAdapterSource = readFileSync(
+  "lib/career-possibility/career-graph-visual-adapter.ts",
+  "utf8",
+);
 
 // Active route: real personal state enters Task 3B, then Task 3C projection.
 assert.match(workspaceSource, /buildPersonalGenericRoleAlignment\(\{ personalState: result\.state \}\)/);
@@ -98,8 +102,10 @@ const displayRadii = projectedRoles.map(
 );
 assert.deepEqual(displayRadii, [420, 438, 456, 474]);
 assert.equal(displayRadii.every((radius, index) => index === 0 || displayRadii[index - 1] < radius), true);
-assert.match(rendererSource, /const rank = node\.proximityRank \?\? index/);
-assert.match(rendererSource, /420 \+ rank \* 18/);
+assert.match(visualAdapterSource, /const rank = node\.proximityRank \?\? index/);
+assert.match(visualAdapterSource, /420 \+ rank \* 18/);
+assert.match(visualAdapterSource, /buildCareerGraphTopologySeeds/);
+assert.doesNotMatch(visualAdapterSource, /Math\.PI \* 2 \* index\) \/ Math\.max\(roles\.length/);
 assert.match(rendererSource, /node\.nodeType === "ROLE"[\s\S]*\? 0\.76/);
 
 // Desktop Canvas and the mobile-accessible navigator consume one visual model.

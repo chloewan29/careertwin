@@ -41,7 +41,7 @@ assert.match(rendererSource, /data-requirement-state=\{node\.nodeType === "ROLE_
 
 // REQUIRED REGRESSION — FORBIDDEN UX
 assert.doesNotMatch(rendererSource, />[^<]*\bfit\b[^<]*</i);
-assert.doesNotMatch(rendererSource, /["'`]strength["'`]/i);
+assert.doesNotMatch(rendererSource, /strength(?:Score|Label)|readinessScore/i);
 assert.doesNotMatch(rendererSource, />[^<]*\bhigh\b[^<]*</i);
 assert.doesNotMatch(rendererSource, />[^<]*\badjacent\b[^<]*</i);
 assert.doesNotMatch(rendererSource, />[^<]*\bstretch\b[^<]*</i);

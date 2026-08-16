@@ -6,6 +6,8 @@ import {
 } from "../../lib/career-possibility/career-map-graph-projection";
 import {
   buildCareerGraphFocusSet,
+  buildCareerGraphRoleFocusState,
+  buildCareerGraphTopologySeeds,
   buildCareerGraphVisualModel,
 } from "../../lib/career-possibility/career-graph-visual-adapter";
 
@@ -22,8 +24,8 @@ const projection: CareerMapGraphProjection = {
     { type: "role", id: "role-3", title: "Role Three", proximityRank: 2 },
     { type: "role", id: "role-4", title: "Role Four", proximityRank: 3 },
     { type: "role_requirement", id: "req:1:a", roleId: "role-1", capabilityId: "cap-a", capabilityLabel: "Capability A", requirementState: "directly_demonstrated" },
-    { type: "role_requirement", id: "req:1:gap", roleId: "role-1", capabilityId: "cap-gap", capabilityLabel: "Capability Gap", requirementState: "evidence_not_yet_shown" },
-    { type: "role_requirement", id: "req:2:gap", roleId: "role-2", capabilityId: "cap-gap", capabilityLabel: "Capability Gap", requirementState: "evidence_not_yet_shown" },
+    { type: "role_requirement", id: "req:1:gap", roleId: "role-1", capabilityId: "measurement-design", capabilityLabel: "Measurement Design", requirementState: "evidence_not_yet_shown" },
+    { type: "role_requirement", id: "req:2:gap", roleId: "role-2", capabilityId: "measurement-design", capabilityLabel: "Measurement Design", requirementState: "evidence_not_yet_shown" },
   ],
   edges: [
     { type: "user_has_family", fromId: "user", toId: "family-a" },
@@ -58,8 +60,9 @@ assert.equal(linksOf("CAPABILITY_EVIDENCE").length, 2);
 
 assert.deepEqual(nodesOf("ROLE").map((node) => node.proximityRank), [0, 1, 2, 3]);
 assert.equal(nodesOf("ROLE_ONLY_CAPABILITY").length, 1);
-assert.equal(nodesOf("ROLE_ONLY_CAPABILITY")[0]?.id, "cap-gap");
+assert.equal(nodesOf("ROLE_ONLY_CAPABILITY")[0]?.id, "measurement-design");
 assert.equal(nodesOf("ROLE_ONLY_CAPABILITY")[0]?.personalOwned, false);
+assert.equal(nodesOf("ROLE_ONLY_CAPABILITY")[0]?.familyLabel, "Analytics & Insight");
 assert.deepEqual(nodesOf("ROLE_ONLY_CAPABILITY")[0]?.roleIds, ["role-1", "role-2"]);
 assert.deepEqual(nodesOf("ROLE_ONLY_CAPABILITY")[0]?.parentIds, ["role-1", "role-2"]);
 assert.equal(linksOf("ROLE_ONLY_CAPABILITY").length, 2);
@@ -72,7 +75,27 @@ assert.deepEqual(familyFocus, new Set(["family-a", "user", "cap-a", "cap-b", "ev
 const capabilityFocus = buildCareerGraphFocusSet(model, "cap-a");
 assert.deepEqual(capabilityFocus, new Set(["cap-a", "family-a", "ev-shared", "role-1", "user"]));
 const roleFocus = buildCareerGraphFocusSet(model, "role-1");
-assert.deepEqual(roleFocus, new Set(["role-1", "cap-a", "cap-gap", "family-a", "user"]));
+assert.deepEqual(roleFocus, new Set(["role-1", "user", "cap-a", "measurement-design", "family-a"]));
+
+const roleFocusState = buildCareerGraphRoleFocusState(model, "role-1");
+assert.ok(roleFocusState);
+assert.deepEqual(roleFocusState.ownedCapabilityIds, new Set(["cap-a"]));
+assert.deepEqual(roleFocusState.gapCapabilityIds, new Set(["measurement-design"]));
+assert.equal(roleFocusState.focusNodeIds.has("ev-shared"), false, "role focus must not expand evidence");
+assert.equal(model.nodes.some((node) => !roleFocusState.focusNodeIds.has(node.id)), true, "unrelated context remains in the model");
+
+const topologySeeds = buildCareerGraphTopologySeeds(model);
+const roleOneSeed = topologySeeds.get("role-1");
+const roleTwoSeed = topologySeeds.get("role-2");
+const gapSeed = topologySeeds.get("measurement-design");
+assert.ok(roleOneSeed && roleTwoSeed && gapSeed);
+const angularDistance = (left: number, right: number) => Math.abs(Math.atan2(Math.sin(left - right), Math.cos(left - right)));
+const roleOneAngle = Math.atan2(roleOneSeed.y, roleOneSeed.x);
+const roleTwoAngle = Math.atan2(roleTwoSeed.y, roleTwoSeed.x);
+const gapAngle = Math.atan2(gapSeed.y, gapSeed.x);
+assert.ok(angularDistance(roleTwoAngle, gapAngle) < 0.5, "role sector follows its connected capability topology");
+assert.ok(angularDistance(roleOneAngle, roleTwoAngle) < 1.2, "local collision handling must not invert roles into even global spacing");
+assert.ok(Math.hypot(roleOneSeed.x, roleOneSeed.y) < Math.hypot(roleTwoSeed.x, roleTwoSeed.y), "proximityRank remains a radius-only input");
 
 const rendererSource = readFileSync("components/career-possibility/CareerMapNeuralGraph.tsx", "utf8");
 const engineBoundarySource = readFileSync("components/career-possibility/CareerMapForceGraph.tsx", "utf8");
