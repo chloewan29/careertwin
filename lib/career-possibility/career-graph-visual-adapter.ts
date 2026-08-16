@@ -4,7 +4,7 @@ import type {
 } from "./career-map-graph-projection";
 
 export const CAREER_GRAPH_VISUAL_ADAPTER_VERSION =
-  "career-graph-visual-adapter/1.0.0" as const;
+  "career-graph-visual-adapter/1.1.0" as const;
 
 export type CareerGraphVisualNodeType =
   | "YOU"
@@ -27,6 +27,8 @@ export type CareerGraphVisualNode = {
   readonly nodeType: CareerGraphVisualNodeType;
   readonly label?: string;
   readonly familyId?: string;
+  readonly familyIds?: readonly string[];
+  readonly parentIds?: readonly string[];
   readonly personalOwned: boolean;
   readonly presentationOnly?: true;
   readonly proximityRank?: number;
@@ -80,6 +82,11 @@ export function buildCareerGraphVisualModel(
       .filter((node) => node.type === "capability")
       .map((node) => node.id),
   );
+  const capabilityFamilyById = new Map(
+    projection.nodes
+      .filter((node) => node.type === "capability")
+      .map((node) => [node.id, node.familyId] as const),
+  );
   const visualNodes: CareerGraphVisualNode[] = [];
   const visualLinks: CareerGraphVisualLink[] = [];
   const missingRequirements = new Map<string, RequirementAccumulator>();
@@ -125,6 +132,7 @@ export function buildCareerGraphVisualModel(
         label: node.label,
         personalOwned: false,
         presentationOnly: true,
+        parentIds: Object.freeze(["user"]),
       });
       continue;
     }
@@ -136,6 +144,8 @@ export function buildCareerGraphVisualModel(
         nodeType: nodeTypeByProjectionType[node.type],
         label: node.label,
         familyId: node.familyId,
+        familyIds: Object.freeze([node.familyId]),
+        parentIds: Object.freeze([node.familyId]),
         personalOwned: true,
         evidenceCount: node.evidenceIds.length,
       });
@@ -143,12 +153,20 @@ export function buildCareerGraphVisualModel(
     }
 
     if (node.type === "evidence") {
+      const familyIds = [...new Set(
+        node.capabilityIds
+          .map((capabilityId) => capabilityFamilyById.get(capabilityId))
+          .filter((familyId): familyId is string => Boolean(familyId)),
+      )];
       visualNodes.push({
         id: node.id,
         semanticId: node.id,
         nodeType: nodeTypeByProjectionType[node.type],
         personalOwned: true,
         relationship: node.relationship,
+        familyId: familyIds[0],
+        familyIds: Object.freeze(familyIds),
+        parentIds: Object.freeze([...node.capabilityIds]),
       });
       continue;
     }
@@ -171,6 +189,7 @@ export function buildCareerGraphVisualModel(
       label: requirement.label,
       personalOwned: false,
       roleIds: Object.freeze([...requirement.roleIds]),
+      parentIds: Object.freeze([...requirement.roleIds]),
       requirementStates: Object.freeze([...requirement.requirementStates]),
     });
   }

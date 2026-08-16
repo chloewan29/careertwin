@@ -3,12 +3,27 @@ import { readFileSync } from "node:fs";
 
 const workspaceSource = readFileSync("components/career-possibility/LocalCareerMapWorkspace.tsx", "utf8");
 const rendererSource = readFileSync("components/career-possibility/CareerMapNeuralGraph.tsx", "utf8");
+const pageSource = readFileSync("app/career-map/page.tsx", "utf8");
 
 // REQUIRED REGRESSION — SINGLE SURFACE
 assert.doesNotMatch(workspaceSource, /Career Map.*tab/i);
 assert.doesNotMatch(workspaceSource, /Neural Graph.*tab/i);
 assert.doesNotMatch(workspaceSource, /Role Lens.*tab/i);
 assert.doesNotMatch(workspaceSource, /activeView/);
+
+// REQUIRED REGRESSION — HERO SURFACE
+assert.equal((workspaceSource.match(/<h1/g) ?? []).length >= 1, true);
+assert.doesNotMatch(pageSource, /<header|<footer|CareerTwin home/);
+assert.doesNotMatch(rendererSource, /Career capability universe|Your experience, connected/i);
+assert.doesNotMatch(rendererSource, /Select a family, capability, evidence signal/);
+assert.match(rendererSource, /Browse map/);
+assert.match(rendererSource, /Accessible graph navigator is available from Browse map/);
+assert.match(rendererSource, /min-h-\[calc\(100dvh-8\.5rem\)\]/);
+
+// REQUIRED REGRESSION — CONCRETE EVIDENCE INTERACTION
+assert.match(rendererSource, /evidenceTextById\.get\(node\.semanticId\)/);
+assert.match(rendererSource, /Supporting experience/);
+assert.doesNotMatch(rendererSource, /Evidence signal/i);
 
 // REQUIRED REGRESSION — TWO LAYERS
 // Family node exists and is visual only

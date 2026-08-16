@@ -349,6 +349,7 @@ async function testG_coherentResponsiveCoordinates() {
   assert.match(source, /enableZoomInteraction/, "G: engine zoom interaction must be enabled");
   assert.match(source, /enableNodeDrag/, "G: engine drag interaction must be enabled");
   assert.match(source, /ResizeObserver/, "G: graph viewport must respond to container size");
+  assert.match(source, /engineReady/, "G: presentation forces must configure after the client engine mounts");
   assert.doesNotMatch(source, /familyPosition|rolePosition|ROLE_ANGLES|FAMILY_RING_R/, "G: retired radial geometry must not remain active");
 
   console.log("  G. Force graph owns responsive geometry and interaction — PASSED");

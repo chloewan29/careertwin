@@ -45,10 +45,15 @@ assert.equal(nodesOf("YOU").length, 1);
 assert.equal(nodesOf("FAMILY").length, 1);
 assert.equal(nodesOf("FAMILY")[0]?.presentationOnly, true);
 assert.equal(nodesOf("FAMILY")[0]?.personalOwned, false);
+assert.deepEqual(nodesOf("FAMILY")[0]?.parentIds, ["user"]);
 
 assert.deepEqual(nodesOf("CAPABILITY").map((node) => node.id), ["cap-a", "cap-b"]);
+assert.deepEqual(nodesOf("CAPABILITY")[0]?.familyIds, ["family-a"]);
+assert.deepEqual(nodesOf("CAPABILITY")[0]?.parentIds, ["family-a"]);
 assert.equal(nodesOf("EVIDENCE").length, 1);
 assert.equal(nodesOf("EVIDENCE")[0]?.label, undefined);
+assert.deepEqual(nodesOf("EVIDENCE")[0]?.familyIds, ["family-a"]);
+assert.deepEqual(nodesOf("EVIDENCE")[0]?.parentIds, ["cap-a", "cap-b"]);
 assert.equal(linksOf("CAPABILITY_EVIDENCE").length, 2);
 
 assert.deepEqual(nodesOf("ROLE").map((node) => node.proximityRank), [0, 1, 2, 3]);
@@ -56,6 +61,7 @@ assert.equal(nodesOf("ROLE_ONLY_CAPABILITY").length, 1);
 assert.equal(nodesOf("ROLE_ONLY_CAPABILITY")[0]?.id, "cap-gap");
 assert.equal(nodesOf("ROLE_ONLY_CAPABILITY")[0]?.personalOwned, false);
 assert.deepEqual(nodesOf("ROLE_ONLY_CAPABILITY")[0]?.roleIds, ["role-1", "role-2"]);
+assert.deepEqual(nodesOf("ROLE_ONLY_CAPABILITY")[0]?.parentIds, ["role-1", "role-2"]);
 assert.equal(linksOf("ROLE_ONLY_CAPABILITY").length, 2);
 
 assert.equal(model.nodes.filter((node) => node.semanticId === "cap-a").length, 1);

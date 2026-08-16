@@ -94,11 +94,13 @@ assert.deepEqual(projectedRoles.map((role) => role.proximityRank), [0, 1, 2, 3])
 
 // The renderer's deterministic seed carries upstream order without reranking.
 const displayRadii = projectedRoles.map(
-  (role, index) => 455 + (role.proximityRank ?? index) * 28,
+  (role, index) => 420 + (role.proximityRank ?? index) * 18,
 );
-assert.deepEqual(displayRadii, [455, 483, 511, 539]);
+assert.deepEqual(displayRadii, [420, 438, 456, 474]);
 assert.equal(displayRadii.every((radius, index) => index === 0 || displayRadii[index - 1] < radius), true);
-assert.match(rendererSource, /455 \+ \(node\.proximityRank \?\? index\) \* 28/);
+assert.match(rendererSource, /const rank = node\.proximityRank \?\? index/);
+assert.match(rendererSource, /420 \+ rank \* 18/);
+assert.match(rendererSource, /node\.nodeType === "ROLE"[\s\S]*\? 0\.76/);
 
 // Desktop Canvas and the mobile-accessible navigator consume one visual model.
 assert.match(rendererSource, /visualModel\.nodes\.filter\(\(node\) => node\.nodeType === nodeType\)/);

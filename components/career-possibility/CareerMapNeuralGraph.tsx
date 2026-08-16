@@ -41,6 +41,7 @@ export type CareerMapNeuralGraphProps = {
 type RenderNode = NodeObject<CareerGraphVisualNode> & {
   seedX: number;
   seedY: number;
+  clusterId?: string;
 };
 type RenderLink = LinkObject<CareerGraphVisualNode, CareerGraphVisualLink>;
 
@@ -54,12 +55,12 @@ const palette: Record<CareerGraphVisualNodeType, string> = {
 };
 
 const nodeRadius: Record<CareerGraphVisualNodeType, number> = {
-  YOU: 15,
-  FAMILY: 8.5,
-  CAPABILITY: 5.4,
-  EVIDENCE: 2,
-  ROLE: 9.5,
-  ROLE_ONLY_CAPABILITY: 3.8,
+  YOU: 17,
+  FAMILY: 10,
+  CAPABILITY: 6.2,
+  EVIDENCE: 2.4,
+  ROLE: 10.5,
+  ROLE_ONLY_CAPABILITY: 4.2,
 };
 
 const normallyLabelled = new Set<CareerGraphVisualNodeType>([
@@ -83,12 +84,18 @@ function pointAt(angle: number, radius: number) {
 
 function seedCareerGraphNodes(
   nodes: readonly CareerGraphVisualNode[],
-  links: readonly CareerGraphVisualLink[],
 ): RenderNode[] {
-  const seeded = nodes.map((node) => ({ ...node, seedX: 0, seedY: 0 })) as RenderNode[];
+  const seeded = nodes.map((node) => ({
+    ...node,
+    seedX: 0,
+    seedY: 0,
+    clusterId: node.familyId ?? node.familyIds?.[0],
+  })) as RenderNode[];
   const byId = new Map(seeded.map((node) => [node.id, node]));
   const families = seeded.filter((node) => node.nodeType === "FAMILY");
   const roles = seeded.filter((node) => node.nodeType === "ROLE");
+
+  const familyAngle = new Map<string, number>();
 
   seeded.forEach((node) => {
     if (node.nodeType === "YOU") {
@@ -100,7 +107,12 @@ function seedCareerGraphNodes(
     }
     if (node.nodeType === "FAMILY") {
       const index = families.indexOf(node);
-      const point = pointAt(-1.35 + (Math.PI * 2 * index) / Math.max(families.length, 1), 205);
+      const angle = -1.45
+        + (Math.PI * 2 * index) / Math.max(families.length, 1)
+        + (stableUnit(`family-angle:${node.id}`) - 0.5) * 0.55;
+      const radius = 142 + stableUnit(`family-radius:${node.id}`) * 50;
+      const point = pointAt(angle, radius);
+      familyAngle.set(node.id, angle);
       node.x = point.x;
       node.y = point.y;
       node.seedX = point.x;
@@ -109,8 +121,12 @@ function seedCareerGraphNodes(
     }
     if (node.nodeType === "ROLE") {
       const index = roles.indexOf(node);
-      const radius = 455 + (node.proximityRank ?? index) * 28;
-      const point = pointAt(0.2 + (Math.PI * 2 * index) / Math.max(roles.length, 1), radius);
+      const rank = node.proximityRank ?? index;
+      const radius = 420 + rank * 18 + stableUnit(`role-radius:${node.id}`) * 14;
+      const angle = 0.08
+        + (Math.PI * 2 * index) / Math.max(roles.length, 1)
+        + (stableUnit(`role-angle:${node.id}`) - 0.5) * 0.9;
+      const point = pointAt(angle, radius);
       node.x = point.x;
       node.y = point.y;
       node.seedX = point.x;
@@ -118,21 +134,49 @@ function seedCareerGraphNodes(
     }
   });
 
-  const parentId = (id: string): string | undefined =>
-    links.find((link) => link.target === id)?.source;
+  seeded
+    .filter((node) => node.nodeType === "CAPABILITY")
+    .forEach((node) => {
+      const parent = byId.get(node.parentIds?.[0] ?? "");
+      const baseAngle = familyAngle.get(node.familyId ?? "")
+        ?? (parent ? Math.atan2(parent.y ?? 0, parent.x ?? 1) : stableUnit(node.id) * Math.PI * 2);
+      const spread = (stableUnit(`capability:${node.id}`) - 0.5) * 1.05;
+      const distance = 82 + stableUnit(`capability-radius:${node.id}`) * 34;
+      const point = pointAt(baseAngle + spread, distance);
+      node.x = (parent?.x ?? 0) + point.x;
+      node.y = (parent?.y ?? 0) + point.y;
+      node.seedX = node.x;
+      node.seedY = node.y;
+    });
 
-  seeded.forEach((node) => {
-    if (node.nodeType === "YOU" || node.nodeType === "FAMILY" || node.nodeType === "ROLE") return;
-    const parent = byId.get(parentId(node.id) ?? "");
-    const baseAngle = parent ? Math.atan2(parent.y ?? 0, parent.x ?? 1) : stableUnit(node.id) * Math.PI * 2;
-    const spread = (stableUnit(`${node.nodeType}:${node.id}`) - 0.5) * 1.25;
-    const distance = node.nodeType === "EVIDENCE" ? 34 : node.nodeType === "ROLE_ONLY_CAPABILITY" ? 74 : 78;
-    const point = pointAt(baseAngle + spread, distance);
-    node.x = (parent?.x ?? 0) + point.x;
-    node.y = (parent?.y ?? 0) + point.y;
-    node.seedX = node.x;
-    node.seedY = node.y;
-  });
+  seeded
+    .filter((node) => node.nodeType === "EVIDENCE")
+    .forEach((node) => {
+      const parents = (node.parentIds ?? []).map((id) => byId.get(id)).filter(Boolean) as RenderNode[];
+      const parentX = parents.reduce((total, parent) => total + (parent.x ?? 0), 0) / Math.max(parents.length, 1);
+      const parentY = parents.reduce((total, parent) => total + (parent.y ?? 0), 0) / Math.max(parents.length, 1);
+      const baseAngle = familyAngle.get(node.familyId ?? "") ?? Math.atan2(parentY, parentX || 1);
+      const spread = (stableUnit(`evidence:${node.id}`) - 0.5) * 0.9;
+      const distance = 58 + stableUnit(`evidence-radius:${node.id}`) * 38;
+      const point = pointAt(baseAngle + spread, distance);
+      node.x = parentX + point.x;
+      node.y = parentY + point.y;
+      node.seedX = node.x;
+      node.seedY = node.y;
+    });
+
+  seeded
+    .filter((node) => node.nodeType === "ROLE_ONLY_CAPABILITY")
+    .forEach((node) => {
+      const parents = (node.parentIds ?? []).map((id) => byId.get(id)).filter(Boolean) as RenderNode[];
+      const parent = parents[0];
+      const baseAngle = parent ? Math.atan2(parent.y ?? 0, parent.x ?? 1) : stableUnit(node.id) * Math.PI * 2;
+      const point = pointAt(baseAngle + (stableUnit(node.id) - 0.5) * 0.95, 68);
+      node.x = (parent?.x ?? 0) + point.x;
+      node.y = (parent?.y ?? 0) + point.y;
+      node.seedX = node.x;
+      node.seedY = node.y;
+    });
 
   return seeded;
 }
@@ -158,7 +202,19 @@ function typeName(nodeType: CareerGraphVisualNodeType): string {
 }
 
 function nodeLabel(node: CareerGraphVisualNode): string {
-  return node.label ?? (node.nodeType === "EVIDENCE" ? "Evidence signal" : node.semanticId);
+  return node.label ?? (node.nodeType === "EVIDENCE" ? "Evidence" : node.semanticId);
+}
+
+function concreteEvidenceExcerpt(text: string, maximumLength = 156): string {
+  const normalized = text.replace(/\s+/g, " ").trim();
+  const sentenceEnd = normalized.search(/[.!?](?:\s|$)/);
+  if (sentenceEnd >= 36 && sentenceEnd + 1 <= maximumLength) {
+    return normalized.slice(0, sentenceEnd + 1);
+  }
+  if (normalized.length <= maximumLength) return normalized;
+  const clipped = normalized.slice(0, maximumLength - 1);
+  const lastWordBoundary = clipped.lastIndexOf(" ");
+  return `${clipped.slice(0, Math.max(lastWordBoundary, maximumLength - 24)).trimEnd()}…`;
 }
 
 function splitCanvasLabel(label: string, compact = false): readonly string[] {
@@ -200,13 +256,7 @@ function SelectedNodeDetail({
   );
 
   if (!selected) {
-    return (
-      <div className="max-w-xl py-5">
-        <p className="text-sm leading-6 text-cyan-50/70">
-          Select a family, capability, evidence signal, or future role to hold its connections and read the detail here.
-        </p>
-      </div>
-    );
+    return null;
   }
 
   if (selected.nodeType === "FAMILY") {
@@ -237,9 +287,9 @@ function SelectedNodeDetail({
         <h3 className="mt-2 text-xl font-semibold tracking-[-0.02em] text-cyan-50">{capability?.label}</h3>
         <p className="mt-2 text-sm text-cyan-50/65">{supportingEvidence.length} supporting evidence {supportingEvidence.length === 1 ? "signal" : "signals"}</p>
         <div className="mt-4 grid gap-2 sm:grid-cols-2">
-          {supportingEvidence.map((item, index) => (
+          {supportingEvidence.map((item) => (
             <button key={item.id} type="button" onClick={() => onSelect(item.id)} className="min-h-11 rounded-xl bg-white/[0.045] px-4 py-3 text-left text-sm text-cyan-50/80 transition-colors hover:bg-white/[0.08] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-200">
-              Evidence {index + 1} · {item.relationship === "direct_evidence" ? "direct" : "transferable"}
+              {item.text}
             </button>
           ))}
         </div>
@@ -302,19 +352,21 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
     () => {
       void layoutRevision;
       return {
-        nodes: seedCareerGraphNodes(visualModel.nodes, visualModel.links),
+        nodes: seedCareerGraphNodes(visualModel.nodes),
         links: visualModel.links.map((link) => ({ ...link })) as RenderLink[],
       };
     },
     [visualModel, layoutRevision],
   );
   const graphRef = useRef<CareerMapForceGraphHandle | null>(null);
+  const [engineReady, setEngineReady] = useState(false);
   const fieldRef = useRef<HTMLDivElement | null>(null);
   const [dimensions, setDimensions] = useState({ width: 900, height: 650 });
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [settled, setSettled] = useState(false);
   const [zoom, setZoom] = useState(1);
+  const [hoverPosition, setHoverPosition] = useState<{ x: number; y: number } | null>(null);
 
   const focusId = hoveredId ?? selectedId;
   const focusSet = useMemo(
@@ -322,7 +374,23 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
     [visualModel, focusId],
   );
   const selectedNode = visualModel.nodes.find((node) => node.id === selectedId) ?? null;
+  const hoveredNode = visualModel.nodes.find((node) => node.id === hoveredId) ?? null;
+  const evidenceTextById = useMemo(
+    () => new Map(
+      projection.nodes
+        .filter((node): node is EvidenceGraphNode => node.type === "evidence")
+        .map((node) => [node.id, concreteEvidenceExcerpt(node.text)] as const),
+    ),
+    [projection],
+  );
+  const hoveredEvidenceText = hoveredNode?.nodeType === "EVIDENCE"
+    ? evidenceTextById.get(hoveredNode.semanticId)
+    : undefined;
   const hasRole = visualModel.nodes.some((node) => node.nodeType === "ROLE");
+  const connectGraph = useCallback((instance: CareerMapForceGraphHandle | null) => {
+    graphRef.current = instance;
+    if (instance) setEngineReady(true);
+  }, []);
 
   useEffect(() => {
     const field = fieldRef.current;
@@ -341,15 +409,20 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
   useEffect(() => {
     const graph = graphRef.current;
     if (!graph) return;
+    const layoutScale = dimensions.width < 600 ? 0.72 : 1;
+    const horizontalScale = dimensions.width >= 900 ? 1.28 : 1;
+    const verticalScale = dimensions.width >= 900 ? 0.82 : 1;
 
     const charge = graph.d3Force("charge") as
       | { strength: (value: (node: RenderNode) => number) => unknown }
       | undefined;
     charge?.strength((node) => {
-      if (node.nodeType === "YOU") return -280;
-      if (node.nodeType === "EVIDENCE") return -14;
-      if (node.nodeType === "ROLE_ONLY_CAPABILITY") return -34;
-      return -92;
+      if (node.nodeType === "YOU") return -340;
+      if (node.nodeType === "ROLE") return -180;
+      if (node.nodeType === "FAMILY") return -130;
+      if (node.nodeType === "EVIDENCE") return -24;
+      if (node.nodeType === "ROLE_ONLY_CAPABILITY") return -42;
+      return -76;
     });
 
     const linkForce = graph.d3Force("link") as
@@ -360,26 +433,62 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
       | undefined;
     linkForce
       ?.distance((link) => {
-        if (link.linkType === "CAPABILITY_EVIDENCE") return 34;
-        if (link.linkType === "ROLE_OWNED_CAPABILITY") return 168;
-        if (link.linkType === "ROLE_ONLY_CAPABILITY") return 76;
-        return 82;
+        if (link.linkType === "USER_FAMILY") return 155 * layoutScale;
+        if (link.linkType === "FAMILY_CAPABILITY") return 104 * layoutScale;
+        if (link.linkType === "CAPABILITY_EVIDENCE") return 72 * layoutScale;
+        if (link.linkType === "ROLE_OWNED_CAPABILITY") return 340 * layoutScale;
+        if (link.linkType === "ROLE_ONLY_CAPABILITY") return 72 * layoutScale;
+        return 96 * layoutScale;
       });
     linkForce
       ?.strength((link) => {
-        if (link.linkType === "CAPABILITY_EVIDENCE") return 0.9;
+        if (link.linkType === "CAPABILITY_EVIDENCE") return 0.38;
         if (link.linkType === "ROLE_ONLY_CAPABILITY") return 0.62;
-        if (link.linkType === "ROLE_OWNED_CAPABILITY") return 0.14;
-        return 0.5;
+        if (link.linkType === "ROLE_OWNED_CAPABILITY") return 0.012;
+        return 0.42;
       });
 
     let forceNodes: RenderNode[] = [];
     const semanticForce = (alpha: number) => {
       for (const node of forceNodes) {
         if (node.nodeType === "YOU") continue;
-        const attraction = node.nodeType === "ROLE" ? 0.19 : node.nodeType === "FAMILY" ? 0.13 : 0.05;
-        node.vx = (node.vx ?? 0) + (node.seedX - (node.x ?? 0)) * attraction * alpha;
-        node.vy = (node.vy ?? 0) + (node.seedY - (node.y ?? 0)) * attraction * alpha;
+        const attraction = node.nodeType === "ROLE"
+          ? 0.76
+          : node.nodeType === "FAMILY"
+            ? 0.44
+            : node.nodeType === "ROLE_ONLY_CAPABILITY"
+              ? 0.36
+              : node.nodeType === "CAPABILITY"
+                ? 0.32
+                : 0.42;
+        node.vx = (node.vx ?? 0) + (node.seedX * layoutScale * horizontalScale - (node.x ?? 0)) * attraction * alpha;
+        node.vy = (node.vy ?? 0) + (node.seedY * layoutScale * verticalScale - (node.y ?? 0)) * attraction * alpha;
+      }
+
+      for (let leftIndex = 0; leftIndex < forceNodes.length; leftIndex += 1) {
+        const left = forceNodes[leftIndex]!;
+        for (let rightIndex = leftIndex + 1; rightIndex < forceNodes.length; rightIndex += 1) {
+          const right = forceNodes[rightIndex]!;
+          const dx = (right.x ?? 0) - (left.x ?? 0);
+          const dy = (right.y ?? 0) - (left.y ?? 0);
+          const distance = Math.max(0.01, Math.hypot(dx, dy));
+          const differentClusters = left.clusterId && right.clusterId && left.clusterId !== right.clusterId;
+          const minimum = nodeRadius[left.nodeType] + nodeRadius[right.nodeType]
+            + (left.nodeType === "ROLE" || right.nodeType === "ROLE" ? 34 : 16)
+            + (differentClusters ? 12 : 0);
+          if (distance >= minimum) continue;
+          const pressure = ((minimum - distance) / distance) * 0.22 * alpha;
+          const pushX = dx * pressure;
+          const pushY = dy * pressure;
+          if (left.nodeType !== "YOU") {
+            left.vx = (left.vx ?? 0) - pushX;
+            left.vy = (left.vy ?? 0) - pushY;
+          }
+          if (right.nodeType !== "YOU") {
+            right.vx = (right.vx ?? 0) + pushX;
+            right.vy = (right.vy ?? 0) + pushY;
+          }
+        }
       }
     };
     semanticForce.initialize = (nodes: NodeObject<CareerGraphVisualNode>[]) => {
@@ -391,7 +500,28 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
     return () => {
       graph.d3Force("career-semantic-bias", null);
     };
-  }, [graphData]);
+  }, [dimensions.width, engineReady, graphData]);
+
+  const hoverNode = useCallback((node: NodeObject<CareerGraphVisualNode> | null) => {
+    if (!node) {
+      setHoveredId(null);
+      setHoverPosition(null);
+      return;
+    }
+    setHoveredId(String(node.id));
+    let position = { x: dimensions.width / 2, y: dimensions.height / 2 };
+    try {
+      if (node.x !== undefined && node.y !== undefined && graphRef.current?.graph2ScreenCoords) {
+        position = graphRef.current.graph2ScreenCoords(node.x, node.y);
+      }
+    } catch {
+      // The DOM navigator still gets a stable in-field position if the engine is between frames.
+    }
+    setHoverPosition({
+      x: Math.min(Math.max(position.x, 160), Math.max(160, dimensions.width - 160)),
+      y: Math.min(Math.max(position.y, 110), dimensions.height - 24),
+    });
+  }, [dimensions.height, dimensions.width]);
 
   const selectNode = useCallback((id: string) => {
     setSelectedId((current) => current === id ? null : id);
@@ -442,7 +572,7 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
     }
 
     const compact = dimensions.width < 600;
-    const showLabel = (normallyLabelled.has(node.nodeType) && (!compact || node.nodeType !== "FAMILY"))
+    const showLabel = normallyLabelled.has(node.nodeType)
       || selected
       || hovered
       || (node.nodeType === "CAPABILITY" && globalScale > 2.15)
@@ -482,42 +612,28 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
   return (
     <section
       aria-label="Interactive Career Map capability universe"
-      className="overflow-hidden rounded-2xl bg-[#061012] text-cyan-50 shadow-[0_32px_100px_-50px_rgba(45,212,191,0.55)]"
+      className="flex h-full min-h-[calc(100dvh-8.5rem)] flex-col overflow-hidden rounded-2xl bg-[#061012] text-cyan-50 shadow-[0_36px_110px_-58px_rgba(45,212,191,0.55)]"
       data-graph-node-count={visualModel.nodes.length}
       data-graph-link-count={visualModel.links.length}
       data-graph-status={settled ? "settled" : "forming"}
     >
-      <header className="flex flex-col gap-4 border-b border-cyan-100/10 px-5 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-7">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-teal-300">Career capability universe</p>
-          <h2 className="mt-1 text-xl font-semibold tracking-[-0.025em] text-cyan-50">Your experience, connected</h2>
-        </div>
-        <div className="flex items-center gap-3">
-          <span className="flex items-center gap-2 text-xs text-cyan-50/65" aria-live="polite">
-            <i className={`h-2 w-2 rounded-full ${settled ? "bg-teal-300" : "animate-pulse bg-orange-300"}`} aria-hidden="true" />
-            {settled ? "Map settled" : "Map forming"}
-          </span>
-          <button type="button" onClick={resetGraph} className="min-h-11 rounded-full border border-cyan-100/20 px-4 text-sm font-medium text-cyan-50 transition-colors hover:border-cyan-100/45 hover:bg-white/[0.06] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-200">
-            Reset view
-          </button>
-        </div>
-      </header>
-
       <div
         ref={fieldRef}
         role="application"
-        aria-label="Career Map graph. Pan and zoom the field, or use the accessible navigator below."
-        className="relative h-[68vh] min-h-[560px] max-h-[780px] overflow-hidden bg-[radial-gradient(circle_at_50%_48%,rgba(20,91,88,0.18),transparent_44%),linear-gradient(180deg,#071416_0%,#061012_100%)] md:h-[72vh] md:min-h-[640px]"
+        aria-label="Career Map graph. Pan and zoom the field, or use Browse map for keyboard navigation."
+        className="relative min-h-[620px] flex-1 overflow-hidden bg-[radial-gradient(circle_at_50%_48%,rgba(20,91,88,0.18),transparent_48%),linear-gradient(180deg,#071416_0%,#061012_100%)] sm:min-h-[680px]"
       >
         <CareerMapForceGraph
-          ref={graphRef}
+          ref={connectGraph}
           width={dimensions.width}
           height={dimensions.height}
           graphData={graphData}
           backgroundColor="rgba(0,0,0,0)"
           nodeCanvasObject={drawNode}
           nodePointerAreaPaint={paintPointerArea}
-          nodeLabel={(node) => nodeLabel(node)}
+          nodeLabel={(node) => node.nodeType === "EVIDENCE"
+            ? evidenceTextById.get(node.semanticId) ?? "Evidence"
+            : nodeLabel(node)}
           linkColor={(link) => {
             const source = endpointId(link.source);
             const target = endpointId(link.target);
@@ -530,7 +646,7 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
           }}
           linkLineDash={(link) => link.linkType === "ROLE_ONLY_CAPABILITY" || link.requirementState === "transferable_signal" ? [4, 4] : null}
           linkWidth={(link) => link.linkType.startsWith("ROLE_") ? 1.15 : 0.72}
-          onNodeHover={(node) => setHoveredId(node ? String(node.id) : null)}
+          onNodeHover={hoverNode}
           onNodeClick={(node) => selectNode(String(node.id))}
           onBackgroundClick={() => setSelectedId(null)}
           onNodeDragEnd={(node) => {
@@ -541,7 +657,7 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
           onZoom={({ k }) => setZoom(k)}
           onEngineStop={() => {
             setSettled(true);
-            graphRef.current?.zoomToFit(600, dimensions.width < 600 ? 28 : 72);
+            graphRef.current?.zoomToFit(700, dimensions.width < 600 ? 20 : 52);
           }}
           enableNodeDrag
           enablePanInteraction
@@ -554,49 +670,71 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
           d3VelocityDecay={0.34}
         />
 
-        <div className="pointer-events-none absolute bottom-4 left-4 right-4 flex items-end justify-between gap-3 sm:bottom-5 sm:left-6 sm:right-6">
-          <div className="max-w-[75%]">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.15em] text-cyan-100/45">{focusId ? typeName(visualModel.nodes.find((node) => node.id === focusId)?.nodeType ?? "YOU") : "Explore"}</p>
-            <p className="mt-1 truncate text-sm font-medium text-cyan-50/85">{focusId ? nodeLabel(visualModel.nodes.find((node) => node.id === focusId) ?? visualModel.nodes[0]!) : "Move through your career universe"}</p>
-          </div>
-          <span className="rounded-full bg-black/30 px-3 py-1.5 text-xs tabular-nums text-cyan-50/55">{Math.round(zoom * 100)}%</span>
+        <div className="absolute right-3 top-3 z-20 flex items-center gap-2 sm:right-4 sm:top-4">
+          <span className="hidden items-center gap-2 rounded-full bg-[#071214]/90 px-3 py-2 text-xs text-cyan-50/65 sm:flex" aria-live="polite">
+            <i className={`h-2 w-2 rounded-full ${settled ? "bg-teal-300" : "animate-pulse bg-orange-300"}`} aria-hidden="true" />
+            {settled ? "Map settled" : "Map forming"}
+          </span>
+          <button type="button" onClick={resetGraph} className="min-h-11 rounded-full bg-[#071214]/90 px-4 text-sm font-medium text-cyan-50 transition-colors hover:bg-[#102426] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-200">
+            Reset view
+          </button>
         </div>
-      </div>
 
-      <div className="border-t border-cyan-100/10 px-5 sm:px-7">
-        <SelectedNodeDetail projection={projection} selected={selectedNode} onSelect={selectNode} />
-      </div>
-
-      <details className="border-t border-cyan-100/10 px-5 py-4 sm:px-7">
-        <summary className="cursor-pointer select-none text-sm font-medium text-cyan-50/75 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-200">Accessible graph navigator</summary>
-        <div className="mt-4 grid max-h-72 gap-5 overflow-y-auto pb-2 sm:grid-cols-2 lg:grid-cols-3">
-          {(["FAMILY", "CAPABILITY", "ROLE", "EVIDENCE", "ROLE_ONLY_CAPABILITY"] as const).map((nodeType) => {
-            const nodes = visualModel.nodes.filter((node) => node.nodeType === nodeType);
-            if (nodes.length === 0) return null;
-            return (
-              <div key={nodeType}>
-                <p className="text-xs font-semibold uppercase tracking-[0.14em] text-cyan-100/45">{typeName(nodeType)}</p>
-                <div className="mt-2 grid gap-1">
-                  {nodes.map((node, index) => (
-                    <button
-                      key={node.id}
-                      type="button"
-                      onClick={() => selectNode(node.id)}
-                      aria-pressed={selectedId === node.id}
-                      data-node-type={projectionNodeType(node.nodeType)}
-                      data-node-id={node.id}
-                      data-requirement-state={node.nodeType === "ROLE_ONLY_CAPABILITY" ? node.requirementStates?.[0] : undefined}
-                      className="min-h-11 rounded-lg px-3 py-2 text-left text-sm text-cyan-50/75 transition-colors hover:bg-white/[0.06] hover:text-cyan-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-200 aria-pressed:bg-cyan-100/10 aria-pressed:text-cyan-50"
-                    >
-                      {node.nodeType === "EVIDENCE" ? `Evidence ${index + 1}` : nodeLabel(node)}
-                    </button>
-                  ))}
+        <details className="group absolute left-3 top-3 z-30 sm:left-4 sm:top-4">
+          <summary className="flex min-h-11 cursor-pointer list-none items-center rounded-full bg-[#071214]/90 px-4 text-sm font-medium text-cyan-50/80 transition-colors hover:bg-[#102426] hover:text-cyan-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-200">Browse map</summary>
+          <div className="absolute left-0 top-12 grid max-h-[min(70vh,34rem)] w-[min(22rem,calc(100vw-2rem))] gap-5 overflow-y-auto rounded-xl bg-[#081517] p-4 shadow-[0_18px_55px_rgba(0,0,0,0.48)] sm:grid-cols-2 sm:w-[34rem]">
+            {(["FAMILY", "CAPABILITY", "ROLE", "EVIDENCE", "ROLE_ONLY_CAPABILITY"] as const).map((nodeType) => {
+              const nodes = visualModel.nodes.filter((node) => node.nodeType === nodeType);
+              if (nodes.length === 0) return null;
+              return (
+                <div key={nodeType}>
+                  <p className="text-xs font-semibold uppercase tracking-[0.14em] text-cyan-100/45">{typeName(nodeType)}</p>
+                  <div className="mt-2 grid gap-1">
+                    {nodes.map((node) => (
+                      <button
+                        key={node.id}
+                        type="button"
+                        onClick={() => selectNode(node.id)}
+                        onFocus={() => hoverNode(graphData.nodes.find((candidate) => candidate.id === node.id) ?? null)}
+                        onBlur={() => hoverNode(null)}
+                        aria-pressed={selectedId === node.id}
+                        data-node-type={projectionNodeType(node.nodeType)}
+                        data-node-id={node.id}
+                        data-requirement-state={node.nodeType === "ROLE_ONLY_CAPABILITY" ? node.requirementStates?.[0] : undefined}
+                        className="min-h-11 rounded-lg px-3 py-2 text-left text-sm text-cyan-50/75 transition-colors hover:bg-white/[0.06] hover:text-cyan-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-200 aria-pressed:bg-cyan-100/10 aria-pressed:text-cyan-50"
+                      >
+                        {node.nodeType === "EVIDENCE"
+                          ? evidenceTextById.get(node.semanticId) ?? "Evidence"
+                          : nodeLabel(node)}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            );
-          })}
-        </div>
-      </details>
+              );
+            })}
+          </div>
+        </details>
+
+        {hoveredEvidenceText && hoverPosition && (
+          <div
+            className="pointer-events-none absolute z-20 w-[min(20rem,calc(100%-2rem))] -translate-x-1/2 -translate-y-[calc(100%+0.875rem)] rounded-xl bg-[#121425] px-4 py-3 shadow-[0_16px_45px_rgba(0,0,0,0.5)]"
+            style={{ left: hoverPosition.x, top: hoverPosition.y }}
+            role="status"
+          >
+            <p className="text-xs font-medium leading-5 text-violet-100">{hoveredEvidenceText}</p>
+            <p className="mt-1 text-[11px] text-violet-200/55">Supporting experience</p>
+          </div>
+        )}
+
+        {selectedNode && (
+          <div className="absolute bottom-4 left-4 z-20 max-h-[42%] w-[min(44rem,calc(100%-2rem))] overflow-y-auto rounded-xl bg-[#081517]/95 px-4 shadow-[0_18px_55px_rgba(0,0,0,0.5)] sm:left-5 sm:px-5">
+            <SelectedNodeDetail projection={projection} selected={selectedNode} onSelect={selectNode} />
+          </div>
+        )}
+
+        <span className="pointer-events-none absolute bottom-3 right-3 rounded-full bg-black/30 px-3 py-1.5 text-xs tabular-nums text-cyan-50/55">{Math.round(zoom * 100)}%</span>
+        <span className="sr-only">Accessible graph navigator is available from Browse map.</span>
+      </div>
       <span className="sr-only">{hasRole ? "Future role paths are available in this map." : "No future role paths are available."}</span>
     </section>
   );
