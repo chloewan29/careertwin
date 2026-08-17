@@ -1,5 +1,26 @@
 # Current System Memory
 
+### Post-MVP Task D: Topology-Aware Role Focus + Visual Gap Explainability Closed (`POST_MVP_TASK_D_CLOSED`)
+
+- Career Map MVP remains `CLOSED / MVP VALIDATED`; Post-MVP Task A, Task A.1, Task B, and Task C remain `CLOSED`.
+- Task D name: `POST-MVP TASK D — TOPOLOGY-AWARE ROLE FOCUS + VISUAL GAP EXPLAINABILITY`. Task D is `CLOSED`; implementation is verified; implementation decision is `POST_MVP_TASK_D_ROLE_FOCUS_IMPLEMENTED`; product judgment is `TASK_D_ROLE_FOCUS_READY_WITH_MINOR_ISSUES`; material blockers are `NONE`.
+- Implementation commit: `7b0bc406f9331ff2d07ce6d6175437c993fd813b` (`feat(career): explain role fit in career graph`).
+- Founder dogfood found that visually uniform outer-role positions could be topologically misleading. Future roles remain in the outermost career-possibility domain, but angular/sector position now derives from connected canonical capability and family direction vectors through a weighted topological centroid plus bounded local collision/crossing adjustment. Role radius remains presentation-only and informed by upstream `proximityRank`; global even spacing no longer overrides semantic locality.
+- Customer Insights Lead improved from `MATERIALLY_DISPLACED` at 46.6° displacement, 408.3 average edge length, and 903.5 longest edge to `TOPOLOGY_LOCAL` at 0.0°, 382.7 average, 631.1 longest, 30.2% longest-edge reduction, and zero central crossings. Data Product Manager improved from `MILDLY_DISPLACED` to `TOPOLOGY_LOCAL` with 22.7% longest-edge reduction. Analytics Manager and Marketing Analytics Lead remain `ACCEPTABLE_LOCALITY`; all 4/4 roles are topology-local or acceptable, with no material cross-graph bridge caused by global uniformity.
+- Browse mode continues to explain the broader capability universe. One click activates Role Focus inside the same Career Map, with no new route, Role Lens tab, or duplicate semantic system. It automatically exposes every role-relevant canonical capability, owned/shared capability, role-only gap, and relevant family context; manual family clicks are `0`; unrelated context remains present at approximately 20% presentation weight; evidence does not auto-expand.
+- Real-state Data Product Manager focus exposes 7 relevant capabilities: 3 owned/shared, 4 role-only gaps, and 0 transferable. Readiness was 118 ms at 1440, 117 ms at 1280, and 103 ms at 390; Founder 3-second test was `A`.
+- Owned/shared capability presentation is filled with a structural outer ring, strong family path, and strong solid role path. Role-only gaps are hollow with a thick dashed structural ring, dashed role-only relationship, and no YOU ownership path. The selected role is enlarged with a double halo, stronger outline, and label emphasis. These structural and accessible-state distinctions do not rely on color alone.
+- Family and broader spatial context remain visible. Hover/focus evidence behavior is preserved and concrete existing evidence remains available for owned capabilities; real-state evidence probes passed and fabricated gap evidence is `0`. The role panel is a `SECONDARY_CONFIRMATION_LAYER`; the graph itself communicates what the user already has versus what is missing.
+- All four roles remain projected, rendered, and reachable on desktop and mobile. Responsive results: 1440 default/focus `PASS`; 1280 default `PASS` and focus `PASS WITH MINOR LABEL PROXIMITY`; 390 default `PASS WITH EXISTING MINOR DENSITY` and focus `PASS WITH MINOR LABEL CROWDING`; destructive horizontal overflow is `NONE`.
+- Semantic guarantees are preserved: canonical capability ontology and family authority are unchanged; shared canonical identity, role-only non-ownership, evidence semantics, and role knowledge are preserved; role ranking and `proximityRank` remain upstream; graph projection remains semantic authority; renderer reranking, renderer fit scores, visible fit percentages, and High/Adjacent/Stretch labels remain absent; provider/API, inference, materializer, persistence, and Job Copilot are unchanged.
+- Final acceptance used the real Founder Career Map state, classified `STATE_ADMISSIBLE`, SHA256 `0A9043BA497E7C1F3B05E74F14937B6E9C309F0F1B0DC59BCCB134B8EB5E9C8D`; synthetic acceptance state `NO`; live provider calls `0`; CV uploads `0`.
+- Verification carried forward from the accepted implementation: focused Task D tests `PASS — 4/4`; critical semantic regressions `PASS — 5/5`; shared identity, role-only non-ownership, evidence semantics, and ranking/projection `PASS`; TypeScript, targeted ESLint, and fresh production build `PASS`.
+- Validation artifact (read-only and unstaged): `artifacts/career-possibility/post-mvp-task-d-role-focus-gap-explainability.md`, SHA256 `1ECC852DE62CF6D3ADF16D7312335E4300D1C933EDA6AFCE8BFBB5FD85089F51`.
+- Known non-blocking issue: 390px Role Focus central-label crowding is `DEFERRED / NON-BLOCKING`. It does not reopen Task D, block acceptance, or automatically create a polish task.
+- Next post-MVP task: `NONE`. Any future work requires new Founder / EM product review and explicit admission; no Task E or other follow-on task is automatic.
+- `memory_sync_required: no`
+- `memory_sync_targets: []`
+
 ### Post-MVP Task C: Hero Career Graph + Layered Cluster Field Closed (`POST_MVP_TASK_C_CLOSED`)
 
 - Career Map MVP remains `CLOSED / MVP VALIDATED`; Post-MVP Task A, Task A.1, and Task B remain `CLOSED`.
@@ -16,8 +37,8 @@
 - Responsive acceptance: 1440×1000 `PASS` with 864px graph field; 1280×800 `PASS` with 680px graph field; 390×844 `PASS WITH MINOR ISSUE` with 708px graph field; no destructive horizontal overflow; graph remains primary.
 - Verification: focused Task C tests `PASS — 4/4`; critical Career Map semantic regressions `PASS — 5/5`; shared canonical identity, role-only non-ownership, evidence semantics, and ranking/projection `PASS`; TypeScript, targeted ESLint, and fresh production build `PASS`.
 - Validation artifact: `artifacts/career-possibility/post-mvp-task-c-hero-layered-cluster-graph.md`, SHA256 `7AF5587B95149A580D78479D612C9C7D756B59872D34D02F93D70E6344088AE7`.
-- Known non-blocking issues are deferred: mobile central-label density and naturally long outer-role bridge edges. They do not reopen or block Task C and do not automatically admit follow-on work.
-- Next post-MVP task: `NONE`. Any further Career Map work requires new Founder / EM product review and explicit admission; do not invent Task D or an automatic polish task.
+- Historical Task C non-blocking issues were mobile central-label density and naturally long outer-role bridge edges. Task D superseded the topology/role-focus presentation state without reopening Task C.
+- Historical Task C next-task state was `NONE`; it was superseded by the explicitly admitted and now-closed Task D above.
 - `memory_sync_required: no`
 - `memory_sync_targets: []`
 
