@@ -1,5 +1,24 @@
 # Current System Memory
 
+### Post-MVP Task F.9: Canonical Capability Semantic Contract Hardening Closed (`POST_MVP_TASK_F9_CONTROL_CLOSED`)
+
+- Career Map MVP and Post-MVP Tasks A-D remain `CLOSED`. Task F remains the semantic-quality workstream, but no follow-on task is currently admitted. Task F.8 completed the semantic-contract audit; Task F.8.1 ratified semantic conflicts and benchmark meaning; Task F.9 is `CLOSED / IMPLEMENTED / PUSHED / VERIFIED`.
+- Task F.9 implementation commit: `dc36e0982e1d21fa2d1d08c8a4bbd9408d016594` (`feat(career): define canonical capability semantics`).
+- Canonical authority remains `lib/career-possibility/canonical-capability-library.ts`. It contains exactly 51 capabilities across 12 families. IDs, labels, ordering, and family memberships did not change. Content version advanced from `1.2.0` to `1.3.0` because canonical meaning was materially enriched without changing identity or the external inference schema.
+- Every canonical capability now has a compact machine-usable contract containing `definition`, `positiveEvidence`, `notSufficient`, and `distinctions`. Coverage is 51/51 definitions, 51/51 positive-evidence criteria, 51/51 not-sufficient boundaries, and 51/51 capabilities with neighbour distinctions. There are 104 directed distinctions, 0 invalid neighbour references, 0 self references, and 0 duplicate neighbour references within a contract.
+- Durable semantic principle: a personal canonical capability must be established by performed professional behavior and/or observable professional responsibility or outcome. It must not be inferred merely from job title, employer, education, qualification, generic project context, target role, an adjacent capability, or likelihood that the capability was required. Shorthand: `EVIDENCE OF PERFORMANCE, NOT LIKELIHOOD FROM CONTEXT`.
+- Representative ratified boundaries: Analytics Governance requires standards, controls, definitions, quality/access/decision mechanisms, or equivalent governance evidence; analyst tooling/workspace enablement alone is insufficient. Commercial Partnerships requires material commercial purpose or value exchange; collaboration, joint programmes, or institutional partnerships alone are insufficient. Service Performance requires service-delivery responsibility, measurement, or outcome improvement; transformation, process, or programme activity alone is insufficient.
+- The three F.8 potential duplicate-semantic groups and all 12 cross-family ambiguity groups are resolved by explicit semantic boundaries. No material semantic ambiguity remains identified. No canonical merge, rename, new ID, or family move was required.
+- Durable benchmark authority is `structured-inference-coverage-benchmark/2.1.0`, SHA256 `B4BC948CABB7D37C032CF3080056C804872B7F523315FB1B36A4EC76F083A55A`, status `BENCHMARK_SEMANTICALLY_RATIFIED`. Static consistency is REQUIRED 42/42, ALLOWED_OPTIONAL 26/26, and FORBIDDEN 89/89, with 0 semantic conflicts.
+- The final maximum remains 3 capability assessments per atomic evidence item, `PRESERVED FOR NOW`, because every currently required benchmark mapping fits within it. F.9 admitted no output-schema change.
+- F.9 changed canonical semantic authority only. It did not modify the provider, inference/output validator, final structured output schema, eligibility, materializer, graph projection, or role semantic identity. Provider calls and Founder holdout calls were both 0.
+- Compact semantic-contract context measures 45,294 characters, approximately 11,324 tokens and 10.16x the prior canonical provider context. Classification: `FEASIBLE_WITH_MATERIAL_CONTEXT_INCREASE`. This is not an F.9 blocker and is a required measurement dimension for any future inference evaluation.
+- F.9 verification: focused semantic-contract tests, deterministic benchmark contract, role/canonical regressions, shared-identity regressions, TypeScript, targeted ESLint, build, and post-push build all `PASS`.
+- Planned candidate only: Post-MVP Task F.10, Semantic-Contract Inference Evaluation. If explicitly admitted, its intended first comparison is single-stage, full evidence batch, full canonical set, no behavior decomposition, no Stage-2 partitioning, with compact canonical semantic contracts as the only new variable. Its purpose is to test whether earlier decomposition/chunking complexity compensated for under-specified canonical semantics.
+- Task F.10 is `NOT ADMITTED / NOT ACTIVE`. Task E is `NOT ACTIVE`. Next post-MVP task is `NONE` until explicit Founder / EM admission.
+- `memory_sync_required: no`
+- `memory_sync_targets: []`
+
 ### Post-MVP Task D: Topology-Aware Role Focus + Visual Gap Explainability Closed (`POST_MVP_TASK_D_CLOSED`)
 
 - Career Map MVP remains `CLOSED / MVP VALIDATED`; Post-MVP Task A, Task A.1, Task B, and Task C remain `CLOSED`.
