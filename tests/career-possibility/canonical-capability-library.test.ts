@@ -18,11 +18,20 @@ import { applyResumeEvidenceReviewDecisions } from "../../lib/career-possibility
 import { RESUME_EVIDENCE_REVIEW_SCHEMA_VERSION, type ResumeEvidenceReviewSession } from "../../lib/career-possibility/resume-evidence-review-contract";
 
 const clone = (library: CanonicalCapabilityLibrary): CanonicalCapabilityLibrary => structuredClone(library);
-const validLibrary = (capabilities: CanonicalCapabilityLibrary["capabilities"], contentVersion = "2.0.0"): CanonicalCapabilityLibrary => ({
-  schemaVersion: CANONICAL_CAPABILITY_LIBRARY_SCHEMA_VERSION,
-  contentVersion,
-  capabilities,
-});
+const testSemanticContract = Object.freeze({ definition: "Performs a defined professional capability.", positiveEvidence: Object.freeze(["Performs the relevant professional behaviour.", "Produces an observable professional outcome."]), notSufficient: Object.freeze(["Context without performed behaviour.", "A label without observable responsibility."]), distinctions: Object.freeze([]) });
+const validLibrary = (capabilities: CanonicalCapabilityLibrary["capabilities"], contentVersion = "2.0.0"): CanonicalCapabilityLibrary => {
+  const includedIds = new Set(capabilities.map((capability) => capability.id));
+  return {
+    schemaVersion: CANONICAL_CAPABILITY_LIBRARY_SCHEMA_VERSION,
+    contentVersion,
+    capabilities: capabilities.map((capability) => ({
+      ...capability,
+      semanticContract: capability.semanticContract
+        ? { ...capability.semanticContract, distinctions: capability.semanticContract.distinctions.filter((item) => includedIds.has(item.capabilityId)) }
+        : testSemanticContract,
+    })),
+  };
+};
 const expectValidationIssue = (library: CanonicalCapabilityLibrary, code: string) => {
   const result = validateCanonicalCapabilityLibrary(library);
   assert.equal(result.ok, false);
@@ -35,7 +44,7 @@ const expectTransitionFailure = (previous: CanonicalCapabilityLibrary, next: Can
 };
 
 assert.equal(CANONICAL_CAPABILITY_LIBRARY_SCHEMA_VERSION, "1.0.0");
-assert.equal(CANONICAL_CAPABILITY_LIBRARY_CONTENT_VERSION, "1.2.0");
+assert.equal(CANONICAL_CAPABILITY_LIBRARY_CONTENT_VERSION, "1.3.0");
 const expectedCapabilities = [
   ["forecasting", "Forecasting", "Analytics & Insight"],
   ["insight-synthesis", "Insight Synthesis", "Analytics & Insight"],
@@ -115,7 +124,7 @@ if (membershipValidation.ok) assert.equal(membershipValidation.memberships.lengt
 
 const people = canonicalCapabilityLibrary.capabilities.filter((item) => item.id === "people-leadership");
 assert.equal(people.length, 1);
-assert.deepEqual(people[0], { id: "people-leadership", label: "People Leadership", family: "Leadership" });
+assert.deepEqual(({ id: people[0].id, label: people[0].label, family: people[0].family }), { id: "people-leadership", label: "People Leadership", family: "Leadership" });
 assert.equal(canonicalCapabilityLibrary.capabilities.some((item) => item.label === "Engineering People Leadership"), false);
 assert.equal(canonicalCapabilityLibrary.capabilities.some((item) => item.id === "engineering-people-leadership"), false);
 const deferredIds = [

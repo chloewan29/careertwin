@@ -13,7 +13,7 @@ assert.deepEqual(result.definitions.map(({ label }) => label), canonicalCapabili
 assert.equal(result.definitions.filter(({ id }) => id === "people-leadership").length, 1);
 assert.deepEqual(result.definitions.find(({ id }) => id === "people-leadership"), { id: "people-leadership", label: "People Leadership", family: "Leadership" });
 assert.equal(result.definitions.some(({ id }) => id === "matter-management"), false);
-assert.match(result.definitionVersion, /capability-schema-1\.0\.0\/capability-content-1\.2\.0\/family-schema-1\.0\.0\/family-content-1\.0\.0\/adapter-1\.0\.0$/);
+assert.match(result.definitionVersion, /capability-schema-1\.0\.0\/capability-content-1\.3\.0\/family-schema-1\.0\.0\/family-content-1\.0\.0\/adapter-1\.0\.0$/);
 assert.deepEqual(build(), result);
 assert.deepEqual(JSON.parse(JSON.stringify(result)), result);
 assert.equal(Object.isFrozen(result.definitions), true);
@@ -24,7 +24,18 @@ const changedFamilyVersion = buildCareerMapCapabilityDefinitionsFromCanonicalLib
 assert.equal(changedFamilyVersion.ok && changedFamilyVersion.definitionVersion !== result.definitionVersion, true);
 assert.equal(buildCareerMapCapabilityDefinitionsFromCanonicalLibrary({ capabilityLibrary: { ...canonicalCapabilityLibrary, schemaVersion: "9.0.0" }, familyLibrary: canonicalCapabilityFamilyLibrary }).ok, false);
 assert.equal(buildCareerMapCapabilityDefinitionsFromCanonicalLibrary({ capabilityLibrary: canonicalCapabilityLibrary, familyLibrary: { ...canonicalCapabilityFamilyLibrary, schemaVersion: "9.0.0" } }).ok, false);
-const invalidMembership = { ...canonicalCapabilityLibrary, capabilities: [{ id: "unknown-family-capability", label: "Unknown Family Capability", family: "Unknown family" }] };
+const invalidMembership = {
+  ...canonicalCapabilityLibrary,
+  capabilities: [{
+    id: "unknown-family-capability",
+    label: "Unknown Family Capability",
+    family: "Unknown family",
+    semanticContract: {
+      ...canonicalCapabilityLibrary.capabilities[0].semanticContract!,
+      distinctions: [],
+    },
+  }],
+};
 const invalidMembershipResult = buildCareerMapCapabilityDefinitionsFromCanonicalLibrary({ capabilityLibrary: invalidMembership, familyLibrary: canonicalCapabilityFamilyLibrary });
 assert.equal(invalidMembershipResult.ok, false);
 if (!invalidMembershipResult.ok) assert.equal(invalidMembershipResult.issues[0].code, "invalid_family_membership");

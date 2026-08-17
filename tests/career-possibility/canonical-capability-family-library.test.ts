@@ -50,7 +50,17 @@ const capabilityLibrary = (
 ): CanonicalCapabilityLibrary => ({
   schemaVersion: CANONICAL_CAPABILITY_LIBRARY_SCHEMA_VERSION,
   contentVersion: "2.0.0",
-  capabilities: [{ id, label, family }],
+  capabilities: [{
+    id,
+    label,
+    family,
+    semanticContract: {
+      definition: "Performs a defined professional capability.",
+      positiveEvidence: ["Performs the relevant professional behaviour.", "Produces an observable professional outcome."],
+      notSufficient: ["Context without performed behaviour.", "A label without observable responsibility."],
+      distinctions: [],
+    },
+  }],
 });
 const expectFamilyIssue = (
   library: CanonicalCapabilityFamilyLibrary,
@@ -312,8 +322,8 @@ const orderedMembershipResult = validateCanonicalCapabilityFamilyMembership({
     schemaVersion: CANONICAL_CAPABILITY_LIBRARY_SCHEMA_VERSION,
     contentVersion: "2.0.0",
     capabilities: [
-      { id: "zeta", label: "Zeta", family: "Leadership" },
-      { id: "alpha", label: "Alpha", family: "Leadership" },
+      { id: "zeta", label: "Zeta", family: "Leadership", semanticContract: capabilityLibrary("Leadership").capabilities[0].semanticContract },
+      { id: "alpha", label: "Alpha", family: "Leadership", semanticContract: capabilityLibrary("Leadership").capabilities[0].semanticContract },
     ].sort((left, right) =>
       left.family.localeCompare(right.family, "en") ||
       left.label.localeCompare(right.label, "en") ||

@@ -56,7 +56,19 @@ const library = (
   capabilities: readonly CanonicalCapabilityDefinition[],
   contentVersion = "2.0.0",
   schemaVersion = CANONICAL_CAPABILITY_LIBRARY_SCHEMA_VERSION,
-): CanonicalCapabilityLibrary => ({ schemaVersion, contentVersion, capabilities });
+): CanonicalCapabilityLibrary => ({
+  schemaVersion,
+  contentVersion,
+  capabilities: capabilities.map((capability) => ({
+    ...capability,
+    semanticContract: capability.semanticContract ?? {
+      definition: "Performs a defined professional capability.",
+      positiveEvidence: ["Performs the relevant professional behaviour.", "Produces an observable professional outcome."],
+      notSufficient: ["Context without performed behaviour.", "A label without observable responsibility."],
+      distinctions: [],
+    },
+  })),
+});
 
 const completeLibrary = () => library([
   { id: "leadership", label: "Leadership", family: "Leadership" },
