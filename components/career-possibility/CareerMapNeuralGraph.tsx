@@ -560,6 +560,15 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
     context: CanvasRenderingContext2D,
   ) => {
     const id = String(node.id);
+
+    if (node.nodeType === "EVIDENCE") {
+      const selfActive = id === hoveredId || id === selectedId;
+      const parentActive = !!node.parentIds?.some(pid => pid === hoveredId || pid === selectedId);
+      if (!selfActive && !parentActive) {
+        return;
+      }
+    }
+
     const active = !focusSet || focusSet.has(id) || id === hoveredId;
     const roleOwned = selectedRoleFocus?.ownedCapabilityIds.has(id) ?? false;
     const roleTransferable = selectedRoleFocus?.transferableCapabilityIds.has(id) ?? false;
@@ -783,11 +792,19 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
     color: string,
     context: CanvasRenderingContext2D,
   ) => {
+    if (node.nodeType === "EVIDENCE") {
+      const id = String(node.id);
+      const selfActive = id === hoveredId || id === selectedId;
+      const parentActive = !!node.parentIds?.some(pid => pid === hoveredId || pid === selectedId);
+      if (!selfActive && !parentActive) {
+        return;
+      }
+    }
     context.fillStyle = color;
     context.beginPath();
     context.arc(node.x ?? 0, node.y ?? 0, Math.max(7, nodeRadius[node.nodeType]), 0, Math.PI * 2);
     context.fill();
-  }, []);
+  }, [hoveredId, selectedId]);
 
   const roleFocusStateForNode = useCallback((node: CareerGraphVisualNode) => {
     if (!selectedRoleFocus) return undefined;
@@ -847,6 +864,11 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
           linkColor={(link) => {
             const source = endpointId(link.source);
             const target = endpointId(link.target);
+            if (link.linkType === "CAPABILITY_EVIDENCE") {
+              if (source === selectedId || target === selectedId) return "rgba(167,139,250,0.45)";
+              if (source === hoveredId || target === hoveredId) return "rgba(167,139,250,0.25)";
+              return "rgba(0,0,0,0)";
+            }
             const active = !focusSet || (focusSet.has(source) && focusSet.has(target));
             if (!active) return "rgba(116,148,148,0.055)";
             const hoveredRoleLink = !selectedRoleFocus
@@ -868,7 +890,6 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
                   : rolePresentation.defaultGapLinkAlpha;
               return `rgba(203,213,225,${alpha})`;
             }
-            if (link.linkType === "CAPABILITY_EVIDENCE") return "rgba(167,139,250,0.25)";
             if (selectedRoleFocus) return "rgba(105,220,204,0.48)";
             if (link.linkType === "USER_FAMILY") return `rgba(105,220,204,${personalNetworkPresentation.userFamilyLinkAlpha})`;
             return `rgba(105,220,204,${personalNetworkPresentation.familyCapabilityLinkAlpha})`;
@@ -877,6 +898,11 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
           linkWidth={(link) => {
             const source = endpointId(link.source);
             const target = endpointId(link.target);
+            if (link.linkType === "CAPABILITY_EVIDENCE") {
+              if (source === selectedId || target === selectedId) return 1.2;
+              if (source === hoveredId || target === hoveredId) return 0.7;
+              return 0;
+            }
             const active = !focusSet || (focusSet.has(source) && focusSet.has(target));
             if (!active) return 0.6;
             const hoveredRoleLink = !selectedRoleFocus
