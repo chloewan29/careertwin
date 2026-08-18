@@ -70,7 +70,7 @@ const rolePresentation = {
   hoverRadiusBoost: 2.3,
   selectedRadiusBoost: 5.4,
   defaultOwnedLinkAlpha: 0.2,
-  defaultGapLinkAlpha: 0.22,
+  defaultGapLinkAlpha: 0.08,
   hoverOwnedLinkAlpha: 0.58,
   hoverGapLinkAlpha: 0.52,
   selectedOwnedLinkAlpha: 0.78,
@@ -569,7 +569,7 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
       }
     }
 
-    const active = !focusSet || focusSet.has(id) || id === hoveredId;
+    const active = !focusSet ? (node.nodeType !== "ROLE_ONLY_CAPABILITY") : (focusSet.has(id) || id === hoveredId);
     const roleOwned = selectedRoleFocus?.ownedCapabilityIds.has(id) ?? false;
     const roleTransferable = selectedRoleFocus?.transferableCapabilityIds.has(id) ?? false;
     const roleGap = selectedRoleFocus?.gapCapabilityIds.has(id) ?? false;
@@ -585,7 +585,7 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
           ? rolePresentation.hoverRadiusBoost
           : 0);
     context.save();
-    context.globalAlpha = active ? 1 : 0.2;
+    context.globalAlpha = active ? 1 : (node.nodeType === "ROLE_ONLY_CAPABILITY" && !focusSet ? 0.08 : 0.2);
     context.shadowColor = selected || hovered || node.nodeType === "YOU" ? palette[node.nodeType] : "transparent";
     context.shadowBlur = selected ? 22 : hovered ? 16 : node.nodeType === "YOU" ? 10 : 0;
     context.beginPath();
@@ -691,7 +691,7 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
       const roleGap = selectedRoleFocus?.gapCapabilityIds.has(id) ?? false;
       const selectedRole = node.nodeType === "ROLE" && id === selectedRoleFocus?.roleId;
       const hoveredRole = node.nodeType === "ROLE" && hovered;
-      const active = !focusSet || focusSet.has(id) || id === hoveredId;
+      const active = !focusSet ? (node.nodeType !== "ROLE_ONLY_CAPABILITY") : (focusSet.has(id) || id === hoveredId);
 
       const showCapabilityLabel = node.nodeType === "CAPABILITY"
         && globalScale > (compact
@@ -703,7 +703,7 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
         || roleOwned
         || roleGap
         || showCapabilityLabel
-        || (node.nodeType === "ROLE_ONLY_CAPABILITY" && globalScale > 3.2);
+        || (node.nodeType === "ROLE_ONLY_CAPABILITY" && !!focusSet && focusSet.has(id) && globalScale > 3.2);
 
       if (!showLabel || !node.label) continue;
 
@@ -792,8 +792,11 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
     color: string,
     context: CanvasRenderingContext2D,
   ) => {
+    const id = String(node.id);
+    if (node.nodeType === "ROLE_ONLY_CAPABILITY") {
+      if (!focusSet || !focusSet.has(id)) return;
+    }
     if (node.nodeType === "EVIDENCE") {
-      const id = String(node.id);
       const selfActive = id === hoveredId || id === selectedId;
       const parentActive = !!node.parentIds?.some(pid => pid === hoveredId || pid === selectedId);
       if (!selfActive && !parentActive) {
@@ -804,7 +807,7 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
     context.beginPath();
     context.arc(node.x ?? 0, node.y ?? 0, Math.max(7, nodeRadius[node.nodeType]), 0, Math.PI * 2);
     context.fill();
-  }, [hoveredId, selectedId]);
+  }, [focusSet, hoveredId, selectedId]);
 
   const roleFocusStateForNode = useCallback((node: CareerGraphVisualNode) => {
     if (!selectedRoleFocus) return undefined;
