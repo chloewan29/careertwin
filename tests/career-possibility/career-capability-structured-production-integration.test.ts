@@ -142,7 +142,12 @@ async function main() {
   }));
   assert.equal(validRouteResponse.status, 200);
   assert.equal(serverRequest?.canonicalCapabilities.length, definitions.length);
-  assert.deepEqual(serverRequest?.canonicalCapabilities, definitions);
+  assert.deepEqual(
+    serverRequest?.canonicalCapabilities.map(({ id, label, family }) => ({ id, label, family })),
+    definitions,
+  );
+  assert.deepEqual(serverRequest?.canonicalCapabilities, canonicalCapabilityLibrary.capabilities);
+  assert.equal(serverRequest?.canonicalCapabilities.every((capability) => capability.semanticContract !== undefined), true);
 
   const forbiddenRouteResponse = await handler(new Request("http://localhost/api/career-map/capability-inference", {
     method: "POST",
