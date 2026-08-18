@@ -319,13 +319,22 @@ ecb6fb79a0f395dd429c27d6466ad6b7850a37b2
 TASK G PRODUCT JUDGMENT:
 TASK_G_FORCE_GRAPH_LIFECYCLE_READY
 
+POST-MVP TASK H:
+CLOSED / IMPLEMENTED / PUSHED / VERIFIED
+
+TASK H IMPLEMENTATION COMMIT:
+a2f28988021a8066d58bed7d9a74355e78300778
+
+TASK H PRODUCT JUDGMENT:
+TASK_H_ROLE_GAP_OUTWARD_TOPOLOGY_READY
+
 NEXT POST-MVP TASK:
 NONE
 
 ACTIVE POST-MVP TASK:
 NONE
 
-Task F, Task F.15, Task E, and Task G are closed. No inference-quality, visual product, or runtime-correctness task is active. Any future Career Map work requires new Founder / EM product review and explicit task admission. Do not automatically create Task E.1, role-gap externalization, mobile label polish, role scoring, readiness scoring, fit percentages, gap ontology, a learning-plan task, job matching, or Job Copilot integration.
+Task F, Task F.15, Task E, Task G, and Task H are closed. No inference-quality, visual product, presentation topology, or runtime-correctness task is active. Any future Career Map work requires new Founder / EM product review and explicit task admission. Do not automatically create Task E.1, mobile label polish, role scoring, readiness scoring, fit percentages, gap ontology, a learning-plan task, job matching, or Job Copilot integration.
 
 ### Historical / superseded active-line context
 

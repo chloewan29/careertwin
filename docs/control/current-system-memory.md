@@ -1,5 +1,29 @@
 # Current System Memory
 
+### Post-MVP Task H: Role-Gap Outward Spatial Semantics Closed (`POST_MVP_TASK_H_FINAL_CONTROL_CLOSED`)
+
+- Career Map MVP is `CLOSED / VALIDATED`; Post-MVP Tasks A-D are `CLOSED`; Task F is `CLOSED`; Task E is `CLOSED`; Task G is `CLOSED`; Task H is `CLOSED / IMPLEMENTED / PUSHED / VERIFIED`. No post-MVP task is active. The next post-MVP task is `NONE` until explicit Founder / EM admission.
+- Task H implementation commit: `a2f28988021a8066d58bed7d9a74355e78300778` (`feat(career): place role gaps beyond future roles`). Product judgment: `TASK_H_ROLE_GAP_OUTWARD_TOPOLOGY_READY`.
+- Original defect: Unowned role-required canonical capabilities could previously be seeded inside the future role relative to YOU. This caused gap capabilities to visually mix into the user's personal capability field and weakened the distinction between "what I already have" and "what I still need".
+- Root cause: The presentation topology owner was `lib/career-possibility/career-graph-visual-adapter.ts` (specifically `buildCareerGraphTopologySeeds`). `ROLE_ONLY_CAPABILITY` nodes were previously seeded independently from their roles at an inner static radius of approximately 238px. Future roles were seeded farther outward at approximately 420px+. The force simulation therefore pulled gap nodes toward inner seeds, placing them visually between YOU and their future role.
+- Final spatial grammar (presentation topology): `YOU -> OWNED / SHARED PERSONAL CAPABILITY -> FUTURE ROLE -> UNOWNED / GAP CAPABILITY`. Meaning: USER-SIDE / INNER DOMAIN = "what I already have"; ROLE DOMAIN = "where I could go"; OUTWARD ROLE DOMAIN = "what I still need". This does NOT determine semantic ownership.
+- Single-role gap invariant: For a single-role gap capability G connected to future role R and user center U, the settled presentation target is outward of the role. Durable conceptual invariant: `distance(U, R) < distance(U, G)` and the role-to-gap direction is outward relative to YOU. The graph remains organic.
+- Multi-gap presentation: Multiple gap capabilities for one role use deterministic sibling angular offsets. They form an outward-facing fan / spread rather than occupying identical coordinates or collapsing into a single radial line.
+- Multi-role shared gap: One unowned canonical capability may be connected to multiple future roles. It remains ONE canonical semantic node. No role-specific duplicate semantic capability nodes are introduced. Presentation target is deterministically derived from connected role topology, using the combined / averaged normalized role directions and an outward radius beyond the connected roles.
+- Critical semantic boundary: TOPOLOGY CONSUMES OWNERSHIP SEMANTICS. TOPOLOGY DOES NOT CREATE OWNERSHIP SEMANTICS. Node position must never be used to infer whether a capability is owned or a gap. Authoritative ownership/gap classification remains upstream semantic state.
+- Owned/shared state: Owned/shared canonical capabilities remain within the personal capability network / YOU↔ROLE domain. Task H did NOT push owned capabilities outward merely for visual symmetry. Existing conceptual semantic identity remains `YOU -> X <- ROLE`.
+- Gap state: Unowned role-required canonical capability remains `ROLE -> X` with no false YOU ownership edge. Task H changed only X's presentation target. Gap remains a visual/ownership state over one canonical capability identity, not a separate ontology.
+- Task D preservation: Task D role-focus semantics remain authoritative. Selected role still exposes owned/shared capabilities, gap capabilities, unrelated dimmed context without evidence auto-expansion. Task H strengthens spatial explainability but does not replace Task D visual states.
+- Task E preservation: Task E remains `CLOSED`. Default hierarchy remains PRIMARY: YOU + personal capability network; SECONDARY: future role possibilities; TERTIARY: atomic evidence. Externalized gaps do not become the default visual subject.
+- Task G preservation: Task G remains `CLOSED`. ForceGraph zoom lifecycle repair remains intact. Browser validation found original React lifecycle warning absent, no new React warnings, zoom/pan preserved, no render loop, no topology-induced lifecycle regression.
+- Organic layout principle: Career Map remains an organic / constellation-style graph. Task H does NOT establish fixed concentric rings, mechanical radial spokes, a tree layout, or rigid wheel geometry. The durable requirement is OUTWARD SEMANTIC ORDER, not geometric uniformity.
+- Screen / collision state: Desktop `PASS`; Selected-role `PASS`; Other-role `PASS`; Narrow layout `PASS`; Mobile `PASS`; Screen-boundary safety `PASS`; Collision safety `PASS`. No rigid-ring/spoke regression confirmed.
+- Implementation owner: Presentation topology owner is `lib/career-possibility/career-graph-visual-adapter.ts`. Focused regression owner is `tests/career-possibility/career-graph-visual-adapter.test.ts`. No renderer, semantic, inference, or role-ranking owner was changed.
+- Verification state: Topology geometry tests `PASS`; Role-focus tests `PASS`; Shared canonical identity tests `PASS`; TypeScript `PASS`; Exact-file ESLint `PASS`; Build `PASS`; Browser validation `PASS`; React console warnings `NONE OBSERVED`; Package files `UNCHANGED`.
+- Task F preservation: Task F `CLOSED`. No inference or canonical semantic changes occurred.
+- `memory_sync_required: no`
+- `memory_sync_targets: []`
+
 ### Post-MVP Task G: Force-Graph Zoom State Lifecycle Repair Closed (`POST_MVP_TASK_G_FINAL_CONTROL_CLOSED`)
 
 - Career Map MVP is `CLOSED / VALIDATED`; Post-MVP Tasks A-D are `CLOSED`; Task F is `CLOSED`; Task E is `CLOSED`; Task G is `CLOSED / IMPLEMENTED / PUSHED / VERIFIED`. No post-MVP task is active. The next post-MVP task is `NONE` until explicit Founder / EM admission.
