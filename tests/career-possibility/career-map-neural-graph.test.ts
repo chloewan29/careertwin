@@ -369,6 +369,23 @@ async function testH_initialCapabilitiesRemainVisible() {
 }
 
 // ---------------------------------------------------------------------------
+// Test I — Capability-first hierarchy preserves role interaction escalation
+// ---------------------------------------------------------------------------
+
+async function testI_capabilityFirstVisualHierarchy() {
+  const source = readFileSync(RENDERER_SOURCE_PATH, "utf8");
+  assert.match(source, /CAPABILITY: 8\.2,[\s\S]*ROLE: 7\.4,/, "I: personal capabilities must be larger than default future roles");
+  assert.match(source, /defaultOwnedLinkAlpha: 0\.2,[\s\S]*selectedOwnedLinkAlpha: 0\.78,/, "I: role links must escalate from quiet default to selected focus");
+  assert.match(source, /defaultLinkWidth: 0\.58,[\s\S]*selectedOwnedLinkWidth: 2\.25,[\s\S]*selectedGapLinkWidth: 1\.85,/, "I: Task D selected-role edge strength must remain explicit");
+  assert.match(source, /userFamilyLinkWidth: 1\.45,[\s\S]*familyCapabilityLinkWidth: 1\.08,/, "I: the personal capability network must lead default edge hierarchy");
+  assert.match(source, /selectedRole[\s\S]*hoveredRole[\s\S]*rolePresentation\.selectedRadiusBoost[\s\S]*rolePresentation\.hoverRadiusBoost/, "I: future roles must have distinct default, hover, and selected presentation states");
+  assert.match(source, /node\.nodeType === "CAPABILITY" && !roleOwned[\s\S]*rgba\(148,231,183,0\.42\)/, "I: personal capabilities need a non-colour structural emphasis");
+  assert.match(source, /desktopCapabilityLabelZoom: 0\.72,[\s\S]*compactCapabilityLabelZoom: 2\.15,/, "I: compact layouts must retain the collision-safe capability-label threshold");
+
+  console.log("  I. Capability-first hierarchy and role interaction escalation — PASSED");
+}
+
+// ---------------------------------------------------------------------------
 // Main
 // ---------------------------------------------------------------------------
 
@@ -384,6 +401,7 @@ async function main() {
   await testF_noJobCopilotImport();
   await testG_coherentResponsiveCoordinates();
   await testH_initialCapabilitiesRemainVisible();
+  await testI_capabilityFirstVisualHierarchy();
   console.log("All career-map-neural-graph renderer contract tests passed.");
 }
 

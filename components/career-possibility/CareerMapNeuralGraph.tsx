@@ -58,13 +58,38 @@ const palette: Record<CareerGraphVisualNodeType, string> = {
 };
 
 const nodeRadius: Record<CareerGraphVisualNodeType, number> = {
-  YOU: 17,
+  YOU: 18,
   FAMILY: 10,
-  CAPABILITY: 6.2,
+  CAPABILITY: 8.2,
   EVIDENCE: 2.4,
-  ROLE: 10.5,
+  ROLE: 7.4,
   ROLE_ONLY_CAPABILITY: 4.2,
 };
+
+const rolePresentation = {
+  hoverRadiusBoost: 2.3,
+  selectedRadiusBoost: 5.4,
+  defaultOwnedLinkAlpha: 0.2,
+  defaultGapLinkAlpha: 0.22,
+  hoverOwnedLinkAlpha: 0.58,
+  hoverGapLinkAlpha: 0.52,
+  selectedOwnedLinkAlpha: 0.78,
+  selectedGapLinkAlpha: 0.68,
+  defaultLinkWidth: 0.58,
+  hoverOwnedLinkWidth: 1.45,
+  hoverGapLinkWidth: 1.3,
+  selectedOwnedLinkWidth: 2.25,
+  selectedGapLinkWidth: 1.85,
+} as const;
+
+const personalNetworkPresentation = {
+  userFamilyLinkAlpha: 0.52,
+  familyCapabilityLinkAlpha: 0.38,
+  userFamilyLinkWidth: 1.45,
+  familyCapabilityLinkWidth: 1.08,
+  desktopCapabilityLabelZoom: 0.72,
+  compactCapabilityLabelZoom: 2.15,
+} as const;
 
 const normallyLabelled = new Set<CareerGraphVisualNodeType>([
   "YOU",
@@ -539,15 +564,21 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
     const roleOwned = selectedRoleFocus?.ownedCapabilityIds.has(id) ?? false;
     const roleTransferable = selectedRoleFocus?.transferableCapabilityIds.has(id) ?? false;
     const roleGap = selectedRoleFocus?.gapCapabilityIds.has(id) ?? false;
-    const radius = nodeRadius[node.nodeType]
-      + (roleOwned || roleGap ? 1.4 : 0)
-      + (node.nodeType === "ROLE" && id === selectedRoleFocus?.roleId ? 2.3 : 0);
     const selected = node.id === selectedId;
     const hovered = node.id === hoveredId;
+    const selectedRole = node.nodeType === "ROLE" && id === selectedRoleFocus?.roleId;
+    const hoveredRole = node.nodeType === "ROLE" && hovered;
+    const radius = nodeRadius[node.nodeType]
+      + (roleOwned || roleGap ? 1.4 : 0)
+      + (selectedRole
+        ? rolePresentation.selectedRadiusBoost
+        : hoveredRole
+          ? rolePresentation.hoverRadiusBoost
+          : 0);
     context.save();
     context.globalAlpha = active ? 1 : 0.2;
-    context.shadowColor = selected || hovered ? palette[node.nodeType] : "transparent";
-    context.shadowBlur = selected ? 22 : hovered ? 16 : 0;
+    context.shadowColor = selected || hovered || node.nodeType === "YOU" ? palette[node.nodeType] : "transparent";
+    context.shadowBlur = selected ? 22 : hovered ? 16 : node.nodeType === "YOU" ? 10 : 0;
     context.beginPath();
     context.arc(node.x ?? 0, node.y ?? 0, radius, 0, Math.PI * 2);
     if (roleGap || node.nodeType === "ROLE_ONLY_CAPABILITY" || (node.nodeType === "EVIDENCE" && node.relationship === "transferable_signal")) {
@@ -557,8 +588,18 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
       context.stroke();
       context.setLineDash([]);
     } else {
-      context.fillStyle = palette[node.nodeType];
+      context.fillStyle = node.nodeType === "ROLE" && !selectedRole && !hoveredRole
+        ? "rgba(255,180,109,0.58)"
+        : palette[node.nodeType];
       context.fill();
+    }
+
+    if (node.nodeType === "CAPABILITY" && !roleOwned) {
+      context.beginPath();
+      context.arc(node.x ?? 0, node.y ?? 0, radius + 2.4, 0, Math.PI * 2);
+      context.strokeStyle = "rgba(148,231,183,0.42)";
+      context.lineWidth = 1.15;
+      context.stroke();
     }
 
     if (roleOwned) {
@@ -571,15 +612,15 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
       context.setLineDash([]);
     }
 
-    if (node.nodeType === "YOU" || node.nodeType === "ROLE" || selected) {
+    if (node.nodeType === "YOU" || selectedRole || hoveredRole || selected) {
       context.beginPath();
       context.arc(node.x ?? 0, node.y ?? 0, radius + (node.nodeType === "YOU" ? 7 : 4.5), 0, Math.PI * 2);
-      context.strokeStyle = `${palette[node.nodeType]}66`;
-      context.lineWidth = node.nodeType === "YOU" ? 2.2 : 1.4;
+      context.strokeStyle = node.nodeType === "YOU" ? "rgba(234,255,255,0.52)" : `${palette[node.nodeType]}66`;
+      context.lineWidth = node.nodeType === "YOU" ? 2.4 : 1.4;
       context.stroke();
     }
 
-    if (node.nodeType === "ROLE" && id === selectedRoleFocus?.roleId) {
+    if (selectedRole) {
       context.beginPath();
       context.arc(node.x ?? 0, node.y ?? 0, radius + 9, 0, Math.PI * 2);
       context.strokeStyle = "rgba(255,180,109,0.48)";
@@ -588,24 +629,33 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
     }
 
     const compact = dimensions.width < 600;
+    const showCapabilityLabel = node.nodeType === "CAPABILITY"
+      && globalScale > (compact
+        ? personalNetworkPresentation.compactCapabilityLabelZoom
+        : personalNetworkPresentation.desktopCapabilityLabelZoom);
     const showLabel = normallyLabelled.has(node.nodeType)
       || selected
       || hovered
       || roleOwned
       || roleGap
-      || (node.nodeType === "CAPABILITY" && globalScale > 2.15)
+      || showCapabilityLabel
       || (node.nodeType === "ROLE_ONLY_CAPABILITY" && globalScale > 3.2);
     if (showLabel && node.label) {
-      const screenFontSize = compact ? 9.5 : node.nodeType === "YOU" ? 13 : node.nodeType === "FAMILY" || node.nodeType === "ROLE" ? 11 : 9.5;
+      const screenFontSize = compact
+        ? node.nodeType === "YOU" ? 11 : node.nodeType === "ROLE" ? 8.5 : 9.5
+        : node.nodeType === "YOU" ? 13 : node.nodeType === "FAMILY" ? 11 : node.nodeType === "ROLE" ? selectedRole || hoveredRole ? 11 : 9.5 : 9.5;
       const fontSize = screenFontSize / globalScale;
-      context.font = `600 ${fontSize}px ui-sans-serif, system-ui, sans-serif`;
+      const fontWeight = node.nodeType === "ROLE" && !selectedRole && !hoveredRole ? 500 : 600;
+      context.font = `${fontWeight} ${fontSize}px ui-sans-serif, system-ui, sans-serif`;
       const outward = (!compact && (node.nodeType === "FAMILY" || node.nodeType === "ROLE"))
         || roleOwned
         || roleGap;
       const rightSide = (node.x ?? 0) >= 0;
       context.textAlign = outward ? rightSide ? "left" : "right" : "center";
       context.textBaseline = outward ? "middle" : "top";
-      context.fillStyle = active ? "#e7f7f6" : "#53686a";
+      context.fillStyle = active
+        ? node.nodeType === "ROLE" && !selectedRole && !hoveredRole ? "rgba(231,247,246,0.68)" : "#e7f7f6"
+        : "#53686a";
       const labelLines = splitCanvasLabel(node.label, compact);
       labelLines.forEach((line, index) => {
         const labelX = (node.x ?? 0) + (outward ? (rightSide ? radius + 7 : -radius - 7) : 0);
@@ -688,10 +738,29 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
             const target = endpointId(link.target);
             const active = !focusSet || (focusSet.has(source) && focusSet.has(target));
             if (!active) return "rgba(116,148,148,0.055)";
-            if (link.linkType === "ROLE_OWNED_CAPABILITY") return "rgba(255,180,109,0.78)";
-            if (link.linkType === "ROLE_ONLY_CAPABILITY") return "rgba(203,213,225,0.68)";
+            const hoveredRoleLink = !selectedRoleFocus
+              && hoveredNode?.nodeType === "ROLE"
+              && (source === hoveredNode.id || target === hoveredNode.id);
+            if (link.linkType === "ROLE_OWNED_CAPABILITY") {
+              const alpha = selectedRoleFocus
+                ? rolePresentation.selectedOwnedLinkAlpha
+                : hoveredRoleLink
+                  ? rolePresentation.hoverOwnedLinkAlpha
+                  : rolePresentation.defaultOwnedLinkAlpha;
+              return `rgba(255,180,109,${alpha})`;
+            }
+            if (link.linkType === "ROLE_ONLY_CAPABILITY") {
+              const alpha = selectedRoleFocus
+                ? rolePresentation.selectedGapLinkAlpha
+                : hoveredRoleLink
+                  ? rolePresentation.hoverGapLinkAlpha
+                  : rolePresentation.defaultGapLinkAlpha;
+              return `rgba(203,213,225,${alpha})`;
+            }
             if (link.linkType === "CAPABILITY_EVIDENCE") return "rgba(167,139,250,0.25)";
-            return selectedRoleFocus ? "rgba(105,220,204,0.48)" : "rgba(105,220,204,0.22)";
+            if (selectedRoleFocus) return "rgba(105,220,204,0.48)";
+            if (link.linkType === "USER_FAMILY") return `rgba(105,220,204,${personalNetworkPresentation.userFamilyLinkAlpha})`;
+            return `rgba(105,220,204,${personalNetworkPresentation.familyCapabilityLinkAlpha})`;
           }}
           linkLineDash={(link) => link.linkType === "ROLE_ONLY_CAPABILITY" || link.requirementState === "transferable_signal" ? [4, 4] : null}
           linkWidth={(link) => {
@@ -699,9 +768,29 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
             const target = endpointId(link.target);
             const active = !focusSet || (focusSet.has(source) && focusSet.has(target));
             if (!active) return 0.6;
-            if (link.linkType === "ROLE_OWNED_CAPABILITY") return selectedRoleFocus ? 2.25 : 1.15;
-            if (link.linkType === "ROLE_ONLY_CAPABILITY") return selectedRoleFocus ? 1.85 : 1.15;
-            return selectedRoleFocus ? 1.15 : 0.72;
+            const hoveredRoleLink = !selectedRoleFocus
+              && hoveredNode?.nodeType === "ROLE"
+              && (source === hoveredNode.id || target === hoveredNode.id);
+            if (link.linkType === "ROLE_OWNED_CAPABILITY") {
+              return selectedRoleFocus
+                ? rolePresentation.selectedOwnedLinkWidth
+                : hoveredRoleLink
+                  ? rolePresentation.hoverOwnedLinkWidth
+                  : rolePresentation.defaultLinkWidth;
+            }
+            if (link.linkType === "ROLE_ONLY_CAPABILITY") {
+              return selectedRoleFocus
+                ? rolePresentation.selectedGapLinkWidth
+                : hoveredRoleLink
+                  ? rolePresentation.hoverGapLinkWidth
+                  : rolePresentation.defaultLinkWidth;
+            }
+            if (selectedRoleFocus) return 1.15;
+            return link.linkType === "USER_FAMILY"
+              ? personalNetworkPresentation.userFamilyLinkWidth
+              : link.linkType === "FAMILY_CAPABILITY"
+                ? personalNetworkPresentation.familyCapabilityLinkWidth
+                : 0.5;
           }}
           onNodeHover={hoverNode}
           onNodeClick={(node) => selectNode(String(node.id))}
