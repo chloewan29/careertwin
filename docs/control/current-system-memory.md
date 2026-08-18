@@ -1,5 +1,31 @@
 # Current System Memory
 
+### Post-MVP Task I: Adaptive Capability Label Decluttering Closed (`POST_MVP_TASK_I_FINAL_CONTROL_CLOSED`)
+
+- Career Map MVP is `CLOSED / VALIDATED`; Post-MVP Tasks A-D are `CLOSED`; Task F is `CLOSED`; Task E is `CLOSED`; Task G is `CLOSED`; Task H is `CLOSED`; Task I is `CLOSED / IMPLEMENTED / PUSHED / VERIFIED`. No post-MVP task is active. The next post-MVP task is `NONE` until explicit Founder / EM admission.
+- Task I implementation commit: `a0509939950bd51fd6045b267f2c2e683375b427` (`feat(career): declutter capability labels`). Product judgment: `TASK_I_ADAPTIVE_LABEL_DECLUTTERING_READY`.
+- Original defect: Dense personal-capability clusters could render multiple independent labels simultaneously with no shared spatial awareness. This caused overlapping / unreadable label regions even though the underlying graph nodes and topology were acceptable. The defect was LABEL PRESENTATION DENSITY, not capability topology, node ownership, or semantic graph structure.
+- Root cause: `CareerMapNeuralGraph` previously rendered labels through independent per-node drawing calls. Those calls had no unified screen-space awareness of labels already accepted for the current frame. Dense capability regions could therefore draw overlapping labels.
+- Final presentation owner: Label presentation owner is `components/career-possibility/CareerMapNeuralGraph.tsx`. No topology owner or semantic/data owner was modified.
+- Final decluttering behavior (presentation truth): Visible labels are gathered and evaluated in a deterministic priority order. Screen-space text bounds are measured. A passive lower-priority label may be suppressed when its bounds materially collide with a previously retained higher-priority label. The graph node itself remains visible, interactive, and semantically unchanged. Label suppression does NOT remove the capability from the graph.
+- Label priority policy: Highest priority is YOU. Then interaction-driven labels (hovered node, selected node, selected role, selected-role relevant owned/gap capability). Then passive presentation labels (family, personal capability, future role, gap, evidence). This is PRESENTATION priority only and does not redefine semantic importance.
+- YOU label rule: YOU label is never suppressed by passive collision management. YOU remains the strongest identity anchor.
+- Interaction restoration: Hovered labels regain visibility. Selected labels regain visibility. Selected-role explanation outranks passive default decluttering. Decluttering affects passive density, not active comprehension.
+- Selected-role preservation: Task D / Task H selected-role experience remains authoritative. When a role is selected, the selected role label remains available, relevant owned/shared capability labels remain available, gap labels remain available. Build-next interpretation remains intact. Task H outward gap topology remains intact.
+- Determinism: Given the same graph state, zoom, viewport, and interaction state, label visibility is deterministic. Stable ordering uses presentation priority plus stable node identity tie-breaking. Force-engine timing does not determine which passive label wins.
+- Zoom behavior: Decluttering operates in rendered / screen-space terms. At smaller effective screen separation, more passive labels may be suppressed. At larger zoom / greater screen-space separation, more labels may naturally become visible. This is adaptive presentation behavior.
+- Task G lifecycle preservation: Task G remains `CLOSED`. Task I did NOT reintroduce unsafe React zoom-state writes. The lifecycle-safe zoom ownership remains intact. Browser validation found no React lifecycle warning, no render loop, no material label flicker.
+- Task H topology preservation: Task H remains `CLOSED`. Task I did NOT modify `buildCareerGraphTopologySeeds`, role placement, gap placement, outward gap vectors, multi-gap fan behavior, or shared-gap geometry. The accepted spatial grammar remains: `YOU -> owned/shared capability -> future role -> gap capability`.
+- Task E hierarchy preservation: Task E remains `CLOSED`. Default hierarchy remains PRIMARY (YOU + personal capability network), SECONDARY (future roles), TERTIARY (atomic evidence / contextual gap detail). Decluttering improves readability without changing this hierarchy.
+- Evidence dots: Evidence-dot presentation was NOT changed by Task I. Purple evidence-dot visibility remains a separate Founder-review observation, not active work. No evidence-dot task is active.
+- Role edges: Default role-edge presentation was NOT changed. No role-edge cleanup task is active.
+- Over-decluttering state: Default network remains meaningfully labelled. Task I did not make the map empty. Suppressed passive labels remain discoverable through interaction. Product judgment: NO MATERIAL OVER-DECLUTTERING REGRESSION.
+- Validation state: Dense capability cluster `PASS`; Default desktop `PASS`; Hover interaction `PASS`; Selected capability `PASS`; Selected role `PASS`; Narrow layout `PASS`; Mobile `PASS`; Over-decluttering `PASS`; Label flicker `SAFE`; Console warning state `SAFE`.
+- Verification state: Relevant renderer tests `PASS`; Role-focus regressions `PASS`; Task H topology regression `PASS`; TypeScript `PASS`; Exact-file ESLint `PASS`; Build `PASS`; Package files `UNCHANGED`.
+- Task F preservation: Task F `CLOSED`. No semantic inference work occurred.
+- `memory_sync_required: no`
+- `memory_sync_targets: []`
+
 ### Post-MVP Task H: Role-Gap Outward Spatial Semantics Closed (`POST_MVP_TASK_H_FINAL_CONTROL_CLOSED`)
 
 - Career Map MVP is `CLOSED / VALIDATED`; Post-MVP Tasks A-D are `CLOSED`; Task F is `CLOSED`; Task E is `CLOSED`; Task G is `CLOSED`; Task H is `CLOSED / IMPLEMENTED / PUSHED / VERIFIED`. No post-MVP task is active. The next post-MVP task is `NONE` until explicit Founder / EM admission.
