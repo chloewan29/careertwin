@@ -464,6 +464,44 @@ export function buildCareerGraphTopologySeeds(
     });
   }
 
+  const gapNodesByRoles = new Map<string, CareerGraphVisualNode[]>();
+  for (const node of model.nodes.filter((candidate) => candidate.nodeType === "ROLE_ONLY_CAPABILITY")) {
+    const rolesKey = [...(node.roleIds ?? [])].sort().join(",");
+    const siblings = gapNodesByRoles.get(rolesKey) ?? [];
+    siblings.push(node);
+    gapNodesByRoles.set(rolesKey, siblings);
+  }
+
+  for (const siblings of gapNodesByRoles.values()) {
+    for (const [index, node] of siblings.entries()) {
+      const connectedRoles = (node.roleIds ?? [])
+        .map((id) => seeds.get(id))
+        .filter((position): position is CareerGraphSeedPosition => Boolean(position));
+
+      if (connectedRoles.length === 0) continue;
+
+      const vector = connectedRoles.reduce((total, role) => {
+        const magnitude = Math.max(1, Math.hypot(role.x, role.y));
+        return {
+          x: total.x + (role.x / magnitude),
+          y: total.y + (role.y / magnitude),
+        };
+      }, { x: 0, y: 0 });
+
+      const baseAngle = Math.hypot(vector.x, vector.y) > 0.1
+        ? Math.atan2(vector.y, vector.x)
+        : (connectedRoles[0]?.roleTopologyAngle ?? -Math.PI);
+
+      const maxRoleRadius = Math.max(...connectedRoles.map((role) => Math.hypot(role.x, role.y)));
+      const siblingOffset = (index - (siblings.length - 1) / 2) * 0.18;
+      const angle = baseAngle + siblingOffset + (stableUnit(`gap-outward:${node.id}`) - 0.5) * 0.08;
+      const radius = maxRoleRadius + 140 + (index % 2 === 0 ? 0 : 22) + (stableUnit(`gap-radius-outward:${node.id}`) - 0.5) * 24;
+      
+      const point = pointAt(angle, radius);
+      seeds.set(node.id, { ...point, familyId: node.familyId });
+    }
+  }
+
   for (const node of model.nodes.filter((candidate) => candidate.nodeType === "EVIDENCE")) {
     const parents = (node.parentIds ?? [])
       .map((id) => seeds.get(id))

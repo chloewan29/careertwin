@@ -97,6 +97,22 @@ assert.ok(angularDistance(roleTwoAngle, gapAngle) < 0.5, "role sector follows it
 assert.ok(angularDistance(roleOneAngle, roleTwoAngle) < 1.2, "local collision handling must not invert roles into even global spacing");
 assert.ok(Math.hypot(roleOneSeed.x, roleOneSeed.y) < Math.hypot(roleTwoSeed.x, roleTwoSeed.y), "proximityRank remains a radius-only input");
 
+// Task H assertions: Outward geometry for gap capabilities
+const roleOneRadius = Math.hypot(roleOneSeed.x, roleOneSeed.y);
+const roleTwoRadius = Math.hypot(roleTwoSeed.x, roleTwoSeed.y);
+const gapRadius = Math.hypot(gapSeed.x, gapSeed.y);
+
+// For multi-role gap, it should be placed outside the max role radius
+assert.ok(gapRadius > Math.max(roleOneRadius, roleTwoRadius) + 100, "Gap capability is placed in the outward domain beyond the roles");
+assert.ok(gapRadius > roleOneRadius, "U -> R1 < U -> G distance ordering");
+assert.ok(gapRadius > roleTwoRadius, "U -> R2 < U -> G distance ordering");
+
+// Outward projection check for role 1
+const d1 = { x: roleOneSeed.x / roleOneRadius, y: roleOneSeed.y / roleOneRadius };
+const gapRel1 = { x: gapSeed.x - roleOneSeed.x, y: gapSeed.y - roleOneSeed.y };
+const proj1 = gapRel1.x * d1.x + gapRel1.y * d1.y;
+assert.ok(proj1 > 50, "Gap has positive meaningful visual margin projected outwardly from role 1");
+
 const rendererSource = readFileSync("components/career-possibility/CareerMapNeuralGraph.tsx", "utf8");
 const engineBoundarySource = readFileSync("components/career-possibility/CareerMapForceGraph.tsx", "utf8");
 assert.doesNotMatch(rendererSource, /\.fitScore|\.fitLabel/);
