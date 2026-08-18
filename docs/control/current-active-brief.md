@@ -337,13 +337,22 @@ a0509939950bd51fd6045b267f2c2e683375b427
 TASK I PRODUCT JUDGMENT:
 TASK_I_ADAPTIVE_LABEL_DECLUTTERING_READY
 
+POST-MVP TASK J:
+CLOSED / IMPLEMENTED / PUSHED / VERIFIED
+
+TASK J IMPLEMENTATION COMMIT:
+d6ad677ef175055bd7fa00d2a65e6bfafa681cab
+
+TASK J PRODUCT JUDGMENT:
+TASK_J_EVIDENCE_PROGRESSIVE_DISCLOSURE_READY
+
 NEXT POST-MVP TASK:
 NONE
 
 ACTIVE POST-MVP TASK:
 NONE
 
-Task F, Task F.15, Task E, Task G, Task H, and Task I are closed. No inference-quality, visual product, presentation topology, label decluttering, or runtime-correctness task is active. Any future Career Map work requires new Founder / EM product review and explicit task admission. Do not automatically create Task E.1, mobile label polish, role scoring, readiness scoring, fit percentages, gap ontology, a learning-plan task, job matching, or Job Copilot integration.
+Task F, Task F.15, Task E, Task G, Task H, Task I, and Task J are closed. No inference-quality, visual product, presentation topology, label decluttering, progressive disclosure, or runtime-correctness task is active. Any future Career Map work requires new Founder / EM product review and explicit task admission. Do not automatically create Task J.1, Task E.1, mobile label polish, role scoring, readiness scoring, fit percentages, gap ontology, a learning-plan task, job matching, or Job Copilot integration.
 
 ### Historical / superseded active-line context
 

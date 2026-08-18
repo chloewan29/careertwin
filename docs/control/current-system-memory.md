@@ -1,5 +1,34 @@
 # Current System Memory
 
+### Post-MVP Task J: Evidence Layer Progressive Disclosure Closed (`POST_MVP_TASK_J_FINAL_CONTROL_CLOSED`)
+
+- Career Map MVP is `CLOSED / VALIDATED`; Post-MVP Tasks A-D are `CLOSED`; Task F is `CLOSED`; Task E is `CLOSED`; Task G is `CLOSED`; Task H is `CLOSED`; Task I is `CLOSED`; Task J is `CLOSED / IMPLEMENTED / PUSHED / VERIFIED`. No post-MVP task is active. The next post-MVP task is `NONE` until explicit Founder / EM admission.
+- Task J implementation commit: `d6ad677ef175055bd7fa00d2a65e6bfafa681cab` (`feat(career): reveal evidence on capability interaction`). Product judgment: `TASK_J_EVIDENCE_PROGRESSIVE_DISCLOSURE_READY`.
+- Original defect: Atomic evidence nodes/links were previously drawn at passive base visibility in the default Career Map. In dense capability areas, this created particle-like visual noise before the user had asked for evidence. The problem was presentation timing and information hierarchy, not evidence ownership, grounding, projection, or semantic relationships.
+- Final evidence hierarchy: DEFAULT: Evidence is visually silent. The user should first understand YOU, personal capability network, future role possibilities. CAPABILITY HOVER: Evidence directly supporting the hovered personal capability is revealed as a lightweight proof preview. Unrelated evidence remains suppressed. CAPABILITY SELECTED: Evidence directly supporting the selected capability is clearly visible and inspectable. ROLE SELECTED: Role selection alone does NOT automatically reveal all personal evidence for role-relevant capabilities. Role focus remains what I already have and what I still need.
+- Default evidence node state: Passive evidence nodes are not visibly drawn in the default state (presentation suppression only). They remain present in authoritative graph/state semantics.
+- Default evidence edge state: Passive capability→evidence presentation edges are visually suppressed in the default state. They regain visibility only when the related capability evidence is being inspected. Semantic evidence relationships remain unchanged.
+- Default evidence label state: Passive evidence labels are not rendered in the default map. Evidence labels/detail remain interaction-driven.
+- Capability hover state: Hovering a personal capability reveals only its directly supporting evidence (evidence node visibility and supporting evidence-link visibility) without unrelated evidence flood.
+- Capability selected state: Selecting a capability exposes its relevant supporting evidence more strongly than hover. Evidence remains subordinate to the capability itself.
+- Unrelated evidence: Evidence unrelated to the currently interacted capability remains suppressed. Task J does not expose evidence globally merely because one capability is active.
+- Role-focus non-explosion rule: SELECTING A FUTURE ROLE DOES NOT AUTO-EXPAND PERSONAL EVIDENCE. This is durable product behavior. Evidence remains capability-level proof.
+- Gap capability rule: Unowned role-only gap capabilities have no fabricated personal evidence. Gap remains ROLE → X with no false personal evidence ownership.
+- Shared capability rule: If canonical capability X is owned by YOU and required by a ROLE, there remains one canonical X. Personal evidence supporting X remains attached to that same canonical identity. No evidence duplication was introduced.
+- No topology change: Task J changed presentation visibility only. It did NOT modify evidence coordinates, force topology, buildCareerGraphTopologySeeds, or graph semantic edges. Evidence suppression does not trigger graph re-layout.
+- Task E hierarchy preservation: Task E remains `CLOSED`. Default hierarchy remains PRIMARY: YOU + personal capability network; SECONDARY: future roles; TERTIARY: atomic evidence. Task J strengthens this hierarchy.
+- Task G lifecycle preservation: Task G remains `CLOSED`. Task J introduced no unsafe React state write from ForceGraph callbacks. Browser validation found no React lifecycle warning, no render loop, no evidence reveal flicker.
+- Task H topology preservation: Task H remains `CLOSED`. Outward role-gap spatial grammar remains intact. Task J did not alter this.
+- Task I label preservation: Task I remains `CLOSED`. Adaptive label decluttering remains intact. Task J did not redesign label collision management.
+- Future-role label issue: Task J did NOT modify the separate observation that a passive future-role label may occasionally be suppressed by adaptive collision handling. No future-role label task is active.
+- Long role edges: Task J did NOT modify long passive role edges. No role-edge cleanup task is active.
+- Validation state: Default desktop `PASS`; Dense capability cluster `PASS`; Capability hover `PASS`; Capability selected `PASS`; Selected role `PASS`; Selected role + capability interaction `PASS`; Narrow layout `PASS`; Mobile `PASS`; Zoom/pan `PASS`; Evidence flicker `SAFE`; React console warnings `SAFE`; No graph re-layout `CONFIRMED`.
+- Verification state: Relevant evidence tests `PASS`; Renderer regressions `PASS`; Role-focus tests `PASS`; TypeScript `PASS`; Exact-file ESLint `PASS`; Build `PASS`; Package files `UNCHANGED`.
+- Task F preservation: Task F `CLOSED`. No semantic inference work occurred.
+- Unrelated HOLD: Preserved exactly. The stale untracked provenance test remains non-authoritative.
+- `memory_sync_required: no`
+- `memory_sync_targets: []`
+
 ### Post-MVP Task I: Adaptive Capability Label Decluttering Closed (`POST_MVP_TASK_I_FINAL_CONTROL_CLOSED`)
 
 - Career Map MVP is `CLOSED / VALIDATED`; Post-MVP Tasks A-D are `CLOSED`; Task F is `CLOSED`; Task E is `CLOSED`; Task G is `CLOSED`; Task H is `CLOSED`; Task I is `CLOSED / IMPLEMENTED / PUSHED / VERIFIED`. No post-MVP task is active. The next post-MVP task is `NONE` until explicit Founder / EM admission.
