@@ -332,7 +332,7 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [settled, setSettled] = useState(false);
-  const [zoom, setZoom] = useState(1);
+  const zoomLabelRef = useRef<HTMLSpanElement>(null);
   const [hoverPosition, setHoverPosition] = useState<{ x: number; y: number } | null>(null);
 
   const selectedNode = visualModel.nodes.find((node) => node.id === selectedId) ?? null;
@@ -800,7 +800,11 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
             node.fx = node.x;
             node.fy = node.y;
           }}
-          onZoom={({ k }) => setZoom(k)}
+          onZoom={({ k }) => {
+            if (zoomLabelRef.current) {
+              zoomLabelRef.current.textContent = `${Math.round(k * 100)}%`;
+            }
+          }}
           onEngineStop={() => {
             setSettled(true);
             if (selectedRoleFocus) frameRoleFocus(selectedRoleFocus);
@@ -889,7 +893,7 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
           </div>
         )}
 
-        <span className="pointer-events-none absolute bottom-3 right-3 rounded-full bg-black/30 px-3 py-1.5 text-xs tabular-nums text-cyan-50/55">{Math.round(zoom * 100)}%</span>
+        <span ref={zoomLabelRef} className="pointer-events-none absolute bottom-3 right-3 rounded-full bg-black/30 px-3 py-1.5 text-xs tabular-nums text-cyan-50/55">100%</span>
         <span className="sr-only">Accessible graph navigator is available from Browse map.</span>
       </div>
       <span className="sr-only">{hasRole ? "Future role paths are available in this map." : "No future role paths are available."}</span>
