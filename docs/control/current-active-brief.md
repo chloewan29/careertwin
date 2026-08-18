@@ -310,13 +310,22 @@ NONE
 KNOWN NON-BLOCKING:
 COMPACT SELECTED-ROLE LAYOUTS AND SOME DENSE DESKTOP CLUSTERS MAY HAVE LOCAL LABEL PROXIMITY / KNOWN / VISIBLE / MINOR / NON-BLOCKING / NO AUTOMATIC E.1
 
+POST-MVP TASK G:
+CLOSED / IMPLEMENTED / PUSHED / VERIFIED
+
+TASK G IMPLEMENTATION COMMIT:
+ecb6fb79a0f395dd429c27d6466ad6b7850a37b2
+
+TASK G PRODUCT JUDGMENT:
+TASK_G_FORCE_GRAPH_LIFECYCLE_READY
+
 NEXT POST-MVP TASK:
 NONE
 
 ACTIVE POST-MVP TASK:
 NONE
 
-Task F, Task F.15, and Task E are closed. No inference-quality or visual product task is active. Any future Career Map work requires new Founder / EM product review and explicit task admission. Do not automatically create Task E.1, mobile label polish, role scoring, readiness scoring, fit percentages, gap ontology, a learning-plan task, job matching, or Job Copilot integration.
+Task F, Task F.15, Task E, and Task G are closed. No inference-quality, visual product, or runtime-correctness task is active. Any future Career Map work requires new Founder / EM product review and explicit task admission. Do not automatically create Task E.1, role-gap externalization, mobile label polish, role scoring, readiness scoring, fit percentages, gap ontology, a learning-plan task, job matching, or Job Copilot integration.
 
 ### Historical / superseded active-line context
 

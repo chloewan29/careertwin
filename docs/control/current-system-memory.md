@@ -1,5 +1,21 @@
 # Current System Memory
 
+### Post-MVP Task G: Force-Graph Zoom State Lifecycle Repair Closed (`POST_MVP_TASK_G_FINAL_CONTROL_CLOSED`)
+
+- Career Map MVP is `CLOSED / VALIDATED`; Post-MVP Tasks A-D are `CLOSED`; Task F is `CLOSED`; Task E is `CLOSED`; Task G is `CLOSED / IMPLEMENTED / PUSHED / VERIFIED`. No post-MVP task is active. The next post-MVP task is `NONE` until explicit Founder / EM admission.
+- Task G implementation commit: `ecb6fb79a0f395dd429c27d6466ad6b7850a37b2` (`fix(career): make force graph zoom updates lifecycle safe`). Implementation decision: `POST_MVP_TASK_G_FORCE_GRAPH_LIFECYCLE_REPAIR_IMPLEMENTED`. Product judgment: `TASK_G_FORCE_GRAPH_LIFECYCLE_READY`.
+- Original defect: React emitted "Cannot update a component (`CareerMapNeuralGraph`) while rendering a different component (`ForceGraph2D`)." The problematic behavior was associated with the `ForceGraph2D` zoom callback synchronously updating `CareerMapNeuralGraph` React state (`onZoom={({ k }) => setZoom(k)}`).
+- Root cause: `ForceGraph2D` invokes the zoom callback from its own internal render / animation lifecycle. `CareerMapNeuralGraph` previously used that callback to synchronously update React state. That parent-state write was not lifecycle-safe in that callback path.
+- Final zoom-state ownership: Previous zoom owner was React `useState` in `CareerMapNeuralGraph`. Final zoom-dependent label owner is React `useRef` (`zoomLabelRef`). React state is no longer required for this zoom-label update path. The zoom callback now performs the required local presentation update without triggering synchronous parent React reconciliation.
+- Implementation boundary: Exact production owner modified is `components/career-possibility/CareerMapNeuralGraph.tsx`. Task G modified no other production owner. No separate semantic or topology state system was introduced.
+- Behavior preserved: zoom interaction `PASS`; pan interaction `PASS`; zoom-dependent label behavior `PASS`; engine settle behavior `PASS`; selected-role framing `PASS`; Task D role-focus behavior `PASS`; Task E capability-first hierarchy `PASS`. No new render loop and no graph jitter introduced.
+- Runtime error state: Original React console error `RESOLVED`. New React warnings `NONE OBSERVED`. Browser validation `PASS`.
+- Semantic/Data preservation: Topology `UNCHANGED`; role positioning `UNCHANGED`; gap positioning `UNCHANGED`. Semantic/data behavior unchanged. No change to canonical semantic authority, provider semantics, validator, benchmark, materialization, or projection semantics. Task E hierarchy and Task F architecture remain preserved.
+- Deterministic verification: Relevant graph tests `PASS`; TypeScript `PASS`; exact-file ESLint `PASS`; build `PASS`; browser validation `PASS`; package files changed `NO`. No new dedicated Task G test file was introduced.
+- Planned role-gap issue: Founder product observation notes that unowned role-required capability nodes can currently appear spatially between YOU and the future role, implying false ownership. Desired conceptual spatial grammar for future review: `YOU -> OWNED / SHARED CAPABILITY -> FUTURE ROLE -> GAP CAPABILITY`. This is `PLANNED / NOT ACTIVE`. It is NOT yet admitted architecture. Do NOT encode a hard geometric rule as durable architecture during this closure.
+- `memory_sync_required: no`
+- `memory_sync_targets: []`
+
 ### Post-MVP Task E: Capability-First Visual Hierarchy Rebalance Closed (`POST_MVP_TASK_E_FINAL_CONTROL_CLOSED`)
 
 - Career Map MVP is `CLOSED / VALIDATED`; Post-MVP Tasks A-D are `CLOSED`; Task F is `CLOSED`; Task E is `CLOSED / IMPLEMENTED / PUSHED / VERIFIED`. No post-MVP task is active. The next post-MVP task is `NONE` until explicit Founder / EM admission.
