@@ -333,6 +333,7 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [settled, setSettled] = useState(false);
   const zoomLabelRef = useRef<HTMLSpanElement>(null);
+  const frameNodesRef = useRef<NodeObject<CareerGraphVisualNode>[]>([]);
   const [hoverPosition, setHoverPosition] = useState<{ x: number; y: number } | null>(null);
 
   const selectedNode = visualModel.nodes.find((node) => node.id === selectedId) ?? null;
@@ -557,7 +558,6 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
   const drawNode = useCallback((
     node: NodeObject<CareerGraphVisualNode>,
     context: CanvasRenderingContext2D,
-    globalScale: number,
   ) => {
     const id = String(node.id);
     const active = !focusSet || focusSet.has(id) || id === hoveredId;
@@ -628,44 +628,154 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
       context.stroke();
     }
 
+    frameNodesRef.current.push(node);
+    context.restore();
+  }, [focusSet, hoveredId, selectedId, selectedRoleFocus]);
+
+  const onRenderFramePost = useCallback((context: CanvasRenderingContext2D, globalScale: number) => {
+    const nodes = frameNodesRef.current;
+    frameNodesRef.current = [];
+    if (!nodes.length) return;
+
     const compact = dimensions.width < 600;
-    const showCapabilityLabel = node.nodeType === "CAPABILITY"
-      && globalScale > (compact
-        ? personalNetworkPresentation.compactCapabilityLabelZoom
-        : personalNetworkPresentation.desktopCapabilityLabelZoom);
-    const showLabel = normallyLabelled.has(node.nodeType)
-      || selected
-      || hovered
-      || roleOwned
-      || roleGap
-      || showCapabilityLabel
-      || (node.nodeType === "ROLE_ONLY_CAPABILITY" && globalScale > 3.2);
-    if (showLabel && node.label) {
+    const nodePriorities = new Map<string, number>();
+
+    for (const node of nodes) {
+      let p = 100;
+      const id = String(node.id);
+      const selected = id === selectedId;
+      const hovered = id === hoveredId;
+      const roleOwned = selectedRoleFocus?.ownedCapabilityIds.has(id) ?? false;
+      const roleTransferable = selectedRoleFocus?.transferableCapabilityIds.has(id) ?? false;
+      const roleGap = selectedRoleFocus?.gapCapabilityIds.has(id) ?? false;
+      const selectedRole = node.nodeType === "ROLE" && id === selectedRoleFocus?.roleId;
+
+      if (node.nodeType === "YOU") p = 1;
+      else if (hovered) p = 2;
+      else if (selected) p = 3;
+      else if (selectedRole) p = 4;
+      else if (roleOwned || roleTransferable || roleGap) p = 5;
+      else if (node.nodeType === "FAMILY") p = 6;
+      else if (node.nodeType === "CAPABILITY") p = 7;
+      else if (node.nodeType === "ROLE") p = 8;
+      else if (node.nodeType === "ROLE_ONLY_CAPABILITY") p = 9;
+      else p = 10;
+      
+      nodePriorities.set(id, p);
+    }
+
+    const sortedNodes = [...nodes].sort((a, b) => {
+      const pa = nodePriorities.get(String(a.id)) ?? 100;
+      const pb = nodePriorities.get(String(b.id)) ?? 100;
+      if (pa !== pb) return pa - pb;
+      return String(a.id).localeCompare(String(b.id));
+    });
+
+    const occupiedBoxes: { x1: number; y1: number; x2: number; y2: number }[] = [];
+
+    for (const node of sortedNodes) {
+      const id = String(node.id);
+      const p = nodePriorities.get(id) ?? 100;
+      const selected = id === selectedId;
+      const hovered = id === hoveredId;
+      const roleOwned = selectedRoleFocus?.ownedCapabilityIds.has(id) ?? false;
+      const roleGap = selectedRoleFocus?.gapCapabilityIds.has(id) ?? false;
+      const selectedRole = node.nodeType === "ROLE" && id === selectedRoleFocus?.roleId;
+      const hoveredRole = node.nodeType === "ROLE" && hovered;
+      const active = !focusSet || focusSet.has(id) || id === hoveredId;
+
+      const showCapabilityLabel = node.nodeType === "CAPABILITY"
+        && globalScale > (compact
+          ? personalNetworkPresentation.compactCapabilityLabelZoom
+          : personalNetworkPresentation.desktopCapabilityLabelZoom);
+      const showLabel = normallyLabelled.has(node.nodeType)
+        || selected
+        || hovered
+        || roleOwned
+        || roleGap
+        || showCapabilityLabel
+        || (node.nodeType === "ROLE_ONLY_CAPABILITY" && globalScale > 3.2);
+
+      if (!showLabel || !node.label) continue;
+
+      const radius = nodeRadius[node.nodeType]
+        + (roleOwned || roleGap ? 1.4 : 0)
+        + (selectedRole
+          ? rolePresentation.selectedRadiusBoost
+          : hoveredRole
+            ? rolePresentation.hoverRadiusBoost
+            : 0);
+
       const screenFontSize = compact
         ? node.nodeType === "YOU" ? 11 : node.nodeType === "ROLE" ? 8.5 : 9.5
         : node.nodeType === "YOU" ? 13 : node.nodeType === "FAMILY" ? 11 : node.nodeType === "ROLE" ? selectedRole || hoveredRole ? 11 : 9.5 : 9.5;
       const fontSize = screenFontSize / globalScale;
       const fontWeight = node.nodeType === "ROLE" && !selectedRole && !hoveredRole ? 500 : 600;
       context.font = `${fontWeight} ${fontSize}px ui-sans-serif, system-ui, sans-serif`;
+      
       const outward = (!compact && (node.nodeType === "FAMILY" || node.nodeType === "ROLE"))
         || roleOwned
         || roleGap;
       const rightSide = (node.x ?? 0) >= 0;
-      context.textAlign = outward ? rightSide ? "left" : "right" : "center";
-      context.textBaseline = outward ? "middle" : "top";
-      context.fillStyle = active
-        ? node.nodeType === "ROLE" && !selectedRole && !hoveredRole ? "rgba(231,247,246,0.68)" : "#e7f7f6"
-        : "#53686a";
       const labelLines = splitCanvasLabel(node.label, compact);
-      labelLines.forEach((line, index) => {
-        const labelX = (node.x ?? 0) + (outward ? (rightSide ? radius + 7 : -radius - 7) : 0);
-        const labelY = outward
-          ? (node.y ?? 0) + (index - (labelLines.length - 1) / 2) * (fontSize + 2)
-          : (node.y ?? 0) + radius + 6 + index * (fontSize + 2);
-        context.fillText(line, labelX, labelY);
-      });
+      
+      let textWidth = 0;
+      for (const line of labelLines) {
+        const w = context.measureText(line).width;
+        if (w > textWidth) textWidth = w;
+      }
+      
+      const textHeight = labelLines.length * (fontSize + 2);
+      const labelX = (node.x ?? 0) + (outward ? (rightSide ? radius + 7 : -radius - 7) : 0);
+      const labelYBase = outward ? (node.y ?? 0) : (node.y ?? 0) + radius + 6;
+
+      let x1, x2, y1, y2;
+      if (outward) {
+        if (rightSide) {
+          x1 = labelX;
+          x2 = labelX + textWidth;
+        } else {
+          x1 = labelX - textWidth;
+          x2 = labelX;
+        }
+        y1 = labelYBase - textHeight / 2;
+        y2 = labelYBase + textHeight / 2;
+      } else {
+        x1 = labelX - textWidth / 2;
+        x2 = labelX + textWidth / 2;
+        y1 = labelYBase;
+        y2 = labelYBase + textHeight;
+      }
+
+      const pad = 4 / globalScale;
+      x1 -= pad;
+      y1 -= pad;
+      x2 += pad;
+      y2 += pad;
+
+      const alwaysShow = p <= 5;
+      const intersect = occupiedBoxes.some(box => x1 < box.x2 && x2 > box.x1 && y1 < box.y2 && y2 > box.y1);
+      
+      if (alwaysShow || !intersect) {
+        occupiedBoxes.push({ x1, y1, x2, y2 });
+        
+        context.save();
+        context.globalAlpha = active ? 1 : 0.2;
+        context.textAlign = outward ? rightSide ? "left" : "right" : "center";
+        context.textBaseline = outward ? "middle" : "top";
+        context.fillStyle = active
+          ? node.nodeType === "ROLE" && !selectedRole && !hoveredRole ? "rgba(231,247,246,0.68)" : "#e7f7f6"
+          : "#53686a";
+        
+        labelLines.forEach((line, index) => {
+          const drawY = outward
+            ? labelYBase + (index - (labelLines.length - 1) / 2) * (fontSize + 2)
+            : labelYBase + index * (fontSize + 2);
+          context.fillText(line, labelX, drawY);
+        });
+        context.restore();
+      }
     }
-    context.restore();
   }, [dimensions.width, focusSet, hoveredId, selectedId, selectedRoleFocus]);
 
   const paintPointerArea = useCallback((
@@ -729,6 +839,7 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
           graphData={graphData}
           backgroundColor="rgba(0,0,0,0)"
           nodeCanvasObject={drawNode}
+          onRenderFramePost={onRenderFramePost}
           nodePointerAreaPaint={paintPointerArea}
           nodeLabel={(node) => node.nodeType === "EVIDENCE"
             ? evidenceTextById.get(node.semanticId) ?? "Evidence"
