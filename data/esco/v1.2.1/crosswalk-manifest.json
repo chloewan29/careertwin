@@ -1,0 +1,23 @@
+{
+  "sourceClassification": "ESCO",
+  "escoVersion": "v1.2.1",
+  "careerTwinCapabilityContractVersion": "1.0.0",
+  "careerTwinCapabilityCount": 51,
+  "generationMethodVersion": "1.0.0-heuristic-mock",
+  "providerIdentifier": "offline-mock-provider",
+  "generationDate": "2026-08-19T23:05:57.452Z",
+  "decisionCount": 13939,
+  "classificationDistribution": {
+    "direct_transferable_fit": 889,
+    "multi_capability_fit": 878,
+    "task_specific_no_map": 10770,
+    "tool_specific_no_map": 932,
+    "domain_knowledge_no_map": 320,
+    "credential_or_compliance_knowledge_no_map": 15,
+    "ontology_gap": 135,
+    "ambiguous": 0
+  },
+  "contentSha256": "6a2e08050d3bf505d76f23543a51cc0ccbc43fc841be07506d003a348c835381",
+  "sourceEscoSkillSnapshotSha256": "fc3a0062edd968b94067b2249c5fa708d5c9946f5cac29d6149de0f29669a720",
+  "attribution": "Mock diagnostic crosswalk."
+}
