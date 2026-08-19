@@ -1,5 +1,30 @@
 # Current System Memory
 
+### Post-MVP Task N2B: Role Knowledge Registry Foundation Closed (`POST_MVP_TASK_N2B_ROLE_KNOWLEDGE_REGISTRY_IMPLEMENTED`)
+
+- Task N2B is `CLOSED / IMPLEMENTED / PUSHED / VERIFIED`.
+- Implementation commit: `a6376a6a71c7905c63c4aa006dc1f14a1666fc4e` (`refactor(career): establish role knowledge registry`).
+- Role registry owner: `lib/career-possibility/role-knowledge/role-registry.ts`.
+- Role profile contract owner: `lib/career-possibility/role-knowledge/role-profile.ts`.
+- Registry version: Schema 1.0.0, Content 1.0.0.
+- Current 4-role set: `analytics-manager`, `customer-insights-lead`, `marketing-analytics-lead`, `data-product-manager`.
+- Structural migration: Exact mapping, zero semantic drift. New roles: 0. Deleted roles: 0.
+- Semantic fingerprint equality: Pre-migration SHA256 `0E4E2B5447AAB263B9A9C9592C27172DA405E2D74A18027ADAF302F0CA3B7C1C` == Post-migration SHA256 `0E4E2B5447AAB263B9A9C9592C27172DA405E2D74A18027ADAF302F0CA3B7C1C`.
+- Legacy representative array compatibility disposition: Export preserved in `generic-role-archetype.ts` but derives from new registry.
+- Duplicate data authority removed: NONE remains.
+- Production consumer migrated to registry: `personal-generic-role-alignment-adapter.ts` updated.
+- N1 unchanged: Admission policy remains unchanged.
+- Ranking unchanged: Relative ordering is preserved.
+- Projection unchanged: Semantic mapping and renderer remain unchanged.
+- Renderer unchanged: Visual graph and layout remain unchanged.
+- Sparse regression: 4 candidates -> 0 admitted roles preserved.
+- Analytics-rich ordering: `analytics-manager`, `marketing-analytics-lead`, `customer-insights-lead`, `data-product-manager` preserved.
+- External taxonomy: Still absent/deferred.
+- Role-universe coverage: Remains MATERIALLY NARROW.
+- Broad-domain canonical capability sufficiency: Remains UNRESOLVED.
+- N2C is next candidate, not automatically active.
+- `memory_sync_required: no`
+- `memory_sync_targets: []`
 ### Post-MVP Task N2A: Role Universe Architecture + Coverage Design Closed (`POST_MVP_TASK_N2A_ROLE_UNIVERSE_ARCHITECTURE_READY`)
 
 - Task N2A is `CLOSED / ARCHITECTURE DESIGN COMPLETE`.
