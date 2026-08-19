@@ -18,10 +18,9 @@ export const financeBusinessPartner: GenericRoleArchetype = freezeRole({
     capability("forecasting", "must", "Ran rolling business unit forecasts."),
   ],
   supportingCapabilities: [
-    capability("benefits-realisation", "should", "Tracked business case ROI."),
   ],
   differentiators: [
-
+    capability("benefits-realisation", "differentiator", "Tracked business case ROI.", "owned_outcome"),
   ],
   evidenceExpectations: [
     expectation("variance", "variance-analysis", "domain_expertise", "Explained financial variances."),

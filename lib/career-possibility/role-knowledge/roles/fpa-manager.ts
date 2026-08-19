@@ -15,7 +15,7 @@ export const fpaManager: GenericRoleArchetype = freezeRole({
   ],
   coreEnablers: [
     capability("investment-governance", "must", "Managed the capital allocation and budget process."),
-    capability("variance-analysis", "must", "Consolidated company-wide financial variance."),
+    capability("variance-analysis", "must", "Consolidated corporate financial variance."),
   ],
   supportingCapabilities: [
     capability("operating-rhythm", "should", "Ran the financial calendar."),
