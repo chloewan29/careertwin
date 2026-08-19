@@ -8,10 +8,20 @@ import { reconcileRoleCapabilityProfilesWithCanonicalLibrary } from "../../lib/c
 
 assert.equal(GENERIC_ROLE_ARCHETYPE_SCHEMA_VERSION, "1.0.0"); assert.equal(GENERIC_ROLE_ARCHETYPE_CONTENT_VERSION, "1.1.0");
 const valid = validateGenericRoleArchetypes(representativeGenericRoleArchetypes, canonicalCapabilityLibrary); assert.equal(valid.ok, true);
-assert.deepEqual(representativeGenericRoleArchetypes.map((item) => item.roleFamilyId), ["analytics-manager", "customer-insights-lead", "marketing-analytics-lead", "data-product-manager", "product-operations-manager", "customer-experience-manager", "account-manager", "business-development-manager", "service-delivery-manager", "finance-business-partner", "fpa-manager", "engineering-manager"]);
-const admittedRoleTitles = ["Analytics Manager", "Customer Insights Lead", "Marketing Analytics Lead", "Data Product Manager", "Product Operations Manager", "Customer Experience Manager", "Account Manager", "Business Development Manager", "Service Delivery Manager", "Finance Business Partner", "FP&A Manager", "Engineering Manager"];
+assert.deepEqual(representativeGenericRoleArchetypes.map((item) => item.roleFamilyId), ["analytics-manager", "customer-insights-lead", "marketing-analytics-lead", "data-product-manager", "product-operations-manager", "customer-experience-manager", "account-manager",  "business-development-manager",
+  "service-delivery-manager",
+  "finance-business-partner",
+  "fpa-manager",
+  "engineering-manager",
+  "program-manager",
+  "hr-business-partner",
+  "risk-manager",
+  "strategy-manager",
+  "sales-director"
+]);
+const admittedRoleTitles = ["Analytics Manager", "Customer Insights Lead", "Marketing Analytics Lead", "Data Product Manager", "Product Operations Manager", "Customer Experience Manager", "Account Manager", "Business Development Manager", "Service Delivery Manager", "Finance Business Partner", "FP&A Manager", "Engineering Manager", "Program Manager", "HR Business Partner", "Risk Manager", "Strategy Manager", "Sales Director"];
 const profilesBefore = JSON.stringify(representativeGenericRoleProfiles); const developmentProfilesBefore = JSON.stringify(roleCapabilityProfiles);
-assert.equal(representativeGenericRoleProfiles.length, 12); assert.deepEqual(representativeGenericRoleProfiles.map((item) => item.canonicalTitle), admittedRoleTitles);
+assert.equal(representativeGenericRoleProfiles.length, 17); assert.deepEqual(representativeGenericRoleProfiles.map((item) => item.canonicalTitle), admittedRoleTitles);
 assert.deepEqual(representativeGenericRoleProfiles.map((item) => item.roleFamilyId), representativeGenericRoleArchetypes.map((item) => item.roleFamilyId));
 assert.deepEqual(representativeGenericRoleProfiles.map((item) => item.description), representativeGenericRoleArchetypes.map((item) => item.primaryMandate));
 assert.equal(representativeGenericRoleProfiles.every((item) => item.description.trim().length > 0), true);
@@ -19,7 +29,7 @@ assert.equal(Object.isFrozen(representativeGenericRoleProfiles), true); assert.e
 const byId = new Map(representativeGenericRoleArchetypes.map((item) => [item.roleFamilyId, item])); const analytics = byId.get("analytics-manager")!; const customer = byId.get("customer-insights-lead")!; const marketing = byId.get("marketing-analytics-lead")!; const product = byId.get("data-product-manager")!;
 assert.notEqual(analytics.primaryMandate, customer.primaryMandate); assert.notDeepEqual(analytics.identityDefiningCapabilities.map((x) => x.capabilityId), marketing.identityDefiningCapabilities.map((x) => x.capabilityId)); assert.notDeepEqual(analytics.primaryOwnership, product.primaryOwnership); assert.notDeepEqual(customer.identityDefiningCapabilities.map((x) => x.capabilityId), marketing.identityDefiningCapabilities.map((x) => x.capabilityId));
 for (const role of representativeGenericRoleArchetypes) { assert.ok(role.differentiators.length); assert.ok(role.evidenceExpectations.length); assert.equal(Object.isFrozen(role), true); assert.equal(Object.isFrozen(role.identityDefiningCapabilities), true); assert.equal(JSON.stringify(JSON.parse(JSON.stringify(role))), JSON.stringify(role)); assert.deepEqual(projectGenericRoleArchetypeToProfile(role), projectGenericRoleArchetypeToProfile(role)); const projected = roleCapabilityProfileById.get(role.roleFamilyId)!; assert.deepEqual(projected, projectGenericRoleArchetypeToProfile(role)); assert.equal(Object.isFrozen(projected.commonGrowthAreas[0]), true); assert.deepEqual(projected.mustHaveCapabilities.map((x) => x.capabilityId), [...role.identityDefiningCapabilities, ...role.coreEnablers].filter((x) => x.importance === "must").map((x) => x.capabilityId)); }
-assert.equal(roleCapabilityProfiles.length, 27); assert.equal(reconcileRoleCapabilityProfilesWithCanonicalLibrary({ profiles: roleCapabilityProfiles, canonicalLibrary: canonicalCapabilityLibrary, governanceLibrary: canonicalCapabilityGovernanceLibrary }).coverage.governanceComplete, true);
+assert.equal(roleCapabilityProfiles.length, 30); assert.equal(reconcileRoleCapabilityProfilesWithCanonicalLibrary({ profiles: roleCapabilityProfiles, canonicalLibrary: canonicalCapabilityLibrary, governanceLibrary: canonicalCapabilityGovernanceLibrary }).coverage.governanceComplete, true);
 assert.equal(JSON.stringify(representativeGenericRoleProfiles), profilesBefore); assert.equal(JSON.stringify(roleCapabilityProfiles), developmentProfilesBefore);
 const routeSource = readFileSync("app/career-map/page.tsx", "utf8");
 assert.equal(routeSource.includes('roles={representativeGenericRoleProfiles}'), false); assert.equal(routeSource.includes('roles={roleCapabilityProfiles}'), false); assert.equal(routeSource.includes("sourceNotes"), false);

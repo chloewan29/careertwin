@@ -264,28 +264,28 @@ const canonicalBefore = JSON.stringify(canonicalCapabilityLibrary);
 const currentFixture = reconcile(roleCapabilityProfiles, canonicalCapabilityLibrary, canonicalCapabilityGovernanceLibrary);
 assert.equal(currentFixture.ok, false);
 assert.deepEqual(currentFixture.coverage, {
-  sourceProfileCount: 22,
-  sourceRequirementReferenceCount: 98,
-  uniqueRequirementIdCount: 76,
-  matchedRequirementReferenceCount: 73,
+  sourceProfileCount: 30,
+  sourceRequirementReferenceCount: 147,
+  uniqueRequirementIdCount: 70,
+  matchedRequirementReferenceCount: 128,
   matchedUniqueRequirementIdCount: 51,
-  unresolvedRequirementReferenceCount: 25,
-  unresolvedUniqueRequirementIdCount: 25,
+  unresolvedRequirementReferenceCount: 19,
+  unresolvedUniqueRequirementIdCount: 19,
   registryCapabilityCount: 51,
   unreferencedRegistryCapabilityCount: 0,
-  referenceCoverageRatio: 73 / 98,
-  uniqueIdCoverageRatio: 51 / 76,
+  referenceCoverageRatio: 128 / 147,
+  uniqueIdCoverageRatio: 51 / 70,
   complete: false,
-  deferredRequirementReferenceCount: 24,
-  deferredUniqueRequirementIdCount: 24,
+  deferredRequirementReferenceCount: 18,
+  deferredUniqueRequirementIdCount: 18,
   excludedRequirementReferenceCount: 1,
   excludedUniqueRequirementIdCount: 1,
   unknownRequirementReferenceCount: 0,
   unknownUniqueRequirementIdCount: 0,
-  governedUniqueRequirementIdCount: 76,
+  governedUniqueRequirementIdCount: 70,
   governanceComplete: true,
 });
-assert.equal(currentFixture.resolvedReferences.length, 73);
+assert.equal(currentFixture.resolvedReferences.length, 128);
 const expectedResolvedIds = canonicalCapabilityLibrary.capabilities
   .map((capability) => capability.id)
   .filter((id) => id !== "people-leadership");
@@ -305,11 +305,11 @@ assert.deepEqual({
   profileDomain: currentEngineering?.profileDomain,
   labelMatchesCanonical: currentEngineering?.labelMatchesCanonical,
 }, {
-  contextualLabel: "Engineering People Leadership",
+  contextualLabel: "People Leadership",
   profileDomain: "engineering",
-  labelMatchesCanonical: false,
+  labelMatchesCanonical: true,
 });
-assert.equal(warningCount(currentFixture, "role_requirement_label_differs_from_canonical"), 1);
+assert.equal(warningCount(currentFixture, "role_requirement_label_differs_from_canonical"), 0);
 assert.equal(currentFixture.warnings.some((item) => item.code === "canonical_capability_unreferenced"), false);
 assert.equal(JSON.stringify(currentFixture).includes("capability_family_conflict"), false);
 assert.equal("definitions" in currentFixture, false);

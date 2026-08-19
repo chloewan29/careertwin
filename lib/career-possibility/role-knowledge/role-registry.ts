@@ -13,6 +13,12 @@ import { financeBusinessPartner } from "./roles/finance-business-partner";
 import { fpaManager } from "./roles/fpa-manager";
 import { engineeringManager } from "./roles/engineering-manager";
 
+import { programManager } from "./roles/program-manager";
+import { hrBusinessPartner } from "./roles/hr-business-partner";
+import { riskManager } from "./roles/risk-manager";
+import { strategyManager } from "./roles/strategy-manager";
+import { salesDirector } from "./roles/sales-director";
+
 export type RoleKnowledgeRegistry = {
   readonly schemaVersion: string;
   readonly contentVersion: string;
@@ -35,5 +41,10 @@ export const roleKnowledgeRegistry: RoleKnowledgeRegistry = Object.freeze({
     financeBusinessPartner,
     fpaManager,
     engineeringManager,
+    programManager,
+    hrBusinessPartner,
+    riskManager,
+    strategyManager,
+    salesDirector,
   ]),
 });

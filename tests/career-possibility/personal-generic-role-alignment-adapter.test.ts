@@ -188,8 +188,8 @@ for (const role of result.alignment.roles) {
   );
 }
 
-// Case C — all 12 governed roles are evaluated and returned.
-assert.equal(result.alignment.roles.length, 12);
+// Case C — all 17 governed roles are evaluated and returned.
+assert.equal(result.alignment.roles.length, 17);
 assert.deepEqual(
   [...result.alignment.roles.map((role) => role.roleId)].sort(),
   [
@@ -202,9 +202,14 @@ assert.deepEqual(
     "engineering-manager",
     "finance-business-partner",
     "fpa-manager",
+    "hr-business-partner",
     "marketing-analytics-lead",
     "product-operations-manager",
+    "program-manager",
+    "risk-manager",
+    "sales-director",
     "service-delivery-manager",
+    "strategy-manager",
   ].sort(),
 );
 

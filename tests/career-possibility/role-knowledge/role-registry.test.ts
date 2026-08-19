@@ -9,8 +9,8 @@ test("registry foundation", () => {
   expect(roleKnowledgeRegistry.schemaVersion).toBe("1.0.0");
   expect(roleKnowledgeRegistry.contentVersion).toBe("1.1.0");
 
-  // registry contains exactly current 12 roles
-  expect(roleKnowledgeRegistry.roles.length).toBe(12);
+  // registry contains exactly current 17 roles
+  expect(roleKnowledgeRegistry.roles.length).toBe(17);
   const roleIds = roleKnowledgeRegistry.roles.map(r => r.roleFamilyId).sort();
   expect(roleIds).toEqual([
     "account-manager",
@@ -22,9 +22,14 @@ test("registry foundation", () => {
     "engineering-manager",
     "finance-business-partner",
     "fpa-manager",
+    "hr-business-partner",
     "marketing-analytics-lead",
     "product-operations-manager",
-    "service-delivery-manager"
+    "program-manager",
+    "risk-manager",
+    "sales-director",
+    "service-delivery-manager",
+    "strategy-manager"
   ]);
 });
 
@@ -50,5 +55,5 @@ test("post-migration semantic fingerprint is correct", () => {
   
   const json = JSON.stringify(data);
   const hash = crypto.createHash("sha256").update(json).digest("hex").toUpperCase();
-  expect(hash).toBe("73E06D21F729082E71EDAC407C6479954C703CE26FB0E7A1750F12209C67D831");
+  expect(hash).toBe("44D0AFAE68BB796489EED35B59AEBE03AE77B6272E462BBFE36440D5F21B54DA");
 });
