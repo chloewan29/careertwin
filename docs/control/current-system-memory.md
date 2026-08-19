@@ -1,5 +1,29 @@
 # Current System Memory
 
+### Post-MVP Task N2C: Cross-Domain Canonical Capability Coverage Audit Closed (`POST_MVP_TASK_N2C_CANONICAL_ONTOLOGY_PARTIALLY_SUFFICIENT`)
+
+- Task N2C is `CLOSED / COVERAGE AUDIT COMPLETE`.
+- Canonical inventory: 51 capabilities, 12 families.
+- Audit scope: 72 concepts across 6 domains and 12 roles.
+- Domain readiness:
+  - Commercial, Finance: `READY_FOR_ROLE_AUTHORING`
+  - Product, Customer, Operations: `READY_WITH_LIMITED_GAPS`
+  - Technology: `ONTOLOGY_WORK_REQUIRED` for deep software-engineering IC roles.
+- Role readiness:
+  - `AUTHORABLE_WITH_CURRENT_ONTOLOGY`: Product Operations Manager, Customer Experience Manager, Account Manager, Business Development Manager, Service Delivery Manager, Finance Business Partner, FP&A Manager, Engineering Manager.
+  - `AUTHORABLE_WITH_MINOR_MAPPING_REVIEW`: Product Manager, Operations Manager.
+  - `BLOCKED_BY_PROVEN_CANONICAL_GAPS`: Customer Success Manager, Software Engineer.
+- Ontology status: `PARTIALLY SUFFICIENT`. Global expansion is NOT required first.
+- Analytics bias: `ANALYTICS_WEIGHTED_BUT_CROSS_DOMAIN_USABLE`.
+- Eight audit gap concepts remain `NON_CANONICAL` and require atomicity/design review before admission.
+- No new capability family proven yet (unresolved).
+- Role-library vs ontology-gap distinction is locked.
+- First tranche can proceed in selected domains.
+- Eight-role semantic design candidate set: Product Ops, CX Manager, Account Manager, BD Manager, Service Delivery Manager, Finance BP, FP&A Manager, Engineering Manager.
+- Excluded roles (blocked or mapping review required): Product Manager, CSM, Operations Manager, Software Engineer.
+- N2D semantic design is required before implementation.
+
+
 ### Post-MVP Task N2B: Role Knowledge Registry Foundation Closed (`POST_MVP_TASK_N2B_ROLE_KNOWLEDGE_REGISTRY_IMPLEMENTED`)
 
 - Task N2B is `CLOSED / IMPLEMENTED / PUSHED / VERIFIED`.
