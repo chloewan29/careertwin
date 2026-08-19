@@ -27,7 +27,7 @@ export function LocalCareerMapWorkspace({ definitions, definitionVersion }: { de
     const graphProjection = buildCareerMapGraphProjection({
       presentation: personal.presentation,
       familyLibrary: canonicalCapabilityFamilyLibrary,
-      ...(graphAlignment?.ok ? { rankedRoleAlignment: graphAlignment.result.alignment } : {}),
+      ...(graphAlignment?.ok ? { rankedRoleAlignment: { ...graphAlignment.result.alignment, roles: graphAlignment.result.recommendedRoles } } : {}),
     });
     return <section className="flex min-h-[calc(100dvh-5.25rem)] flex-col py-2">
       <div className="flex min-h-11 items-center justify-between gap-3 px-1 pb-2">

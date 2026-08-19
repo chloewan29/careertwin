@@ -15,6 +15,8 @@ import {
 export const PERSONAL_GENERIC_ROLE_ALIGNMENT_ADAPTER_VERSION =
   "personal-generic-role-alignment-adapter/1.0.0" as const;
 
+export const CAREER_MAP_MAX_RECOMMENDATIONS = 4 as const;
+
 export type PersonalGenericRoleAlignment = {
   readonly version: typeof PERSONAL_GENERIC_ROLE_ALIGNMENT_ADAPTER_VERSION;
   readonly semanticSource: "provisional_local_career_map_state";
@@ -28,6 +30,11 @@ export type PersonalGenericRoleAlignment = {
    * Downstream graph projection must consume this list, not alignment.roles.
    */
   readonly admittedRoles: readonly GenericRoleCanonicalOwnershipAlignment[];
+  /**
+   * The subset of admitted roles that are recommended for Career Map display.
+   * Capped to the top highly-ranked possibilities.
+   */
+  readonly recommendedRoles: readonly GenericRoleCanonicalOwnershipAlignment[];
 };
 
 export type PersonalGenericRoleAlignmentResult =
@@ -90,6 +97,7 @@ export function buildPersonalGenericRoleAlignment(input: {
   });
 
   const admittedRoles = filterAdmittedRoles(alignment.roles);
+  const recommendedRoles = Object.freeze(admittedRoles.slice(0, CAREER_MAP_MAX_RECOMMENDATIONS));
 
   return {
     ok: true,
@@ -99,6 +107,7 @@ export function buildPersonalGenericRoleAlignment(input: {
       personalCapabilities,
       alignment,
       admittedRoles,
+      recommendedRoles,
     }),
   };
 }

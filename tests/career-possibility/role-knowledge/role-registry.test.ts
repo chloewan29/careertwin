@@ -7,16 +7,24 @@ import * as crypto from "crypto";
 test("registry foundation", () => {
   // registry schema/content version present
   expect(roleKnowledgeRegistry.schemaVersion).toBe("1.0.0");
-  expect(roleKnowledgeRegistry.contentVersion).toBe("1.0.0");
+  expect(roleKnowledgeRegistry.contentVersion).toBe("1.1.0");
 
-  // registry contains exactly current four roles
-  expect(roleKnowledgeRegistry.roles.length).toBe(4);
+  // registry contains exactly current 12 roles
+  expect(roleKnowledgeRegistry.roles.length).toBe(12);
   const roleIds = roleKnowledgeRegistry.roles.map(r => r.roleFamilyId).sort();
   expect(roleIds).toEqual([
+    "account-manager",
     "analytics-manager",
+    "business-development-manager",
+    "customer-experience-manager",
     "customer-insights-lead",
     "data-product-manager",
-    "marketing-analytics-lead"
+    "engineering-manager",
+    "finance-business-partner",
+    "fpa-manager",
+    "marketing-analytics-lead",
+    "product-operations-manager",
+    "service-delivery-manager"
   ]);
 });
 
@@ -42,5 +50,5 @@ test("post-migration semantic fingerprint is correct", () => {
   
   const json = JSON.stringify(data);
   const hash = crypto.createHash("sha256").update(json).digest("hex").toUpperCase();
-  expect(hash).toBe("0E4E2B5447AAB263B9A9C9592C27172DA405E2D74A18027ADAF302F0CA3B7C1C");
+  expect(hash).toBe("73E06D21F729082E71EDAC407C6479954C703CE26FB0E7A1750F12209C67D831");
 });

@@ -2,6 +2,9 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { canonicalCapabilityLibrary } from "../../lib/career-possibility/canonical-capability-library";
 import { buildPersonalGenericRoleAlignment } from "../../lib/career-possibility/personal-generic-role-alignment-adapter";
+import { buildGenericCareerPathAlignment } from "../../lib/career-possibility/generic-career-path-alignment";
+import { filterAdmittedRoles } from "../../lib/career-possibility/generic-role-admission";
+import { roleKnowledgeRegistry } from "../../lib/career-possibility/role-knowledge/role-registry";
 import {
   PROVISIONAL_LOCAL_CAREER_MAP_SCHEMA_VERSION,
   type ProvisionalLocalCareerMapEvidence,
@@ -121,9 +124,9 @@ function buildState(seeds: readonly MappingSeed[]): ProvisionalLocalCareerMapSta
 function requireAlignment(state: ProvisionalLocalCareerMapState) {
   const before = JSON.stringify(state);
   const built = buildPersonalGenericRoleAlignment({ personalState: state });
+  if (!built.ok) throw new Error(built.issues[0]?.message ?? "Alignment failed");
   assert.equal(built.ok, true);
   assert.equal(JSON.stringify(state), before, "adapter must not mutate personal state");
-  if (!built.ok) throw new Error(built.issues[0]?.message ?? "Alignment failed");
   return built.result;
 }
 
@@ -185,15 +188,23 @@ for (const role of result.alignment.roles) {
   );
 }
 
-// Case C — all four governed MVP roles are evaluated and returned.
-assert.equal(result.alignment.roles.length, 4);
+// Case C — all 12 governed roles are evaluated and returned.
+assert.equal(result.alignment.roles.length, 12);
 assert.deepEqual(
   [...result.alignment.roles.map((role) => role.roleId)].sort(),
   [
+    "account-manager",
     "analytics-manager",
+    "business-development-manager",
+    "customer-experience-manager",
     "customer-insights-lead",
     "data-product-manager",
+    "engineering-manager",
+    "finance-business-partner",
+    "fpa-manager",
     "marketing-analytics-lead",
+    "product-operations-manager",
+    "service-delivery-manager",
   ].sort(),
 );
 
@@ -288,4 +299,72 @@ assert.equal(
   true,
 );
 
+// Case K — N1 admission gate & >4 ADMITTED FIXTURE
+const manyCapabilitiesState = buildState([
+  { capabilityId: "insight-synthesis", evidenceId: "ev1", relationship: "direct_evidence", method: "structured_inference" },
+  { capabilityId: "analytics-governance", evidenceId: "ev2", relationship: "direct_evidence", method: "authored_deterministic" },
+  { capabilityId: "forecasting", evidenceId: "ev3", relationship: "direct_evidence", method: "structured_inference" },
+  { capabilityId: "variance-analysis", evidenceId: "ev4", relationship: "direct_evidence", method: "structured_inference" },
+  { capabilityId: "strategic-analysis", evidenceId: "ev5", relationship: "direct_evidence", method: "structured_inference" },
+  { capabilityId: "account-growth", evidenceId: "ev6", relationship: "direct_evidence", method: "structured_inference" },
+  { capabilityId: "commercial-negotiation", evidenceId: "ev7", relationship: "direct_evidence", method: "structured_inference" },
+  { capabilityId: "research-design", evidenceId: "ev8", relationship: "direct_evidence", method: "structured_inference" },
+  { capabilityId: "customer-segmentation", evidenceId: "ev9", relationship: "direct_evidence", method: "structured_inference" },
+]);
+const manyAdmittedResult = requireAlignment(manyCapabilitiesState);
+assert.equal(manyAdmittedResult.admittedRoles.length > 4, true, "Must have >4 admitted roles for this test");
+assert.equal(manyAdmittedResult.recommendedRoles.length, 4, "Must cap recommended roles to 4");
+assert.deepEqual(
+  manyAdmittedResult.recommendedRoles.map(r => r.roleId),
+  manyAdmittedResult.admittedRoles.slice(0, 4).map(r => r.roleId)
+);
+
+// Case L — <=4 ADMITTED FIXTURE
+const fewCapabilitiesState = buildState([
+  { capabilityId: "insight-synthesis", evidenceId: "ev1", relationship: "direct_evidence", method: "structured_inference" },
+  { capabilityId: "analytics-governance", evidenceId: "ev2", relationship: "direct_evidence", method: "authored_deterministic" },
+]);
+const fewAdmittedResult = requireAlignment(fewCapabilitiesState);
+assert.equal(fewAdmittedResult.admittedRoles.length > 0 && fewAdmittedResult.admittedRoles.length <= 4, true, "Must have 1-4 admitted roles for this test");
+assert.equal(fewAdmittedResult.recommendedRoles.length, fewAdmittedResult.admittedRoles.length);
+assert.deepEqual(
+  fewAdmittedResult.recommendedRoles.map(r => r.roleId),
+  fewAdmittedResult.admittedRoles.map(r => r.roleId)
+);
+
+// Case M — REGISTRY-ORDER INDEPENDENCE (Pure-function experiment)
+const reversedRoles = [...roleKnowledgeRegistry.roles].reverse();
+const forwardAlignment = buildGenericCareerPathAlignment({
+  canonicalCapabilityOwnership: manyAdmittedResult.personalCapabilities,
+  genericRoleArchetypes: roleKnowledgeRegistry.roles,
+  canonicalDefinitions: canonicalCapabilityLibrary.capabilities,
+});
+const reversedAlignment = buildGenericCareerPathAlignment({
+  canonicalCapabilityOwnership: manyAdmittedResult.personalCapabilities,
+  genericRoleArchetypes: reversedRoles,
+  canonicalDefinitions: canonicalCapabilityLibrary.capabilities,
+});
+const forwardAdmitted = filterAdmittedRoles(forwardAlignment.roles);
+const reversedAdmitted = filterAdmittedRoles(reversedAlignment.roles);
+assert.deepEqual(
+  forwardAdmitted.map(r => r.roleId),
+  reversedAdmitted.map(r => r.roleId),
+  "Changing input role order does NOT change authoritative role order"
+);
+
+// Case N — TIE-BREAK DETERMINISM
+const emptyState = buildState([
+  { capabilityId: "legal-technology", evidenceId: "ev-tie", relationship: "direct_evidence", method: "structured_inference" },
+]);
+const emptyResult = requireAlignment(emptyState);
+const sortedRoleIds = [...emptyResult.alignment.roles].map(r => r.roleId);
+const expectedSorted = [...sortedRoleIds].sort((a, b) => {
+  const roleA = roleKnowledgeRegistry.roles.find(r => r.roleFamilyId === a)!;
+  const roleB = roleKnowledgeRegistry.roles.find(r => r.roleFamilyId === b)!;
+  const titleCmp = roleA.canonicalTitle.localeCompare(roleB.canonicalTitle, "en");
+  return titleCmp !== 0 ? titleCmp : a.localeCompare(b, "en");
+});
+assert.deepEqual(sortedRoleIds, expectedSorted, "Tie-break must follow title then roleId");
+
 console.log("personal generic role alignment adapter tests passed");
+
