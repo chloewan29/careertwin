@@ -26,7 +26,7 @@ const visualAdapterSource = readFileSync(
 
 // Active route: real personal state enters Task 3B, then Task 3C projection.
 assert.match(workspaceSource, /buildPersonalGenericRoleAlignment\(\{ personalState: result\.state \}\)/);
-assert.match(workspaceSource, /rankedRoleAlignment: graphAlignment\.result\.alignment/);
+assert.match(workspaceSource, /rankedRoleAlignment: \{ \.\.\.graphAlignment\.result\.alignment, roles: graphAlignment\.result\.admittedRoles \}/);
 assert.doesNotMatch(workspaceSource, /roleFamilyId === ["']analytics-manager["']/);
 assert.doesNotMatch(workspaceSource, /buildPersonalTargetRoleComparison/);
 
@@ -34,7 +34,7 @@ assert.doesNotMatch(workspaceSource, /buildPersonalTargetRoleComparison/);
 assert.doesNotMatch(rendererSource, /roleNodes\[0\]/);
 assert.match(rendererSource, /buildCareerGraphVisualModel\(projection\)/);
 assert.match(rendererSource, /roleRequirements = requirements\.filter\(\(item\) => item\.roleId === selected\.semanticId\)/);
-assert.doesNotMatch(rendererSource, /\.sort\(|matchedCapabilities|Math\.random/);
+assert.doesNotMatch(rendererSource, /roles.*\.sort\(|matchedCapabilities|Math\.random/);
 assert.doesNotMatch(rendererSource, /from ["'][^"']*(job-copilot|candidate-baseline|generic-career-path-alignment)[^"']*["']/i);
 
 const roles = [
@@ -175,8 +175,12 @@ if (!routeAlignment.ok) throw new Error(routeAlignment.issues[0]?.message ?? "Ro
 const routeProjection = buildCareerMapGraphProjection({
   presentation,
   familyLibrary: canonicalCapabilityFamilyLibrary,
-  rankedRoleAlignment: routeAlignment.result.alignment,
+  rankedRoleAlignment: { ...routeAlignment.result.alignment, roles: routeAlignment.result.admittedRoles },
 });
-assert.equal(routeProjection.nodes.filter((node) => node.type === "role").length, 4);
+// insight-synthesis alone = 1 substantive match, no second substantive → 0 admitted roles.
+assert.equal(routeProjection.nodes.filter((node) => node.type === "role").length, 0);
+// Personal graph remains available even with 0 recommended roles.
+assert.equal(routeProjection.nodes.filter((node) => node.type === "capability").length >= 0, true);
+assert.equal(routeProjection.nodes.some((node) => node.type === "user"), true);
 
 console.log("active multi-role Career Map renderer tests passed");

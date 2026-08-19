@@ -3,7 +3,9 @@ import {
   buildGenericCareerPathAlignment,
   type CanonicalCapabilityOwnership,
   type GenericCareerPathOwnershipAlignmentResult,
+  type GenericRoleCanonicalOwnershipAlignment,
 } from "./generic-career-path-alignment";
+import { filterAdmittedRoles } from "./generic-role-admission";
 import { representativeGenericRoleArchetypes } from "./generic-role-archetype";
 import {
   validateProvisionalLocalCareerMapState,
@@ -17,7 +19,15 @@ export type PersonalGenericRoleAlignment = {
   readonly version: typeof PERSONAL_GENERIC_ROLE_ALIGNMENT_ADAPTER_VERSION;
   readonly semanticSource: "provisional_local_career_map_state";
   readonly personalCapabilities: readonly CanonicalCapabilityOwnership[];
+  /** Full alignment result for all role candidates. Ordering is unchanged from alignment. */
   readonly alignment: GenericCareerPathOwnershipAlignmentResult;
+  /**
+   * Roles that passed the N1 recommendation admission gate.
+   * Preserves relative order from alignment. May be empty when no role
+   * has sufficient substantive support.
+   * Downstream graph projection must consume this list, not alignment.roles.
+   */
+  readonly admittedRoles: readonly GenericRoleCanonicalOwnershipAlignment[];
 };
 
 export type PersonalGenericRoleAlignmentResult =
@@ -79,6 +89,8 @@ export function buildPersonalGenericRoleAlignment(input: {
     canonicalDefinitions: canonicalCapabilityLibrary.capabilities,
   });
 
+  const admittedRoles = filterAdmittedRoles(alignment.roles);
+
   return {
     ok: true,
     result: Object.freeze({
@@ -86,6 +98,7 @@ export function buildPersonalGenericRoleAlignment(input: {
       semanticSource: "provisional_local_career_map_state",
       personalCapabilities,
       alignment,
+      admittedRoles,
     }),
   };
 }
