@@ -1,5 +1,28 @@
 # Current System Memory
 
+### Post-MVP Task N2A: Role Universe Architecture + Coverage Design Closed (`POST_MVP_TASK_N2A_ROLE_UNIVERSE_ARCHITECTURE_READY`)
+
+- Task N2A is `CLOSED / ARCHITECTURE DESIGN COMPLETE`.
+- Artifact: `artifacts/career-possibility/task-n2a-role-universe-architecture-coverage-design.md`.
+- Role registry required: CareerTwin requires a scalable, versioned generic ROLE KNOWLEDGE REGISTRY before major role-universe expansion.
+- Hybrid strategy locked: Standardized occupational catalog/taxonomy provides stable hierarchy/metadata, but CareerTwin remains the sole authority for canonical capability mappings, importance semantics, and recommendation-ready profile publication.
+- External taxonomy deferred: Do NOT select or integrate O*NET/ESCO in N2B. The registry must be SOURCE-AGNOSTIC.
+- Runtime LLM prohibition locked: Runtime LLMs must NOT invent new generic roles, role requirements, or role semantic truth based on a user's CV.
+- Separation of concerns locked: Role family != canonical capability family. Single canonical capability authority. Retrieval, admission, and ranking remain separate discrete stages.
+- N1 preserved: N1 role admission remains unchanged and authoritative.
+- 0–4 Career Map contract locked: Role universe size != candidate set size != admitted role count != displayed role count. Career Map continues to display 0–4 admitted generic roles.
+- Role granularity direction: Recognizable cross-company generic career directions.
+- Aliases direction: Title aliases are metadata pointing to one semantic generic role.
+- Deferred: Seniority representation, regionality, exact external taxonomy.
+- Offline reviewed authoring: Role requirements are offline authored, human-reviewed, mapped to canonical IDs, validated, versioned, and published deterministically.
+- Role quality-gate direction: Every ID exists, no duplicates, valid sections, no differentiator-only roles, stable ID, domain/family metadata, minimum semantic coverage.
+- Canonical capability status: Currently 51 capabilities, 12 families.
+- Capability coverage risk: `MATERIAL_CANONICAL_CAPABILITY_COVERAGE_GAPS` is a CREDIBLE RISK but NOT yet proven blocker. Automatic ontology expansion is REJECTED until a dedicated coverage audit is performed.
+- Revised sequencing: N2B (Role Knowledge Registry Foundation - structural only, 4 roles) -> N2C (Cross-Domain Capability Coverage Audit). First tranche size (10-20 roles) remains a hypothesis dependent on N2C.
+- `memory_sync_required: no`
+- `memory_sync_targets: []`
+
+
 ### Post-MVP Task N1: Role Recommendation Admission Gate Closed (`POST_MVP_TASK_N1_ROLE_ADMISSION_GATE_IMPLEMENTED`)
 
 - Task N1 is `CLOSED / IMPLEMENTED / PUSHED / VERIFIED`. N0 trust defect (forced ranking of weak candidates) is resolved.
