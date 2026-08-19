@@ -153,11 +153,28 @@ function employmentBoundaries(text: string): EmploymentBoundary[] {
       workSectionStart = undefined;
       continue;
     }
-    const combined = /^(.+?)\s+[-–—]\s+(.+?)(?:\s*[|,]\s*(.+))?$/.exec(value);
+    // DOCX tab-stop format: "Role Title\tMonth Year – Month Year"
+    // Word documents frequently align dates using tab stops, producing a single line
+    // with the role title before the tab and the date range after it.
+    const tabIdx = value.indexOf("\t");
+    if (tabIdx > 0) {
+      const beforeTab = value.slice(0, tabIdx).trim();
+      const afterTab = value.slice(tabIdx + 1).trim();
+      const tabDates = dateRange.exec(afterTab);
+      if (tabDates && beforeTab && !workHistoryHeading.test(beforeTab) && !nonEmploymentSectionHeading.test(sectionHeadingCandidate(beforeTab))) {
+        const contentStart = line.end < text.length ? line.end + 1 : line.end;
+        boundaries.push({ startOffset: line.start, contentStartOffset: contentStart, evidenceEligible: true, roleTitle: beforeTab, startDate: tabDates[1], endDate: tabDates[2] });
+        continue;
+      }
+    }
 
-    if (combined && (dateRange.test(combined[3] ?? "") || companySuffix.test(combined[1]))) {
-      const dates = dateRange.exec(combined[3] ?? "");
-      boundaries.push({ startOffset: line.start, contentStartOffset: line.end < text.length ? line.end + 1 : line.end, evidenceEligible: true, employer: combined[1].trim(), roleTitle: combined[2].trim(), ...(dates ? { startDate: dates[1], endDate: dates[2] } : {}) });
+    const combined = /^(.+?)\s+[-\u2013\u2014]\s+(.+?)(?:\s*[|,]\s*(.+))?$/.exec(value);
+
+    // combined[2] is a date range with no third component: "Role – DateRange"
+    if (combined && (dateRange.test(combined[3] ?? "") || companySuffix.test(combined[1]) || (dateRange.test(combined[2]) && combined[3] === undefined))) {
+      const dates = dateRange.exec(combined[3] ?? combined[2]);
+      const isRoleDateFormat = combined[3] === undefined && dateRange.test(combined[2]);
+      boundaries.push({ startOffset: line.start, contentStartOffset: line.end < text.length ? line.end + 1 : line.end, evidenceEligible: true, ...(isRoleDateFormat ? { roleTitle: combined[1].trim() } : { employer: combined[1].trim(), roleTitle: combined[2].trim() }), ...(dates ? { startDate: dates[1], endDate: dates[2] } : {}) });
       continue;
     }
     const roleWithDates = /^(.+?)\s*[|,]\s*(.+)$/.exec(value);

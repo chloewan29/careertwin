@@ -355,4 +355,142 @@ const unorderedFailureA = extractResumeEvidenceFromText(baseInput("Valid", { doc
 const unorderedFailureB = extractResumeEvidenceFromText(baseInput("Valid", { documentId: "", bundleId: "", extractionRunId: "", maxCharacters: 0 }));
 assert.deepEqual(unorderedFailureA, unorderedFailureB);
 
+
+// ===================================================================
+// Step 2A — General professional evidence extraction regression tests
+// Phase 12: Cross-format boundary detection
+// Phase 13: Negative tests (non-evidence sections)
+// Phase 14: Domain-neutral professional language
+// Phase 15: Existing analytics-style regression (preserved above)
+// ===================================================================
+
+// CASE A: Employer — Role | Month Year - Month Year (existing passing format)
+const caseA = success("Example Corp — Operations Analyst | Jan 2020 - Dec 2023\n- Built a reporting workflow.\n- Coordinated a planning cycle.");
+assert.equal(caseA.bundle.employmentRecords.length, 1, "CASE_A: single employment record");
+assert.equal(caseA.bundle.evidenceRecords.length, 2, "CASE_A: two evidence items");
+assert.equal(caseA.bundle.employmentRecords[0].employerName?.value, "Example Corp", "CASE_A: employer extracted");
+assert.equal(caseA.bundle.employmentRecords[0].roleTitle?.value, "Operations Analyst", "CASE_A: role extracted");
+
+// CASE B: Role | Employer (no explicit dates on role line, standalone date line below)
+const caseB = success("WORK EXPERIENCE\nInsights Lead | Harbour Group\n2022 - Present\n- Built a customer segmentation model.\n- Delivered a weekly stakeholder briefing.");
+assert.equal(caseB.bundle.employmentRecords.length, 1, "CASE_B: single employment record");
+assert.equal(caseB.bundle.evidenceRecords.length, 2, "CASE_B: two evidence items");
+
+// CASE C: Employer — Role — dates on one line (already handled by combined check)
+const caseC = success("Northstar Ltd — Operations Analyst | 2020 - 2022\n- Automated weekly reporting.\nHarbour Group — Insights Lead | 2022 - Present\n- Built a customer taxonomy.");
+assert.equal(caseC.bundle.employmentRecords.length, 2, "CASE_C: two employment records from dash-combined format");
+assert.equal(caseC.bundle.evidenceRecords.length, 2, "CASE_C: one evidence per role");
+
+// CASE D: Year-only ranges (existing dateRange already handles this)
+const caseD = success("Senior Manager | 2021 - 2024\n- Improved forecasting accuracy.\n- Led quarterly planning sessions.");
+assert.equal(caseD.bundle.employmentRecords.length, 1, "CASE_D: year-only range recognised as employment boundary");
+assert.equal(caseD.bundle.evidenceRecords.length, 2, "CASE_D: evidence extracted from year-range employment");
+
+// CASE E: Unicode en-dash / em-dash date ranges in Role – DateRange format (new fix: combined[2] is date range)
+const caseEEnDash = success("PROFESSIONAL EXPERIENCE\nSenior Analyst \u2013 2019 \u2013 2022\n- Improved delivery processes.\n- Managed vendor relationships.");
+assert.equal(caseEEnDash.bundle.employmentRecords.length, 1, "CASE_E_ENDASH: Role–DateRange with en-dash recognised as boundary");
+assert.equal(caseEEnDash.bundle.evidenceRecords.length >= 1, true, "CASE_E_ENDASH: evidence items extracted");
+const caseEEmDash = success("PROFESSIONAL EXPERIENCE\nProgram Director \u2014 Jan 2020 \u2013 Dec 2023\n- Delivered a multi-workstream programme.\n- Coordinated cross-functional teams.");
+assert.equal(caseEEmDash.bundle.employmentRecords.length, 1, "CASE_E_EMDASH: Role—DateRange with em-dash separator recognised as boundary");
+assert.equal(caseEEmDash.bundle.evidenceRecords.length >= 1, true, "CASE_E_EMDASH: evidence items extracted");
+
+// CASE F: Multiple jobs with multiple bullets (core multi-role regression)
+const caseFText = "WORK EXPERIENCE\nExample Corp — Delivery Manager | Jan 2021 - Dec 2023\n- Led a governed service transformation.\n- Coordinated stakeholder alignment across eight business units.\nPrevious Corp — Operations Lead | Jan 2018 - Dec 2020\n- Improved operational throughput.\n- Managed a team of 12 delivery professionals.";
+const caseF = success(caseFText);
+assert.equal(caseF.bundle.employmentRecords.length, 2, "CASE_F: two employment records");
+assert.equal(caseF.bundle.evidenceRecords.length, 4, "CASE_F: four evidence items across two roles");
+assert.equal(new Set(caseF.bundle.evidenceRecords.map((item) => item.employmentRecordId)).size, 2, "CASE_F: evidence correctly distributed across two records");
+
+// CASE G: Non-analytics professional language — domain-neutral evidence survives
+const caseGText = "PROFESSIONAL EXPERIENCE\nService Delivery Co — Account Manager | 2020 - Present\n- Managed a portfolio of enterprise customer accounts across the Asia-Pacific region.\n- Negotiated contract renewals achieving a 95 percent retention outcome.\nOperations Group — People Lead | 2017 - 2020\n- Led a team of 22 operations specialists through a workplace transformation.\n- Implemented a performance-improvement programme reducing cycle time.";
+const caseG = success(caseGText);
+assert.equal(caseG.bundle.employmentRecords.length, 2, "CASE_G: two employment records from non-analytics résumé");
+assert.equal(caseG.bundle.evidenceRecords.length >= 2, true, "CASE_G: evidence extracted from commercial/operations/people-domain text");
+assert.equal(caseG.bundle.evidenceRecords.some((item) => /analytics|SQL|Power BI|data|dashboard/.test(item.sourceText)), false, "CASE_G: no analytics-specific terms required for evidence extraction");
+
+// DOCX tab-stop format: "Role Title[TAB]Month Year – Month Year" (new fix: tab-date boundary rule)
+const tabDateText = "PROFESSIONAL EXPERIENCE\nDelivery Manager\tJan 2021 \u2013 Present\n- Led a cross-functional service transformation.\n- Coordinated planning with senior stakeholders.\nAnalytics Lead\tJan 2018 \u2013 Dec 2020\n- Built a governed reporting workflow.\n- Automated a manual reconciliation process.";
+const tabDate = success(tabDateText);
+assert.equal(tabDate.bundle.employmentRecords.length, 2, "TAB_DATE: two employment records from DOCX tab-stop date format");
+assert.equal(tabDate.bundle.evidenceRecords.length, 4, "TAB_DATE: four evidence items extracted");
+assert.equal(tabDate.bundle.employmentRecords[0].roleTitle?.value, "Delivery Manager", "TAB_DATE: first role title extracted from tab-stop format");
+assert.equal(tabDate.bundle.employmentRecords[1].roleTitle?.value, "Analytics Lead", "TAB_DATE: second role title extracted from tab-stop format");
+assert.equal(tabDate.bundle.employmentRecords[0].startDate?.value, "Jan 2021", "TAB_DATE: start date extracted correctly");
+assert.equal(tabDate.bundle.employmentRecords[0].endDate?.value, "Present", "TAB_DATE: end date extracted correctly");
+
+// Multi-job collapse regression: must not collapse multiple roles into one evidence item
+const multiJobText = "WORK EXPERIENCE\nManagerial Role\tFeb 2022 \u2013 Present\n- Led a governance transformation programme.\nAnalyst Role\tJan 2019 \u2013 Jan 2022\n- Improved service reporting across six teams.\nJunior Role\tMar 2016 \u2013 Dec 2018\n- Supported delivery of a customer-facing portal.";
+const multiJob = success(multiJobText);
+assert.equal(multiJob.bundle.employmentRecords.length, 3, "MULTI_JOB: three employment records — résumé must not collapse to one evidence item");
+assert.equal(multiJob.bundle.evidenceRecords.length, 3, "MULTI_JOB: three evidence items across three roles");
+
+// Evidence ID determinism across tab-date format
+const tabDeterministicA = extractResumeEvidenceFromText(baseInput(tabDateText, { documentId: "doc-td-a", bundleId: "bundle-td-a", extractionRunId: "run-td-a" }));
+const tabDeterministicB = extractResumeEvidenceFromText(baseInput(tabDateText, { documentId: "doc-td-a", bundleId: "bundle-td-a", extractionRunId: "run-td-a" }));
+assert.equal(tabDeterministicA.ok, true, "TAB_DETERMINISM: tab-format extraction succeeds");
+assert.equal(tabDeterministicB.ok, true, "TAB_DETERMINISM: tab-format extraction repeatable");
+assert.equal(JSON.stringify(tabDeterministicA), JSON.stringify(tabDeterministicB), "TAB_DETERMINISM: identical input produces identical output");
+
+// ===================================================================
+// Phase 13: Negative tests — non-employment sections do NOT become evidence
+// ===================================================================
+
+// Contact/header information must not become evidence
+const contactHeader = success("PROFESSIONAL EXPERIENCE\nExample Company Ltd — Operations Analyst | 2020 - 2022\n- Delivered a cross-functional improvement.\nEDUCATION\nBachelor of Example Science\nExample University\n2012 - 2015");
+assert.equal(contactHeader.bundle.evidenceRecords.some((item) => /Bachelor|University|2012/.test(item.sourceText)), false, "NEG_EDUCATION: education content must not become evidence");
+
+const certList = success("WORK EXPERIENCE\nExample Corp — Manager | 2021 - 2023\n- Managed a cross-functional team.\nQUALIFICATIONS\nCertified Example Professional\nExample Management Certification");
+assert.equal(certList.bundle.evidenceRecords.some((item) => /Certified|Certification/.test(item.sourceText)), false, "NEG_CERT: certification content must not become evidence");
+
+const skillsList = success("WORK EXPERIENCE\nExample Corp — Analyst | 2020 - 2022\n- Built a governed reporting workflow.\nKEY SKILLS\nSQL\nPython\nTableau\nPower BI");
+assert.equal(skillsList.bundle.evidenceRecords.some((item) => /^SQL$|^Python$|^Tableau$|^Power BI$/.test(item.sourceText?.trim())), false, "NEG_SKILLS: standalone skill tokens must not become evidence");
+
+// Tab-delimited content without a valid date range must not trigger a false boundary
+const tabNoDate = success("PROFESSIONAL EXPERIENCE\nExample Company — Operations Lead | 2019 - 2021\n- Delivered\ta\tcross-functional\tproject.\n- Coordinated stakeholder alignment.");
+assert.equal(tabNoDate.bundle.evidenceRecords.length >= 1, true, "TAB_NO_DATE: tabbed prose does not prevent evidence extraction");
+assert.equal(tabNoDate.bundle.employmentRecords.length, 1, "TAB_NO_DATE: non-date tab-delimited content does not create spurious boundary");
+
+// Single technology/tool lines must not become evidence
+const techLine = success("WORK EXPERIENCE\nExample Corp — Analyst | 2020 - 2022\n- Automated a reporting pipeline.\nSQL\nPython");
+assert.equal(techLine.bundle.evidenceRecords.some((item) => /^SQL$|^Python$/.test(item.sourceText?.trim())), false, "NEG_TECH: standalone technology tokens must not become evidence");
+
+// Section heading alone must not become evidence
+const headingOnly = success("WORK EXPERIENCE\n- Led a delivery transformation.\nEDUCATION");
+assert.equal(headingOnly.bundle.evidenceRecords.length, 1, "NEG_HEADING: section heading must not become evidence");
+assert.equal(headingOnly.bundle.evidenceRecords.some((item) => item.sourceText === "EDUCATION"), false, "NEG_HEADING: EDUCATION heading is not an evidence item");
+
+// ===================================================================
+// Phase 14: Multi-domain language — domain-neutral extraction confirmed
+// ===================================================================
+
+// Finance / FP&A domain
+const financeText = "WORK EXPERIENCE\nFinance Group — Finance Business Partner | Jan 2020 - Dec 2022\n- Managed a departmental budget of significant scale across five cost centres.\n- Delivered a monthly financial close cycle within required timelines.";
+const finance = success(financeText);
+assert.equal(finance.bundle.evidenceRecords.length >= 1, true, "DOMAIN_FINANCE: finance-domain evidence extracted");
+
+// People / HR domain
+const hrText = "WORK EXPERIENCE\nPeople Organisation — HR Business Partner | 2019 - 2021\n- Partnered with senior leaders to design a workforce planning strategy.\n- Implemented a talent development programme for 200 employees.";
+const hr = success(hrText);
+assert.equal(hr.bundle.evidenceRecords.length >= 1, true, "DOMAIN_HR: people-domain evidence extracted");
+
+// Operations domain
+const opsText = "WORK EXPERIENCE\nOperations Co — Operations Manager | Mar 2018 - Feb 2020\n- Managed day-to-day operations across three service centres.\n- Led a process improvement initiative reducing error rate by 40 percent.";
+const ops = success(opsText);
+assert.equal(ops.bundle.evidenceRecords.length >= 1, true, "DOMAIN_OPS: operations-domain evidence extracted");
+
+// Commercial / sales domain
+const salesText = "WORK EXPERIENCE\nCommercial Group — Account Executive | 2021 - 2024\n- Managed a portfolio of enterprise accounts generating annual recurring revenue.\n- Negotiated and closed multi-year commercial agreements with enterprise clients.";
+const sales = success(salesText);
+assert.equal(sales.bundle.evidenceRecords.length >= 1, true, "DOMAIN_SALES: commercial-domain evidence extracted");
+
+// Customer service / CX domain
+const csText = "WORK EXPERIENCE\nService Organisation — Customer Experience Lead | 2020 - 2023\n- Designed a customer feedback programme across all digital touchpoints.\n- Led a resolution-quality initiative improving customer satisfaction scores.";
+const cs = success(csText);
+assert.equal(cs.bundle.evidenceRecords.length >= 1, true, "DOMAIN_CX: customer-service-domain evidence extracted");
+
+// Program delivery domain
+const pmText = "WORK EXPERIENCE\nDelivery Agency — Program Manager | 2018 - 2021\n- Managed delivery of a technology transformation programme with a large cross-functional team.\n- Coordinated stakeholder governance across multiple workstreams.";
+const pm = success(pmText);
+assert.equal(pm.bundle.evidenceRecords.length >= 1, true, "DOMAIN_PM: program-delivery-domain evidence extracted");
+
 originalLog("resume-evidence-text-extractor.test passed");
