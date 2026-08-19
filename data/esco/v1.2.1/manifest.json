@@ -1,0 +1,27 @@
+{
+  "classification": "ESCO",
+  "version": "v1.2.1",
+  "language": "en",
+  "publisher": "European Commission",
+  "source": "https://ec.europa.eu/esco/portal/download",
+  "sourceAcquisitionType": "manual_download_zip",
+  "importSchemaVersion": "1.0.0",
+  "importTimestamp": "2026-08-19T22:54:49.357Z",
+  "occupationCount": 3039,
+  "skillCount": 13939,
+  "relationCount": 126051,
+  "essentialRelationCount": 67600,
+  "optionalRelationCount": 58451,
+  "compressedByteSizes": {
+    "occupations": 406752,
+    "skills": 1298244,
+    "relations": 2962873
+  },
+  "hashes": {
+    "sourceArchive": null,
+    "occupations": "93003e832f1ec72809d73168f5a468bde55a45c6c63c2a80ae4d67a25f0c05c3",
+    "skills": "b66de062dc95f4845c0417297c02a8db72ea7ee72a756237b1324743037ea962",
+    "relations": "7cf3e3d732697c1c8223f02106cb0a691c01f0b69c385aebf8b938ede09cb054"
+  },
+  "attribution": "This service uses the ESCO classification of the European Commission. The CareerTwin normalized representation is an adapted/internal representation of the source classification."
+}
