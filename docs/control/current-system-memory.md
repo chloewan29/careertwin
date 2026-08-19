@@ -1,5 +1,26 @@
 # Current System Memory
 
+### Post-MVP Task O / O.1 / O.2: First Governed Role Expansion Tranche Closed (`POST_MVP_TASK_O2V_VERIFIED_READY_FOR_CLOSURE`)
+
+- Task O (Coverage Audit), Task O.1 (Admission Audit), and Task O.2 (Implementation) are `CLOSED`.
+- Implementation commit: `d5774663940967d29ebb956d3e9ad6b98c27d7e9`.
+- Current governed canonical role count: 17.
+- Five new roles admitted through O.1 governance process: `program-manager`, `hr-business-partner`, `risk-manager`, `strategy-manager`, `sales-director`.
+- Transformation Lead NOT admitted (rejected as near-duplicate / insufficient semantic distinction).
+- Head of Sales NOT admitted as canonical role (classified as title alias towards Sales Director).
+- Alias infrastructure: NOT IMPLEMENTED.
+- No new canonical capabilities added. Canonical library remains semantic authority. Role expansion must not silently create capability ontology.
+- Role library size is separate from Career Map recommendation count. Top-4 recommendation architecture remains unchanged (broad library -> alignment -> admission -> relevance rank -> up to 4 roles).
+- Ranking engine, recommendation engine, and renderer remain unchanged.
+- Governance Policy established: New canonical role requires materially distinct professional mandate, ownership, capability composition, and differentiators. Market title, seniority words, or industry wording alone do NOT establish a new canonical role. Coverage gap is a prioritisation signal, not sufficient reason for admission. Future expansion must happen in small governed tranches.
+- Verification: 17-role semantic validation PASS. Direct reconciliation test PASS. No regressions caused by O.2.
+- Broad-suite residuals: One actual assertion failure remains in `post-upload-career-map-simplification.test.ts` (caused by earlier commit `a3922476b58aae680fbee6cf62c100aa83681911`, not O.2). Multiple parse/missing-suite Vitest errors remain unresolved. These are NOT closed by Task O.
+- Reconciliation truth: `roleCapabilityProfiles` dynamically combines canonical governed role profiles with legacy seed profiles. The 30 profiles observed dynamically represent the authoritative 17-role registry mapped against the legacy un-governed seeds. The Engineering Manager label-warning expectation was pre-existing stale test debt (from `a6376a6`), not caused by O.2.
+- HOLD Truth: Pre-existing HOLD paths from `N2E.R2F-RESUME` are preserved exactly.
+- Next tranche: NOT AUTOMATICALLY AUTHORISED.
+- `memory_sync_required: no`
+- `memory_sync_targets: []`
+
 ### Post-MVP Task N2C: Cross-Domain Canonical Capability Coverage Audit Closed (`POST_MVP_TASK_N2C_CANONICAL_ONTOLOGY_PARTIALLY_SUFFICIENT`)
 
 - Task N2C is `CLOSED / COVERAGE AUDIT COMPLETE`.

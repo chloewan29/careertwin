@@ -465,7 +465,25 @@ N2E FIRST BROAD ROLE TRANCHE IMPLEMENTATION
 N2E:
 CLOSED / FIRST BROAD ROLE TRANCHE IMPLEMENTED
 
-Task F, Task F.15, Task E, Task G, Task H, Task I, Task J, Task M.2, Task N0, Task N1, Task N2A, Task N2B, Task N2C, the N2D series, and N2E are closed. No further implementation is active until explicit Founder/EM admission.
+TASK O:
+CLOSED / GENERIC ROLE LIBRARY GOVERNANCE / COVERAGE AUDIT
+
+TASK O.1:
+CLOSED / FIRST GOVERNED ROLE TRANCHE ADMISSION AUDIT
+
+TASK O.2:
+CLOSED / FIRST GOVERNED 5-ROLE EXPANSION TRANCHE
+
+ROLE LIBRARY GOVERNANCE WORKSTREAM:
+CLOSED FOR CURRENT TRANCHE
+
+CURRENT GOVERNED ROLE COUNT:
+17
+
+NEXT TRANCHE:
+NOT AUTOMATICALLY AUTHORISED
+
+Task F, Task F.15, Task E, Task G, Task H, Task I, Task J, Task M.2, Task N0, Task N1, Task N2A, Task N2B, Task N2C, the N2D series, N2E, Task O, Task O.1, and Task O.2 are closed. No further implementation is active until explicit Founder/EM admission.
 
 ### Historical / superseded active-line context
 
