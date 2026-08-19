@@ -436,11 +436,39 @@ NEXT:
 N2D FIRST BROAD ROLE TRANCHE SEMANTIC DESIGN
 
 N2D:
+CLOSED / INITIAL SEMANTIC DESIGN SUPERSEDED BY HARDENED DESIGN
+
+N2D.1:
+CLOSED / SEMANTIC HARDENING COMPLETE
+
+N2D.2:
+CLOSED / PUBLICATION EVIDENCE COMPLETED BUT PAIRWISE ADJUDICATION SUPERSEDED
+
+N2D.3:
+CLOSED / FINAL SEMANTIC ADJUDICATION ACCEPTED
+
+FIRST BROAD ROLE TRANCHE:
+8 ROLE DESIGNS APPROVED
+
+PUBLICATION STATUS:
+NOT YET IMPLEMENTED
+
+CURRENT REGISTRY COUNT:
+4
+
+EXPECTED POST-N2E COUNT:
+12
+
+CANONICAL ONTOLOGY CHANGE REQUIRED:
+NO
+
+NEXT:
+N2E FIRST BROAD ROLE TRANCHE IMPLEMENTATION
+
+N2E:
 NOT ACTIVE UNTIL EXPLICIT FOUNDER / EM ADMISSION.
 
-NO IMPLEMENTATION TASK ACTIVE UNTIL EXPLICIT FOUNDER/EM ADMISSION.
-
-Task F, Task F.15, Task E, Task G, Task H, Task I, Task J, Task M.2, Task N0, Task N1, Task N2A, Task N2B, and Task N2C are closed. The next post-MVP task is N2D (First Broad Role Tranche Semantic Design) but NO implementation is active until explicit Founder/EM admission. Do not automatically implement N2D.
+Task F, Task F.15, Task E, Task G, Task H, Task I, Task J, Task M.2, Task N0, Task N1, Task N2A, Task N2B, Task N2C, and the N2D series are closed. The next post-MVP task is N2E (First Broad Role Tranche Implementation) but NO implementation is active until explicit Founder/EM admission. Do not automatically implement N2E.
 
 ### Historical / superseded active-line context
 

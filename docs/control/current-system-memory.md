@@ -21,8 +21,6 @@
 - First tranche can proceed in selected domains.
 - Eight-role semantic design candidate set: Product Ops, CX Manager, Account Manager, BD Manager, Service Delivery Manager, Finance BP, FP&A Manager, Engineering Manager.
 - Excluded roles (blocked or mapping review required): Product Manager, CSM, Operations Manager, Software Engineer.
-- N2D semantic design is required before implementation.
-
 
 ### Post-MVP Task N2B: Role Knowledge Registry Foundation Closed (`POST_MVP_TASK_N2B_ROLE_KNOWLEDGE_REGISTRY_IMPLEMENTED`)
 
@@ -1304,6 +1302,25 @@ Current guardrail truth:
   - `resume_outcome_telemetry_fail_open_repair` (alternative: broader post-closure smoke)
 
 ---
+
+### N2D Series Closure (First Broad Role Tranche)
+- N2D series closure
+- eight approved role IDs/titles/domains: `product-operations-manager` (product), `customer-experience-manager` (customer), `account-manager` (commercial), `business-development-manager` (commercial), `service-delivery-manager` (operations), `finance-business-partner` (finance), `fpa-manager` (finance), `engineering-manager` (engineering)
+- exact section mappings: preserved in N2D.1 and N2D.2 artifacts
+- 5/6-variable requirement counts: 5, 5, 5, 6, 6, 5, 6, 6 respectively
+- removed weak mappings: `operating-rhythm` (Product Ops), `variance-analysis` (CX, AM), `commercial-leadership` (FBP)
+- Engineering Manager technical identity correction: `architecture-governance` is IDENTITY, `cross-functional-delivery` is CORE
+- 44/44 mapping evidence
+- no new-tranche semantic duplication
+- Jaccard diagnostic-only rule
+- existing Analytics Manager ? Marketing Analytics Lead flagged only as deferred role-granularity review candidate
+- no current-role modification
+- N1 unchanged
+- current registry count 4
+- future N2E expected 12
+- schema 1.0.0 unchanged
+- contentVersion expected 1.1.0
+- no ontology changes required.
 
 ## 6. Stable working rules
 
