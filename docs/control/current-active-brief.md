@@ -454,9 +454,6 @@ PUBLICATION STATUS:
 NOT YET IMPLEMENTED
 
 CURRENT REGISTRY COUNT:
-4
-
-EXPECTED POST-N2E COUNT:
 12
 
 CANONICAL ONTOLOGY CHANGE REQUIRED:
@@ -466,9 +463,9 @@ NEXT:
 N2E FIRST BROAD ROLE TRANCHE IMPLEMENTATION
 
 N2E:
-NOT ACTIVE UNTIL EXPLICIT FOUNDER / EM ADMISSION.
+CLOSED / FIRST BROAD ROLE TRANCHE IMPLEMENTED
 
-Task F, Task F.15, Task E, Task G, Task H, Task I, Task J, Task M.2, Task N0, Task N1, Task N2A, Task N2B, Task N2C, and the N2D series are closed. The next post-MVP task is N2E (First Broad Role Tranche Implementation) but NO implementation is active until explicit Founder/EM admission. Do not automatically implement N2E.
+Task F, Task F.15, Task E, Task G, Task H, Task I, Task J, Task M.2, Task N0, Task N1, Task N2A, Task N2B, Task N2C, the N2D series, and N2E are closed. No further implementation is active until explicit Founder/EM admission.
 
 ### Historical / superseded active-line context
 

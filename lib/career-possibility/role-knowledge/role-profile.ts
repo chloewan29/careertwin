@@ -1,7 +1,7 @@
 import { type CapabilityImportance, type RoleEvidenceProofType, type MinimumProofLevel } from "../role-capability-library";
 
 export const GENERIC_ROLE_ARCHETYPE_SCHEMA_VERSION = "1.0.0" as const;
-export const GENERIC_ROLE_ARCHETYPE_CONTENT_VERSION = "1.0.0" as const;
+export const GENERIC_ROLE_ARCHETYPE_CONTENT_VERSION = "1.1.0" as const;
 
 export type ArchetypeCapability = {
   readonly capabilityId: string;
