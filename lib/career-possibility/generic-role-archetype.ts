@@ -1,61 +1,19 @@
 import { canonicalCapabilityLibrary, type CanonicalCapabilityLibrary } from "./canonical-capability-library";
-import { ROLE_CAPABILITY_PROFILE_SCHEMA_VERSION, type CapabilityImportance, type MinimumProofLevel, type RoleCapabilityProfile, type RoleCapabilityRequirement, type RoleEvidenceProofType } from "./role-capability-library";
+import { type CapabilityImportance, type MinimumProofLevel, type RoleCapabilityProfile, type RoleCapabilityRequirement, type RoleEvidenceProofType, ROLE_CAPABILITY_PROFILE_SCHEMA_VERSION } from "./role-capability-library";
+import { roleKnowledgeRegistry } from "./role-knowledge/role-registry";
+import { type GenericRoleArchetype, type ArchetypeCapability, type ArchetypeEvidenceExpectation, type GenericRoleArchetypeIssue, type GenericRoleArchetypeValidation, GENERIC_ROLE_ARCHETYPE_SCHEMA_VERSION, GENERIC_ROLE_ARCHETYPE_CONTENT_VERSION } from "./role-knowledge/role-profile";
 
-export const GENERIC_ROLE_ARCHETYPE_SCHEMA_VERSION = "1.0.0" as const;
-export const GENERIC_ROLE_ARCHETYPE_CONTENT_VERSION = "1.0.0" as const;
-
-export type ArchetypeCapability = RoleCapabilityRequirement & { readonly canonicalFamily: string };
-export type ArchetypeEvidenceExpectation = { readonly id: string; readonly capabilityId: string; readonly proofType: RoleEvidenceProofType; readonly description: string };
-export type GenericRoleArchetype = {
-  readonly schemaVersion: string; readonly contentVersion: string; readonly roleFamilyId: string; readonly canonicalTitle: string;
-  readonly aliases: readonly string[]; readonly searchTitles: readonly string[]; readonly domain: string;
-  readonly primaryMandate: string; readonly primaryOwnership: readonly string[];
-  readonly identityDefiningCapabilities: readonly ArchetypeCapability[]; readonly coreEnablers: readonly ArchetypeCapability[];
-  readonly supportingCapabilities: readonly ArchetypeCapability[]; readonly differentiators: readonly ArchetypeCapability[];
-  readonly evidenceExpectations: readonly ArchetypeEvidenceExpectation[];
+export { 
+  GENERIC_ROLE_ARCHETYPE_SCHEMA_VERSION, 
+  GENERIC_ROLE_ARCHETYPE_CONTENT_VERSION, 
+  type ArchetypeCapability, 
+  type ArchetypeEvidenceExpectation, 
+  type GenericRoleArchetype, 
+  type GenericRoleArchetypeIssue, 
+  type GenericRoleArchetypeValidation 
 };
-export type GenericRoleArchetypeIssue = { readonly code: string; readonly path: string; readonly message: string };
-export type GenericRoleArchetypeValidation = { readonly ok: true; readonly archetypes: readonly GenericRoleArchetype[] } | { readonly ok: false; readonly issues: readonly GenericRoleArchetypeIssue[] };
 
-const canonicalById = new Map(canonicalCapabilityLibrary.capabilities.map((item) => [item.id, item]));
-const capability = (id: string, importance: CapabilityImportance, expectedEvidence: string, minimumProofLevel: MinimumProofLevel = "demonstrated"): ArchetypeCapability => {
-  const canonical = canonicalById.get(id); if (!canonical) throw new Error(`Unknown authored canonical capability ${id}.`);
-  return Object.freeze({ capabilityId: id, label: canonical.label, canonicalFamily: canonical.family, importance, expectedEvidence, minimumProofLevel });
-};
-const expectation = (id: string, capabilityId: string, proofType: RoleEvidenceProofType, description: string): ArchetypeEvidenceExpectation => Object.freeze({ id, capabilityId, proofType, description });
-const freeze = (value: GenericRoleArchetype): GenericRoleArchetype => Object.freeze({ ...value, aliases: Object.freeze([...value.aliases]), searchTitles: Object.freeze([...value.searchTitles]), primaryOwnership: Object.freeze([...value.primaryOwnership]), identityDefiningCapabilities: Object.freeze([...value.identityDefiningCapabilities]), coreEnablers: Object.freeze([...value.coreEnablers]), supportingCapabilities: Object.freeze([...value.supportingCapabilities]), differentiators: Object.freeze([...value.differentiators]), evidenceExpectations: Object.freeze([...value.evidenceExpectations]) });
-const base = { schemaVersion: GENERIC_ROLE_ARCHETYPE_SCHEMA_VERSION, contentVersion: GENERIC_ROLE_ARCHETYPE_CONTENT_VERSION };
-
-export const representativeGenericRoleArchetypes = Object.freeze([
-  freeze({ ...base, roleFamilyId: "analytics-manager", canonicalTitle: "Analytics Manager", aliases: ["Data Analytics Manager"], searchTitles: ["Insights Analytics Lead", "Business Intelligence Manager"], domain: "analytics",
-    primaryMandate: "Set analytics direction and ensure trusted analysis changes business decisions.", primaryOwnership: ["analytics priorities", "analytical quality and trusted metrics", "analytics delivery and adoption"],
-    identityDefiningCapabilities: [capability("measurement-design", "must", "Owned an analytical measurement approach tied to a decision."), capability("analytics-governance", "must", "Established trusted definitions, quality controls, or analytical standards.")],
-    coreEnablers: [capability("insight-synthesis", "must", "Synthesised analysis into a clear decision direction."), capability("cross-functional-delivery", "should", "Coordinated analytical delivery across business and technical partners.")],
-    supportingCapabilities: [capability("strategic-analysis", "should", "Used structured analysis to shape priorities and trade-offs.")],
-    differentiators: [capability("benefits-realisation", "differentiator", "Demonstrated adoption and measurable value from an analytics programme.", "owned_outcome")],
-    evidenceExpectations: [expectation("analytics-direction", "measurement-design", "owned_outcome", "Set analytical priorities and connected measurement to an organisational decision."), expectation("trusted-analytics", "analytics-governance", "governance", "Established trusted metrics, review practices, or analytical quality controls."), expectation("analytics-adoption", "benefits-realisation", "commercial_impact", "Showed that analytical work was adopted and changed an outcome.")] }),
-  freeze({ ...base, roleFamilyId: "customer-insights-lead", canonicalTitle: "Customer Insights Lead", aliases: ["Consumer Insights Lead"], searchTitles: ["Voice of Customer Lead", "Customer Research Manager"], domain: "customer-insights",
-    primaryMandate: "Own the customer-understanding agenda and turn customer evidence into strategic action.", primaryOwnership: ["customer insight agenda", "customer research and evidence synthesis", "customer-centred decision influence"],
-    identityDefiningCapabilities: [capability("research-design", "must", "Owned research designed around a consequential customer question."), capability("insight-synthesis", "must", "Integrated customer evidence into a decision-ready point of view."), capability("customer-segmentation", "must", "Used meaningful customer groups to change strategy or experience decisions.")],
-    coreEnablers: [capability("audience-insight", "should", "Connected behavioural or attitudinal evidence to customer choices."), capability("strategic-analysis", "should", "Translated customer evidence into strategic implications.")],
-    supportingCapabilities: [capability("cross-functional-delivery", "should", "Worked across functions to embed customer evidence in delivery.")],
-    differentiators: [capability("customer-adoption", "differentiator", "Connected insight-led change to customer adoption or behaviour.", "owned_outcome")],
-    evidenceExpectations: [expectation("customer-agenda", "research-design", "owned_outcome", "Set a customer-learning agenda and commissioned or led appropriate research."), expectation("customer-synthesis", "insight-synthesis", "stakeholder_scope", "Synthesised multiple customer signals into a recommendation used by decision makers."), expectation("customer-change", "customer-adoption", "commercial_impact", "Demonstrated a customer-centred change and observable response.")] }),
-  freeze({ ...base, roleFamilyId: "marketing-analytics-lead", canonicalTitle: "Marketing Analytics Lead", aliases: ["Marketing Measurement Lead"], searchTitles: ["Marketing Science Lead", "Campaign Analytics Lead"], domain: "marketing-analytics",
-    primaryMandate: "Own marketing measurement and turn effectiveness evidence into growth and budget decisions.", primaryOwnership: ["marketing measurement strategy", "channel and campaign effectiveness", "optimisation and budget decision support"],
-    identityDefiningCapabilities: [capability("marketing-effectiveness", "must", "Owned evaluation of marketing effectiveness and optimisation choices."), capability("measurement-design", "must", "Designed a measurement framework suited to marketing decisions.")],
-    coreEnablers: [capability("audience-insight", "should", "Used audience evidence to interpret marketing performance."), capability("strategic-analysis", "must", "Connected marketing evidence to growth or allocation trade-offs.")],
-    supportingCapabilities: [capability("analytics-governance", "should", "Maintained trusted marketing metrics and measurement definitions.")],
-    differentiators: [capability("investment-governance", "differentiator", "Governed evidence-led allocation across marketing investments.", "owned_outcome")],
-    evidenceExpectations: [expectation("measurement-framework", "measurement-design", "governance", "Designed a repeatable framework for campaign, channel, or portfolio measurement."), expectation("effectiveness-decision", "marketing-effectiveness", "owned_outcome", "Used causal, incremental, or comparative evidence to change marketing action."), expectation("allocation-impact", "investment-governance", "budget", "Influenced budget allocation using transparent effectiveness evidence.")] }),
-  freeze({ ...base, roleFamilyId: "data-product-manager", canonicalTitle: "Data Product Manager", aliases: ["Data Products Lead"], searchTitles: ["Analytics Product Manager", "Data Platform Product Manager"], domain: "data-product",
-    primaryMandate: "Own reusable data-product outcomes from user discovery through roadmap, adoption, and lifecycle decisions.", primaryOwnership: ["data-product outcomes", "user discovery and roadmap priorities", "cross-functional lifecycle and adoption"],
-    identityDefiningCapabilities: [capability("product-insights", "must", "Used user and product evidence to define a data-product problem."), capability("roadmap-governance", "must", "Owned transparent prioritisation and roadmap trade-offs."), capability("product-cadence", "must", "Maintained a product operating cadence across discovery, delivery, and learning.")],
-    coreEnablers: [capability("cross-functional-delivery", "must", "Aligned data, engineering, analytics, and business contributors around outcomes."), capability("tooling-enablement", "should", "Enabled reliable use of reusable data capabilities.")],
-    supportingCapabilities: [capability("analytics-governance", "should", "Applied trust and governance expectations to data-product decisions.")],
-    differentiators: [capability("customer-adoption", "differentiator", "Demonstrated sustained adoption of a reusable data product.", "owned_outcome")],
-    evidenceExpectations: [expectation("data-product-discovery", "product-insights", "domain_expertise", "Used user discovery to define a data-product outcome rather than a delivery output."), expectation("roadmap-tradeoffs", "roadmap-governance", "owned_outcome", "Owned roadmap prioritisation with explicit user value and trade-offs."), expectation("data-product-adoption", "customer-adoption", "delivery", "Measured adoption and evolved a reusable data capability through its lifecycle.")] }),
-]);
+export const representativeGenericRoleArchetypes = roleKnowledgeRegistry.roles;
 
 export function validateGenericRoleArchetypes(archetypes: readonly GenericRoleArchetype[], canonicalLibrary: CanonicalCapabilityLibrary): GenericRoleArchetypeValidation {
   const issues: GenericRoleArchetypeIssue[] = []; const add = (code: string, path: string, message: string) => issues.push({ code, path, message });

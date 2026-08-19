@@ -6,7 +6,7 @@ import {
   type GenericRoleCanonicalOwnershipAlignment,
 } from "./generic-career-path-alignment";
 import { filterAdmittedRoles } from "./generic-role-admission";
-import { representativeGenericRoleArchetypes } from "./generic-role-archetype";
+import { roleKnowledgeRegistry } from "./role-knowledge/role-registry";
 import {
   validateProvisionalLocalCareerMapState,
   type ProvisionalLocalCareerMapState,
@@ -85,7 +85,7 @@ export function buildPersonalGenericRoleAlignment(input: {
 
   const alignment = buildGenericCareerPathAlignment({
     canonicalCapabilityOwnership: personalCapabilities,
-    genericRoleArchetypes: representativeGenericRoleArchetypes,
+    genericRoleArchetypes: roleKnowledgeRegistry.roles,
     canonicalDefinitions: canonicalCapabilityLibrary.capabilities,
   });
 
