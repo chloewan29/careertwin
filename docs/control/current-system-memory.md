@@ -1,27 +1,20 @@
 # Current System Memory
 
-### Post-MVP Task N0: Role Recommendation Admission + Role Universe Coverage Audit Closed (`POST_MVP_TASK_N0_FORCED_TOP_K_AND_COVERAGE_DEFECT_CONFIRMED`)
+### Post-MVP Task N1: Role Recommendation Admission Gate Closed (`POST_MVP_TASK_N1_ROLE_ADMISSION_GATE_IMPLEMENTED`)
 
-- Task N0 is `CLOSED / DIAGNOSIS COMPLETE`. Mode was `READ-ONLY PRODUCT / ARCHITECTURE DIAGNOSIS`. No production code changed.
-- N0 audit artifact: `artifacts/career-possibility/task-n0-role-recommendation-admission-role-universe-audit.md`, SHA256 `BBC03690F34958BA5D2E81DD88EA027EA817036CF2156A33654AD7A8BA01FC59`. Artifact is untracked / unstaged. Do not stage.
-- Sparse target SHA256: `78FC3DF2327CB9B0740C0C1226A47DA2AF724C50A528896A91BEB89A704FB1AD`. Privacy-safe structural facts: 1 evidence, 1 mapping, 1 capability (`customer-adoption`, `transferable_signal`, `structured_inference`), 0 unresolved.
-- Contrast profile SHA256: `0A9043BA497E7C1F3B05E74F14937B6E9C309F0F1B0DC59BCCB134B8EB5E9C8D`. Source: `REAL_LOCAL_STATE`.
-- **Current generic role universe: 4 roles — Analytics Manager, Customer Insights Lead, Marketing Analytics Lead, Data Product Manager.** All 4 domains are concentrated in analytics / insights / data product. Role universe classification: `VERY_NARROW_PROOF_OF_CONCEPT_ROLE_UNIVERSE`.
-- **Current role pipeline architecture:** `PERSONAL CANONICAL CAPABILITIES → ALL GENERIC ROLE ARCHETYPES → ALIGNMENT → RELATIVE SORT / RANK → ALL 4 ROLES → PROJECTION → CAREER MAP`. All 4 archetypes are always passed through — no candidate retrieval filter exists.
-- **Role admission gate: ABSENT.** No role is ever rejected for weak absolute support. Zero-role recommendation result is NOT SUPPORTED BY ALIGNMENT PIPELINE. Effective K = 4 (implicit, equals archetype count). System behavior: `FORCED RELATIVE RANKING`.
-- **Sparse target alignment results:** All 4 roles received `NEGLIGIBLE_SUPPORT`. Customer Insights Lead: 0/3 identity-defining, 0/2 core, 0/1 supporting, 1/1 differentiator, 6 gaps. Data Product Manager: same structure. Analytics Manager: 0 substantive coverage. Marketing Analytics Lead: 0 substantive coverage.
-- **Customer Insights Lead Path 1 finding:** Customer Insights Lead became Path 1 NOT because of strong absolute support. It tied Data Product Manager on `orderingBasis [0,0,0,1]` and won the rank-0 position through alphabetical tiebreak. `Path 1` currently expresses relative order only. It must NOT be interpreted as absolute recommendation confidence.
-- **Contrast profile finding:** For the richer analytics-oriented real profile (11 capabilities, all `direct_evidence`), existing ranking produces meaningfully differentiated results. Analytics Manager ranked first with 2/2 identity-defining coverage; Marketing Analytics Lead second with 2/2. Role alignment ordering is NOT generally broken. The failure occurs because weak candidates are never rejected AND the candidate universe is extremely narrow.
-- **Primary root cause: `FORCED_TOP_K_AND_ROLE_UNIVERSE_COVERAGE_INSUFFICIENT`.** Both defects are present and independently harmful.
-- **Product risk: P0 TRUST DEFECT.** CareerTwin may confidently present analytics/data future paths to a user with negligible substantive support simply because those are the only roles the system currently knows.
-- **Founder product principle (durable):** CAREERTWIN MUST NOT FORCE THE USER TO FIT THE ROLE LIBRARY. Ranking answers "Which admitted role ranks higher?" Admission answers "Is this role credible enough to recommend at all?" These are separate product decisions. A role ranking first does NOT imply it deserves recommendation. CareerTwin must support 0, 1, 2, 3, or 4 recommended roles.
-- **Downstream variable-role-count support:** Projection `SUPPORTS_VARIABLE_ROLE_COUNT`; visual adapter `SUPPORTS_VARIABLE_ROLE_COUNT`; renderer `SUPPORTS_VARIABLE_ROLE_COUNT`. No semantic projection change is required for N1 to operate correctly.
-- **Insufficient-signal product state: ABSENT.** No current product state, semantic concept, or UX path exists for "insufficient signal to recommend future paths."
-- **N1 admission policy direction (Founder / EM contract for next task; NOT YET IMPLEMENTED):** SUBSTANTIVE MATCHES = matched canonical capabilities from `IDENTITY_DEFINING + CORE_ENABLER + SUPPORTING` sections. DIFFERENTIATOR matches do NOT count toward minimum substantive support. Candidate role admission should require: `SUBSTANTIVE_MATCH_COUNT >= 2` AND at least one substantive match from `IDENTITY_DEFINING` or `CORE_ENABLER`. A differentiator-only match may influence ranking/context AFTER admission but can NEVER independently cause admission. No new fit score, confidence ontology, or semantic capability changes are required.
-- **N1 admission seam (future):** Admission should occur BEFORE presentation projection, in `personal-generic-role-alignment-adapter.ts` as a post-alignment filter or as a new thin `role-admission-gate.ts`. Renderer must NOT own recommendation admission.
-- **N2 — Role Universe Coverage Expansion:** REQUIRED LATER. Must NOT precede N1. Expanding the library without admission only changes "best among 4 weak roles" into "best among many weak roles." Admission trust comes first.
-- **N3 — Insufficient-Signal Future-Path UX:** NOT ACTIVE. Future scope: 0 admitted roles + clear explanation + evidence enrichment/review UX prompt.
-- Task ledger: Task M.2 `CLOSED`; Task N0 `CLOSED`; next is `POST-MVP TASK N1 — ROLE RECOMMENDATION ADMISSION GATE`; N2 not active; N3 not active.
+- Task N1 is `CLOSED / IMPLEMENTED / PUSHED / VERIFIED`. N0 trust defect (forced ranking of weak candidates) is resolved.
+- Implementation commit: `4fe86d81623df462f34227b6b2ba4661995fa70d` (`fix(career): gate weak role recommendations`).
+- Validation artifact: `artifacts/career-possibility/task-n1-role-recommendation-admission-gate.md`, SHA256 `b41d649137e9bab0b151ff4825198744767dfeba577259118da112e2a553a12a` (unstaged).
+- N1 admission policy: A role requires >= 2 substantive matches (from identity_defining, core_enabler, or supporting sections), AND at least 1 match from identity_defining or core_enabler. Differentiator-only support is never admissible.
+- Explicit owners: Admission policy owned by `lib/career-possibility/generic-role-admission.ts`. Integration owned by `lib/career-possibility/personal-generic-role-alignment-adapter.ts`.
+- Zero-role support: 0 recommended roles is now a valid and supported product state.
+- Sparse real result: 4 candidate roles → 0 admitted roles.
+- Analytics-rich result: 4 credible roles remain admitted, proving the gate does not destroy in-domain recommendations.
+- Role ranking unchanged: Relative survivor order is preserved. Downstream rank is contiguous. No second ranker was introduced.
+- Architectural boundaries preserved: Role archetypes unchanged. Role requirements unchanged. Projection unchanged. Renderer unchanged. M.2 default-gap visibility is preserved.
+- Process deviation closed: Stash/restore operations during invalid-commit recovery were noted and closed.
+- Role-universe coverage: Remains unresolved. The current 4-role POC is still insufficient.
+- N2 (Role Universe Coverage Expansion): NOT ACTIVE. Does not automatically start.
 - `memory_sync_required: no`
 - `memory_sync_targets: []`
 
