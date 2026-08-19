@@ -13,7 +13,7 @@ export function retrieveEscoSkillCandidates(evidenceText: string): EscoCandidate
   const candidatesMap = new Map<string, EscoCandidateRetrievalResult>();
 
   for (const word of words) {
-    const hits = searchSkillsByLabel(word, 5); // top 5 per word
+    const hits = searchSkillsByLabel(word, 10); // top 10 per word
     for (const hit of hits) {
       if (!candidatesMap.has(hit.uri)) {
         candidatesMap.set(hit.uri, {
