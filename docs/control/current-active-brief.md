@@ -408,12 +408,39 @@ STILL NARROW
 BROAD-DOMAIN CANONICAL CAPABILITY COVERAGE:
 NOT YET PROVEN
 
+N2C:
+CLOSED / COVERAGE AUDIT COMPLETE
+
+CANONICAL ONTOLOGY:
+PARTIALLY SUFFICIENT
+
+GLOBAL ONTOLOGY EXPANSION REQUIRED FIRST:
+NO
+
+SELECTED-DOMAIN ROLE EXPANSION:
+SUPPORTED
+
+DEEP SOFTWARE ENGINEERING IC COVERAGE:
+BLOCKED
+
+AUDIT GAP LABELS:
+NON_CANONICAL
+
+NEW CAPABILITY FAMILY:
+UNRESOLVED
+
+FIRST ROLE TRANCHE:
+NOT YET PUBLISHED
+
 NEXT:
-N2C CROSS-DOMAIN CAPABILITY COVERAGE AUDIT
+N2D FIRST BROAD ROLE TRANCHE SEMANTIC DESIGN
+
+N2D:
+NOT ACTIVE UNTIL EXPLICIT FOUNDER / EM ADMISSION.
 
 NO IMPLEMENTATION TASK ACTIVE UNTIL EXPLICIT FOUNDER/EM ADMISSION.
 
-Task F, Task F.15, Task E, Task G, Task H, Task I, Task J, Task M.2, Task N0, Task N1, Task N2A, and Task N2B are closed. The next post-MVP task is N2C (Cross-Domain Capability Coverage Audit) but NO implementation is active until explicit Founder/EM admission. Do not automatically implement N2C.
+Task F, Task F.15, Task E, Task G, Task H, Task I, Task J, Task M.2, Task N0, Task N1, Task N2A, Task N2B, and Task N2C are closed. The next post-MVP task is N2D (First Broad Role Tranche Semantic Design) but NO implementation is active until explicit Founder/EM admission. Do not automatically implement N2D.
 
 ### Historical / superseded active-line context
 
