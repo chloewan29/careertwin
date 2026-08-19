@@ -101,3 +101,8 @@ export function getOccupationsForSkill(uri: string): Array<{ occupation: EscoOcc
   ensureIndexes();
   return occupationsBySkillUri.get(uri) || [];
 }
+
+export function getOccupations(): EscoOccupation[] {
+  ensureIndexes();
+  return Array.from(occupationByUri.values());
+}
