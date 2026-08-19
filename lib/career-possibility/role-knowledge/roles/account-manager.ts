@@ -21,7 +21,7 @@ export const accountManager: GenericRoleArchetype = freezeRole({
 
   ],
   differentiators: [
-    capability("benefits-realisation", "differentiator", "Tracked and proved client ROI.", "commercial_impact"),
+    capability("benefits-realisation", "differentiator", "Tracked and proved client ROI.", "owned_outcome"),
   ],
   evidenceExpectations: [
     expectation("account-retention", "account-growth", "commercial_impact", "Retained and grew accounts."),

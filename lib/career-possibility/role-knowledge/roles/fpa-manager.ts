@@ -21,7 +21,7 @@ export const fpaManager: GenericRoleArchetype = freezeRole({
     capability("operating-rhythm", "should", "Ran the financial calendar."),
   ],
   differentiators: [
-    capability("strategic-analysis", "differentiator", "Influenced corporate strategy through analysis.", "strategic_advice"),
+    capability("strategic-analysis", "differentiator", "Influenced corporate strategy through analysis.", "owned_outcome"),
   ],
   evidenceExpectations: [
     expectation("corporate-forecast", "forecasting", "owned_outcome", "Owned corporate forecasting."),

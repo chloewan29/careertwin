@@ -25,6 +25,6 @@ export const financeBusinessPartner: GenericRoleArchetype = freezeRole({
   ],
   evidenceExpectations: [
     expectation("variance", "variance-analysis", "domain_expertise", "Explained financial variances."),
-    expectation("advisory", "strategic-analysis", "strategic_advice", "Advised business leaders."),
+    expectation("advisory", "strategic-analysis", "stakeholder_scope", "Advised business leaders."),
   ],
 });

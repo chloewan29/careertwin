@@ -21,7 +21,7 @@ export const businessDevelopmentManager: GenericRoleArchetype = freezeRole({
     capability("forecasting", "should", "Forecasted sales performance."),
   ],
   differentiators: [
-    capability("commercial-partnerships", "differentiator", "Built channel or alliance partnerships.", "commercial_impact"),
+    capability("commercial-partnerships", "differentiator", "Built channel or alliance partnerships.", "owned_outcome"),
   ],
   evidenceExpectations: [
     expectation("new-business", "pipeline-management", "commercial_impact", "Managed new business pipeline."),

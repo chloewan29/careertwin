@@ -21,7 +21,7 @@ export const serviceDeliveryManager: GenericRoleArchetype = freezeRole({
     capability("process-improvement", "should", "Drove continual service improvement."),
   ],
   differentiators: [
-    capability("operating-rhythm", "differentiator", "Ran executive service reviews.", "governance"),
+    capability("operating-rhythm", "differentiator", "Ran executive service reviews.", "owned_outcome"),
   ],
   evidenceExpectations: [
     expectation("sla-management", "service-performance", "owned_outcome", "Owned service performance and SLAs."),
