@@ -82,6 +82,8 @@ export function validateProvisionalLocalCareerMapState(value: unknown, definitio
     if (!nonBlank(item.evidenceId) || evidenceIds.has(item.evidenceId)) issues.push({ code: "invalid_evidence", path: `${path}.evidenceId`, message: "Evidence IDs must be nonblank and unique." });
     evidenceIds.add(item.evidenceId);
     if (item.reviewStatus !== "unreviewed" || !nonBlank(item.sourceExcerpt) || !nonBlank(item.sourceLocator?.locatorId) || !nonBlank(item.extractionVersion)) issues.push({ code: "invalid_evidence", path, message: "Provisional evidence must remain unreviewed and retain bounded provenance." });
+    if (item.employer !== undefined && !nonBlank(item.employer)) issues.push({ code: "invalid_evidence", path: `${path}.employer`, message: "Employer provenance must be a nonblank string when present." });
+    if (item.roleTitle !== undefined && !nonBlank(item.roleTitle)) issues.push({ code: "invalid_evidence", path: `${path}.roleTitle`, message: "Role-title provenance must be a nonblank string when present." });
   });
   const mappingIds = new Set<string>();
   (state.mappings ?? []).forEach((item, index) => {

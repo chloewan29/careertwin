@@ -386,6 +386,19 @@ async function testI_capabilityFirstVisualHierarchy() {
 }
 
 // ---------------------------------------------------------------------------
+// Test J — Default Role-Gap Progressive Disclosure
+// ---------------------------------------------------------------------------
+
+async function testJ_roleGapProgressiveDisclosure() {
+  const source = readFileSync(RENDERER_SOURCE_PATH, "utf8");
+  assert.match(source, /if \(!focusSet \|\| \(!focusSet\.has\(id\) && id !== hoveredId\)\) \{\s*return;\s*\}/, "J: gap nodes must abort drawing when unselected");
+  assert.match(source, /if \(!focusSet \|\| \(!focusSet\.has\(source\) && !focusSet\.has\(target\)\)\) \{\s*return "rgba\(0,0,0,0\)";\s*\}/, "J: gap links must return transparent color when unselected");
+  assert.match(source, /if \(!focusSet \|\| \(!focusSet\.has\(source\) && !focusSet\.has\(target\)\)\) return 0;/, "J: gap links must return 0 width when unselected");
+
+  console.log("  J. Default role-gap progressive disclosure — PASSED");
+}
+
+// ---------------------------------------------------------------------------
 // Main
 // ---------------------------------------------------------------------------
 
@@ -402,6 +415,7 @@ async function main() {
   await testG_coherentResponsiveCoordinates();
   await testH_initialCapabilitiesRemainVisible();
   await testI_capabilityFirstVisualHierarchy();
+  await testJ_roleGapProgressiveDisclosure();
   console.log("All career-map-neural-graph renderer contract tests passed.");
 }
 

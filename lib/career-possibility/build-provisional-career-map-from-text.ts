@@ -72,16 +72,24 @@ export async function buildProvisionalCareerMapFromText(input: Input): Promise<P
 
     const evidence: ProvisionalLocalCareerMapEvidence[] = [];
     const mappingResults: ProvisionalMappingResult[] = [];
+    const employmentById = new Map(extracted.bundle.employmentRecords.map((employment) => [employment.id, employment]));
+    const provenanceFor = (record: { employmentRecordId: string }) => {
+      const employment = employmentById.get(record.employmentRecordId);
+      const employer = employment?.employerName?.value?.trim();
+      const roleTitle = employment?.roleTitle?.value?.trim();
+      return { ...(employer ? { employer } : {}), ...(roleTitle ? { roleTitle } : {}) };
+    };
     let structuredCount = 0; let unresolvedCount = 0; let unsupportedCount = 0;
     for (const record of extracted.bundle.evidenceRecords) {
+      const provenance = provenanceFor(record);
       const bridged = await bridgeEvidenceToProvisionalSignals({ evidence: record, sourceSpans: extracted.bundle.sourceSpans }, provisionalEvidenceSignalPolicy);
       if (bridged.status === "structured") {
         structuredCount += 1;
-        evidence.push(Object.freeze({ ...bridged.evidence, extractionVersion: input.versions.evidenceParserVersion }));
+        evidence.push(Object.freeze({ ...bridged.evidence, ...provenance, extractionVersion: input.versions.evidenceParserVersion }));
         mappingResults.push(...await mapProvisionalResumeEvidencePlural({ evidence: bridged.evidence, policy: provisionalResumeMappingPolicy, capabilityDefinitions: input.capabilityDefinitions, capabilityDefinitionVersion: input.versions.capabilityDefinitionVersion }));
       } else {
         if (bridged.status === "unresolved") unresolvedCount += 1; else unsupportedCount += 1;
-        evidence.push(Object.freeze({ evidenceId: bridged.unresolved.evidenceId, sourceExcerpt: bridged.unresolved.sourceExcerpt, sourceLocator: Object.freeze({ ...bridged.unresolved.sourceLocator }), signals: Object.freeze([]), reviewStatus: "unreviewed", extractionVersion: input.versions.evidenceParserVersion }));
+        evidence.push(Object.freeze({ evidenceId: bridged.unresolved.evidenceId, sourceExcerpt: bridged.unresolved.sourceExcerpt, sourceLocator: Object.freeze({ ...bridged.unresolved.sourceLocator }), signals: Object.freeze([]), ...provenance, reviewStatus: "unreviewed", extractionVersion: input.versions.evidenceParserVersion }));
         mappingResults.push(inactiveMappingResult({ evidenceId: bridged.unresolved.evidenceId, sourceExcerpt: bridged.unresolved.sourceExcerpt, sourceLocator: bridged.unresolved.sourceLocator, status: bridged.status, explanation: `${bridged.unresolved.reason}: ${bridged.unresolved.explanation}`, matchingRuleIds: bridged.unresolved.matchedSignalRuleIds, capabilityDefinitionVersion: input.versions.capabilityDefinitionVersion }));
       }
     }

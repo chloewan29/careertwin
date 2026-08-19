@@ -50,6 +50,8 @@ export function buildPersonalCareerMapExplorerViewModel(presentation: PersonalCa
       reviewStatus: presentation.mapTrustStatus,
       sourceStart: evidence.sourceStart,
       sourceEnd: evidence.sourceEnd,
+      ...(evidence.employer ? { company: evidence.employer } : {}),
+      ...(evidence.roleTitle ? { role: evidence.roleTitle } : {}),
     }));
   }
   return Object.freeze({

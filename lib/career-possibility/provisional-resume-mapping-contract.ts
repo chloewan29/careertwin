@@ -15,6 +15,9 @@ export type ProvisionalMappingEvidence = Readonly<{
   signals: readonly ProvisionalEvidenceSignal[];
   titleSignals?: readonly string[];
   toolSignals?: readonly string[];
+  /** Provenance-only context copied from the source employment record. Never a capability signal. */
+  employer?: string;
+  roleTitle?: string;
 }>;
 
 type ProvisionalAutoAdmittedMappingBase = Readonly<{

@@ -577,6 +577,13 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
     const hovered = node.id === hoveredId;
     const selectedRole = node.nodeType === "ROLE" && id === selectedRoleFocus?.roleId;
     const hoveredRole = node.nodeType === "ROLE" && hovered;
+
+    if (node.nodeType === "ROLE_ONLY_CAPABILITY") {
+      if (!focusSet || (!focusSet.has(id) && id !== hoveredId)) {
+        return;
+      }
+    }
+
     const radius = nodeRadius[node.nodeType]
       + (roleOwned || roleGap ? 1.4 : 0)
       + (selectedRole
@@ -585,7 +592,7 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
           ? rolePresentation.hoverRadiusBoost
           : 0);
     context.save();
-    context.globalAlpha = active ? 1 : (node.nodeType === "ROLE_ONLY_CAPABILITY" && !focusSet ? 0.08 : 0.2);
+    context.globalAlpha = active ? 1 : 0.2;
     context.shadowColor = selected || hovered || node.nodeType === "YOU" ? palette[node.nodeType] : "transparent";
     context.shadowBlur = selected ? 22 : hovered ? 16 : node.nodeType === "YOU" ? 10 : 0;
     context.beginPath();
@@ -886,6 +893,9 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
               return `rgba(255,180,109,${alpha})`;
             }
             if (link.linkType === "ROLE_ONLY_CAPABILITY") {
+              if (!focusSet || (!focusSet.has(source) && !focusSet.has(target))) {
+                return "rgba(0,0,0,0)";
+              }
               const alpha = selectedRoleFocus
                 ? rolePresentation.selectedGapLinkAlpha
                 : hoveredRoleLink
@@ -919,6 +929,7 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
                   : rolePresentation.defaultLinkWidth;
             }
             if (link.linkType === "ROLE_ONLY_CAPABILITY") {
+              if (!focusSet || (!focusSet.has(source) && !focusSet.has(target))) return 0;
               return selectedRoleFocus
                 ? rolePresentation.selectedGapLinkWidth
                 : hoveredRoleLink

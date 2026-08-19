@@ -9,7 +9,7 @@ export type PersonalCareerMapPresentation = {
   readonly unresolvedEvidenceCount: number;
   readonly reviewedEvidenceCount: number;
   readonly provisionalEvidenceCount: number;
-  readonly capabilities: readonly { readonly id: string; readonly label: string; readonly family: string; readonly evidence: readonly { readonly id: string; readonly evidenceId: string; readonly text: string; readonly relationship: "direct_evidence" | "transferable_signal"; readonly sourceStart: number; readonly sourceEnd: number; readonly provisional: true }[] }[];
+  readonly capabilities: readonly { readonly id: string; readonly label: string; readonly family: string; readonly evidence: readonly { readonly id: string; readonly evidenceId: string; readonly text: string; readonly relationship: "direct_evidence" | "transferable_signal"; readonly sourceStart: number; readonly sourceEnd: number; readonly provisional: true; readonly employer?: string; readonly roleTitle?: string }[] }[];
   readonly futurePaths: { readonly available: false; readonly reason: string };
   readonly roleLens: { readonly available: false; readonly reason: string };
 };
@@ -36,7 +36,7 @@ export function buildPersonalCareerMapPresentation(input: { localState: LocalCar
     capabilities = Object.freeze(provisionalState.capabilities.map((item) => {
       const definition = definitions.get(item.capabilityId)!;
       const active = provisionalState.mappings.filter((mapping) => mapping.capabilityId === item.capabilityId);
-      return Object.freeze({ id: item.capabilityId, label: definition.label, family: definition.family ?? "", evidence: Object.freeze(active.map((mapping) => { const record = evidence.get(mapping.evidenceId)!; return Object.freeze({ id: mapping.mappingId, evidenceId: mapping.evidenceId, text: record.sourceExcerpt, relationship: mapping.relationship, sourceStart: record.sourceLocator.startOffset, sourceEnd: record.sourceLocator.endOffset, provisional: true as const }); })) });
+      return Object.freeze({ id: item.capabilityId, label: definition.label, family: definition.family ?? "", evidence: Object.freeze(active.map((mapping) => { const record = evidence.get(mapping.evidenceId)!; return Object.freeze({ id: mapping.mappingId, evidenceId: mapping.evidenceId, text: record.sourceExcerpt, relationship: mapping.relationship, sourceStart: record.sourceLocator.startOffset, sourceEnd: record.sourceLocator.endOffset, provisional: true as const, ...(record.employer ? { employer: record.employer } : {}), ...(record.roleTitle ? { roleTitle: record.roleTitle } : {}) }); })) });
     }));
     mapTrustStatus = "provisional";
     unresolvedEvidenceCount = provisionalState.unresolvedEvidence.length;

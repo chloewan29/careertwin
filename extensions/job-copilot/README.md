@@ -11,6 +11,9 @@
 - `content/index.js`: content entrypoint and orchestration
 - `content/detect-job-page.js`: job-page detection only
 - `content/extract-job-page.js`: normalized payload extraction only
+- `content/job-surface-adapters/adapter-registry.js`: adapter registration and URL routing
+- `content/job-surface-adapters/linkedin-adapter.js`: LinkedIn job surface adapter
+- `content/job-surface-adapters/seek-adapter.js`: SEEK job surface adapter
 - `content/parser-registry.js`: parser selection and registration
 - `content/platform-parsers/*`: platform-specific extraction selectors
 - `sidepanel/sidepanel.html`: sidepanel document entrypoint
@@ -25,7 +28,7 @@
 
 ## Current runtime flow
 
-LinkedIn/Seek/Greenhouse/Lever page -> `content/index.js` extraction request handling -> `background/index.js` analysis routing -> `sidepanel/sidepanel-live.js` render delegation.
+LinkedIn/Seek detail page -> job-surface adapter registry -> `content/index.js` extraction request handling -> `background/index.js` analysis routing -> `sidepanel/sidepanel-live.js` render delegation.
 
 ## LinkedIn JD extraction audit mode
 

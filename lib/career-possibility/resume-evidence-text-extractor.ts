@@ -100,6 +100,7 @@ const nonEmploymentSectionHeading = /^(?:education|skills|key skills|technical s
 const dateRange = /\b((?:(?:jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|jul(?:y)?|aug(?:ust)?|sep(?:tember)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?)\s+)?(?:19|20)\d{2})\s*[-–—]\s*((?:(?:jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|jul(?:y)?|aug(?:ust)?|sep(?:tember)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?)\s+)?(?:19|20)\d{2}|present|current)\b/i;
 const companySuffix = /\b(?:inc\.?|llc|ltd\.?|limited|corp\.?|corporation|company|co\.?|group|plc|pty\.?\s+ltd\.?)$/i;
 
+
 function sourced(value: string, sourceSpanId: string, methodVersion: string): ProvenancedField<string> {
   return { value, provenance: "user_provided", sourceSpanIds: [sourceSpanId], method: "deterministic", methodVersion, reviewStatus: "unreviewed" };
 }
@@ -153,6 +154,7 @@ function employmentBoundaries(text: string): EmploymentBoundary[] {
       continue;
     }
     const combined = /^(.+?)\s+[-–—]\s+(.+?)(?:\s*[|,]\s*(.+))?$/.exec(value);
+
     if (combined && (dateRange.test(combined[3] ?? "") || companySuffix.test(combined[1]))) {
       const dates = dateRange.exec(combined[3] ?? "");
       boundaries.push({ startOffset: line.start, contentStartOffset: line.end < text.length ? line.end + 1 : line.end, evidenceEligible: true, employer: combined[1].trim(), roleTitle: combined[2].trim(), ...(dates ? { startDate: dates[1], endDate: dates[2] } : {}) });

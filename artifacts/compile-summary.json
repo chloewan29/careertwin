@@ -1,6 +1,0 @@
-{
-  "command": "C:\\WINDOWS\\system32\\cmd.exe /d /s /c npx tsc -p tsconfig.verify.json --pretty false",
-  "exit_code": 0,
-  "stdout": "",
-  "stderr": ""
-}
