@@ -416,19 +416,15 @@ export function buildCareerGraphTopologySeeds(
     }
   }
 
-  const placedRoleAngles: number[] = [];
-  for (const [index, node] of roles.entries()) {
+  const rolePreferences = roles.map((node, index) => {
     const connected = model.links
       .filter((link) => link.source === node.id && link.linkType.startsWith("ROLE_"))
       .map((link) => ({
         position: seeds.get(link.target),
-        weight: link.requirementImportance === "must"
-          ? 1.35
-          : link.requirementImportance === "differentiator"
-            ? 1.15
-            : 1,
+        weight: link.requirementImportance === "must" ? 1.35 : link.requirementImportance === "differentiator" ? 1.15 : 1,
       }))
       .filter((entry): entry is { position: CareerGraphSeedPosition; weight: number } => Boolean(entry.position));
+
     const vector = connected.reduce((total, entry) => {
       const magnitude = Math.max(1, Math.hypot(entry.position.x, entry.position.y));
       return {
@@ -436,48 +432,22 @@ export function buildCareerGraphTopologySeeds(
         y: total.y + (entry.position.y / magnitude) * entry.weight,
       };
     }, { x: 0, y: 0 });
-    let angle = Math.hypot(vector.x, vector.y) > 0.18
+
+    const preferredAngle = Math.hypot(vector.x, vector.y) > 0.18
       ? Math.atan2(vector.y, vector.x)
       : -Math.PI + stableUnit(`distributed-role-angle:${node.id}`) * Math.PI * 2;
-    const rank = node.proximityRank ?? index;
-    const radius = 420 + rank * 18 + stableUnit(`role-radius:${node.id}`) * 14;
-    const topologyAngle = angle;
-    const localCandidates = [-0.24, -0.16, -0.08, 0, 0.08, 0.16, 0.24];
-    angle = localCandidates.reduce((bestAngle, offset) => {
-      const candidateAngle = topologyAngle + offset;
-      const candidate = pointAt(candidateAngle, radius);
-      const centralCrossings = connected.filter(
-        (entry) => segmentDistanceFromOrigin(candidate, entry.position) < 95,
-      ).length;
-      const averageLength = connected.reduce(
-        (total, entry) => total + Math.hypot(candidate.x - entry.position.x, candidate.y - entry.position.y),
-        0,
-      ) / Math.max(connected.length, 1);
-      const score = centralCrossings * 1000 + Math.abs(offset) * 90 + averageLength / 20;
-      const best = pointAt(bestAngle, radius);
-      const bestOffset = circularDistance(bestAngle, topologyAngle);
-      const bestCrossings = connected.filter(
-        (entry) => segmentDistanceFromOrigin(best, entry.position) < 95,
-      ).length;
-      const bestAverageLength = connected.reduce(
-        (total, entry) => total + Math.hypot(best.x - entry.position.x, best.y - entry.position.y),
-        0,
-      ) / Math.max(connected.length, 1);
-      const bestScore = bestCrossings * 1000 + bestOffset * 90 + bestAverageLength / 20;
-      return score < bestScore ? candidateAngle : bestAngle;
-    }, topologyAngle);
-    const localDirection = stableUnit(`role-local-collision:${node.id}`) >= 0.5 ? 1 : -1;
-    for (let attempt = 0; attempt < roles.length; attempt += 1) {
-      const nearest = placedRoleAngles.reduce(
-        (distance, placed) => Math.min(distance, circularDistance(angle, placed)),
-        Number.POSITIVE_INFINITY,
-      );
-      if (nearest >= 0.24) break;
-      angle += localDirection * Math.min(0.12, 0.24 - nearest + 0.025);
-    }
-    placedRoleAngles.push(angle);
+
+    return { node, preferredAngle, rank: node.proximityRank ?? index };
+  });
+
+  rolePreferences.sort((a, b) => a.preferredAngle - b.preferredAngle);
+
+  for (const [index, { node, rank }] of rolePreferences.entries()) {
+    const angle = -Math.PI + (Math.PI * 2 * index) / Math.max(rolePreferences.length, 1);
+    const radius = 460 + rank * 8; // Deterministic logical band, actual radius enforced by UI layout
     seeds.set(node.id, {
       ...pointAt(angle, radius),
+      familyId: node.familyId,
       roleTopologyAngle: angle,
     });
   }

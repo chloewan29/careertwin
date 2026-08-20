@@ -442,10 +442,10 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
         let targetRadius = 0;
         let strength = 0;
         if (node.nodeType === "FAMILY") { targetRadius = familyRadius; strength = 0.8; }
-        else if (node.nodeType === "CAPABILITY") { targetRadius = ownedRadius; strength = (!node.familyId || node.familyId === "user") ? 0.6 : 0; }
-        else if (node.nodeType === "EVIDENCE") { targetRadius = evidenceRadius; strength = 0.6; }
-        else if (node.nodeType === "ROLE") { targetRadius = roleRadius; strength = 0.7; }
-        else if (node.nodeType === "ROLE_ONLY_CAPABILITY") { targetRadius = gapRadius; strength = 0.8; }
+        else if (node.nodeType === "CAPABILITY") { targetRadius = ownedRadius; strength = 1.0; }
+        else if (node.nodeType === "EVIDENCE") { targetRadius = evidenceRadius; strength = 1.0; }
+        else if (node.nodeType === "ROLE") { targetRadius = roleRadius; strength = 1.0; }
+        else if (node.nodeType === "ROLE_ONLY_CAPABILITY") { targetRadius = gapRadius; strength = 1.0; }
         
         if (strength === 0 || node.x === undefined || node.y === undefined) continue;
         
@@ -922,7 +922,7 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
             if (link.linkType === "CAPABILITY_EVIDENCE") {
               if (source === selectedId || target === selectedId) return "rgba(167,139,250,0.45)";
               if (source === hoveredId || target === hoveredId) return "rgba(167,139,250,0.25)";
-              return "rgba(167,139,250,0.12)";
+              return "rgba(167,139,250,0.4)";
             }
             const active = !focusSet || (focusSet.has(source) && focusSet.has(target));
             if (!active) return "rgba(116,148,148,0.055)";
