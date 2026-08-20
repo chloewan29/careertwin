@@ -314,16 +314,7 @@ function SelectedNodeDetail({
 export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) {
   const visualModel = useMemo(() => buildCareerGraphVisualModel(projection), [projection]);
   const [layoutRevision, setLayoutRevision] = useState(0);
-  const graphData = useMemo(
-    () => {
-      void layoutRevision;
-      return {
-        nodes: seedCareerGraphNodes(visualModel, visualModel.nodes),
-        links: visualModel.links.map((link) => ({ ...link })) as RenderLink[],
-      };
-    },
-    [visualModel, layoutRevision],
-  );
+
   const graphRef = useRef<CareerMapForceGraphHandle | null>(null);
   const focusFrameTimerRef = useRef<number | null>(null);
   const [engineReady, setEngineReady] = useState(false);
@@ -342,6 +333,32 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
       ? buildCareerGraphRoleFocusState(visualModel, selectedNode.id)
       : null,
     [selectedNode, visualModel],
+  );
+  
+  const graphData = useMemo(
+    () => {
+      void layoutRevision;
+      
+      const activeNodes = visualModel.nodes.filter(node => {
+        if (node.nodeType === "ROLE_ONLY_CAPABILITY") {
+          return selectedRoleFocus?.gapCapabilityIds.has(node.id) ?? false;
+        }
+        return true;
+      });
+      
+      const activeLinks = visualModel.links.filter(link => {
+        if (link.linkType === "ROLE_ONLY_CAPABILITY") {
+          return selectedRoleFocus?.relevantLinkIds.has(link.id) ?? false;
+        }
+        return true;
+      });
+      
+      return {
+        nodes: seedCareerGraphNodes(visualModel, activeNodes),
+        links: activeLinks.map((link) => ({ ...link })) as RenderLink[],
+      };
+    },
+    [visualModel, layoutRevision, selectedRoleFocus],
   );
   const focusId = selectedRoleFocus?.roleId ?? hoveredId ?? selectedId;
   const focusSet = useMemo(
@@ -422,6 +439,7 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
     linkForce
       ?.distance((link) => {
         if (link.linkType === "USER_FAMILY") return 155 * layoutScale;
+        if (link.linkType === "USER_CAPABILITY") return 135 * layoutScale;
         if (link.linkType === "FAMILY_CAPABILITY") return 104 * layoutScale;
         if (link.linkType === "CAPABILITY_EVIDENCE") return 72 * layoutScale;
         if (link.linkType === "ROLE_OWNED_CAPABILITY") return 340 * layoutScale;
@@ -733,7 +751,10 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
         || roleOwned
         || roleGap;
       const rightSide = (node.x ?? 0) >= 0;
-      const labelLines = splitCanvasLabel(node.label, compact);
+      const labelLines = [...splitCanvasLabel(node.label, compact)];
+      if (node.nodeType === "CAPABILITY" && node.evidenceCount) {
+        labelLines.push(`· ${node.evidenceCount} evidence`);
+      }
       
       let textWidth = 0;
       for (const line of labelLines) {

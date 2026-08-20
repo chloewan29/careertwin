@@ -118,7 +118,8 @@ export type CareerMapGraphEdgeType =
   | "user_has_family"
   | "family_contains_capability"
   | "capability_supported_by_evidence"
-  | "role_requires_capability";
+  | "role_requires_capability"
+  | "user_owns_capability";
 
 export type CareerMapGraphEdge = {
   readonly type: CareerMapGraphEdgeType;

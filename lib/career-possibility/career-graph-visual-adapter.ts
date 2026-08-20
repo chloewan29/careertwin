@@ -21,7 +21,8 @@ export type CareerGraphVisualLinkType =
   | "FAMILY_CAPABILITY"
   | "CAPABILITY_EVIDENCE"
   | "ROLE_OWNED_CAPABILITY"
-  | "ROLE_ONLY_CAPABILITY";
+  | "ROLE_ONLY_CAPABILITY"
+  | "USER_CAPABILITY";
 
 export type CareerGraphVisualNode = {
   readonly id: string;
@@ -276,6 +277,15 @@ export function buildCareerGraphVisualModel(
         source: edge.fromId,
         target: edge.toId,
         linkType: "USER_FAMILY",
+      });
+      continue;
+    }
+    if (edge.type === "user_owns_capability") {
+      visualLinks.push({
+        id: linkId("USER_CAPABILITY", edge.fromId, edge.toId),
+        source: edge.fromId,
+        target: edge.toId,
+        linkType: "USER_CAPABILITY",
       });
       continue;
     }

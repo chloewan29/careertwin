@@ -120,14 +120,27 @@ export function buildEscoPresentationGraph(
 
     const roleSkills = getSkillsForOccupation(role.uri);
     
-    for (const rs of roleSkills) {
+    // Sort role skills by importance to pick the best gaps
+    const sortedSkills = [...roleSkills].sort((a, b) => {
+      if (a.relationType === "essential" && b.relationType !== "essential") return -1;
+      if (a.relationType !== "essential" && b.relationType === "essential") return 1;
+      return a.skill.preferredLabel.localeCompare(b.skill.preferredLabel);
+    });
+
+    let gapCount = 0;
+    const MAX_GAPS = 12;
+
+    for (const rs of sortedSkills) {
       if (ownedUris.has(rs.skill.uri)) {
-        // Shared node (upgrade owned to shared visually if needed, though they look similar in CareerTwin)
+        // Shared node 
         const node = nodes.get(rs.skill.uri)!;
         node.status = "shared";
         edges.push({ source: rs.skill.uri, target: role.uri, type: "solid" });
-      } else if (isSelected) {
-        // Gap node - only for selected role
+      } else {
+        if (gapCount >= MAX_GAPS) continue;
+        gapCount++;
+        
+        // Gap node
         if (!nodes.has(rs.skill.uri)) {
            nodes.set(rs.skill.uri, {
              id: rs.skill.uri,
@@ -138,7 +151,6 @@ export function buildEscoPresentationGraph(
         }
         // Dashed edge from gap to role
         edges.push({ source: rs.skill.uri, target: role.uri, type: "dashed" });
-        // No edge from YOU to gap.
       }
     }
   }
