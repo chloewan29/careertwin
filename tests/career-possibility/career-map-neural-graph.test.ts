@@ -412,8 +412,8 @@ async function testK_step2K_layoutTopologies() {
   assert.match(source, /Math\.max\(.*Math\.min\(/, "K: responsive bands are clamped safely");
   
   // Radial force explicitly uses the responsive bands
-  assert.match(source, /if \(node\.nodeType === "ROLE"\) return roleRadius;/, "K: future roles placed explicitly by semantic depth target");
-  assert.match(source, /if \(node\.nodeType === "CAPABILITY"\) return ownedRadius;/, "K: owned capabilities placed explicitly by semantic depth target");
+  assert.match(source, /node\.nodeType === "ROLE"\) \{ targetRadius = roleRadius;/, "K: future roles placed explicitly by semantic depth target");
+  assert.match(source, /node\.nodeType === "CAPABILITY"\) \{ targetRadius = ownedRadius;/, "K: owned capabilities placed explicitly by semantic depth target");
 
   // Capability evidence disclosure (EVIDENCE nodes in focusSet show labels)
   assert.match(source, /node\.nodeType === "EVIDENCE" && !!focusSet && focusSet\.has\(id\)/, "K: focused evidence nodes explicitly render their text labels");

@@ -437,26 +437,29 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
     const roleRadius = Math.max(400, Math.min(600, shortSide * 0.65)) * baseScale;
     const gapRadius = roleRadius + Math.max(110, Math.min(180, shortSide * 0.22)) * baseScale;
 
-    const radial = d3Force.forceRadial<RenderNode>(
-      (node) => {
-        if (node.nodeType === "FAMILY") return familyRadius;
-        if (node.nodeType === "CAPABILITY") return ownedRadius;
-        if (node.nodeType === "EVIDENCE") return evidenceRadius;
-        if (node.nodeType === "ROLE") return roleRadius;
-        if (node.nodeType === "ROLE_ONLY_CAPABILITY") return gapRadius;
-        return 0;
-      },
-      0,
-      0,
-    ).strength((node) => {
-      if (node.nodeType === "FAMILY") return 0.8;
-      if (node.nodeType === "CAPABILITY" && (!node.familyId || node.familyId === "user")) return 0.6;
-      if (node.nodeType === "EVIDENCE") return 0.6;
-      if (node.nodeType === "ROLE") return 0.7;
-      if (node.nodeType === "ROLE_ONLY_CAPABILITY") return 0.8;
-      return 0;
-    });
-    graph.d3Force("radial", radial);
+    const semanticRadialForce = (alpha: number) => {
+      for (const node of graphData.nodes) {
+        let targetRadius = 0;
+        let strength = 0;
+        if (node.nodeType === "FAMILY") { targetRadius = familyRadius; strength = 0.8; }
+        else if (node.nodeType === "CAPABILITY") { targetRadius = ownedRadius; strength = (!node.familyId || node.familyId === "user") ? 0.6 : 0; }
+        else if (node.nodeType === "EVIDENCE") { targetRadius = evidenceRadius; strength = 0.6; }
+        else if (node.nodeType === "ROLE") { targetRadius = roleRadius; strength = 0.7; }
+        else if (node.nodeType === "ROLE_ONLY_CAPABILITY") { targetRadius = gapRadius; strength = 0.8; }
+        
+        if (strength === 0 || node.x === undefined || node.y === undefined) continue;
+        
+        const dx = node.x || 1e-6;
+        const dy = node.y || 1e-6;
+        const r = Math.sqrt(dx * dx + dy * dy);
+        const k = ((targetRadius - r) * strength * alpha) / r;
+        if (node.vx !== undefined && node.vy !== undefined) {
+          node.vx += dx * k;
+          node.vy += dy * k;
+        }
+      }
+    };
+    graph.d3Force("radial", semanticRadialForce);
 
     const linkForce = graph.d3Force("link") as
       | {
