@@ -1,4 +1,4 @@
-import { validateAnyLocalCareerMapState, type AnyLocalCareerMapState } from "./local-career-map-state";
+import { validateAnyLocalCareerMapState, type AnyLocalCareerMapState, type LocalCareerMapStateV1, type ProvisionalLocalCareerMapState } from "./local-career-map-state";
 import type { CanonicalCapabilityLibrary } from "./canonical-capability-library";
 import type { CanonicalCapabilityGovernanceLibrary } from "./canonical-capability-governance-decisions";
 import type { RoleCapabilityProfile } from "./role-capability-library";
@@ -36,15 +36,17 @@ export function buildPersonalTargetRoleComparison(input: { localCareerMapState: 
   const definitions = input.canonicalCapabilityLibrary.capabilities.map((item) => ({ id: item.id, label: item.label, family: item.family }));
   const valid = validateAnyLocalCareerMapState(input.localCareerMapState, definitions);
   if (!valid.ok) return valid;
-  const stateDefinitionVersion = input.localCareerMapState.schemaVersion === "1.0.0" ? input.localCareerMapState.definitionVersion : input.localCareerMapState.versions.capabilityDefinitionVersion;
+  if (input.localCareerMapState.schemaVersion === "esco/1.0.0") return { ok: false, issues: [{ code: "legacy_path", path: "state", message: "Legacy target comparison not supported for ESCO state" }] };
+  const state = input.localCareerMapState as LocalCareerMapStateV1 | ProvisionalLocalCareerMapState;
+  const stateDefinitionVersion = state.schemaVersion === "1.0.0" ? state.definitionVersion : state.versions.capabilityDefinitionVersion;
   if (stateDefinitionVersion !== input.definitionVersion) return { ok: false, issues: [{ code: "definition_version_mismatch", path: "definitionVersion", message: "Personal map definition version does not match." }] };
 
   const roleRequirements = [...input.targetRoleProfile.mustHaveCapabilities, ...input.targetRoleProfile.shouldHaveCapabilities, ...input.targetRoleProfile.differentiatingCapabilities];
   const seen = new Set<string>();
   const canonical = new Map(input.canonicalCapabilityLibrary.capabilities.map((item) => [item.id, item]));
   const governance = new Map(input.governanceDecisions.decisions.map((item) => [item.capabilityId, item]));
-  const evidenceById = input.localCareerMapState.schemaVersion === "2.0.0" ? new Map(input.localCareerMapState.evidence.map((item) => [item.evidenceId, item])) : null;
-  const personal = new Map(input.localCareerMapState.capabilities.map((item) => [item.capabilityId, item]));
+  const evidenceById = state.schemaVersion === "2.0.0" ? new Map(state.evidence.map((item) => [item.evidenceId, item])) : null;
+  const personal = new Map(state.capabilities.map((item) => [item.capabilityId, item]));
   const requirements: PersonalTargetRoleComparison["requirements"][number][] = [];
 
   for (const [index, requirement] of roleRequirements.entries()) {
@@ -53,7 +55,7 @@ export function buildPersonalTargetRoleComparison(input: { localCareerMapState: 
     const definition = canonical.get(requirement.capabilityId);
     if (definition) {
       const capability = personal.get(requirement.capabilityId);
-      const mappings = input.localCareerMapState.schemaVersion === "1.0.0" ? (capability && "mappings" in capability ? capability.mappings : []) : input.localCareerMapState.mappings.filter((mapping) => mapping.capabilityId === requirement.capabilityId);
+      const mappings = state.schemaVersion === "1.0.0" ? (capability && "mappings" in capability ? capability.mappings : []) : state.mappings.filter((mapping) => mapping.capabilityId === requirement.capabilityId);
       const direct = mappings.some((mapping) => mapping.relationship === "direct_evidence");
       const outcome: RequirementOutcome = direct ? "directly_demonstrated" : mappings.length ? "transferable_signal" : "evidence_not_yet_shown";
       const expectedEvidence = outcome === "evidence_not_yet_shown" && requirement.expectedEvidence?.trim() ? requirement.expectedEvidence : "";
@@ -80,7 +82,7 @@ export function buildPersonalTargetRoleComparison(input: { localCareerMapState: 
   const nextRequirement = importanceOrder
     .map((importance) => requirements.find((requirement) => requirement.importance === importance && requirement.outcome === "evidence_not_yet_shown" && Boolean(requirement.expectedEvidence?.trim())))
     .find((requirement) => requirement !== undefined);
-  const reasonByImportance: Readonly<Record<NextProofToBuild["importance"], string>> = input.localCareerMapState.schemaVersion === "2.0.0" ? {
+  const reasonByImportance: Readonly<Record<NextProofToBuild["importance"], string>> = state.schemaVersion === "2.0.0" ? {
     must: "Must-have requirement not evidenced in your current CV-derived map.",
     should: "Supporting requirement not evidenced in your current CV-derived map.",
     differentiator: "Differentiating requirement not evidenced in your current CV-derived map.",
@@ -99,7 +101,7 @@ export function buildPersonalTargetRoleComparison(input: { localCareerMapState: 
   return { ok: true, comparison: Object.freeze({
     version: PERSONAL_TARGET_ROLE_COMPARISON_VERSION,
     role: Object.freeze({ roleId: input.targetRoleProfile.roleFamilyId, title: input.targetRoleProfile.canonicalTitle, domain: input.targetRoleProfile.domain }),
-    mapTrustStatus: input.localCareerMapState.schemaVersion === "2.0.0" ? "provisional" : "reviewed",
+    mapTrustStatus: state.schemaVersion === "2.0.0" ? "provisional" : "reviewed",
     missingMeaning: "Not evidenced in your current CV-derived map.",
     summary: Object.freeze({ totalRequirements: requirements.length, directly_demonstrated: count("directly_demonstrated"), transferable_signal: count("transferable_signal"), evidence_not_yet_shown: count("evidence_not_yet_shown"), governance_deferred: count("governance_deferred"), governance_excluded: count("governance_excluded"), unknown: 0 }),
     ...(nextProofToBuild ? { nextProofToBuild } : {}),

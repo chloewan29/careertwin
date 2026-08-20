@@ -1,4 +1,4 @@
-import { validateAnyLocalCareerMapState, type LocalCareerMapState } from "./local-career-map-state";
+import { validateAnyLocalCareerMapState, type LocalCareerMapState, type LocalCareerMapStateV1, type ProvisionalLocalCareerMapState } from "./local-career-map-state";
 import type { CareerMapCapabilityDefinition } from "./reviewed-resume-evidence-map-adapter";
 
 export const LOCAL_CAREER_MAP_PRESENTATION_ADAPTER_VERSION = "1.0.0" as const;
@@ -24,14 +24,15 @@ export function buildPersonalCareerMapPresentation(input: { localState: LocalCar
   let reviewedEvidenceCount: number;
   let provisionalEvidenceCount: number;
 
-  if (input.localState.schemaVersion === "1.0.0") {
-    capabilities = Object.freeze(input.localState.capabilities.map((item) => Object.freeze({ id: item.capabilityId, label: item.capabilityLabel, family: item.family, evidence: Object.freeze(item.mappings.map((mapping) => Object.freeze({ id: mapping.mappingId, evidenceId: mapping.evidenceId, text: mapping.sourceText, relationship: mapping.relationship, sourceStart: mapping.sourceStart, sourceEnd: mapping.sourceEnd, provisional: true as const }))) })));
+  const state = input.localState as LocalCareerMapStateV1 | ProvisionalLocalCareerMapState;
+  if (state.schemaVersion === "1.0.0") {
+    capabilities = Object.freeze(state.capabilities.map((item) => Object.freeze({ id: item.capabilityId, label: item.capabilityLabel, family: item.family, evidence: Object.freeze(item.mappings.map((mapping) => Object.freeze({ id: mapping.mappingId, evidenceId: mapping.evidenceId, text: mapping.sourceText, relationship: mapping.relationship, sourceStart: mapping.sourceStart, sourceEnd: mapping.sourceEnd, provisional: true as const }))) })));
     mapTrustStatus = "reviewed";
     unresolvedEvidenceCount = 0;
-    reviewedEvidenceCount = new Set(input.localState.capabilities.flatMap((item) => item.mappings.map((mapping) => mapping.evidenceId))).size;
+    reviewedEvidenceCount = new Set(state.capabilities.flatMap((item) => item.mappings.map((mapping) => mapping.evidenceId))).size;
     provisionalEvidenceCount = 0;
   } else {
-    const provisionalState = input.localState;
+    const provisionalState = state as ProvisionalLocalCareerMapState;
     const evidence = new Map(provisionalState.evidence.map((item) => [item.evidenceId, item]));
     capabilities = Object.freeze(provisionalState.capabilities.map((item) => {
       const definition = definitions.get(item.capabilityId)!;

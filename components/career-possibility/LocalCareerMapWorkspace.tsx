@@ -3,11 +3,12 @@ import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import type { CareerMapCapabilityDefinition } from "@/lib/career-possibility/reviewed-resume-evidence-map-adapter";
 import { clearLocalCareerMapState, readLocalCareerMapState, type LocalCareerMapReadResult } from "@/lib/career-possibility/local-career-map-storage";
-import { buildPersonalCareerMapPresentation } from "@/lib/career-possibility/local-career-map-presentation-adapter";
-import { CareerMapNeuralGraph } from "./CareerMapNeuralGraph";
-import { buildCareerMapGraphProjection } from "@/lib/career-possibility/career-map-graph-projection";
-import { buildPersonalGenericRoleAlignment } from "@/lib/career-possibility/personal-generic-role-alignment-adapter";
+import { buildEscoCareerMapPresentation } from "@/lib/career-possibility/esco-career-map-presentation-adapter";
 import { canonicalCapabilityFamilyLibrary } from "@/lib/career-possibility/canonical-capability-family-library";
+import { CareerMapNeuralGraph } from "./CareerMapNeuralGraph";
+import { buildPersonalCareerMapPresentation } from "@/lib/career-possibility/local-career-map-presentation-adapter";
+import { buildPersonalGenericRoleAlignment } from "@/lib/career-possibility/personal-generic-role-alignment-adapter";
+import { buildCareerMapGraphProjection } from "@/lib/career-possibility/career-map-graph-projection";
 
 export function LocalCareerMapWorkspace({ definitions, definitionVersion }: { definitions: readonly CareerMapCapabilityDefinition[]; definitionVersion: string }) {
   const [result, setResult] = useState<LocalCareerMapReadResult | null>(null); const refresh = useCallback(() => setResult(readLocalCareerMapState(definitions, definitionVersion)), [definitions, definitionVersion]);
@@ -15,20 +16,28 @@ export function LocalCareerMapWorkspace({ definitions, definitionVersion }: { de
   function clear() { if (!window.confirm("Clear the Career Map stored in this browser?")) return; if (clearLocalCareerMapState().ok) setResult({ status: "absent" }); }
   if (!result) return <div className="py-16 text-center text-sm text-cyan-50/45">Loading browser-local Career Map…</div>;
   if (result.status === "loaded") {
-    const personal = buildPersonalCareerMapPresentation({ localState: result.state, canonicalDefinitions: definitions });
-    if (!personal.ok) return <StateNotice title="Saved browser data could not be read" message={personal.issues[0].message} clear={clear} />;
-    const provisional = result.state.schemaVersion === "2.0.0";
-    // --- Neural graph projection (real state, no second storage read) ---
-    // Task 3B owns role ordering; this route only hands its result to Task 3C.
-    const graphAlignment =
-      result.state.schemaVersion === "2.0.0" && result.state.mappings.length > 0
-        ? buildPersonalGenericRoleAlignment({ personalState: result.state })
-        : null;
-    const graphProjection = buildCareerMapGraphProjection({
-      presentation: personal.presentation,
-      familyLibrary: canonicalCapabilityFamilyLibrary,
-      ...(graphAlignment?.ok ? { rankedRoleAlignment: { ...graphAlignment.result.alignment, roles: graphAlignment.result.recommendedRoles } } : {}),
-    });
+    let graphProjection;
+    let provisional = false;
+
+    if (result.state.schemaVersion === "esco/1.0.0") {
+      graphProjection = buildEscoCareerMapPresentation(result.state);
+      provisional = true;
+    } else {
+      provisional = result.state.schemaVersion === "2.0.0";
+      const personal = buildPersonalCareerMapPresentation({ localState: result.state, canonicalDefinitions: definitions });
+      if (!personal.ok) return <StateNotice title="Saved browser data could not be read" message={personal.issues[0].message} clear={clear} />;
+      
+      const graphAlignment =
+        result.state.schemaVersion === "2.0.0" && result.state.mappings.length > 0
+          ? buildPersonalGenericRoleAlignment({ personalState: result.state })
+          : null;
+      graphProjection = buildCareerMapGraphProjection({
+        presentation: personal.presentation,
+        familyLibrary: canonicalCapabilityFamilyLibrary,
+        ...(graphAlignment?.ok ? { rankedRoleAlignment: { ...graphAlignment.result.alignment, roles: graphAlignment.result.recommendedRoles } } : {}),
+      });
+    }
+
     return <section className="flex min-h-[calc(100dvh-5.25rem)] flex-col py-2">
       <div className="flex min-h-11 items-center justify-between gap-3 px-1 pb-2">
         <div className="flex min-w-0 flex-wrap items-baseline gap-x-3 gap-y-0.5">

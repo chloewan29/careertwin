@@ -23,7 +23,16 @@ export type ProvisionalLocalCareerMapState = Readonly<{
   createdAt: string;
   updatedAt: string;
 }>;
-export type LocalCareerMapState = LocalCareerMapStateV1 | ProvisionalLocalCareerMapState;
+export const ESCO_LOCAL_CAREER_MAP_SCHEMA_VERSION = "esco/1.0.0" as const;
+export type EscoLocalCareerMapEvidence = Readonly<{ evidenceId: string; sourceExcerpt: string; }>;
+export type EscoLocalCareerMapSkill = Readonly<{ skillUri: string; evidenceIds: readonly string[]; }>;
+export type EscoLocalCareerMapState = Readonly<{
+  schemaVersion: typeof ESCO_LOCAL_CAREER_MAP_SCHEMA_VERSION;
+  source: "esco_grounding";
+  evidence: readonly EscoLocalCareerMapEvidence[];
+  ownedSkills: readonly EscoLocalCareerMapSkill[];
+}>;
+export type LocalCareerMapState = LocalCareerMapStateV1 | ProvisionalLocalCareerMapState | EscoLocalCareerMapState;
 export type AnyLocalCareerMapState = LocalCareerMapState;
 export type LocalCareerMapIssue = { readonly code: string; readonly path: string; readonly message: string };
 
@@ -130,7 +139,17 @@ export function validateAnyLocalCareerMapState(value: unknown, definitions: read
   const schemaVersion = (value as { schemaVersion?: unknown } | null)?.schemaVersion;
   if (schemaVersion === LOCAL_CAREER_MAP_SCHEMA_VERSION) return validateV1(value, definitions);
   if (schemaVersion === PROVISIONAL_LOCAL_CAREER_MAP_SCHEMA_VERSION) return validateProvisionalLocalCareerMapState(value, definitions);
+  if (schemaVersion === ESCO_LOCAL_CAREER_MAP_SCHEMA_VERSION) return validateEscoLocalCareerMapState(value);
   return { ok: false, issues: [{ code: "unsupported_schema_version", path: "schemaVersion", message: "Unsupported local Career Map schema version." }] };
+}
+
+export function validateEscoLocalCareerMapState(value: unknown): { ok: true; state: EscoLocalCareerMapState } | { ok: false; issues: readonly LocalCareerMapIssue[] } {
+  const state = value as EscoLocalCareerMapState;
+  const issues: LocalCareerMapIssue[] = [];
+  if (!state || typeof state !== "object") return { ok: false, issues: [{ code: "invalid_state", path: "state", message: "Saved state must be an object." }] };
+  if (state.schemaVersion !== ESCO_LOCAL_CAREER_MAP_SCHEMA_VERSION) issues.push({ code: "unsupported_schema_version", path: "schemaVersion", message: "Unsupported local Career Map schema version." });
+  if (state.source !== "esco_grounding") issues.push({ code: "invalid_source", path: "source", message: "ESCO state source is invalid." });
+  return issues.length ? { ok: false, issues: Object.freeze(issues) } : { ok: true, state };
 }
 
 export const validateLocalCareerMapState = validateV1;

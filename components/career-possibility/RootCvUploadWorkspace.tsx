@@ -3,14 +3,11 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { CareerMapCapabilityDefinition } from "@/lib/career-possibility/reviewed-resume-evidence-map-adapter";
-import { buildProvisionalCareerMapFromFile, type ProvisionalCareerMapFileBuildFailureCode } from "@/lib/career-possibility/build-provisional-career-map-from-file";
-import { createCareerCapabilityStructuredInferenceApiProducer } from "@/lib/career-possibility/career-capability-structured-inference-api-producer";
+import { buildEscoCareerMapFromFile, type EscoCareerMapFileBuildFailureCode } from "@/lib/career-possibility/build-esco-career-map-from-file";
 import { readLocalCareerMapState, writeLocalCareerMapState } from "@/lib/career-possibility/local-career-map-storage";
 
-const structuredInferenceProducer = createCareerCapabilityStructuredInferenceApiProducer();
-
-const errors: Record<ProvisionalCareerMapFileBuildFailureCode | "storage_failed", string> = {
-  unsupported_file: "Upload a PDF or DOCX file.", file_too_large: "Your CV must be 5 MB or smaller.", password_protected_pdf: "This PDF is password protected and cannot be read.", scanned_or_image_only_pdf: "This PDF does not contain readable text. Upload a text-based PDF or DOCX.", malformed_file: "We could not read this CV. Try another PDF or DOCX.", empty_extracted_text: "We could not read this CV. Try another PDF or DOCX.", evidence_extraction_failed: "We could not read this CV. Try another PDF or DOCX.", no_unambiguous_mappings: "We could not generate reliable capability relationships from this CV. Try a clearer or more detailed CV.", materialization_failed: "We could not generate reliable capability relationships from this CV. Try a clearer or more detailed CV.", unexpected_failure: "We could not read this CV. Try another PDF or DOCX.", storage_failed: "Your Career Map could not be saved in this browser. Your previous Career Map has not been changed.",
+const errors: Record<EscoCareerMapFileBuildFailureCode | "storage_failed", string> = {
+  unsupported_file: "Upload a PDF or DOCX file.", file_too_large: "Your CV must be 5 MB or smaller.", password_protected_pdf: "This PDF is password protected and cannot be read.", scanned_or_image_only_pdf: "This PDF does not contain readable text. Upload a text-based PDF or DOCX.", malformed_file: "We could not read this CV. Try another PDF or DOCX.", empty_extracted_text: "We could not read this CV. Try another PDF or DOCX.", evidence_extraction_failed: "We could not read this CV. Try another PDF or DOCX.", unexpected_failure: "We could not read this CV. Try another PDF or DOCX.", storage_failed: "Your Career Map could not be saved in this browser. Your previous Career Map has not been changed.",
 };
 
 export function RootCvUploadWorkspace({ capabilityDefinitions, capabilityDefinitionVersion }: { capabilityDefinitions: readonly CareerMapCapabilityDefinition[]; capabilityDefinitionVersion: string }) {
@@ -25,8 +22,7 @@ export function RootCvUploadWorkspace({ capabilityDefinitions, capabilityDefinit
   }, [capabilityDefinitions, capabilityDefinitionVersion]);
   async function selected(file: File | undefined) {
     if (!file || stage !== "idle") return; setError("");
-    const timestamp = new Date().toISOString();
-    const built = await buildProvisionalCareerMapFromFile({ file, capabilityDefinitions, capabilityDefinitionVersion, structuredInferenceProducer, createdAt: timestamp, updatedAt: timestamp, onStage: setStage });
+    const built = await buildEscoCareerMapFromFile({ file, onStage: setStage });
     if (built.status === "failure") { setStage("idle"); setError(errors[built.code]); requestAnimationFrame(() => errorRef.current?.focus()); return; }
     const written = writeLocalCareerMapState(built.state, capabilityDefinitions);
     if (!written.ok) { setStage("idle"); setError(errors.storage_failed); requestAnimationFrame(() => errorRef.current?.focus()); return; }
