@@ -405,17 +405,15 @@ async function testJ_roleGapProgressiveDisclosure() {
 async function testK_step2K_layoutTopologies() {
   const source = readFileSync(RENDERER_SOURCE_PATH, "utf8");
   
-  // Owned skills inner ring (150px)
-  assert.match(source, /node\.nodeType === "CAPABILITY"\) return 150 \*/, "K: owned capabilities form an inner ring");
+  // Semantic depth bands ordered responsively
+  assert.match(source, /ownedRadius < evidenceRadius|ownedRadius \+ shortSide/i, "K: evidence nodes placed in a discrete band outside capabilities");
+  assert.match(source, /gapRadius = roleRadius \+/i, "K: role gaps placed on the outermost band relative to roles");
+  assert.match(source, /Math\.min\(dimensions\.width, dimensions\.height\)/, "K: layout relies on shortSide for responsiveness");
+  assert.match(source, /Math\.max\(.*Math\.min\(/, "K: responsive bands are clamped safely");
   
-  // Roles outer ring (500px)
-  assert.match(source, /node\.nodeType === "ROLE"\) return 500 \*/, "K: future roles placed strictly on the outer ring");
-  
-  // Gaps on the outermost ring (650px)
-  assert.match(source, /node\.nodeType === "ROLE_ONLY_CAPABILITY"\) return 650 \*/, "K: role gaps placed on the outermost band");
-  
-  // Evidence on its own ring (260px)
-  assert.match(source, /node\.nodeType === "EVIDENCE"\) return 260 \*/, "K: evidence nodes placed in a discrete band outside capabilities");
+  // Radial force explicitly uses the responsive bands
+  assert.match(source, /if \(node\.nodeType === "ROLE"\) return roleRadius;/, "K: future roles placed explicitly by semantic depth target");
+  assert.match(source, /if \(node\.nodeType === "CAPABILITY"\) return ownedRadius;/, "K: owned capabilities placed explicitly by semantic depth target");
 
   // Capability evidence disclosure (EVIDENCE nodes in focusSet show labels)
   assert.match(source, /node\.nodeType === "EVIDENCE" && !!focusSet && focusSet\.has\(id\)/, "K: focused evidence nodes explicitly render their text labels");

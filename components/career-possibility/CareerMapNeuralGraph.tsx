@@ -429,13 +429,21 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
       if (node.nodeType === "ROLE_ONLY_CAPABILITY") return -42;
       return -76;
     });
+    const shortSide = Math.min(dimensions.width, dimensions.height);
+    const baseScale = dimensions.width < 600 ? 0.85 : 1.0;
+    const ownedRadius = Math.max(120, Math.min(180, shortSide * 0.26)) * baseScale;
+    const familyRadius = Math.max(170, Math.min(250, shortSide * 0.35)) * baseScale;
+    const evidenceRadius = Math.max(190, Math.min(300, ownedRadius + shortSide * 0.20)) * baseScale;
+    const roleRadius = Math.max(400, Math.min(600, shortSide * 0.65)) * baseScale;
+    const gapRadius = roleRadius + Math.max(110, Math.min(180, shortSide * 0.22)) * baseScale;
+
     const radial = d3Force.forceRadial<RenderNode>(
       (node) => {
-        if (node.nodeType === "FAMILY") return 220 * layoutScale;
-        if (node.nodeType === "CAPABILITY") return 150 * layoutScale;
-        if (node.nodeType === "EVIDENCE") return 260 * layoutScale;
-        if (node.nodeType === "ROLE") return 500 * layoutScale;
-        if (node.nodeType === "ROLE_ONLY_CAPABILITY") return 650 * layoutScale;
+        if (node.nodeType === "FAMILY") return familyRadius;
+        if (node.nodeType === "CAPABILITY") return ownedRadius;
+        if (node.nodeType === "EVIDENCE") return evidenceRadius;
+        if (node.nodeType === "ROLE") return roleRadius;
+        if (node.nodeType === "ROLE_ONLY_CAPABILITY") return gapRadius;
         return 0;
       },
       0,
