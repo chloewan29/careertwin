@@ -591,7 +591,8 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
       return;
     }
     if (deselecting) {
-      graphRef.current?.zoomToFit(520, dimensions.width < 600 ? 20 : 52);
+      graphRef.current?.centerAt(0, 0, 520);
+      graphRef.current?.zoom(dimensions.width < 600 ? 0.75 : 1.15, 520);
       return;
     }
     if (node?.x !== undefined && node.y !== undefined) {
@@ -921,7 +922,7 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
             if (link.linkType === "CAPABILITY_EVIDENCE") {
               if (source === selectedId || target === selectedId) return "rgba(167,139,250,0.45)";
               if (source === hoveredId || target === hoveredId) return "rgba(167,139,250,0.25)";
-              return "rgba(0,0,0,0)";
+              return "rgba(167,139,250,0.12)";
             }
             const active = !focusSet || (focusSet.has(source) && focusSet.has(target));
             if (!active) return "rgba(116,148,148,0.055)";
@@ -1003,7 +1004,10 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
           onEngineStop={() => {
             setSettled(true);
             if (selectedRoleFocus) frameRoleFocus(selectedRoleFocus);
-            else graphRef.current?.zoomToFit(700, dimensions.width < 600 ? 20 : 52);
+            else {
+              graphRef.current?.centerAt(0, 0, 700);
+              graphRef.current?.zoom(dimensions.width < 600 ? 0.75 : 1.15, 700);
+            }
           }}
           enableNodeDrag
           enablePanInteraction

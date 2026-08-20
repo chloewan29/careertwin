@@ -367,29 +367,29 @@ export function buildCareerGraphTopologySeeds(
     seeds.set(node.id, { ...point, familyId: node.id });
   }
 
-  const userCapabilities = model.nodes.filter((n) => n.nodeType === "CAPABILITY" && (n.familyId === "user" || !n.familyId));
-  const userCapAngles = new Map<string, number>();
-  userCapabilities.forEach((node, index) => {
-    userCapAngles.set(node.id, -Math.PI + (Math.PI * 2 * index) / Math.max(userCapabilities.length, 1));
+  const capabilities = model.nodes.filter((n) => n.nodeType === "CAPABILITY");
+  const capAngles = new Map<string, number>();
+  const sortedCaps = [...capabilities].sort((a, b) => (a.familyId || "").localeCompare(b.familyId || ""));
+  sortedCaps.forEach((node, index) => {
+    capAngles.set(node.id, -Math.PI + (Math.PI * 2 * index) / Math.max(sortedCaps.length, 1));
   });
 
   const familyAngleFor = (familyId: string | undefined, nodeId: string) => {
+    if (capAngles.has(nodeId)) return capAngles.get(nodeId)!;
     if (familyId && familyAngles.has(familyId)) return familyAngles.get(familyId)!;
-    if (userCapAngles.has(nodeId)) return userCapAngles.get(nodeId)!;
     if (familyId) return -Math.PI + stableUnit(`gap-family-angle:${familyId}`) * Math.PI * 2;
     return -Math.PI + stableUnit(`unclassified-capability-angle:${nodeId}`) * Math.PI * 2;
   };
 
   for (const node of model.nodes.filter((candidate) => candidate.nodeType === "CAPABILITY")) {
-    const parent = seeds.get(node.parentIds?.[0] ?? "");
-    const baseAngle = familyAngleFor(node.familyId, node.id);
+    const baseAngle = capAngles.get(node.id) ?? 0;
     const offset = pointAt(
-      baseAngle + (stableUnit(`capability:${node.id}`) - 0.5) * 1.05,
+      baseAngle + (stableUnit(`capability:${node.id}`) - 0.5) * 0.25,
       82 + stableUnit(`capability-radius:${node.id}`) * 34,
     );
     seeds.set(node.id, {
-      x: (parent?.x ?? 0) + offset.x,
-      y: (parent?.y ?? 0) + offset.y,
+      x: offset.x,
+      y: offset.y,
       familyId: node.familyId,
     });
   }
@@ -521,14 +521,13 @@ export function buildCareerGraphTopologySeeds(
   }
 
   for (const node of model.nodes.filter((candidate) => candidate.nodeType === "EVIDENCE")) {
-    const parents = (node.parentIds ?? [])
-      .map((id) => seeds.get(id))
-      .filter((position): position is CareerGraphSeedPosition => Boolean(position));
-    const parentX = parents.reduce((total, parent) => total + parent.x, 0) / Math.max(parents.length, 1);
-    const parentY = parents.reduce((total, parent) => total + parent.y, 0) / Math.max(parents.length, 1);
-    const baseAngle = familyAngleFor(node.familyId, node.id);
+    const parentId = node.parentIds?.[0];
+    const parentPos = parentId ? seeds.get(parentId) : undefined;
+    const parentX = parentPos?.x ?? 0;
+    const parentY = parentPos?.y ?? 0;
+    const parentAngle = parentId ? (capAngles.get(parentId) ?? familyAngleFor(node.familyId, node.id)) : familyAngleFor(node.familyId, node.id);
     const offset = pointAt(
-      baseAngle + (stableUnit(`evidence:${node.id}`) - 0.5) * 0.9,
+      parentAngle + (stableUnit(`evidence:${node.id}`) - 0.5) * 0.8,
       58 + stableUnit(`evidence-radius:${node.id}`) * 38,
     );
     seeds.set(node.id, {
