@@ -1,0 +1,194 @@
+{
+  "version": "job_copilot_dominant_guard_negative_control_v1",
+  "cases": [
+    {
+      "case_id": "negative-control-genuinely-uncovered-dominant-context",
+      "description": "Ensures dominant-context guard still reserves unrelated candidates when dominant coverage remains genuinely uncovered.",
+      "has_strong_role_context_signals": true,
+      "desired_selected_count": 3,
+      "target_dominant_role_context_coverage": 3,
+      "dominant_context_tokens": [
+        "enterprise_business_intelligence_strategy",
+        "reporting_reliability_cycle_time",
+        "performance_benchmark_feedback_loop"
+      ],
+      "context_specific_cluster_ids": [
+        "enterprise_bi_strategy",
+        "reporting_reliability_ops"
+      ],
+      "clusters": [
+        {
+          "cluster_id": "enterprise_bi_strategy",
+          "display_name": "Enterprise Business Intelligence Strategy",
+          "domain_modifiers": [
+            "enterprise business intelligence strategy"
+          ],
+          "methods": [
+            "enterprise reporting governance"
+          ],
+          "matched_terms": [
+            "bi strategy"
+          ],
+          "direct_capabilities": [
+            "enterprise data strategy"
+          ],
+          "transfer_capabilities": []
+        },
+        {
+          "cluster_id": "reporting_reliability_ops",
+          "display_name": "Reporting Reliability and Cycle Time",
+          "domain_modifiers": [
+            "reporting reliability cycle time"
+          ],
+          "methods": [
+            "reporting operating model"
+          ],
+          "matched_terms": [
+            "reporting reliability"
+          ],
+          "direct_capabilities": [
+            "cycle-time reduction"
+          ],
+          "transfer_capabilities": []
+        },
+        {
+          "cluster_id": "commercial_analytics",
+          "display_name": "Commercial Analytics",
+          "domain_modifiers": [
+            "commercial analytics"
+          ],
+          "methods": [],
+          "matched_terms": [
+            "commercial analytics"
+          ],
+          "direct_capabilities": [],
+          "transfer_capabilities": [
+            "general analytics"
+          ]
+        },
+        {
+          "cluster_id": "strategy_consulting_advisory",
+          "display_name": "Strategy Consulting / Advisory Delivery",
+          "domain_modifiers": [
+            "strategy consulting"
+          ],
+          "methods": [],
+          "matched_terms": [
+            "advisory delivery"
+          ],
+          "direct_capabilities": [],
+          "transfer_capabilities": [
+            "stakeholder communication"
+          ]
+        }
+      ],
+      "cluster_context": [
+        {
+          "cluster_id": "enterprise_bi_strategy",
+          "is_broad_transferable": false,
+          "alignment": 0.82,
+          "sub_context_tokens": [
+            "enterprise_business_intelligence_strategy",
+            "bi_governance"
+          ]
+        },
+        {
+          "cluster_id": "reporting_reliability_ops",
+          "is_broad_transferable": false,
+          "alignment": 0.78,
+          "sub_context_tokens": [
+            "reporting_reliability_cycle_time",
+            "reporting_operating_model"
+          ]
+        },
+        {
+          "cluster_id": "commercial_analytics",
+          "is_broad_transferable": true,
+          "alignment": 0.17,
+          "sub_context_tokens": [
+            "commercial_analytics",
+            "growth_dashboarding"
+          ]
+        },
+        {
+          "cluster_id": "strategy_consulting_advisory",
+          "is_broad_transferable": true,
+          "alignment": 0.12,
+          "sub_context_tokens": [
+            "strategy_consulting_advisory",
+            "stakeholder_comms"
+          ]
+        }
+      ],
+      "initial_selected_evidence_ids": [
+        "ev-initial-bi-strategy"
+      ],
+      "candidates": [
+        {
+          "order": 0,
+          "evidence_id": "ev-initial-bi-strategy",
+          "title": "Initial BI strategy owner evidence",
+          "select_eligible": true,
+          "matched_cluster_ids": [
+            "enterprise_bi_strategy"
+          ],
+          "matched_role_contexts": [
+            "functional_domains:enterprise business intelligence strategy"
+          ],
+          "sub_context_tokens": [
+            "enterprise_bi_strategy",
+            "bi_governance"
+          ]
+        },
+        {
+          "order": 1,
+          "evidence_id": "ev-reporting-ops-bridge",
+          "title": "Reporting reliability operating model evidence",
+          "select_eligible": true,
+          "matched_cluster_ids": [
+            "reporting_reliability_ops"
+          ],
+          "matched_role_contexts": [
+            "work_modes:reporting reliability cycle time"
+          ],
+          "sub_context_tokens": [
+            "reporting_operating_model",
+            "reliability_governance"
+          ]
+        },
+        {
+          "order": 2,
+          "evidence_id": "ev-commercial-analytics-broad",
+          "title": "Broad commercial analytics evidence",
+          "select_eligible": true,
+          "matched_cluster_ids": [
+            "commercial_analytics"
+          ],
+          "matched_role_contexts": [
+            "functional_domains:commercial analytics"
+          ],
+          "sub_context_tokens": [
+            "commercial_analytics",
+            "growth_dashboarding"
+          ]
+        },
+        {
+          "order": 3,
+          "evidence_id": "ev-strategy-transferable",
+          "title": "Transferable strategy advisory evidence",
+          "select_eligible": true,
+          "matched_cluster_ids": [
+            "strategy_consulting_advisory"
+          ],
+          "matched_role_contexts": [
+            "work_modes:stakeholder advisory"
+          ],
+          "sub_context_tokens": [
+            "strategy_consulting_advisory",
+            "stakeholder_comms"
+          ]
+        }
+      ]
+    }
+  ]
+}

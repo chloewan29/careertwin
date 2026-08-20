@@ -1,0 +1,666 @@
+{
+  "diagnostics": [
+    {
+      "file": "app/api/job-recommendations/route.ts",
+      "line": 83,
+      "column": 16,
+      "code": "TS2352",
+      "message": "Conversion of type '{ skills: { name: any; }[]; }[]' to type 'UserSkillRow[]' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.",
+      "category": "legacy_or_debt_path"
+    },
+    {
+      "file": "app/api/job-search/route.ts",
+      "line": 104,
+      "column": 16,
+      "code": "TS2352",
+      "message": "Conversion of type '{ skills: { name: any; }[]; }[]' to type 'UserSkillRow[]' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.",
+      "category": "legacy_or_debt_path"
+    },
+    {
+      "file": "app/api/job-search/route.ts",
+      "line": 163,
+      "column": 9,
+      "code": "TS2322",
+      "message": "Type 'string' is not assignable to type '\"ok\" | \"no_results\" | \"source_blocked\"'.",
+      "category": "legacy_or_debt_path"
+    },
+    {
+      "file": "app/api/match-job/route.ts",
+      "line": 53,
+      "column": 16,
+      "code": "TS2352",
+      "message": "Conversion of type '{ skills: { name: any; }[]; }[]' to type 'UserSkillRow[]' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.",
+      "category": "legacy_or_debt_path"
+    },
+    {
+      "file": "lib/career-engine/job/job-copilot.ts",
+      "line": 404,
+      "column": 66,
+      "code": "TS18047",
+      "message": "'selectedProviderResult' is possibly 'null'.",
+      "category": "legacy_or_debt_path"
+    },
+    {
+      "file": "lib/career-engine/profile/resume-rewriter.ts",
+      "line": 134,
+      "column": 30,
+      "code": "TS2339",
+      "message": "Property 'family' does not exist on type 'NormalizedTitle'.",
+      "category": "legacy_or_debt_path"
+    },
+    {
+      "file": "lib/career-engine/profile/resume-rewriter.ts",
+      "line": 150,
+      "column": 30,
+      "code": "TS2339",
+      "message": "Property 'family' does not exist on type 'NormalizedTitle'.",
+      "category": "legacy_or_debt_path"
+    },
+    {
+      "file": "lib/career-engine/profile/resume-rewriter.ts",
+      "line": 152,
+      "column": 30,
+      "code": "TS2339",
+      "message": "Property 'seniority' does not exist on type 'NormalizedTitle'.",
+      "category": "legacy_or_debt_path"
+    },
+    {
+      "file": "lib/career-engine/profile/resume-rewriter.ts",
+      "line": 251,
+      "column": 98,
+      "code": "TS2339",
+      "message": "Property 'family' does not exist on type 'NormalizedTitle'.",
+      "category": "legacy_or_debt_path"
+    },
+    {
+      "file": "lib/career-engine/profile/resume-rewriter.ts",
+      "line": 257,
+      "column": 30,
+      "code": "TS2339",
+      "message": "Property 'family' does not exist on type 'NormalizedTitle'.",
+      "category": "legacy_or_debt_path"
+    },
+    {
+      "file": "lib/career-engine/scoring/gap-analysis.ts",
+      "line": 1,
+      "column": 29,
+      "code": "TS2307",
+      "message": "Cannot find module './job-matcher' or its corresponding type declarations.",
+      "category": "legacy_or_debt_path"
+    },
+    {
+      "file": "lib/career-engine/strategy/action-plan.ts",
+      "line": 2,
+      "column": 43,
+      "code": "TS2307",
+      "message": "Cannot find module './jd-parser' or its corresponding type declarations.",
+      "category": "legacy_or_debt_path"
+    },
+    {
+      "file": "lib/career-engine/strategy/career-simulator.ts",
+      "line": 2,
+      "column": 43,
+      "code": "TS2307",
+      "message": "Cannot find module './jd-parser' or its corresponding type declarations.",
+      "category": "legacy_or_debt_path"
+    },
+    {
+      "file": "lib/career-engine/strategy/career-simulator.ts",
+      "line": 55,
+      "column": 21,
+      "code": "TS7006",
+      "message": "Parameter 's' implicitly has an 'any' type.",
+      "category": "legacy_or_debt_path"
+    },
+    {
+      "file": "lib/career-engine/strategy/career-simulator.ts",
+      "line": 57,
+      "column": 18,
+      "code": "TS7006",
+      "message": "Parameter 's' implicitly has an 'any' type.",
+      "category": "legacy_or_debt_path"
+    },
+    {
+      "file": "lib/career-engine/strategy/career-strategy.ts",
+      "line": 2,
+      "column": 43,
+      "code": "TS2307",
+      "message": "Cannot find module './jd-parser' or its corresponding type declarations.",
+      "category": "legacy_or_debt_path"
+    },
+    {
+      "file": "lib/career-engine/strategy/career-strategy.ts",
+      "line": 38,
+      "column": 55,
+      "code": "TS7006",
+      "message": "Parameter 's' implicitly has an 'any' type.",
+      "category": "legacy_or_debt_path"
+    },
+    {
+      "file": "lib/career-engine/strategy/career-strategy.ts",
+      "line": 137,
+      "column": 67,
+      "code": "TS7006",
+      "message": "Parameter 's' implicitly has an 'any' type.",
+      "category": "legacy_or_debt_path"
+    },
+    {
+      "file": "lib/career-engine/strategy/role-recommender.ts",
+      "line": 1,
+      "column": 35,
+      "code": "TS2307",
+      "message": "Cannot find module './role-matcher' or its corresponding type declarations.",
+      "category": "legacy_or_debt_path"
+    },
+    {
+      "file": "lib/career-engine/strategy/role-recommender.ts",
+      "line": 128,
+      "column": 38,
+      "code": "TS7006",
+      "message": "Parameter 'sk' implicitly has an 'any' type.",
+      "category": "legacy_or_debt_path"
+    },
+    {
+      "file": "lib/career-engine/strategy/role-recommender.ts",
+      "line": 131,
+      "column": 37,
+      "code": "TS7006",
+      "message": "Parameter 'sk' implicitly has an 'any' type.",
+      "category": "legacy_or_debt_path"
+    },
+    {
+      "file": "lib/career-engine/strategy/strategy.ts",
+      "line": 1,
+      "column": 31,
+      "code": "TS2307",
+      "message": "Cannot find module './parsing/skill-extractor' or its corresponding type declarations.",
+      "category": "legacy_or_debt_path"
+    },
+    {
+      "file": "lib/career-engine/strategy/strategy.ts",
+      "line": 28,
+      "column": 10,
+      "code": "TS7006",
+      "message": "Parameter 'jdSkill' implicitly has an 'any' type.",
+      "category": "legacy_or_debt_path"
+    },
+    {
+      "file": "scripts/debug-resume-tailoring-e2e.ts",
+      "line": 83,
+      "column": 29,
+      "code": "TS2339",
+      "message": "Property 'id' does not exist on type 'never'.",
+      "category": "legacy_or_debt_path"
+    },
+    {
+      "file": "scripts/debug-resume-tailoring-e2e.ts",
+      "line": 83,
+      "column": 42,
+      "code": "TS2339",
+      "message": "Property 'user_id' does not exist on type 'never'.",
+      "category": "legacy_or_debt_path"
+    },
+    {
+      "file": "scripts/debug-resume-tailoring-e2e.ts",
+      "line": 86,
+      "column": 33,
+      "code": "TS2339",
+      "message": "Property 'id' does not exist on type 'never'.",
+      "category": "legacy_or_debt_path"
+    },
+    {
+      "file": "scripts/debug-resume-tailoring-e2e.ts",
+      "line": 86,
+      "column": 53,
+      "code": "TS2339",
+      "message": "Property 'user_id' does not exist on type 'never'.",
+      "category": "legacy_or_debt_path"
+    },
+    {
+      "file": "scripts/debug-resume-tailoring-e2e.ts",
+      "line": 99,
+      "column": 30,
+      "code": "TS2339",
+      "message": "Property 'id' does not exist on type 'never'.",
+      "category": "legacy_or_debt_path"
+    },
+    {
+      "file": "scripts/debug-resume-tailoring-e2e.ts",
+      "line": 99,
+      "column": 45,
+      "code": "TS2339",
+      "message": "Property 'user_id' does not exist on type 'never'.",
+      "category": "legacy_or_debt_path"
+    },
+    {
+      "file": "scripts/debug-resume-tailoring-e2e.ts",
+      "line": 102,
+      "column": 32,
+      "code": "TS2339",
+      "message": "Property 'id' does not exist on type 'never'.",
+      "category": "legacy_or_debt_path"
+    },
+    {
+      "file": "scripts/debug-resume-tailoring-e2e.ts",
+      "line": 102,
+      "column": 55,
+      "code": "TS2339",
+      "message": "Property 'user_id' does not exist on type 'never'.",
+      "category": "legacy_or_debt_path"
+    },
+    {
+      "file": "scripts/debug-resume-tailoring-e2e.ts",
+      "line": 113,
+      "column": 10,
+      "code": "TS2769",
+      "message": "No overload matches this call.",
+      "category": "legacy_or_debt_path"
+    },
+    {
+      "file": "scripts/debug-resume-tailoring-e2e.ts",
+      "line": 127,
+      "column": 40,
+      "code": "TS2339",
+      "message": "Property 'id' does not exist on type 'never'.",
+      "category": "legacy_or_debt_path"
+    },
+    {
+      "file": "scripts/debug-resume-tailoring-e2e.ts",
+      "line": 130,
+      "column": 31,
+      "code": "TS2339",
+      "message": "Property 'id' does not exist on type 'never'.",
+      "category": "legacy_or_debt_path"
+    },
+    {
+      "file": "scripts/debug-resume-tailoring-e2e.ts",
+      "line": 138,
+      "column": 10,
+      "code": "TS2769",
+      "message": "No overload matches this call.",
+      "category": "legacy_or_debt_path"
+    },
+    {
+      "file": "scripts/debug-resume-tailoring-e2e.ts",
+      "line": 208,
+      "column": 9,
+      "code": "TS2322",
+      "message": "Type 'SupabaseClient<any, \"public\", \"public\", any, any>' is not assignable to type 'SupabaseClient<unknown, { PostgrestVersion: string; }, never, never, { PostgrestVersion: string; }>'.",
+      "category": "legacy_or_debt_path"
+    },
+    {
+      "file": "scripts/debug-resume-tailoring-e2e.ts",
+      "line": 215,
+      "column": 46,
+      "code": "TS2322",
+      "message": "Type 'SupabaseClient<any, \"public\", \"public\", any, any>' is not assignable to type 'SupabaseClient<unknown, { PostgrestVersion: string; }, never, never, { PostgrestVersion: string; }>'.",
+      "category": "legacy_or_debt_path"
+    },
+    {
+      "file": "scripts/human-alignment-benchmark.ts",
+      "line": 380,
+      "column": 5,
+      "code": "TS2322",
+      "message": "Type '({ id: string; title: string; human_label: HumanAlignmentBucket; before_bucket: \"medium_fit\"; after_bucket: \"high_fit\"; score_delta: number; why: string; } | null)[]' is not assignable to type '{ id: string; title: string; human_label: HumanAlignmentBucket; before_bucket: HumanAlignmentBucket; after_bucket: HumanAlignmentBucket; score_delta: number; why: string; }[]'.",
+      "category": "legacy_or_debt_path"
+    },
+    {
+      "file": "scripts/human-alignment-benchmark.ts",
+      "line": 404,
+      "column": 33,
+      "code": "TS2677",
+      "message": "A type predicate's type must be assignable to its parameter's type.",
+      "category": "legacy_or_debt_path"
+    },
+    {
+      "file": "scripts/rematerialize-evidence-pieces.ts",
+      "line": 73,
+      "column": 71,
+      "code": "TS2345",
+      "message": "Argument of type 'SupabaseClient<any, \"public\", \"public\", any, any>' is not assignable to parameter of type 'SupabaseClient<unknown, { PostgrestVersion: string; }, never, never, { PostgrestVersion: string; }>'.",
+      "category": "legacy_or_debt_path"
+    },
+    {
+      "file": "scripts/rematerialize-signal-capability-pipeline.ts",
+      "line": 113,
+      "column": 58,
+      "code": "TS2345",
+      "message": "Argument of type 'SupabaseClient<any, \"public\", \"public\", any, any>' is not assignable to parameter of type 'SupabaseClient<unknown, { PostgrestVersion: string; }, never, never, { PostgrestVersion: string; }>'.",
+      "category": "legacy_or_debt_path"
+    },
+    {
+      "file": "scripts/rematerialize-signal-capability-pipeline.ts",
+      "line": 116,
+      "column": 56,
+      "code": "TS2345",
+      "message": "Argument of type 'SupabaseClient<any, \"public\", \"public\", any, any>' is not assignable to parameter of type 'SupabaseClient<unknown, { PostgrestVersion: string; }, never, never, { PostgrestVersion: string; }>'.",
+      "category": "legacy_or_debt_path"
+    },
+    {
+      "file": "scripts/rematerialize-signal-capability-pipeline.ts",
+      "line": 122,
+      "column": 59,
+      "code": "TS2345",
+      "message": "Argument of type 'SupabaseClient<any, \"public\", \"public\", any, any>' is not assignable to parameter of type 'SupabaseClient<unknown, { PostgrestVersion: string; }, never, never, { PostgrestVersion: string; }>'.",
+      "category": "legacy_or_debt_path"
+    },
+    {
+      "file": "scripts/rematerialize-signal-capability-pipeline.ts",
+      "line": 127,
+      "column": 65,
+      "code": "TS2345",
+      "message": "Argument of type 'SupabaseClient<any, \"public\", \"public\", any, any>' is not assignable to parameter of type 'SupabaseClient<unknown, { PostgrestVersion: string; }, never, never, { PostgrestVersion: string; }>'.",
+      "category": "legacy_or_debt_path"
+    },
+    {
+      "file": "scripts/rematerialize-signal-capability-pipeline.ts",
+      "line": 130,
+      "column": 51,
+      "code": "TS2345",
+      "message": "Argument of type 'SupabaseClient<any, \"public\", \"public\", any, any>' is not assignable to parameter of type 'SupabaseClient<unknown, { PostgrestVersion: string; }, never, never, { PostgrestVersion: string; }>'.",
+      "category": "legacy_or_debt_path"
+    },
+    {
+      "file": "scripts/rematerialize-signal-capability-pipeline.ts",
+      "line": 131,
+      "column": 55,
+      "code": "TS2345",
+      "message": "Argument of type 'SupabaseClient<any, \"public\", \"public\", any, any>' is not assignable to parameter of type 'SupabaseClient<unknown, { PostgrestVersion: string; }, never, never, { PostgrestVersion: string; }>'.",
+      "category": "legacy_or_debt_path"
+    },
+    {
+      "file": "scripts/rematerialize-signal-capability-pipeline.ts",
+      "line": 189,
+      "column": 26,
+      "code": "TS2352",
+      "message": "Conversion of type 'GenericStringError[]' to type '{ id: string; career_id: string; raw_text: string; inferred_scale: Record<string, unknown> | null; }[]' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.",
+      "category": "legacy_or_debt_path"
+    },
+    {
+      "file": "scripts/rematerialize-signal-capability-pipeline.ts",
+      "line": 265,
+      "column": 29,
+      "code": "TS2352",
+      "message": "Conversion of type 'GenericStringError[]' to type '{ id: string; evidence_piece_id: string; action: string | null; domain: string | null; initiative_type: string | null; scope_level: string | null; ownership_level: string | null; ... 5 more ...; confidence_score: number | null; }[]' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.",
+      "category": "legacy_or_debt_path"
+    },
+    {
+      "file": "tests/test-api-resume-generate.ts",
+      "line": 25,
+      "column": 5,
+      "code": "TS2322",
+      "message": "Type '{ debug?: { metadata: { profile_id: string; career_id: string; job_id: string; total_evidence_loaded: number; total_evidence_in_pool: number; total_evidence_ranked: number; total_evidence_selected: number; ... 5 more ...; dropped_for_duplicate: number; }; job_signals: { ...; }; experiences: { ...; }[]; } | undefined...' is not assignable to type 'ResumeCopilotServiceResult'.",
+      "category": "legacy_or_debt_path"
+    },
+    {
+      "file": "tests/test-matcher.ts",
+      "line": 1,
+      "column": 37,
+      "code": "TS2307",
+      "message": "Cannot find module './lib/career-engine/jd-parser' or its corresponding type declarations.",
+      "category": "legacy_or_debt_path"
+    },
+    {
+      "file": "tests/test-matcher.ts",
+      "line": 2,
+      "column": 28,
+      "code": "TS2307",
+      "message": "Cannot find module './lib/career-engine/role-matcher' or its corresponding type declarations.",
+      "category": "legacy_or_debt_path"
+    },
+    {
+      "file": "tests/test-matcher.ts",
+      "line": 16,
+      "column": 59,
+      "code": "TS7006",
+      "message": "Parameter 's' implicitly has an 'any' type.",
+      "category": "legacy_or_debt_path"
+    },
+    {
+      "file": "tests/test-matcher2.ts",
+      "line": 1,
+      "column": 28,
+      "code": "TS2307",
+      "message": "Cannot find module './lib/career-engine/role-matcher' or its corresponding type declarations.",
+      "category": "legacy_or_debt_path"
+    },
+    {
+      "file": "tests/test-matcher2.ts",
+      "line": 2,
+      "column": 37,
+      "code": "TS2307",
+      "message": "Cannot find module './lib/career-engine/jd-parser' or its corresponding type declarations.",
+      "category": "legacy_or_debt_path"
+    },
+    {
+      "file": "tests/test-matcher2.ts",
+      "line": 3,
+      "column": 33,
+      "code": "TS2307",
+      "message": "Cannot find module './lib/career-engine/skill-normalizer' or its corresponding type declarations.",
+      "category": "legacy_or_debt_path"
+    },
+    {
+      "file": "tests/test-matcher2.ts",
+      "line": 16,
+      "column": 59,
+      "code": "TS7006",
+      "message": "Parameter 's' implicitly has an 'any' type.",
+      "category": "legacy_or_debt_path"
+    },
+    {
+      "file": "tests/test-parser.ts",
+      "line": 1,
+      "column": 33,
+      "code": "TS2307",
+      "message": "Cannot find module './lib/career-engine/resume-parser' or its corresponding type declarations.",
+      "category": "legacy_or_debt_path"
+    },
+    {
+      "file": "tests/test-rewrite.ts",
+      "line": 1,
+      "column": 28,
+      "code": "TS2307",
+      "message": "Cannot find module './lib/career-engine/role-matcher' or its corresponding type declarations.",
+      "category": "legacy_or_debt_path"
+    },
+    {
+      "file": "tests/test-rewrite.ts",
+      "line": 2,
+      "column": 37,
+      "code": "TS2307",
+      "message": "Cannot find module './lib/career-engine/jd-parser' or its corresponding type declarations.",
+      "category": "legacy_or_debt_path"
+    },
+    {
+      "file": "tests/test-rewrite.ts",
+      "line": 3,
+      "column": 32,
+      "code": "TS2307",
+      "message": "Cannot find module './lib/career-engine/gap-prioritizer' or its corresponding type declarations.",
+      "category": "legacy_or_debt_path"
+    },
+    {
+      "file": "tests/test-rewrite.ts",
+      "line": 4,
+      "column": 33,
+      "code": "TS2307",
+      "message": "Cannot find module './lib/career-engine/skill-normalizer' or its corresponding type declarations.",
+      "category": "legacy_or_debt_path"
+    },
+    {
+      "file": "tests/test-rewrite.ts",
+      "line": 5,
+      "column": 31,
+      "code": "TS2307",
+      "message": "Cannot find module './lib/career-engine/resume-rewriter' or its corresponding type declarations.",
+      "category": "legacy_or_debt_path"
+    },
+    {
+      "file": "tests/test-rewrite.ts",
+      "line": 27,
+      "column": 34,
+      "code": "TS7006",
+      "message": "Parameter 's' implicitly has an 'any' type.",
+      "category": "legacy_or_debt_path"
+    },
+    {
+      "file": "tests/test-sim-json.ts",
+      "line": 1,
+      "column": 28,
+      "code": "TS2307",
+      "message": "Cannot find module './lib/career-engine/role-matcher' or its corresponding type declarations.",
+      "category": "legacy_or_debt_path"
+    },
+    {
+      "file": "tests/test-sim-json.ts",
+      "line": 2,
+      "column": 37,
+      "code": "TS2307",
+      "message": "Cannot find module './lib/career-engine/jd-parser' or its corresponding type declarations.",
+      "category": "legacy_or_debt_path"
+    },
+    {
+      "file": "tests/test-sim-json.ts",
+      "line": 3,
+      "column": 32,
+      "code": "TS2307",
+      "message": "Cannot find module './lib/career-engine/gap-prioritizer' or its corresponding type declarations.",
+      "category": "legacy_or_debt_path"
+    },
+    {
+      "file": "tests/test-sim-json.ts",
+      "line": 4,
+      "column": 39,
+      "code": "TS2307",
+      "message": "Cannot find module './lib/career-engine/career-simulator' or its corresponding type declarations.",
+      "category": "legacy_or_debt_path"
+    },
+    {
+      "file": "tests/test-sim-json.ts",
+      "line": 5,
+      "column": 33,
+      "code": "TS2307",
+      "message": "Cannot find module './lib/career-engine/skill-normalizer' or its corresponding type declarations.",
+      "category": "legacy_or_debt_path"
+    },
+    {
+      "file": "tests/test-sim-json.ts",
+      "line": 26,
+      "column": 34,
+      "code": "TS7006",
+      "message": "Parameter 's' implicitly has an 'any' type.",
+      "category": "legacy_or_debt_path"
+    },
+    {
+      "file": "tests/test-sim.ts",
+      "line": 1,
+      "column": 28,
+      "code": "TS2307",
+      "message": "Cannot find module './lib/career-engine/role-matcher' or its corresponding type declarations.",
+      "category": "legacy_or_debt_path"
+    },
+    {
+      "file": "tests/test-sim.ts",
+      "line": 2,
+      "column": 37,
+      "code": "TS2307",
+      "message": "Cannot find module './lib/career-engine/jd-parser' or its corresponding type declarations.",
+      "category": "legacy_or_debt_path"
+    },
+    {
+      "file": "tests/test-sim.ts",
+      "line": 3,
+      "column": 32,
+      "code": "TS2307",
+      "message": "Cannot find module './lib/career-engine/gap-prioritizer' or its corresponding type declarations.",
+      "category": "legacy_or_debt_path"
+    },
+    {
+      "file": "tests/test-sim.ts",
+      "line": 4,
+      "column": 39,
+      "code": "TS2307",
+      "message": "Cannot find module './lib/career-engine/career-simulator' or its corresponding type declarations.",
+      "category": "legacy_or_debt_path"
+    },
+    {
+      "file": "tests/test-sim.ts",
+      "line": 5,
+      "column": 33,
+      "code": "TS2307",
+      "message": "Cannot find module './lib/career-engine/skill-normalizer' or its corresponding type declarations.",
+      "category": "legacy_or_debt_path"
+    },
+    {
+      "file": "tests/test-sim.ts",
+      "line": 17,
+      "column": 59,
+      "code": "TS7006",
+      "message": "Parameter 's' implicitly has an 'any' type.",
+      "category": "legacy_or_debt_path"
+    },
+    {
+      "file": "tests/test-sim.ts",
+      "line": 23,
+      "column": 79,
+      "code": "TS7006",
+      "message": "Parameter 's' implicitly has an 'any' type.",
+      "category": "legacy_or_debt_path"
+    },
+    {
+      "file": "tests/test-sim2.ts",
+      "line": 1,
+      "column": 28,
+      "code": "TS2307",
+      "message": "Cannot find module './lib/career-engine/role-matcher' or its corresponding type declarations.",
+      "category": "legacy_or_debt_path"
+    },
+    {
+      "file": "tests/test-sim2.ts",
+      "line": 2,
+      "column": 37,
+      "code": "TS2307",
+      "message": "Cannot find module './lib/career-engine/jd-parser' or its corresponding type declarations.",
+      "category": "legacy_or_debt_path"
+    },
+    {
+      "file": "tests/test-sim2.ts",
+      "line": 3,
+      "column": 32,
+      "code": "TS2307",
+      "message": "Cannot find module './lib/career-engine/gap-prioritizer' or its corresponding type declarations.",
+      "category": "legacy_or_debt_path"
+    },
+    {
+      "file": "tests/test-sim2.ts",
+      "line": 4,
+      "column": 39,
+      "code": "TS2307",
+      "message": "Cannot find module './lib/career-engine/career-simulator' or its corresponding type declarations.",
+      "category": "legacy_or_debt_path"
+    },
+    {
+      "file": "tests/test-sim2.ts",
+      "line": 5,
+      "column": 33,
+      "code": "TS2307",
+      "message": "Cannot find module './lib/career-engine/skill-normalizer' or its corresponding type declarations.",
+      "category": "legacy_or_debt_path"
+    },
+    {
+      "file": "tests/test-sim2.ts",
+      "line": 25,
+      "column": 34,
+      "code": "TS7006",
+      "message": "Parameter 's' implicitly has an 'any' type.",
+      "category": "legacy_or_debt_path"
+    }
+  ],
+  "command_result": {
+    "command": "cmd /c /d /s /c npx tsc --noEmit --pretty false",
+    "exit_code": 2,
+    "stdout": "app/api/job-recommendations/route.ts(83,16): error TS2352: Conversion of type '{ skills: { name: any; }[]; }[]' to type 'UserSkillRow[]' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.\r\n  Type '{ skills: { name: any; }[]; }' is not comparable to type 'UserSkillRow'.\r\n    Types of property 'skills' are incompatible.\r\n      Property 'name' is missing in type '{ name: any; }[]' but required in type '{ name: string | null; }'.\r\napp/api/job-search/route.ts(104,16): error TS2352: Conversion of type '{ skills: { name: any; }[]; }[]' to type 'UserSkillRow[]' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.\r\n  Type '{ skills: { name: any; }[]; }' is not comparable to type 'UserSkillRow'.\r\n    Types of property 'skills' are incompatible.\r\n      Property 'name' is missing in type '{ name: any; }[]' but required in type '{ name: string | null; }'.\r\napp/api/job-search/route.ts(163,9): error TS2322: Type 'string' is not assignable to type '\"ok\" | \"no_results\" | \"source_blocked\"'.\r\napp/api/match-job/route.ts(53,16): error TS2352: Conversion of type '{ skills: { name: any; }[]; }[]' to type 'UserSkillRow[]' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.\r\n  Type '{ skills: { name: any; }[]; }' is not comparable to type 'UserSkillRow'.\r\n    Types of property 'skills' are incompatible.\r\n      Property 'name' is missing in type '{ name: any; }[]' but required in type '{ name: string | null; }'.\r\nlib/career-engine/job/job-copilot.ts(404,66): error TS18047: 'selectedProviderResult' is possibly 'null'.\r\nlib/career-engine/profile/resume-rewriter.ts(134,30): error TS2339: Property 'family' does not exist on type 'NormalizedTitle'.\r\nlib/career-engine/profile/resume-rewriter.ts(150,30): error TS2339: Property 'family' does not exist on type 'NormalizedTitle'.\r\nlib/career-engine/profile/resume-rewriter.ts(152,30): error TS2339: Property 'seniority' does not exist on type 'NormalizedTitle'.\r\nlib/career-engine/profile/resume-rewriter.ts(251,98): error TS2339: Property 'family' does not exist on type 'NormalizedTitle'.\r\nlib/career-engine/profile/resume-rewriter.ts(257,30): error TS2339: Property 'family' does not exist on type 'NormalizedTitle'.\r\nlib/career-engine/scoring/gap-analysis.ts(1,29): error TS2307: Cannot find module './job-matcher' or its corresponding type declarations.\r\nlib/career-engine/strategy/action-plan.ts(2,43): error TS2307: Cannot find module './jd-parser' or its corresponding type declarations.\r\nlib/career-engine/strategy/career-simulator.ts(2,43): error TS2307: Cannot find module './jd-parser' or its corresponding type declarations.\r\nlib/career-engine/strategy/career-simulator.ts(55,21): error TS7006: Parameter 's' implicitly has an 'any' type.\r\nlib/career-engine/strategy/career-simulator.ts(57,18): error TS7006: Parameter 's' implicitly has an 'any' type.\r\nlib/career-engine/strategy/career-strategy.ts(2,43): error TS2307: Cannot find module './jd-parser' or its corresponding type declarations.\r\nlib/career-engine/strategy/career-strategy.ts(38,55): error TS7006: Parameter 's' implicitly has an 'any' type.\r\nlib/career-engine/strategy/career-strategy.ts(137,67): error TS7006: Parameter 's' implicitly has an 'any' type.\r\nlib/career-engine/strategy/role-recommender.ts(1,35): error TS2307: Cannot find module './role-matcher' or its corresponding type declarations.\r\nlib/career-engine/strategy/role-recommender.ts(128,38): error TS7006: Parameter 'sk' implicitly has an 'any' type.\r\nlib/career-engine/strategy/role-recommender.ts(131,37): error TS7006: Parameter 'sk' implicitly has an 'any' type.\r\nlib/career-engine/strategy/strategy.ts(1,31): error TS2307: Cannot find module './parsing/skill-extractor' or its corresponding type declarations.\r\nlib/career-engine/strategy/strategy.ts(28,10): error TS7006: Parameter 'jdSkill' implicitly has an 'any' type.\r\nscripts/debug-resume-tailoring-e2e.ts(83,29): error TS2339: Property 'id' does not exist on type 'never'.\r\nscripts/debug-resume-tailoring-e2e.ts(83,42): error TS2339: Property 'user_id' does not exist on type 'never'.\r\nscripts/debug-resume-tailoring-e2e.ts(86,33): error TS2339: Property 'id' does not exist on type 'never'.\r\nscripts/debug-resume-tailoring-e2e.ts(86,53): error TS2339: Property 'user_id' does not exist on type 'never'.\r\nscripts/debug-resume-tailoring-e2e.ts(99,30): error TS2339: Property 'id' does not exist on type 'never'.\r\nscripts/debug-resume-tailoring-e2e.ts(99,45): error TS2339: Property 'user_id' does not exist on type 'never'.\r\nscripts/debug-resume-tailoring-e2e.ts(102,32): error TS2339: Property 'id' does not exist on type 'never'.\r\nscripts/debug-resume-tailoring-e2e.ts(102,55): error TS2339: Property 'user_id' does not exist on type 'never'.\r\nscripts/debug-resume-tailoring-e2e.ts(113,10): error TS2769: No overload matches this call.\r\n  Overload 1 of 2, '(values: never, options?: { onConflict?: string | undefined; ignoreDuplicates?: boolean | undefined; count?: \"exact\" | \"planned\" | \"estimated\" | undefined; } | undefined): PostgrestFilterBuilder<{ ...; }, ... 5 more ..., \"POST\">', gave the following error.\r\n    Argument of type '{ external_source: string; external_id: string; title: string; company: string; location: null; description: string; job_url: null; }' is not assignable to parameter of type 'never'.\r\n  Overload 2 of 2, '(values: never[], options?: { onConflict?: string | undefined; ignoreDuplicates?: boolean | undefined; count?: \"exact\" | \"planned\" | \"estimated\" | undefined; defaultToNull?: boolean | undefined; } | undefined): PostgrestFilterBuilder<...>', gave the following error.\r\n    Object literal may only specify known properties, and 'external_source' does not exist in type 'never[]'.\r\nscripts/debug-resume-tailoring-e2e.ts(127,40): error TS2339: Property 'id' does not exist on type 'never'.\r\nscripts/debug-resume-tailoring-e2e.ts(130,31): error TS2339: Property 'id' does not exist on type 'never'.\r\nscripts/debug-resume-tailoring-e2e.ts(138,10): error TS2769: No overload matches this call.\r\n  Overload 1 of 2, '(values: never, options?: { onConflict?: string | undefined; ignoreDuplicates?: boolean | undefined; count?: \"exact\" | \"planned\" | \"estimated\" | undefined; } | undefined): PostgrestFilterBuilder<{ ...; }, ... 5 more ..., \"POST\">', gave the following error.\r\n    Argument of type '{ job_id: string; target_title: string | null; role_family: string | null; seniority: string | null; required_skills: string[]; preferred_skills: string[]; responsibilities: string[]; domains: string[]; keywords: string[]; }' is not assignable to parameter of type 'never'.\r\n  Overload 2 of 2, '(values: never[], options?: { onConflict?: string | undefined; ignoreDuplicates?: boolean | undefined; count?: \"exact\" | \"planned\" | \"estimated\" | undefined; defaultToNull?: boolean | undefined; } | undefined): PostgrestFilterBuilder<...>', gave the following error.\r\n    Object literal may only specify known properties, and 'job_id' does not exist in type 'never[]'.\r\nscripts/debug-resume-tailoring-e2e.ts(208,9): error TS2322: Type 'SupabaseClient<any, \"public\", \"public\", any, any>' is not assignable to type 'SupabaseClient<unknown, { PostgrestVersion: string; }, never, never, { PostgrestVersion: string; }>'.\r\n  Type '\"public\"' is not assignable to type 'never'.\r\nscripts/debug-resume-tailoring-e2e.ts(215,46): error TS2322: Type 'SupabaseClient<any, \"public\", \"public\", any, any>' is not assignable to type 'SupabaseClient<unknown, { PostgrestVersion: string; }, never, never, { PostgrestVersion: string; }>'.\r\n  Type '\"public\"' is not assignable to type 'never'.\r\nscripts/human-alignment-benchmark.ts(380,5): error TS2322: Type '({ id: string; title: string; human_label: HumanAlignmentBucket; before_bucket: \"medium_fit\"; after_bucket: \"high_fit\"; score_delta: number; why: string; } | null)[]' is not assignable to type '{ id: string; title: string; human_label: HumanAlignmentBucket; before_bucket: HumanAlignmentBucket; after_bucket: HumanAlignmentBucket; score_delta: number; why: string; }[]'.\r\n  Type '{ id: string; title: string; human_label: HumanAlignmentBucket; before_bucket: \"medium_fit\"; after_bucket: \"high_fit\"; score_delta: number; why: string; } | null' is not assignable to type '{ id: string; title: string; human_label: HumanAlignmentBucket; before_bucket: HumanAlignmentBucket; after_bucket: HumanAlignmentBucket; score_delta: number; why: string; }'.\r\n    Type 'null' is not assignable to type '{ id: string; title: string; human_label: HumanAlignmentBucket; before_bucket: HumanAlignmentBucket; after_bucket: HumanAlignmentBucket; score_delta: number; why: string; }'.\r\nscripts/human-alignment-benchmark.ts(404,33): error TS2677: A type predicate's type must be assignable to its parameter's type.\r\n  Type '{ id: string; title: string; human_label: HumanAlignmentBucket; before_bucket: HumanAlignmentBucket; after_bucket: HumanAlignmentBucket; score_delta: number; why: string; }' is not assignable to type '{ id: string; title: string; human_label: HumanAlignmentBucket; before_bucket: \"medium_fit\"; after_bucket: \"high_fit\"; score_delta: number; why: string; }'.\r\n    Types of property 'before_bucket' are incompatible.\r\n      Type 'HumanAlignmentBucket' is not assignable to type '\"medium_fit\"'.\r\n        Type '\"low_fit\"' is not assignable to type '\"medium_fit\"'.\r\nscripts/rematerialize-evidence-pieces.ts(73,71): error TS2345: Argument of type 'SupabaseClient<any, \"public\", \"public\", any, any>' is not assignable to parameter of type 'SupabaseClient<unknown, { PostgrestVersion: string; }, never, never, { PostgrestVersion: string; }>'.\r\n  Type '\"public\"' is not assignable to type 'never'.\r\nscripts/rematerialize-signal-capability-pipeline.ts(113,58): error TS2345: Argument of type 'SupabaseClient<any, \"public\", \"public\", any, any>' is not assignable to parameter of type 'SupabaseClient<unknown, { PostgrestVersion: string; }, never, never, { PostgrestVersion: string; }>'.\r\n  Type '\"public\"' is not assignable to type 'never'.\r\nscripts/rematerialize-signal-capability-pipeline.ts(116,56): error TS2345: Argument of type 'SupabaseClient<any, \"public\", \"public\", any, any>' is not assignable to parameter of type 'SupabaseClient<unknown, { PostgrestVersion: string; }, never, never, { PostgrestVersion: string; }>'.\r\n  Type '\"public\"' is not assignable to type 'never'.\r\nscripts/rematerialize-signal-capability-pipeline.ts(122,59): error TS2345: Argument of type 'SupabaseClient<any, \"public\", \"public\", any, any>' is not assignable to parameter of type 'SupabaseClient<unknown, { PostgrestVersion: string; }, never, never, { PostgrestVersion: string; }>'.\r\n  Type '\"public\"' is not assignable to type 'never'.\r\nscripts/rematerialize-signal-capability-pipeline.ts(127,65): error TS2345: Argument of type 'SupabaseClient<any, \"public\", \"public\", any, any>' is not assignable to parameter of type 'SupabaseClient<unknown, { PostgrestVersion: string; }, never, never, { PostgrestVersion: string; }>'.\r\n  Type '\"public\"' is not assignable to type 'never'.\r\nscripts/rematerialize-signal-capability-pipeline.ts(130,51): error TS2345: Argument of type 'SupabaseClient<any, \"public\", \"public\", any, any>' is not assignable to parameter of type 'SupabaseClient<unknown, { PostgrestVersion: string; }, never, never, { PostgrestVersion: string; }>'.\r\n  Type '\"public\"' is not assignable to type 'never'.\r\nscripts/rematerialize-signal-capability-pipeline.ts(131,55): error TS2345: Argument of type 'SupabaseClient<any, \"public\", \"public\", any, any>' is not assignable to parameter of type 'SupabaseClient<unknown, { PostgrestVersion: string; }, never, never, { PostgrestVersion: string; }>'.\r\n  Type '\"public\"' is not assignable to type 'never'.\r\nscripts/rematerialize-signal-capability-pipeline.ts(189,26): error TS2352: Conversion of type 'GenericStringError[]' to type '{ id: string; career_id: string; raw_text: string; inferred_scale: Record<string, unknown> | null; }[]' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.\r\n  Type '{ error: true; } & String' is missing the following properties from type '{ id: string; career_id: string; raw_text: string; inferred_scale: Record<string, unknown> | null; }': id, career_id, raw_text, inferred_scale\r\nscripts/rematerialize-signal-capability-pipeline.ts(265,29): error TS2352: Conversion of type 'GenericStringError[]' to type '{ id: string; evidence_piece_id: string; action: string | null; domain: string | null; initiative_type: string | null; scope_level: string | null; ownership_level: string | null; ... 5 more ...; confidence_score: number | null; }[]' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.\r\n  Type '{ error: true; } & String' is missing the following properties from type '{ id: string; evidence_piece_id: string; action: string | null; domain: string | null; initiative_type: string | null; scope_level: string | null; ownership_level: string | null; ... 5 more ...; confidence_score: number | null; }': id, evidence_piece_id, action, domain, and 9 more.\r\ntests/test-api-resume-generate.ts(25,5): error TS2322: Type '{ debug?: { metadata: { profile_id: string; career_id: string; job_id: string; total_evidence_loaded: number; total_evidence_in_pool: number; total_evidence_ranked: number; total_evidence_selected: number; ... 5 more ...; dropped_for_duplicate: number; }; job_signals: { ...; }; experiences: { ...; }[]; } | undefined...' is not assignable to type 'ResumeCopilotServiceResult'.\r\n  Types of property 'debug' are incompatible.\r\n    Type '{ metadata: { profile_id: string; career_id: string; job_id: string; total_evidence_loaded: number; total_evidence_in_pool: number; total_evidence_ranked: number; total_evidence_selected: number; ... 5 more ...; dropped_for_duplicate: number; }; job_signals: { ...; }; experiences: { ...; }[]; } | undefined' is not assignable to type 'ResumeCopilotDebugOutput | undefined'.\r\n      Type '{ metadata: { profile_id: string; career_id: string; job_id: string; total_evidence_loaded: number; total_evidence_in_pool: number; total_evidence_ranked: number; total_evidence_selected: number; ... 5 more ...; dropped_for_duplicate: number; }; job_signals: { ...; }; experiences: { ...; }[]; }' is not assignable to type 'ResumeCopilotDebugOutput'.\r\n        Types of property 'experiences' are incompatible.\r\n          Type '{ company: string; role: string; date_range: string; bullets: { evidence_piece_id: string; original_bullet: string; rewritten_bullet: string; score: number; matched_signals: string[]; pool_sources: string[]; score_breakdown: { ...; }; }[]; }[]' is not assignable to type 'ResumeDebugExperience[]'.\r\n            Type '{ company: string; role: string; date_range: string; bullets: { evidence_piece_id: string; original_bullet: string; rewritten_bullet: string; score: number; matched_signals: string[]; pool_sources: string[]; score_breakdown: { ...; }; }[]; }' is not assignable to type 'ResumeDebugExperience'.\r\n              Types of property 'bullets' are incompatible.\r\n                Type '{ evidence_piece_id: string; original_bullet: string; rewritten_bullet: string; score: number; matched_signals: string[]; pool_sources: string[]; score_breakdown: { keyword_overlap: number; }; }[]' is not assignable to type 'ResumeDebugBullet[]'.\r\n                  Type '{ evidence_piece_id: string; original_bullet: string; rewritten_bullet: string; score: number; matched_signals: string[]; pool_sources: string[]; score_breakdown: { keyword_overlap: number; }; }' is missing the following properties from type 'ResumeDebugBullet': original_length, rewritten_length, was_compacted, source_was_paragraph_like\r\ntests/test-matcher.ts(1,37): error TS2307: Cannot find module './lib/career-engine/jd-parser' or its corresponding type declarations.\r\ntests/test-matcher.ts(2,28): error TS2307: Cannot find module './lib/career-engine/role-matcher' or its corresponding type declarations.\r\ntests/test-matcher.ts(16,59): error TS7006: Parameter 's' implicitly has an 'any' type.\r\ntests/test-matcher2.ts(1,28): error TS2307: Cannot find module './lib/career-engine/role-matcher' or its corresponding type declarations.\r\ntests/test-matcher2.ts(2,37): error TS2307: Cannot find module './lib/career-engine/jd-parser' or its corresponding type declarations.\r\ntests/test-matcher2.ts(3,33): error TS2307: Cannot find module './lib/career-engine/skill-normalizer' or its corresponding type declarations.\r\ntests/test-matcher2.ts(16,59): error TS7006: Parameter 's' implicitly has an 'any' type.\r\ntests/test-parser.ts(1,33): error TS2307: Cannot find module './lib/career-engine/resume-parser' or its corresponding type declarations.\r\ntests/test-rewrite.ts(1,28): error TS2307: Cannot find module './lib/career-engine/role-matcher' or its corresponding type declarations.\r\ntests/test-rewrite.ts(2,37): error TS2307: Cannot find module './lib/career-engine/jd-parser' or its corresponding type declarations.\r\ntests/test-rewrite.ts(3,32): error TS2307: Cannot find module './lib/career-engine/gap-prioritizer' or its corresponding type declarations.\r\ntests/test-rewrite.ts(4,33): error TS2307: Cannot find module './lib/career-engine/skill-normalizer' or its corresponding type declarations.\r\ntests/test-rewrite.ts(5,31): error TS2307: Cannot find module './lib/career-engine/resume-rewriter' or its corresponding type declarations.\r\ntests/test-rewrite.ts(27,34): error TS7006: Parameter 's' implicitly has an 'any' type.\r\ntests/test-sim-json.ts(1,28): error TS2307: Cannot find module './lib/career-engine/role-matcher' or its corresponding type declarations.\r\ntests/test-sim-json.ts(2,37): error TS2307: Cannot find module './lib/career-engine/jd-parser' or its corresponding type declarations.\r\ntests/test-sim-json.ts(3,32): error TS2307: Cannot find module './lib/career-engine/gap-prioritizer' or its corresponding type declarations.\r\ntests/test-sim-json.ts(4,39): error TS2307: Cannot find module './lib/career-engine/career-simulator' or its corresponding type declarations.\r\ntests/test-sim-json.ts(5,33): error TS2307: Cannot find module './lib/career-engine/skill-normalizer' or its corresponding type declarations.\r\ntests/test-sim-json.ts(26,34): error TS7006: Parameter 's' implicitly has an 'any' type.\r\ntests/test-sim.ts(1,28): error TS2307: Cannot find module './lib/career-engine/role-matcher' or its corresponding type declarations.\r\ntests/test-sim.ts(2,37): error TS2307: Cannot find module './lib/career-engine/jd-parser' or its corresponding type declarations.\r\ntests/test-sim.ts(3,32): error TS2307: Cannot find module './lib/career-engine/gap-prioritizer' or its corresponding type declarations.\r\ntests/test-sim.ts(4,39): error TS2307: Cannot find module './lib/career-engine/career-simulator' or its corresponding type declarations.\r\ntests/test-sim.ts(5,33): error TS2307: Cannot find module './lib/career-engine/skill-normalizer' or its corresponding type declarations.\r\ntests/test-sim.ts(17,59): error TS7006: Parameter 's' implicitly has an 'any' type.\r\ntests/test-sim.ts(23,79): error TS7006: Parameter 's' implicitly has an 'any' type.\r\ntests/test-sim2.ts(1,28): error TS2307: Cannot find module './lib/career-engine/role-matcher' or its corresponding type declarations.\r\ntests/test-sim2.ts(2,37): error TS2307: Cannot find module './lib/career-engine/jd-parser' or its corresponding type declarations.\r\ntests/test-sim2.ts(3,32): error TS2307: Cannot find module './lib/career-engine/gap-prioritizer' or its corresponding type declarations.\r\ntests/test-sim2.ts(4,39): error TS2307: Cannot find module './lib/career-engine/career-simulator' or its corresponding type declarations.\r\ntests/test-sim2.ts(5,33): error TS2307: Cannot find module './lib/career-engine/skill-normalizer' or its corresponding type declarations.\r\ntests/test-sim2.ts(25,34): error TS7006: Parameter 's' implicitly has an 'any' type.\r\n",
+    "stderr": ""
+  }
+}
