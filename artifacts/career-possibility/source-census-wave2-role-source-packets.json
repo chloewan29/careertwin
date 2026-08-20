@@ -1,0 +1,263 @@
+{
+  "metadata": {
+    "artifactClass": "NON_CANONICAL_DIAGNOSTIC",
+    "artifactType": "WAVE_2_ROLE_SEMANTIC_SOURCE_PACKETS",
+    "authority": "NO_PRODUCTION_SEMANTIC_AUTHORITY",
+    "mode": "CAREER_MAP_MVP / ROLE_KNOWLEDGE_ENRICHMENT / WAVE_2_ROLE_SEMANTIC_CANDIDATE_SYNTHESIS",
+    "generatedAt": "2026-08-11T03:01:58.177Z",
+    "repositoryHead": "32f0f254acd001b9f6fa9d9a9a8b1ed594a8a8b9",
+    "roleCount": 3,
+    "canonicalRelationshipCount": 6,
+    "candidateGenerationNotAdmission": true
+  },
+  "governance": {
+    "precedent": [
+      "artifacts/role-semantic-enrichment-authoring-contract-draft.md",
+      "artifacts/canonical-capability-wave1-role-source-packets.json",
+      "artifacts/canonical-capability-wave1-role-semantic-candidates.md",
+      "artifacts/canonical-capability-wave1-role-semantic-admission-review.md",
+      "artifacts/canonical-capability-wave1-role-semantic-targeted-revisions.md",
+      "artifacts/canonical-capability-wave1-role-semantic-final-review.md"
+    ],
+    "rules": [
+      "STRICT_PROOF_LEVEL_FIDELITY",
+      "NO_UNSOURCED_SCALE_OR_SEGMENT_INJECTION",
+      "ROLE_SPECIFIC_NOT_UNIVERSAL",
+      "OBSERVABLE_PROFESSIONAL_EVIDENCE",
+      "RELATIONSHIP_CATEGORY_PRESERVED",
+      "IMPORTANCE_PRESERVED",
+      "MINIMUM_PROOF_LEVEL_PRESERVED",
+      "NO_CAPABILITY_ID_INVENTION",
+      "NO_PRIVATE_TO_CANONICAL_REMAPPING",
+      "NO_ADMISSION_ASSUMPTION"
+    ]
+  },
+  "roles": [
+    {
+      "roleFamilyId": "fpa-manager",
+      "canonicalTitle": "FP&A Manager",
+      "aliases": ["Financial Planning Manager"],
+      "searchTitles": ["Planning and Forecasting Lead", "Corporate FP&A Lead"],
+      "description": "Seeded CareerTwin role family profile for FP&A Manager, focused on observable capability and proof requirements in finance.",
+      "domain": "finance",
+      "seniorityBand": "manager",
+      "sourceNotes": [
+        "Seeded CareerTwin role family profile; not externally validated production data.",
+        "Designed for local product development and future taxonomy/LLM enrichment."
+      ],
+      "authorisedCanonicalRelationships": [
+        {
+          "roleFamilyId": "fpa-manager",
+          "capabilityId": "forecasting",
+          "canonicalLabel": "Forecasting",
+          "canonicalFamily": "Analytics & Insight",
+          "relationshipCategory": "mustHave",
+          "relationshipLabel": "Forecasting",
+          "importance": "must",
+          "minimumProofLevel": "owned_outcome",
+          "currentExpectedEvidence": "A specific owned outcome demonstrating forecasting.",
+          "currentExpectedEvidenceIsBoilerplate": true,
+          "sourceSufficiency": "INSUFFICIENT",
+          "generationRoute": "ONTOLOGY_ENRICHMENT_REQUIRED",
+          "mappingClues": [],
+          "evidenceSignalClues": [],
+          "reviewBoundary": "Forward-looking estimate or projection; do not collapse into financial planning, scenario modelling, or variance analysis."
+        },
+        {
+          "roleFamilyId": "fpa-manager",
+          "capabilityId": "variance-analysis",
+          "canonicalLabel": "Variance Analysis",
+          "canonicalFamily": "Analytics & Insight",
+          "relationshipCategory": "shouldHave",
+          "relationshipLabel": "Variance Analysis",
+          "importance": "should",
+          "minimumProofLevel": "demonstrated",
+          "currentExpectedEvidence": "A concrete example showing applied variance analysis.",
+          "currentExpectedEvidenceIsBoilerplate": true,
+          "sourceSufficiency": "INSUFFICIENT",
+          "generationRoute": "ONTOLOGY_ENRICHMENT_REQUIRED",
+          "mappingClues": [],
+          "evidenceSignalClues": [],
+          "reviewBoundary": "Explain difference between expected, planned, or benchmark state and actual state; do not collapse into forecasting, executive reporting, or general insight synthesis."
+        }
+      ],
+      "privateContextRelationships": [
+        {
+          "capabilityId": "financial-planning",
+          "status": "PRIVATE_CONTEXT_ONLY",
+          "relationshipCategory": "mustHave",
+          "relationshipLabel": "Financial Planning",
+          "importance": "must",
+          "minimumProofLevel": "demonstrated",
+          "currentExpectedEvidence": "A specific owned outcome demonstrating financial planning.",
+          "currentExpectedEvidenceIsBoilerplate": true,
+          "identityDecision": "NONE"
+        },
+        {
+          "capabilityId": "executive-reporting",
+          "status": "PRIVATE_CONTEXT_ONLY",
+          "relationshipCategory": "shouldHave",
+          "relationshipLabel": "Executive Reporting",
+          "importance": "should",
+          "minimumProofLevel": "demonstrated",
+          "currentExpectedEvidence": "A concrete example showing applied executive reporting.",
+          "currentExpectedEvidenceIsBoilerplate": true,
+          "identityDecision": "NONE"
+        }
+      ]
+    },
+    {
+      "roleFamilyId": "program-manager",
+      "canonicalTitle": "Program Manager",
+      "aliases": ["Programme Manager"],
+      "searchTitles": ["Senior Program Lead", "Delivery Program Manager"],
+      "description": "Seeded CareerTwin role family profile for Program Manager, focused on observable capability and proof requirements in program-delivery.",
+      "domain": "program-delivery",
+      "seniorityBand": "manager",
+      "sourceNotes": [
+        "Seeded CareerTwin role family profile; not externally validated production data.",
+        "Designed for local product development and future taxonomy/LLM enrichment."
+      ],
+      "authorisedCanonicalRelationships": [
+        {
+          "roleFamilyId": "program-manager",
+          "capabilityId": "dependency-management",
+          "canonicalLabel": "Dependency Management",
+          "canonicalFamily": "Operations & Delivery",
+          "relationshipCategory": "mustHave",
+          "relationshipLabel": "Dependency Management",
+          "importance": "must",
+          "minimumProofLevel": "demonstrated",
+          "currentExpectedEvidence": "A specific owned outcome demonstrating dependency management.",
+          "currentExpectedEvidenceIsBoilerplate": true,
+          "sourceSufficiency": "INSUFFICIENT",
+          "generationRoute": "ONTOLOGY_ENRICHMENT_REQUIRED",
+          "mappingClues": [],
+          "evidenceSignalClues": [],
+          "reviewBoundary": "Identify, coordinate, sequence, or resolve dependencies affecting delivery; do not collapse into program planning, stakeholder governance, or operating rhythm."
+        },
+        {
+          "roleFamilyId": "program-manager",
+          "capabilityId": "risk-controls",
+          "canonicalLabel": "Risk and Controls",
+          "canonicalFamily": "Governance & Risk",
+          "relationshipCategory": "shouldHave",
+          "relationshipLabel": "Risk and Controls",
+          "importance": "should",
+          "minimumProofLevel": "demonstrated",
+          "currentExpectedEvidence": "A concrete example showing applied risk and controls.",
+          "currentExpectedEvidenceIsBoilerplate": true,
+          "sourceSufficiency": "INSUFFICIENT",
+          "generationRoute": "ONTOLOGY_ENRICHMENT_REQUIRED",
+          "mappingClues": [],
+          "evidenceSignalClues": [],
+          "reviewBoundary": "Identify, implement, or operate controls against defined risk; do not collapse into dependency management, general governance, or program status reporting."
+        }
+      ],
+      "privateContextRelationships": [
+        {
+          "capabilityId": "program-planning",
+          "status": "PRIVATE_CONTEXT_ONLY",
+          "relationshipCategory": "mustHave",
+          "relationshipLabel": "Program Planning",
+          "importance": "must",
+          "minimumProofLevel": "owned_outcome",
+          "currentExpectedEvidence": "A specific owned outcome demonstrating program planning.",
+          "currentExpectedEvidenceIsBoilerplate": true,
+          "identityDecision": "NONE"
+        },
+        {
+          "capabilityId": "stakeholder-governance",
+          "status": "PRIVATE_CONTEXT_ONLY",
+          "relationshipCategory": "shouldHave",
+          "relationshipLabel": "Stakeholder Governance",
+          "importance": "should",
+          "minimumProofLevel": "demonstrated",
+          "currentExpectedEvidence": "A concrete example showing applied stakeholder governance.",
+          "currentExpectedEvidenceIsBoilerplate": true,
+          "identityDecision": "NONE"
+        }
+      ]
+    },
+    {
+      "roleFamilyId": "education-program-lead",
+      "canonicalTitle": "Education Program Lead",
+      "aliases": ["Learning Program Manager"],
+      "searchTitles": ["Education Delivery Lead", "Academic Program Manager"],
+      "description": "Seeded CareerTwin role family profile for Education Program Lead, focused on observable capability and proof requirements in education.",
+      "domain": "education",
+      "seniorityBand": "manager",
+      "sourceNotes": [
+        "Seeded CareerTwin role family profile; not externally validated production data.",
+        "Designed for local product development and future taxonomy/LLM enrichment."
+      ],
+      "authorisedCanonicalRelationships": [
+        {
+          "roleFamilyId": "education-program-lead",
+          "capabilityId": "education-delivery",
+          "canonicalLabel": "Education Delivery",
+          "canonicalFamily": "Learning & Development",
+          "relationshipCategory": "mustHave",
+          "relationshipLabel": "Education Delivery",
+          "importance": "must",
+          "minimumProofLevel": "demonstrated",
+          "currentExpectedEvidence": "A specific owned outcome demonstrating education delivery.",
+          "currentExpectedEvidenceIsBoilerplate": true,
+          "sourceSufficiency": "INSUFFICIENT",
+          "generationRoute": "ONTOLOGY_ENRICHMENT_REQUIRED",
+          "mappingClues": [],
+          "evidenceSignalClues": [],
+          "reviewBoundary": "Actual delivery, facilitation, or operation of a learning experience; do not collapse into learning design, program administration, or learner-outcome measurement alone."
+        },
+        {
+          "roleFamilyId": "education-program-lead",
+          "capabilityId": "education-partnerships",
+          "canonicalLabel": "Education Partnerships",
+          "canonicalFamily": "Communication & Collaboration",
+          "relationshipCategory": "shouldHave",
+          "relationshipLabel": "Education Partnerships",
+          "importance": "should",
+          "minimumProofLevel": "demonstrated",
+          "currentExpectedEvidence": "A concrete example showing applied education partnerships.",
+          "currentExpectedEvidenceIsBoilerplate": true,
+          "sourceSufficiency": "INSUFFICIENT",
+          "generationRoute": "ONTOLOGY_ENRICHMENT_REQUIRED",
+          "mappingClues": [],
+          "evidenceSignalClues": [],
+          "reviewBoundary": "Substantive collaboration with education partners enabling an education objective or delivery outcome; do not collapse into generic stakeholder management, commercial partnerships, or learning design."
+        }
+      ],
+      "privateContextRelationships": [
+        {
+          "capabilityId": "learning-design",
+          "status": "PRIVATE_CONTEXT_ONLY",
+          "relationshipCategory": "mustHave",
+          "relationshipLabel": "Learning Program Design",
+          "importance": "must",
+          "minimumProofLevel": "owned_outcome",
+          "currentExpectedEvidence": "A specific owned outcome demonstrating learning program design.",
+          "currentExpectedEvidenceIsBoilerplate": true,
+          "identityDecision": "NONE"
+        },
+        {
+          "capabilityId": "learner-outcomes",
+          "status": "PRIVATE_CONTEXT_ONLY",
+          "relationshipCategory": "shouldHave",
+          "relationshipLabel": "Learner Outcome Measurement",
+          "importance": "should",
+          "minimumProofLevel": "demonstrated",
+          "currentExpectedEvidence": "A concrete example showing applied learner outcome measurement.",
+          "currentExpectedEvidenceIsBoilerplate": true,
+          "identityDecision": "NONE"
+        }
+      ]
+    }
+  ],
+  "sourceLimitations": [
+    "All six current expectedEvidence values are structural boilerplate.",
+    "No target has a deterministic mapping clue or evidence-signal clue.",
+    "All three role profiles state that they are seeded local-development data and not externally validated production data.",
+    "Private relationship IDs provide boundary context only and carry no canonical identity decision.",
+    "Candidate language beyond these repository facts necessarily requires disclosed model prior and independent review."
+  ]
+}

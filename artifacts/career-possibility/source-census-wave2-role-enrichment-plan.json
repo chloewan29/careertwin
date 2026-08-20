@@ -1,0 +1,211 @@
+{
+  "metadata": {
+    "decision": "WAVE2_ROLE_ENRICHMENT_READY",
+    "mode": "CAREER_MAP_MVP / SOURCE_CENSUS_STRUCTURAL_PREFLIGHT / WAVE2_ROLE_ENRICHMENT_REPLAN",
+    "generatedAt": "2026-08-11T02:49:10.037Z",
+    "artifactClass": "NON_CANONICAL_DIAGNOSTIC",
+    "authority": "PLANNING_ONLY",
+    "productionSemanticAuthority": "NO_PRODUCTION_SEMANTIC_AUTHORITY",
+    "sourceCompilerCommit": "3a0b4c35a7de84aeb8b93dbeba8b83e17b859669",
+    "sourceScannerArtifact": "artifacts/career-possibility/source-census-conflict-detection.2026-08-11T02-41-19-884Z.json",
+    "primaryLane": "LANE_C"
+  },
+  "currentCompilerState": {
+    "derivedAtPlanningTime": true,
+    "sufficiency": {
+      "STRONG": 8,
+      "MODERATE": 10,
+      "WEAK": 10,
+      "INSUFFICIENT": 23
+    },
+    "routing": {
+      "AUTO": 18,
+      "TARGETED": 10,
+      "ENRICHMENT": 23,
+      "CONFLICT": 0
+    },
+    "baselineMatched": true
+  },
+  "scannerAuthority": {
+    "conflictDetectionScope": "STRUCTURAL_PREFLIGHT_ONLY",
+    "canonicalNameSource": "lib/career-possibility/canonical-capability-library.ts",
+    "idProxyNameCheckingRemaining": false,
+    "semanticSimilarity": "NOT_EVALUATED",
+    "semanticDrift": "NOT_EVALUATED",
+    "meaningOfZeroLabelSignals": "NO_DETERMINISTIC_LABEL_LEVEL_DUPLICATE_SIGNAL_FOUND",
+    "meaningOfNoStructuralSignal": "NO_EXPLICIT_STRUCTURAL_CONFLICT_SIGNAL",
+    "doesNotEstablish": [
+      "general semantic equivalence",
+      "semantic overlap from natural-language meaning",
+      "universal capability boundary correctness",
+      "semantic drift clearance",
+      "ontology write authorization"
+    ]
+  },
+  "scannerCurrentResults": {
+    "capabilitiesScanned": 51,
+    "idDuplicateSignals": 0,
+    "canonicalLabelDuplicateOrNearDuplicateSignals": 0,
+    "invalidFamilySignals": 0,
+    "familyAlignmentStructuralReviewSignals": 0,
+    "routingContradictions": 0,
+    "explicitConflictHolds": 0,
+    "evidenceInsufficiencyHolds": 23,
+    "noExplicitStructuralConflictSignals": 28
+  },
+  "current23GapUniverse": [
+    "forecasting",
+    "scenario-modelling",
+    "variance-analysis",
+    "commercial-partnerships",
+    "education-partnerships",
+    "legal-technology",
+    "architecture-governance",
+    "policy-governance",
+    "regulatory-compliance",
+    "risk-controls",
+    "business-ownership",
+    "commercial-leadership",
+    "education-delivery",
+    "dependency-management",
+    "ecosystem-operations",
+    "operating-rhythm",
+    "hr-systems",
+    "people-process",
+    "change-leadership",
+    "market-strategy",
+    "operating-model",
+    "operating-strategy",
+    "partner-strategy"
+  ],
+  "structuralPreflightResults": [
+    { "capabilityId": "forecasting", "family": "analytics-insight", "structuralConflictSignals": [], "explicitConflictSignalPresent": "NO", "semanticConflictEvaluated": "NO", "sourceInsufficiency": "YES", "planningState": "SOURCE_ENRICHMENT_ELIGIBLE" },
+    { "capabilityId": "scenario-modelling", "family": "analytics-insight", "structuralConflictSignals": [], "explicitConflictSignalPresent": "NO", "semanticConflictEvaluated": "NO", "sourceInsufficiency": "YES", "planningState": "SOURCE_ENRICHMENT_ELIGIBLE" },
+    { "capabilityId": "variance-analysis", "family": "analytics-insight", "structuralConflictSignals": [], "explicitConflictSignalPresent": "NO", "semanticConflictEvaluated": "NO", "sourceInsufficiency": "YES", "planningState": "SOURCE_ENRICHMENT_ELIGIBLE" },
+    { "capabilityId": "commercial-partnerships", "family": "commercial", "structuralConflictSignals": [], "explicitConflictSignalPresent": "NO", "semanticConflictEvaluated": "NO", "sourceInsufficiency": "YES", "planningState": "SOURCE_ENRICHMENT_ELIGIBLE" },
+    { "capabilityId": "education-partnerships", "family": "communication-collaboration", "structuralConflictSignals": [], "explicitConflictSignalPresent": "NO", "semanticConflictEvaluated": "NO", "sourceInsufficiency": "YES", "planningState": "SOURCE_ENRICHMENT_ELIGIBLE" },
+    { "capabilityId": "legal-technology", "family": "data-technology", "structuralConflictSignals": [], "explicitConflictSignalPresent": "NO", "semanticConflictEvaluated": "NO", "sourceInsufficiency": "YES", "planningState": "SOURCE_ENRICHMENT_ELIGIBLE" },
+    { "capabilityId": "architecture-governance", "family": "governance-risk", "structuralConflictSignals": [], "explicitConflictSignalPresent": "NO", "semanticConflictEvaluated": "NO", "sourceInsufficiency": "YES", "planningState": "SOURCE_ENRICHMENT_ELIGIBLE" },
+    { "capabilityId": "policy-governance", "family": "governance-risk", "structuralConflictSignals": [], "explicitConflictSignalPresent": "NO", "semanticConflictEvaluated": "NO", "sourceInsufficiency": "YES", "planningState": "SOURCE_ENRICHMENT_ELIGIBLE" },
+    { "capabilityId": "regulatory-compliance", "family": "governance-risk", "structuralConflictSignals": [], "explicitConflictSignalPresent": "NO", "semanticConflictEvaluated": "NO", "sourceInsufficiency": "YES", "planningState": "SOURCE_ENRICHMENT_ELIGIBLE" },
+    { "capabilityId": "risk-controls", "family": "governance-risk", "structuralConflictSignals": [], "explicitConflictSignalPresent": "NO", "semanticConflictEvaluated": "NO", "sourceInsufficiency": "YES", "planningState": "SOURCE_ENRICHMENT_ELIGIBLE" },
+    { "capabilityId": "business-ownership", "family": "leadership", "structuralConflictSignals": [], "explicitConflictSignalPresent": "NO", "semanticConflictEvaluated": "NO", "sourceInsufficiency": "YES", "planningState": "SOURCE_ENRICHMENT_ELIGIBLE" },
+    { "capabilityId": "commercial-leadership", "family": "leadership", "structuralConflictSignals": [], "explicitConflictSignalPresent": "NO", "semanticConflictEvaluated": "NO", "sourceInsufficiency": "YES", "planningState": "SOURCE_ENRICHMENT_ELIGIBLE" },
+    { "capabilityId": "education-delivery", "family": "learning-development", "structuralConflictSignals": [], "explicitConflictSignalPresent": "NO", "semanticConflictEvaluated": "NO", "sourceInsufficiency": "YES", "planningState": "SOURCE_ENRICHMENT_ELIGIBLE" },
+    { "capabilityId": "dependency-management", "family": "operations-delivery", "structuralConflictSignals": [], "explicitConflictSignalPresent": "NO", "semanticConflictEvaluated": "NO", "sourceInsufficiency": "YES", "planningState": "SOURCE_ENRICHMENT_ELIGIBLE" },
+    { "capabilityId": "ecosystem-operations", "family": "operations-delivery", "structuralConflictSignals": [], "explicitConflictSignalPresent": "NO", "semanticConflictEvaluated": "NO", "sourceInsufficiency": "YES", "planningState": "SOURCE_ENRICHMENT_ELIGIBLE" },
+    { "capabilityId": "operating-rhythm", "family": "operations-delivery", "structuralConflictSignals": [], "explicitConflictSignalPresent": "NO", "semanticConflictEvaluated": "NO", "sourceInsufficiency": "YES", "planningState": "SOURCE_ENRICHMENT_ELIGIBLE" },
+    { "capabilityId": "hr-systems", "family": "people-organisation", "structuralConflictSignals": [], "explicitConflictSignalPresent": "NO", "semanticConflictEvaluated": "NO", "sourceInsufficiency": "YES", "planningState": "SOURCE_ENRICHMENT_ELIGIBLE" },
+    { "capabilityId": "people-process", "family": "people-organisation", "structuralConflictSignals": [], "explicitConflictSignalPresent": "NO", "semanticConflictEvaluated": "NO", "sourceInsufficiency": "YES", "planningState": "SOURCE_ENRICHMENT_ELIGIBLE" },
+    { "capabilityId": "change-leadership", "family": "strategy-transformation", "structuralConflictSignals": [], "explicitConflictSignalPresent": "NO", "semanticConflictEvaluated": "NO", "sourceInsufficiency": "YES", "planningState": "SOURCE_ENRICHMENT_ELIGIBLE" },
+    { "capabilityId": "market-strategy", "family": "strategy-transformation", "structuralConflictSignals": [], "explicitConflictSignalPresent": "NO", "semanticConflictEvaluated": "NO", "sourceInsufficiency": "YES", "planningState": "SOURCE_ENRICHMENT_ELIGIBLE" },
+    { "capabilityId": "operating-model", "family": "strategy-transformation", "structuralConflictSignals": [], "explicitConflictSignalPresent": "NO", "semanticConflictEvaluated": "NO", "sourceInsufficiency": "YES", "planningState": "SOURCE_ENRICHMENT_ELIGIBLE" },
+    { "capabilityId": "operating-strategy", "family": "strategy-transformation", "structuralConflictSignals": [], "explicitConflictSignalPresent": "NO", "semanticConflictEvaluated": "NO", "sourceInsufficiency": "YES", "planningState": "SOURCE_ENRICHMENT_ELIGIBLE" },
+    { "capabilityId": "partner-strategy", "family": "strategy-transformation", "structuralConflictSignals": [], "explicitConflictSignalPresent": "NO", "semanticConflictEvaluated": "NO", "sourceInsufficiency": "YES", "planningState": "SOURCE_ENRICHMENT_ELIGIBLE" }
+  ],
+  "planningStateSummary": {
+    "SOURCE_ENRICHMENT_ELIGIBLE": 23,
+    "STRUCTURAL_BOUNDARY_REVIEW_REQUIRED": 0,
+    "EXPLICIT_CONFLICT_HOLD": 0,
+    "NO_ADEQUATE_ROLE_SOURCE": 0
+  },
+  "roleGapMatrix": [
+    { "roleFamilyId": "general-business-manager", "gapCapabilities": ["business-ownership", "commercial-leadership", "operating-strategy"], "gapCount": 3, "familiesTouched": ["Leadership", "Strategy & Transformation"], "privateIds": [], "alreadyEnrichedInWave1": "NO", "currentRelationshipEvidenceState": "BOILERPLATE_ONLY" },
+    { "roleFamilyId": "gtm-partnerships-manager", "gapCapabilities": ["partner-strategy", "commercial-partnerships", "ecosystem-operations"], "gapCount": 3, "familiesTouched": ["Strategy & Transformation", "Commercial", "Operations & Delivery"], "privateIds": ["gtm-planning"], "alreadyEnrichedInWave1": "NO", "currentRelationshipEvidenceState": "BOILERPLATE_ONLY" },
+    { "roleFamilyId": "people-operations-lead", "gapCapabilities": ["people-process", "hr-systems", "policy-governance"], "gapCount": 3, "familiesTouched": ["People & Organisation", "Governance & Risk"], "privateIds": ["service-operations"], "alreadyEnrichedInWave1": "NO", "currentRelationshipEvidenceState": "BOILERPLATE_ONLY" },
+    { "roleFamilyId": "education-program-lead", "gapCapabilities": ["education-delivery", "education-partnerships"], "gapCount": 2, "familiesTouched": ["Learning & Development", "Communication & Collaboration"], "privateIds": ["learning-design", "learner-outcomes"], "alreadyEnrichedInWave1": "NO", "currentRelationshipEvidenceState": "BOILERPLATE_ONLY" },
+    { "roleFamilyId": "fpa-manager", "gapCapabilities": ["forecasting", "variance-analysis"], "gapCount": 2, "familiesTouched": ["Analytics & Insight"], "privateIds": ["financial-planning", "executive-reporting"], "alreadyEnrichedInWave1": "NO", "currentRelationshipEvidenceState": "BOILERPLATE_ONLY" },
+    { "roleFamilyId": "program-manager", "gapCapabilities": ["dependency-management", "risk-controls"], "gapCount": 2, "familiesTouched": ["Operations & Delivery", "Governance & Risk"], "privateIds": ["program-planning", "stakeholder-governance"], "alreadyEnrichedInWave1": "NO", "currentRelationshipEvidenceState": "BOILERPLATE_ONLY" },
+    { "roleFamilyId": "transformation-manager", "gapCapabilities": ["change-leadership", "operating-model"], "gapCount": 2, "familiesTouched": ["Strategy & Transformation"], "privateIds": [], "alreadyEnrichedInWave1": "NO", "currentRelationshipEvidenceState": "BOILERPLATE_ONLY" },
+    { "roleFamilyId": "clinical-operations-manager", "gapCapabilities": ["regulatory-compliance"], "gapCount": 1, "familiesTouched": ["Governance & Risk"], "privateIds": ["clinical-delivery", "site-management", "quality-oversight"], "alreadyEnrichedInWave1": "NO", "currentRelationshipEvidenceState": "BOILERPLATE_ONLY" },
+    { "roleFamilyId": "commercial-finance-manager", "gapCapabilities": ["scenario-modelling"], "gapCount": 1, "familiesTouched": ["Analytics & Insight"], "privateIds": ["commercial-analysis", "business-partnering"], "alreadyEnrichedInWave1": "NO", "currentRelationshipEvidenceState": "BOILERPLATE_ONLY" },
+    { "roleFamilyId": "engineering-manager", "gapCapabilities": ["architecture-governance"], "gapCount": 1, "familiesTouched": ["Governance & Risk"], "privateIds": ["technical-leadership", "engineering-delivery"], "alreadyEnrichedInWave1": "NO", "currentRelationshipEvidenceState": "BOILERPLATE_ONLY" },
+    { "roleFamilyId": "legal-operations-manager", "gapCapabilities": ["legal-technology"], "gapCount": 1, "familiesTouched": ["Data & Technology"], "privateIds": ["legal-workflow", "matter-management", "vendor-governance"], "alreadyEnrichedInWave1": "NO", "currentRelationshipEvidenceState": "BOILERPLATE_ONLY" },
+    { "roleFamilyId": "marketing-strategy-manager", "gapCapabilities": ["market-strategy"], "gapCount": 1, "familiesTouched": ["Strategy & Transformation"], "privateIds": ["campaign-planning"], "alreadyEnrichedInWave1": "NO", "currentRelationshipEvidenceState": "BOILERPLATE_ONLY" },
+    { "roleFamilyId": "strategy-operations-manager", "gapCapabilities": ["operating-rhythm"], "gapCount": 1, "familiesTouched": ["Operations & Delivery"], "privateIds": ["executive-narrative", "commercial-modelling"], "alreadyEnrichedInWave1": "NO", "currentRelationshipEvidenceState": "BOILERPLATE_ONLY" },
+    { "roleFamilyId": "customer-success-manager", "gapCapabilities": [], "gapCount": 0, "familiesTouched": [], "privateIds": ["value-realisation", "renewal-risk", "executive-engagement"], "alreadyEnrichedInWave1": "NO", "currentRelationshipEvidenceState": "NO_CURRENT_23_GAP_RELATIONSHIP" },
+    { "roleFamilyId": "hr-business-partner", "gapCapabilities": [], "gapCount": 0, "familiesTouched": [], "privateIds": [], "alreadyEnrichedInWave1": "YES", "currentRelationshipEvidenceState": "NO_CURRENT_23_GAP_RELATIONSHIP" },
+    { "roleFamilyId": "operations-manager", "gapCapabilities": [], "gapCount": 0, "familiesTouched": [], "privateIds": ["resource-planning"], "alreadyEnrichedInWave1": "YES", "currentRelationshipEvidenceState": "NO_CURRENT_23_GAP_RELATIONSHIP" },
+    { "roleFamilyId": "product-operations-manager", "gapCapabilities": [], "gapCount": 0, "familiesTouched": [], "privateIds": [], "alreadyEnrichedInWave1": "NO", "currentRelationshipEvidenceState": "NO_CURRENT_23_GAP_RELATIONSHIP" },
+    { "roleFamilyId": "sales-account-manager", "gapCapabilities": [], "gapCount": 0, "familiesTouched": [], "privateIds": [], "alreadyEnrichedInWave1": "YES", "currentRelationshipEvidenceState": "NO_CURRENT_23_GAP_RELATIONSHIP" }
+  ],
+  "roleAuthorabilityAnalysis": [
+    { "roleFamilyId": "general-business-manager", "SOURCE_COVERAGE_LEVERAGE": "HIGH", "SEMANTIC_COHERENCE": "HIGH", "AUTHORABILITY": "MEDIUM", "CROSS_ROLE_REUSE": "HIGH", "STRUCTURAL_CONFLICT_RISK": "MEDIUM", "PRIVATE_ID_LEARNING_VALUE": "LOW" },
+    { "roleFamilyId": "gtm-partnerships-manager", "SOURCE_COVERAGE_LEVERAGE": "HIGH", "SEMANTIC_COHERENCE": "HIGH", "AUTHORABILITY": "MEDIUM", "CROSS_ROLE_REUSE": "HIGH", "STRUCTURAL_CONFLICT_RISK": "MEDIUM", "PRIVATE_ID_LEARNING_VALUE": "MEDIUM" },
+    { "roleFamilyId": "people-operations-lead", "SOURCE_COVERAGE_LEVERAGE": "HIGH", "SEMANTIC_COHERENCE": "HIGH", "AUTHORABILITY": "HIGH", "CROSS_ROLE_REUSE": "HIGH", "STRUCTURAL_CONFLICT_RISK": "LOW", "PRIVATE_ID_LEARNING_VALUE": "MEDIUM" },
+    { "roleFamilyId": "education-program-lead", "SOURCE_COVERAGE_LEVERAGE": "MEDIUM", "SEMANTIC_COHERENCE": "HIGH", "AUTHORABILITY": "HIGH", "CROSS_ROLE_REUSE": "MEDIUM", "STRUCTURAL_CONFLICT_RISK": "LOW", "PRIVATE_ID_LEARNING_VALUE": "HIGH" },
+    { "roleFamilyId": "fpa-manager", "SOURCE_COVERAGE_LEVERAGE": "MEDIUM", "SEMANTIC_COHERENCE": "HIGH", "AUTHORABILITY": "HIGH", "CROSS_ROLE_REUSE": "HIGH", "STRUCTURAL_CONFLICT_RISK": "LOW", "PRIVATE_ID_LEARNING_VALUE": "HIGH" },
+    { "roleFamilyId": "program-manager", "SOURCE_COVERAGE_LEVERAGE": "MEDIUM", "SEMANTIC_COHERENCE": "HIGH", "AUTHORABILITY": "HIGH", "CROSS_ROLE_REUSE": "HIGH", "STRUCTURAL_CONFLICT_RISK": "LOW", "PRIVATE_ID_LEARNING_VALUE": "HIGH" },
+    { "roleFamilyId": "transformation-manager", "SOURCE_COVERAGE_LEVERAGE": "MEDIUM", "SEMANTIC_COHERENCE": "HIGH", "AUTHORABILITY": "HIGH", "CROSS_ROLE_REUSE": "HIGH", "STRUCTURAL_CONFLICT_RISK": "MEDIUM", "PRIVATE_ID_LEARNING_VALUE": "LOW" },
+    { "roleFamilyId": "clinical-operations-manager", "SOURCE_COVERAGE_LEVERAGE": "LOW", "SEMANTIC_COHERENCE": "HIGH", "AUTHORABILITY": "MEDIUM", "CROSS_ROLE_REUSE": "MEDIUM", "STRUCTURAL_CONFLICT_RISK": "MEDIUM", "PRIVATE_ID_LEARNING_VALUE": "HIGH" },
+    { "roleFamilyId": "commercial-finance-manager", "SOURCE_COVERAGE_LEVERAGE": "LOW", "SEMANTIC_COHERENCE": "HIGH", "AUTHORABILITY": "HIGH", "CROSS_ROLE_REUSE": "HIGH", "STRUCTURAL_CONFLICT_RISK": "LOW", "PRIVATE_ID_LEARNING_VALUE": "HIGH" },
+    { "roleFamilyId": "engineering-manager", "SOURCE_COVERAGE_LEVERAGE": "LOW", "SEMANTIC_COHERENCE": "HIGH", "AUTHORABILITY": "HIGH", "CROSS_ROLE_REUSE": "MEDIUM", "STRUCTURAL_CONFLICT_RISK": "LOW", "PRIVATE_ID_LEARNING_VALUE": "HIGH" },
+    { "roleFamilyId": "legal-operations-manager", "SOURCE_COVERAGE_LEVERAGE": "LOW", "SEMANTIC_COHERENCE": "HIGH", "AUTHORABILITY": "MEDIUM", "CROSS_ROLE_REUSE": "MEDIUM", "STRUCTURAL_CONFLICT_RISK": "MEDIUM", "PRIVATE_ID_LEARNING_VALUE": "HIGH" },
+    { "roleFamilyId": "marketing-strategy-manager", "SOURCE_COVERAGE_LEVERAGE": "LOW", "SEMANTIC_COHERENCE": "HIGH", "AUTHORABILITY": "HIGH", "CROSS_ROLE_REUSE": "HIGH", "STRUCTURAL_CONFLICT_RISK": "LOW", "PRIVATE_ID_LEARNING_VALUE": "MEDIUM" },
+    { "roleFamilyId": "strategy-operations-manager", "SOURCE_COVERAGE_LEVERAGE": "LOW", "SEMANTIC_COHERENCE": "HIGH", "AUTHORABILITY": "HIGH", "CROSS_ROLE_REUSE": "HIGH", "STRUCTURAL_CONFLICT_RISK": "LOW", "PRIVATE_ID_LEARNING_VALUE": "HIGH" }
+  ],
+  "candidateBatches": [
+    {
+      "option": "OPTION_A_MAXIMUM_GAP_COVERAGE",
+      "roles": ["general-business-manager", "gtm-partnerships-manager", "people-operations-lead"],
+      "gapCapabilities": ["business-ownership", "commercial-leadership", "operating-strategy", "partner-strategy", "commercial-partnerships", "ecosystem-operations", "people-process", "hr-systems", "policy-governance"],
+      "gapCount": 9,
+      "familiesTouched": ["Leadership", "Strategy & Transformation", "Commercial", "Operations & Delivery", "People & Organisation", "Governance & Risk"],
+      "privateIdsAdditionallyInformed": ["gtm-planning", "service-operations"],
+      "structuralConflictSignals": [],
+      "authoringInputsAvailable": ["current seeded-exclusive role profiles", "canonical labels and families", "role aliases and domains", "existing boilerplate relationship evidence", "growth-area context"],
+      "mainRisk": "The broad general-management boundaries and adjacent GTM/commercial concepts require more author judgment, while People Operations revisits Wave 1 people territory."
+    },
+    {
+      "option": "OPTION_B_MAXIMUM_AUTHORABILITY",
+      "roles": ["fpa-manager", "program-manager", "education-program-lead"],
+      "gapCapabilities": ["forecasting", "variance-analysis", "dependency-management", "risk-controls", "education-delivery", "education-partnerships"],
+      "gapCount": 6,
+      "familiesTouched": ["Analytics & Insight", "Operations & Delivery", "Governance & Risk", "Learning & Development", "Communication & Collaboration"],
+      "privateIdsAdditionallyInformed": ["financial-planning", "executive-reporting", "program-planning", "stakeholder-governance", "learning-design", "learner-outcomes"],
+      "structuralConflictSignals": [],
+      "authoringInputsAvailable": ["current seeded-exclusive role profiles", "canonical labels and families", "role aliases and domains", "existing boilerplate relationship evidence", "growth-area context"],
+      "mainRisk": "Each relationship currently has boilerplate-only evidence, so candidate synthesis still needs bounded human semantic review before any Role Knowledge write."
+    },
+    {
+      "option": "OPTION_C_BALANCED_EXPANSION",
+      "roles": ["general-business-manager", "fpa-manager", "education-program-lead"],
+      "gapCapabilities": ["business-ownership", "commercial-leadership", "operating-strategy", "forecasting", "variance-analysis", "education-delivery", "education-partnerships"],
+      "gapCount": 7,
+      "familiesTouched": ["Leadership", "Strategy & Transformation", "Analytics & Insight", "Learning & Development", "Communication & Collaboration"],
+      "privateIdsAdditionallyInformed": ["financial-planning", "executive-reporting", "learning-design", "learner-outcomes"],
+      "structuralConflictSignals": [],
+      "authoringInputsAvailable": ["current seeded-exclusive role profiles", "canonical labels and families", "role aliases and domains", "existing boilerplate relationship evidence", "growth-area context"],
+      "mainRisk": "General-management capabilities have broader organisational boundaries and lower authorability than the stable-role set in Option B."
+    }
+  ],
+  "recommendedWave2Batch": {
+    "selectedOption": "OPTION_B_MAXIMUM_AUTHORABILITY",
+    "roles": ["fpa-manager", "program-manager", "education-program-lead"],
+    "targetCapabilities": ["forecasting", "variance-analysis", "dependency-management", "risk-controls", "education-delivery", "education-partnerships"],
+    "targetCount": 6,
+    "familiesTouched": ["Analytics & Insight", "Operations & Delivery", "Governance & Risk", "Learning & Development", "Communication & Collaboration"],
+    "privateIdsAdditionallyInformed": ["financial-planning", "executive-reporting", "program-planning", "stakeholder-governance", "learning-design", "learner-outcomes"],
+    "whySelected": "This three-role batch has clear stable-role semantics, low structural conflict risk, strong authorability, useful cross-role reuse, and tests finance, program-delivery, and education territory beyond Wave 1 without optimizing solely for raw count.",
+    "predictedRoutingOutcome": "NOT_PREDICTED",
+    "measurementExpectation": "After any separately admitted source write, rerun the durable compiler and observe actual movement; a first move from INSUFFICIENT to WEAK and TARGETED_REVIEW_CANDIDATE is plausible but not asserted."
+  },
+  "laneSeparation": {
+    "LANE_A": { "count": 18, "state": "AUTO", "purpose": "future canonical semantic candidate generation", "includedInWave2Selection": false },
+    "LANE_B": { "count": 10, "state": "WEAK / TARGETED", "purpose": "future second-source and triangulation work", "includedInWave2Selection": false },
+    "LANE_C": { "count": 23, "state": "INSUFFICIENT / ENRICHMENT", "purpose": "Wave 2 Role Knowledge source enrichment", "includedInWave2Selection": true }
+  },
+  "nextAction": {
+    "mode": "PLANNING / SOURCE_CENSUS_WAVE2_ROLE_SEMANTIC_CANDIDATE_SYNTHESIS",
+    "action": "Synthesize reviewable Role Knowledge relationship candidates for fpa-manager, program-manager, and education-program-lead only; do not write source truth until a separate admission decision."
+  },
+  "nonGoalsConfirmed": {
+    "roleKnowledgeModified": false,
+    "canonicalOntologyModified": false,
+    "semanticPolicyModified": false,
+    "productionAppModified": false,
+    "packageFilesModified": false,
+    "holdModified": false,
+    "newSemanticConflictInfrastructureAdded": false
+  }
+}

@@ -429,6 +429,26 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
       if (node.nodeType === "ROLE_ONLY_CAPABILITY") return -42;
       return -76;
     });
+    const radial = d3Force.forceRadial<RenderNode>(
+      (node) => {
+        if (node.nodeType === "FAMILY") return 220 * layoutScale;
+        if (node.nodeType === "CAPABILITY") return 150 * layoutScale;
+        if (node.nodeType === "EVIDENCE") return 260 * layoutScale;
+        if (node.nodeType === "ROLE") return 500 * layoutScale;
+        if (node.nodeType === "ROLE_ONLY_CAPABILITY") return 650 * layoutScale;
+        return 0;
+      },
+      0,
+      0,
+    ).strength((node) => {
+      if (node.nodeType === "FAMILY") return 0.8;
+      if (node.nodeType === "CAPABILITY" && (!node.familyId || node.familyId === "user")) return 0.6;
+      if (node.nodeType === "EVIDENCE") return 0.6;
+      if (node.nodeType === "ROLE") return 0.7;
+      if (node.nodeType === "ROLE_ONLY_CAPABILITY") return 0.8;
+      return 0;
+    });
+    graph.d3Force("radial", radial);
 
     const linkForce = graph.d3Force("link") as
       | {
@@ -728,6 +748,7 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
         || roleOwned
         || roleGap
         || showCapabilityLabel
+        || (node.nodeType === "EVIDENCE" && !!focusSet && focusSet.has(id))
         || (node.nodeType === "ROLE_ONLY_CAPABILITY" && !!focusSet && focusSet.has(id) && globalScale > 3.2);
 
       if (!showLabel || !node.label) continue;
@@ -1060,7 +1081,7 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
         )}
 
         {selectedNode && (
-          <div className="absolute bottom-4 left-4 z-20 max-h-[42%] w-[min(44rem,calc(100%-2rem))] overflow-y-auto rounded-xl bg-[#081517]/95 px-4 shadow-[0_18px_55px_rgba(0,0,0,0.5)] sm:left-5 sm:px-5">
+          <div className="absolute right-4 top-16 z-20 max-h-[calc(100%-5rem)] w-[min(28rem,calc(100%-2rem))] overflow-y-auto rounded-xl bg-[#081517]/95 px-4 shadow-[0_18px_55px_rgba(0,0,0,0.5)] sm:right-5 sm:px-5">
             <SelectedNodeDetail projection={projection} visualModel={visualModel} selected={selectedNode} onSelect={selectNode} />
           </div>
         )}

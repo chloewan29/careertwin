@@ -233,6 +233,7 @@ export function buildCareerGraphVisualModel(
         id: node.id,
         semanticId: node.id,
         nodeType: nodeTypeByProjectionType[node.type],
+        label: node.text,
         personalOwned: true,
         relationship: node.relationship,
         familyId: familyIds[0],
@@ -366,8 +367,15 @@ export function buildCareerGraphTopologySeeds(
     seeds.set(node.id, { ...point, familyId: node.id });
   }
 
+  const userCapabilities = model.nodes.filter((n) => n.nodeType === "CAPABILITY" && (n.familyId === "user" || !n.familyId));
+  const userCapAngles = new Map<string, number>();
+  userCapabilities.forEach((node, index) => {
+    userCapAngles.set(node.id, -Math.PI + (Math.PI * 2 * index) / Math.max(userCapabilities.length, 1));
+  });
+
   const familyAngleFor = (familyId: string | undefined, nodeId: string) => {
     if (familyId && familyAngles.has(familyId)) return familyAngles.get(familyId)!;
+    if (userCapAngles.has(nodeId)) return userCapAngles.get(nodeId)!;
     if (familyId) return -Math.PI + stableUnit(`gap-family-angle:${familyId}`) * Math.PI * 2;
     return -Math.PI + stableUnit(`unclassified-capability-angle:${nodeId}`) * Math.PI * 2;
   };

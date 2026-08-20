@@ -1,0 +1,64 @@
+{
+  "schemaVersion": "esco/1.0.0",
+  "source": "esco_grounding",
+  "evidence": [
+    {
+      "evidenceId": "evidence:bundle:career-source-revision:schema-1.0.0:normalisation-lf-bom-1.0.0:sha256:1ce429e2df9c58bb79d14fd6fcbcf01d4a77930f924ee70e598c277bceebff40:1",
+      "sourceExcerpt": "- Led commercial analytics and campaign measurement, driving 20% revenue growth."
+    },
+    {
+      "evidenceId": "evidence:bundle:career-source-revision:schema-1.0.0:normalisation-lf-bom-1.0.0:sha256:1ce429e2df9c58bb79d14fd6fcbcf01d4a77930f924ee70e598c277bceebff40:2",
+      "sourceExcerpt": "- Presented business cases to strategy and client stakeholders to win key accounts."
+    },
+    {
+      "evidenceId": "evidence:bundle:career-source-revision:schema-1.0.0:normalisation-lf-bom-1.0.0:sha256:1ce429e2df9c58bb79d14fd6fcbcf01d4a77930f924ee70e598c277bceebff40:3",
+      "sourceExcerpt": "- Owned strategic planning and opportunity sizing for regional sales."
+    },
+    {
+      "evidenceId": "evidence:bundle:career-source-revision:schema-1.0.0:normalisation-lf-bom-1.0.0:sha256:1ce429e2df9c58bb79d14fd6fcbcf01d4a77930f924ee70e598c277bceebff40:4",
+      "sourceExcerpt": "- Negotiated high-value enterprise contracts with C-level executives."
+    },
+    {
+      "evidenceId": "evidence:bundle:career-source-revision:schema-1.0.0:normalisation-lf-bom-1.0.0:sha256:1ce429e2df9c58bb79d14fd6fcbcf01d4a77930f924ee70e598c277bceebff40:5",
+      "sourceExcerpt": "- Managed a team of 15 sales representatives and account managers."
+    }
+  ],
+  "ownedSkills": [
+    {
+      "skillUri": "http://data.europa.eu/esco/skill/0bfb44c7-c412-49ed-aab4-e33d0dd3b265",
+      "evidenceIds": [
+        "evidence:bundle:career-source-revision:schema-1.0.0:normalisation-lf-bom-1.0.0:sha256:1ce429e2df9c58bb79d14fd6fcbcf01d4a77930f924ee70e598c277bceebff40:5"
+      ]
+    },
+    {
+      "skillUri": "http://data.europa.eu/esco/skill/477173ca-5fc2-406b-9122-95d92811f284",
+      "evidenceIds": [
+        "evidence:bundle:career-source-revision:schema-1.0.0:normalisation-lf-bom-1.0.0:sha256:1ce429e2df9c58bb79d14fd6fcbcf01d4a77930f924ee70e598c277bceebff40:2"
+      ]
+    },
+    {
+      "skillUri": "http://data.europa.eu/esco/skill/683bc3e3-6ec1-4ad2-8d62-d0ac1fabbe76",
+      "evidenceIds": [
+        "evidence:bundle:career-source-revision:schema-1.0.0:normalisation-lf-bom-1.0.0:sha256:1ce429e2df9c58bb79d14fd6fcbcf01d4a77930f924ee70e598c277bceebff40:1"
+      ]
+    },
+    {
+      "skillUri": "http://data.europa.eu/esco/skill/71152876-b629-4a99-b9ea-0f25a0d07e4e",
+      "evidenceIds": [
+        "evidence:bundle:career-source-revision:schema-1.0.0:normalisation-lf-bom-1.0.0:sha256:1ce429e2df9c58bb79d14fd6fcbcf01d4a77930f924ee70e598c277bceebff40:4"
+      ]
+    },
+    {
+      "skillUri": "http://data.europa.eu/esco/skill/949ced5f-7536-4614-ac60-563ffc91a2f2",
+      "evidenceIds": [
+        "evidence:bundle:career-source-revision:schema-1.0.0:normalisation-lf-bom-1.0.0:sha256:1ce429e2df9c58bb79d14fd6fcbcf01d4a77930f924ee70e598c277bceebff40:3"
+      ]
+    },
+    {
+      "skillUri": "http://data.europa.eu/esco/skill/e7219848-a27a-4bf4-8775-d367707be7c9",
+      "evidenceIds": [
+        "evidence:bundle:career-source-revision:schema-1.0.0:normalisation-lf-bom-1.0.0:sha256:1ce429e2df9c58bb79d14fd6fcbcf01d4a77930f924ee70e598c277bceebff40:3"
+      ]
+    }
+  ]
+}

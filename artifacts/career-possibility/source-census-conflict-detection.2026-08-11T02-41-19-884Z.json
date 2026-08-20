@@ -1,0 +1,1069 @@
+{
+  "decisionLabel": "SOURCE_CENSUS_CONFLICT_DETECTION_SCANNER_READY",
+  "mode": "PLANNING / SOURCE_CENSUS_CONFLICT_DETECTION_SCANNER_BOUNDARY",
+  "generatedAt": "2026-08-11T02:41:19.884Z",
+  "readOnlyBoundary": true,
+  "sourceCompilerCommit": "3a0b4c35a7de84aeb8b93dbeba8b83e17b859669",
+  "sourcePlanningArtifact": "artifacts/career-possibility/source-census-wave2-planning.2026-08-11T12-30-18-541+10-00.json",
+  "scannerSummary": {
+    "capabilityCount": 51,
+    "conflictSignalCounts": {
+      "ID_DUPLICATE": 0,
+      "NAME_NEAR_DUPLICATE": 0,
+      "FAMILY_REFERENCE_INVALID": 0,
+      "FAMILY_ALIGNMENT_REVIEW": 0,
+      "EVIDENCE_INSUFFICIENCY_HOLD": 23,
+      "ROUTING_CONTRADICTION_REVIEW": 0,
+      "NO_CONFLICT_SIGNAL": 28
+    },
+    "hasBlockingConflictSignals": false,
+    "semanticDriftStatus": "DETERMINISTIC_SCANNER_ONLY",
+    "conflictDetectionStatus": "READ_ONLY_DETERMINISTIC_SCANNER"
+  },
+  "capabilityConflictSignals": [
+    {
+      "capabilityId": "forecasting",
+      "capabilityName": "forecasting",
+      "canonicalFamilyId": "analytics-insight",
+      "currentSufficiency": "INSUFFICIENT",
+      "currentRouting": "ONTOLOGY_ENRICHMENT_REQUIRED",
+      "signals": [
+        {
+          "type": "EVIDENCE_INSUFFICIENCY_HOLD",
+          "severity": "REVIEW",
+          "message": "Current evidence is insufficient for low-risk enrichment classification.",
+          "evidence": {
+            "currentSufficiency": "INSUFFICIENT",
+            "currentRouting": "ONTOLOGY_ENRICHMENT_REQUIRED"
+          }
+        }
+      ],
+      "recommendedPlanningDisposition": "TARGETED_REVIEW_HOLD"
+    },
+    {
+      "capabilityId": "insight-synthesis",
+      "capabilityName": "insight-synthesis",
+      "canonicalFamilyId": "analytics-insight",
+      "currentSufficiency": "STRONG",
+      "currentRouting": "AUTO_GENERATION_CANDIDATE",
+      "signals": [
+        {
+          "type": "NO_CONFLICT_SIGNAL",
+          "severity": "INFO",
+          "message": "No deterministic conflict signal was found; this does not authorize enrichment.",
+          "evidence": {
+            "familyReferenceValid": true,
+            "evidenceDetailAvailable": true
+          }
+        }
+      ],
+      "recommendedPlanningDisposition": "LOW_RISK_REVIEW_CANDIDATE"
+    },
+    {
+      "capabilityId": "marketing-effectiveness",
+      "capabilityName": "marketing-effectiveness",
+      "canonicalFamilyId": "analytics-insight",
+      "currentSufficiency": "MODERATE",
+      "currentRouting": "AUTO_GENERATION_CANDIDATE",
+      "signals": [
+        {
+          "type": "NO_CONFLICT_SIGNAL",
+          "severity": "INFO",
+          "message": "No deterministic conflict signal was found; this does not authorize enrichment.",
+          "evidence": {
+            "familyReferenceValid": true,
+            "evidenceDetailAvailable": true
+          }
+        }
+      ],
+      "recommendedPlanningDisposition": "LOW_RISK_REVIEW_CANDIDATE"
+    },
+    {
+      "capabilityId": "measurement-design",
+      "capabilityName": "measurement-design",
+      "canonicalFamilyId": "analytics-insight",
+      "currentSufficiency": "STRONG",
+      "currentRouting": "AUTO_GENERATION_CANDIDATE",
+      "signals": [
+        {
+          "type": "NO_CONFLICT_SIGNAL",
+          "severity": "INFO",
+          "message": "No deterministic conflict signal was found; this does not authorize enrichment.",
+          "evidence": {
+            "familyReferenceValid": true,
+            "evidenceDetailAvailable": true
+          }
+        }
+      ],
+      "recommendedPlanningDisposition": "LOW_RISK_REVIEW_CANDIDATE"
+    },
+    {
+      "capabilityId": "research-design",
+      "capabilityName": "research-design",
+      "canonicalFamilyId": "analytics-insight",
+      "currentSufficiency": "STRONG",
+      "currentRouting": "AUTO_GENERATION_CANDIDATE",
+      "signals": [
+        {
+          "type": "NO_CONFLICT_SIGNAL",
+          "severity": "INFO",
+          "message": "No deterministic conflict signal was found; this does not authorize enrichment.",
+          "evidence": {
+            "familyReferenceValid": true,
+            "evidenceDetailAvailable": true
+          }
+        }
+      ],
+      "recommendedPlanningDisposition": "LOW_RISK_REVIEW_CANDIDATE"
+    },
+    {
+      "capabilityId": "scenario-modelling",
+      "capabilityName": "scenario-modelling",
+      "canonicalFamilyId": "analytics-insight",
+      "currentSufficiency": "INSUFFICIENT",
+      "currentRouting": "ONTOLOGY_ENRICHMENT_REQUIRED",
+      "signals": [
+        {
+          "type": "EVIDENCE_INSUFFICIENCY_HOLD",
+          "severity": "REVIEW",
+          "message": "Current evidence is insufficient for low-risk enrichment classification.",
+          "evidence": {
+            "currentSufficiency": "INSUFFICIENT",
+            "currentRouting": "ONTOLOGY_ENRICHMENT_REQUIRED"
+          }
+        }
+      ],
+      "recommendedPlanningDisposition": "TARGETED_REVIEW_HOLD"
+    },
+    {
+      "capabilityId": "variance-analysis",
+      "capabilityName": "variance-analysis",
+      "canonicalFamilyId": "analytics-insight",
+      "currentSufficiency": "INSUFFICIENT",
+      "currentRouting": "ONTOLOGY_ENRICHMENT_REQUIRED",
+      "signals": [
+        {
+          "type": "EVIDENCE_INSUFFICIENCY_HOLD",
+          "severity": "REVIEW",
+          "message": "Current evidence is insufficient for low-risk enrichment classification.",
+          "evidence": {
+            "currentSufficiency": "INSUFFICIENT",
+            "currentRouting": "ONTOLOGY_ENRICHMENT_REQUIRED"
+          }
+        }
+      ],
+      "recommendedPlanningDisposition": "TARGETED_REVIEW_HOLD"
+    },
+    {
+      "capabilityId": "account-growth",
+      "capabilityName": "account-growth",
+      "canonicalFamilyId": "commercial",
+      "currentSufficiency": "WEAK",
+      "currentRouting": "TARGETED_REVIEW_CANDIDATE",
+      "signals": [
+        {
+          "type": "NO_CONFLICT_SIGNAL",
+          "severity": "INFO",
+          "message": "No deterministic conflict signal was found; this does not authorize enrichment.",
+          "evidence": {
+            "familyReferenceValid": true,
+            "evidenceDetailAvailable": false
+          }
+        }
+      ],
+      "recommendedPlanningDisposition": "TARGETED_REVIEW_HOLD"
+    },
+    {
+      "capabilityId": "commercial-negotiation",
+      "capabilityName": "commercial-negotiation",
+      "canonicalFamilyId": "commercial",
+      "currentSufficiency": "WEAK",
+      "currentRouting": "TARGETED_REVIEW_CANDIDATE",
+      "signals": [
+        {
+          "type": "NO_CONFLICT_SIGNAL",
+          "severity": "INFO",
+          "message": "No deterministic conflict signal was found; this does not authorize enrichment.",
+          "evidence": {
+            "familyReferenceValid": true,
+            "evidenceDetailAvailable": false
+          }
+        }
+      ],
+      "recommendedPlanningDisposition": "TARGETED_REVIEW_HOLD"
+    },
+    {
+      "capabilityId": "commercial-partnerships",
+      "capabilityName": "commercial-partnerships",
+      "canonicalFamilyId": "commercial",
+      "currentSufficiency": "INSUFFICIENT",
+      "currentRouting": "ONTOLOGY_ENRICHMENT_REQUIRED",
+      "signals": [
+        {
+          "type": "EVIDENCE_INSUFFICIENCY_HOLD",
+          "severity": "REVIEW",
+          "message": "Current evidence is insufficient for low-risk enrichment classification.",
+          "evidence": {
+            "currentSufficiency": "INSUFFICIENT",
+            "currentRouting": "ONTOLOGY_ENRICHMENT_REQUIRED"
+          }
+        }
+      ],
+      "recommendedPlanningDisposition": "TARGETED_REVIEW_HOLD"
+    },
+    {
+      "capabilityId": "consultative-selling",
+      "capabilityName": "consultative-selling",
+      "canonicalFamilyId": "commercial",
+      "currentSufficiency": "WEAK",
+      "currentRouting": "TARGETED_REVIEW_CANDIDATE",
+      "signals": [
+        {
+          "type": "NO_CONFLICT_SIGNAL",
+          "severity": "INFO",
+          "message": "No deterministic conflict signal was found; this does not authorize enrichment.",
+          "evidence": {
+            "familyReferenceValid": true,
+            "evidenceDetailAvailable": false
+          }
+        }
+      ],
+      "recommendedPlanningDisposition": "TARGETED_REVIEW_HOLD"
+    },
+    {
+      "capabilityId": "pipeline-management",
+      "capabilityName": "pipeline-management",
+      "canonicalFamilyId": "commercial",
+      "currentSufficiency": "WEAK",
+      "currentRouting": "TARGETED_REVIEW_CANDIDATE",
+      "signals": [
+        {
+          "type": "NO_CONFLICT_SIGNAL",
+          "severity": "INFO",
+          "message": "No deterministic conflict signal was found; this does not authorize enrichment.",
+          "evidence": {
+            "familyReferenceValid": true,
+            "evidenceDetailAvailable": false
+          }
+        }
+      ],
+      "recommendedPlanningDisposition": "TARGETED_REVIEW_HOLD"
+    },
+    {
+      "capabilityId": "education-partnerships",
+      "capabilityName": "education-partnerships",
+      "canonicalFamilyId": "communication-collaboration",
+      "currentSufficiency": "INSUFFICIENT",
+      "currentRouting": "ONTOLOGY_ENRICHMENT_REQUIRED",
+      "signals": [
+        {
+          "type": "EVIDENCE_INSUFFICIENCY_HOLD",
+          "severity": "REVIEW",
+          "message": "Current evidence is insufficient for low-risk enrichment classification.",
+          "evidence": {
+            "currentSufficiency": "INSUFFICIENT",
+            "currentRouting": "ONTOLOGY_ENRICHMENT_REQUIRED"
+          }
+        }
+      ],
+      "recommendedPlanningDisposition": "TARGETED_REVIEW_HOLD"
+    },
+    {
+      "capabilityId": "audience-insight",
+      "capabilityName": "audience-insight",
+      "canonicalFamilyId": "customer-market",
+      "currentSufficiency": "STRONG",
+      "currentRouting": "AUTO_GENERATION_CANDIDATE",
+      "signals": [
+        {
+          "type": "NO_CONFLICT_SIGNAL",
+          "severity": "INFO",
+          "message": "No deterministic conflict signal was found; this does not authorize enrichment.",
+          "evidence": {
+            "familyReferenceValid": true,
+            "evidenceDetailAvailable": true
+          }
+        }
+      ],
+      "recommendedPlanningDisposition": "LOW_RISK_REVIEW_CANDIDATE"
+    },
+    {
+      "capabilityId": "customer-adoption",
+      "capabilityName": "customer-adoption",
+      "canonicalFamilyId": "customer-market",
+      "currentSufficiency": "STRONG",
+      "currentRouting": "AUTO_GENERATION_CANDIDATE",
+      "signals": [
+        {
+          "type": "NO_CONFLICT_SIGNAL",
+          "severity": "INFO",
+          "message": "No deterministic conflict signal was found; this does not authorize enrichment.",
+          "evidence": {
+            "familyReferenceValid": true,
+            "evidenceDetailAvailable": true
+          }
+        }
+      ],
+      "recommendedPlanningDisposition": "LOW_RISK_REVIEW_CANDIDATE"
+    },
+    {
+      "capabilityId": "customer-segmentation",
+      "capabilityName": "customer-segmentation",
+      "canonicalFamilyId": "customer-market",
+      "currentSufficiency": "MODERATE",
+      "currentRouting": "AUTO_GENERATION_CANDIDATE",
+      "signals": [
+        {
+          "type": "NO_CONFLICT_SIGNAL",
+          "severity": "INFO",
+          "message": "No deterministic conflict signal was found; this does not authorize enrichment.",
+          "evidence": {
+            "familyReferenceValid": true,
+            "evidenceDetailAvailable": true
+          }
+        }
+      ],
+      "recommendedPlanningDisposition": "LOW_RISK_REVIEW_CANDIDATE"
+    },
+    {
+      "capabilityId": "legal-technology",
+      "capabilityName": "legal-technology",
+      "canonicalFamilyId": "data-technology",
+      "currentSufficiency": "INSUFFICIENT",
+      "currentRouting": "ONTOLOGY_ENRICHMENT_REQUIRED",
+      "signals": [
+        {
+          "type": "EVIDENCE_INSUFFICIENCY_HOLD",
+          "severity": "REVIEW",
+          "message": "Current evidence is insufficient for low-risk enrichment classification.",
+          "evidence": {
+            "currentSufficiency": "INSUFFICIENT",
+            "currentRouting": "ONTOLOGY_ENRICHMENT_REQUIRED"
+          }
+        }
+      ],
+      "recommendedPlanningDisposition": "TARGETED_REVIEW_HOLD"
+    },
+    {
+      "capabilityId": "tooling-enablement",
+      "capabilityName": "tooling-enablement",
+      "canonicalFamilyId": "data-technology",
+      "currentSufficiency": "MODERATE",
+      "currentRouting": "AUTO_GENERATION_CANDIDATE",
+      "signals": [
+        {
+          "type": "NO_CONFLICT_SIGNAL",
+          "severity": "INFO",
+          "message": "No deterministic conflict signal was found; this does not authorize enrichment.",
+          "evidence": {
+            "familyReferenceValid": true,
+            "evidenceDetailAvailable": true
+          }
+        }
+      ],
+      "recommendedPlanningDisposition": "LOW_RISK_REVIEW_CANDIDATE"
+    },
+    {
+      "capabilityId": "analytics-governance",
+      "capabilityName": "analytics-governance",
+      "canonicalFamilyId": "governance-risk",
+      "currentSufficiency": "STRONG",
+      "currentRouting": "AUTO_GENERATION_CANDIDATE",
+      "signals": [
+        {
+          "type": "NO_CONFLICT_SIGNAL",
+          "severity": "INFO",
+          "message": "No deterministic conflict signal was found; this does not authorize enrichment.",
+          "evidence": {
+            "familyReferenceValid": true,
+            "evidenceDetailAvailable": true
+          }
+        }
+      ],
+      "recommendedPlanningDisposition": "LOW_RISK_REVIEW_CANDIDATE"
+    },
+    {
+      "capabilityId": "architecture-governance",
+      "capabilityName": "architecture-governance",
+      "canonicalFamilyId": "governance-risk",
+      "currentSufficiency": "INSUFFICIENT",
+      "currentRouting": "ONTOLOGY_ENRICHMENT_REQUIRED",
+      "signals": [
+        {
+          "type": "EVIDENCE_INSUFFICIENCY_HOLD",
+          "severity": "REVIEW",
+          "message": "Current evidence is insufficient for low-risk enrichment classification.",
+          "evidence": {
+            "currentSufficiency": "INSUFFICIENT",
+            "currentRouting": "ONTOLOGY_ENRICHMENT_REQUIRED"
+          }
+        }
+      ],
+      "recommendedPlanningDisposition": "TARGETED_REVIEW_HOLD"
+    },
+    {
+      "capabilityId": "investment-governance",
+      "capabilityName": "investment-governance",
+      "canonicalFamilyId": "governance-risk",
+      "currentSufficiency": "MODERATE",
+      "currentRouting": "AUTO_GENERATION_CANDIDATE",
+      "signals": [
+        {
+          "type": "NO_CONFLICT_SIGNAL",
+          "severity": "INFO",
+          "message": "No deterministic conflict signal was found; this does not authorize enrichment.",
+          "evidence": {
+            "familyReferenceValid": true,
+            "evidenceDetailAvailable": true
+          }
+        }
+      ],
+      "recommendedPlanningDisposition": "LOW_RISK_REVIEW_CANDIDATE"
+    },
+    {
+      "capabilityId": "operating-control",
+      "capabilityName": "operating-control",
+      "canonicalFamilyId": "governance-risk",
+      "currentSufficiency": "WEAK",
+      "currentRouting": "TARGETED_REVIEW_CANDIDATE",
+      "signals": [
+        {
+          "type": "NO_CONFLICT_SIGNAL",
+          "severity": "INFO",
+          "message": "No deterministic conflict signal was found; this does not authorize enrichment.",
+          "evidence": {
+            "familyReferenceValid": true,
+            "evidenceDetailAvailable": false
+          }
+        }
+      ],
+      "recommendedPlanningDisposition": "TARGETED_REVIEW_HOLD"
+    },
+    {
+      "capabilityId": "policy-governance",
+      "capabilityName": "policy-governance",
+      "canonicalFamilyId": "governance-risk",
+      "currentSufficiency": "INSUFFICIENT",
+      "currentRouting": "ONTOLOGY_ENRICHMENT_REQUIRED",
+      "signals": [
+        {
+          "type": "EVIDENCE_INSUFFICIENCY_HOLD",
+          "severity": "REVIEW",
+          "message": "Current evidence is insufficient for low-risk enrichment classification.",
+          "evidence": {
+            "currentSufficiency": "INSUFFICIENT",
+            "currentRouting": "ONTOLOGY_ENRICHMENT_REQUIRED"
+          }
+        }
+      ],
+      "recommendedPlanningDisposition": "TARGETED_REVIEW_HOLD"
+    },
+    {
+      "capabilityId": "regulatory-compliance",
+      "capabilityName": "regulatory-compliance",
+      "canonicalFamilyId": "governance-risk",
+      "currentSufficiency": "INSUFFICIENT",
+      "currentRouting": "ONTOLOGY_ENRICHMENT_REQUIRED",
+      "signals": [
+        {
+          "type": "EVIDENCE_INSUFFICIENCY_HOLD",
+          "severity": "REVIEW",
+          "message": "Current evidence is insufficient for low-risk enrichment classification.",
+          "evidence": {
+            "currentSufficiency": "INSUFFICIENT",
+            "currentRouting": "ONTOLOGY_ENRICHMENT_REQUIRED"
+          }
+        }
+      ],
+      "recommendedPlanningDisposition": "TARGETED_REVIEW_HOLD"
+    },
+    {
+      "capabilityId": "risk-controls",
+      "capabilityName": "risk-controls",
+      "canonicalFamilyId": "governance-risk",
+      "currentSufficiency": "INSUFFICIENT",
+      "currentRouting": "ONTOLOGY_ENRICHMENT_REQUIRED",
+      "signals": [
+        {
+          "type": "EVIDENCE_INSUFFICIENCY_HOLD",
+          "severity": "REVIEW",
+          "message": "Current evidence is insufficient for low-risk enrichment classification.",
+          "evidence": {
+            "currentSufficiency": "INSUFFICIENT",
+            "currentRouting": "ONTOLOGY_ENRICHMENT_REQUIRED"
+          }
+        }
+      ],
+      "recommendedPlanningDisposition": "TARGETED_REVIEW_HOLD"
+    },
+    {
+      "capabilityId": "business-ownership",
+      "capabilityName": "business-ownership",
+      "canonicalFamilyId": "leadership",
+      "currentSufficiency": "INSUFFICIENT",
+      "currentRouting": "ONTOLOGY_ENRICHMENT_REQUIRED",
+      "signals": [
+        {
+          "type": "EVIDENCE_INSUFFICIENCY_HOLD",
+          "severity": "REVIEW",
+          "message": "Current evidence is insufficient for low-risk enrichment classification.",
+          "evidence": {
+            "currentSufficiency": "INSUFFICIENT",
+            "currentRouting": "ONTOLOGY_ENRICHMENT_REQUIRED"
+          }
+        }
+      ],
+      "recommendedPlanningDisposition": "TARGETED_REVIEW_HOLD"
+    },
+    {
+      "capabilityId": "commercial-leadership",
+      "capabilityName": "commercial-leadership",
+      "canonicalFamilyId": "leadership",
+      "currentSufficiency": "INSUFFICIENT",
+      "currentRouting": "ONTOLOGY_ENRICHMENT_REQUIRED",
+      "signals": [
+        {
+          "type": "EVIDENCE_INSUFFICIENCY_HOLD",
+          "severity": "REVIEW",
+          "message": "Current evidence is insufficient for low-risk enrichment classification.",
+          "evidence": {
+            "currentSufficiency": "INSUFFICIENT",
+            "currentRouting": "ONTOLOGY_ENRICHMENT_REQUIRED"
+          }
+        }
+      ],
+      "recommendedPlanningDisposition": "TARGETED_REVIEW_HOLD"
+    },
+    {
+      "capabilityId": "people-leadership",
+      "capabilityName": "people-leadership",
+      "canonicalFamilyId": "leadership",
+      "currentSufficiency": "MODERATE",
+      "currentRouting": "AUTO_GENERATION_CANDIDATE",
+      "signals": [
+        {
+          "type": "NO_CONFLICT_SIGNAL",
+          "severity": "INFO",
+          "message": "No deterministic conflict signal was found; this does not authorize enrichment.",
+          "evidence": {
+            "familyReferenceValid": true,
+            "evidenceDetailAvailable": true
+          }
+        }
+      ],
+      "recommendedPlanningDisposition": "LOW_RISK_REVIEW_CANDIDATE"
+    },
+    {
+      "capabilityId": "education-delivery",
+      "capabilityName": "education-delivery",
+      "canonicalFamilyId": "learning-development",
+      "currentSufficiency": "INSUFFICIENT",
+      "currentRouting": "ONTOLOGY_ENRICHMENT_REQUIRED",
+      "signals": [
+        {
+          "type": "EVIDENCE_INSUFFICIENCY_HOLD",
+          "severity": "REVIEW",
+          "message": "Current evidence is insufficient for low-risk enrichment classification.",
+          "evidence": {
+            "currentSufficiency": "INSUFFICIENT",
+            "currentRouting": "ONTOLOGY_ENRICHMENT_REQUIRED"
+          }
+        }
+      ],
+      "recommendedPlanningDisposition": "TARGETED_REVIEW_HOLD"
+    },
+    {
+      "capabilityId": "cross-functional-delivery",
+      "capabilityName": "cross-functional-delivery",
+      "canonicalFamilyId": "operations-delivery",
+      "currentSufficiency": "STRONG",
+      "currentRouting": "AUTO_GENERATION_CANDIDATE",
+      "signals": [
+        {
+          "type": "NO_CONFLICT_SIGNAL",
+          "severity": "INFO",
+          "message": "No deterministic conflict signal was found; this does not authorize enrichment.",
+          "evidence": {
+            "familyReferenceValid": true,
+            "evidenceDetailAvailable": true
+          }
+        }
+      ],
+      "recommendedPlanningDisposition": "LOW_RISK_REVIEW_CANDIDATE"
+    },
+    {
+      "capabilityId": "dependency-management",
+      "capabilityName": "dependency-management",
+      "canonicalFamilyId": "operations-delivery",
+      "currentSufficiency": "INSUFFICIENT",
+      "currentRouting": "ONTOLOGY_ENRICHMENT_REQUIRED",
+      "signals": [
+        {
+          "type": "EVIDENCE_INSUFFICIENCY_HOLD",
+          "severity": "REVIEW",
+          "message": "Current evidence is insufficient for low-risk enrichment classification.",
+          "evidence": {
+            "currentSufficiency": "INSUFFICIENT",
+            "currentRouting": "ONTOLOGY_ENRICHMENT_REQUIRED"
+          }
+        }
+      ],
+      "recommendedPlanningDisposition": "TARGETED_REVIEW_HOLD"
+    },
+    {
+      "capabilityId": "ecosystem-operations",
+      "capabilityName": "ecosystem-operations",
+      "canonicalFamilyId": "operations-delivery",
+      "currentSufficiency": "INSUFFICIENT",
+      "currentRouting": "ONTOLOGY_ENRICHMENT_REQUIRED",
+      "signals": [
+        {
+          "type": "EVIDENCE_INSUFFICIENCY_HOLD",
+          "severity": "REVIEW",
+          "message": "Current evidence is insufficient for low-risk enrichment classification.",
+          "evidence": {
+            "currentSufficiency": "INSUFFICIENT",
+            "currentRouting": "ONTOLOGY_ENRICHMENT_REQUIRED"
+          }
+        }
+      ],
+      "recommendedPlanningDisposition": "TARGETED_REVIEW_HOLD"
+    },
+    {
+      "capabilityId": "operating-rhythm",
+      "capabilityName": "operating-rhythm",
+      "canonicalFamilyId": "operations-delivery",
+      "currentSufficiency": "INSUFFICIENT",
+      "currentRouting": "ONTOLOGY_ENRICHMENT_REQUIRED",
+      "signals": [
+        {
+          "type": "EVIDENCE_INSUFFICIENCY_HOLD",
+          "severity": "REVIEW",
+          "message": "Current evidence is insufficient for low-risk enrichment classification.",
+          "evidence": {
+            "currentSufficiency": "INSUFFICIENT",
+            "currentRouting": "ONTOLOGY_ENRICHMENT_REQUIRED"
+          }
+        }
+      ],
+      "recommendedPlanningDisposition": "TARGETED_REVIEW_HOLD"
+    },
+    {
+      "capabilityId": "process-improvement",
+      "capabilityName": "process-improvement",
+      "canonicalFamilyId": "operations-delivery",
+      "currentSufficiency": "MODERATE",
+      "currentRouting": "AUTO_GENERATION_CANDIDATE",
+      "signals": [
+        {
+          "type": "NO_CONFLICT_SIGNAL",
+          "severity": "INFO",
+          "message": "No deterministic conflict signal was found; this does not authorize enrichment.",
+          "evidence": {
+            "familyReferenceValid": true,
+            "evidenceDetailAvailable": true
+          }
+        }
+      ],
+      "recommendedPlanningDisposition": "LOW_RISK_REVIEW_CANDIDATE"
+    },
+    {
+      "capabilityId": "service-performance",
+      "capabilityName": "service-performance",
+      "canonicalFamilyId": "operations-delivery",
+      "currentSufficiency": "WEAK",
+      "currentRouting": "TARGETED_REVIEW_CANDIDATE",
+      "signals": [
+        {
+          "type": "NO_CONFLICT_SIGNAL",
+          "severity": "INFO",
+          "message": "No deterministic conflict signal was found; this does not authorize enrichment.",
+          "evidence": {
+            "familyReferenceValid": true,
+            "evidenceDetailAvailable": false
+          }
+        }
+      ],
+      "recommendedPlanningDisposition": "TARGETED_REVIEW_HOLD"
+    },
+    {
+      "capabilityId": "employee-relations",
+      "capabilityName": "employee-relations",
+      "canonicalFamilyId": "people-organisation",
+      "currentSufficiency": "WEAK",
+      "currentRouting": "TARGETED_REVIEW_CANDIDATE",
+      "signals": [
+        {
+          "type": "NO_CONFLICT_SIGNAL",
+          "severity": "INFO",
+          "message": "No deterministic conflict signal was found; this does not authorize enrichment.",
+          "evidence": {
+            "familyReferenceValid": true,
+            "evidenceDetailAvailable": false
+          }
+        }
+      ],
+      "recommendedPlanningDisposition": "TARGETED_REVIEW_HOLD"
+    },
+    {
+      "capabilityId": "hr-systems",
+      "capabilityName": "hr-systems",
+      "canonicalFamilyId": "people-organisation",
+      "currentSufficiency": "INSUFFICIENT",
+      "currentRouting": "ONTOLOGY_ENRICHMENT_REQUIRED",
+      "signals": [
+        {
+          "type": "EVIDENCE_INSUFFICIENCY_HOLD",
+          "severity": "REVIEW",
+          "message": "Current evidence is insufficient for low-risk enrichment classification.",
+          "evidence": {
+            "currentSufficiency": "INSUFFICIENT",
+            "currentRouting": "ONTOLOGY_ENRICHMENT_REQUIRED"
+          }
+        }
+      ],
+      "recommendedPlanningDisposition": "TARGETED_REVIEW_HOLD"
+    },
+    {
+      "capabilityId": "organisation-design",
+      "capabilityName": "organisation-design",
+      "canonicalFamilyId": "people-organisation",
+      "currentSufficiency": "WEAK",
+      "currentRouting": "TARGETED_REVIEW_CANDIDATE",
+      "signals": [
+        {
+          "type": "NO_CONFLICT_SIGNAL",
+          "severity": "INFO",
+          "message": "No deterministic conflict signal was found; this does not authorize enrichment.",
+          "evidence": {
+            "familyReferenceValid": true,
+            "evidenceDetailAvailable": false
+          }
+        }
+      ],
+      "recommendedPlanningDisposition": "TARGETED_REVIEW_HOLD"
+    },
+    {
+      "capabilityId": "people-process",
+      "capabilityName": "people-process",
+      "canonicalFamilyId": "people-organisation",
+      "currentSufficiency": "INSUFFICIENT",
+      "currentRouting": "ONTOLOGY_ENRICHMENT_REQUIRED",
+      "signals": [
+        {
+          "type": "EVIDENCE_INSUFFICIENCY_HOLD",
+          "severity": "REVIEW",
+          "message": "Current evidence is insufficient for low-risk enrichment classification.",
+          "evidence": {
+            "currentSufficiency": "INSUFFICIENT",
+            "currentRouting": "ONTOLOGY_ENRICHMENT_REQUIRED"
+          }
+        }
+      ],
+      "recommendedPlanningDisposition": "TARGETED_REVIEW_HOLD"
+    },
+    {
+      "capabilityId": "talent-planning",
+      "capabilityName": "talent-planning",
+      "canonicalFamilyId": "people-organisation",
+      "currentSufficiency": "WEAK",
+      "currentRouting": "TARGETED_REVIEW_CANDIDATE",
+      "signals": [
+        {
+          "type": "NO_CONFLICT_SIGNAL",
+          "severity": "INFO",
+          "message": "No deterministic conflict signal was found; this does not authorize enrichment.",
+          "evidence": {
+            "familyReferenceValid": true,
+            "evidenceDetailAvailable": false
+          }
+        }
+      ],
+      "recommendedPlanningDisposition": "TARGETED_REVIEW_HOLD"
+    },
+    {
+      "capabilityId": "workforce-advisory",
+      "capabilityName": "workforce-advisory",
+      "canonicalFamilyId": "people-organisation",
+      "currentSufficiency": "WEAK",
+      "currentRouting": "TARGETED_REVIEW_CANDIDATE",
+      "signals": [
+        {
+          "type": "NO_CONFLICT_SIGNAL",
+          "severity": "INFO",
+          "message": "No deterministic conflict signal was found; this does not authorize enrichment.",
+          "evidence": {
+            "familyReferenceValid": true,
+            "evidenceDetailAvailable": false
+          }
+        }
+      ],
+      "recommendedPlanningDisposition": "TARGETED_REVIEW_HOLD"
+    },
+    {
+      "capabilityId": "product-insights",
+      "capabilityName": "product-insights",
+      "canonicalFamilyId": "product",
+      "currentSufficiency": "MODERATE",
+      "currentRouting": "AUTO_GENERATION_CANDIDATE",
+      "signals": [
+        {
+          "type": "NO_CONFLICT_SIGNAL",
+          "severity": "INFO",
+          "message": "No deterministic conflict signal was found; this does not authorize enrichment.",
+          "evidence": {
+            "familyReferenceValid": true,
+            "evidenceDetailAvailable": true
+          }
+        }
+      ],
+      "recommendedPlanningDisposition": "LOW_RISK_REVIEW_CANDIDATE"
+    },
+    {
+      "capabilityId": "product-cadence",
+      "capabilityName": "product-cadence",
+      "canonicalFamilyId": "product",
+      "currentSufficiency": "MODERATE",
+      "currentRouting": "AUTO_GENERATION_CANDIDATE",
+      "signals": [
+        {
+          "type": "NO_CONFLICT_SIGNAL",
+          "severity": "INFO",
+          "message": "No deterministic conflict signal was found; this does not authorize enrichment.",
+          "evidence": {
+            "familyReferenceValid": true,
+            "evidenceDetailAvailable": true
+          }
+        }
+      ],
+      "recommendedPlanningDisposition": "LOW_RISK_REVIEW_CANDIDATE"
+    },
+    {
+      "capabilityId": "roadmap-governance",
+      "capabilityName": "roadmap-governance",
+      "canonicalFamilyId": "product",
+      "currentSufficiency": "MODERATE",
+      "currentRouting": "AUTO_GENERATION_CANDIDATE",
+      "signals": [
+        {
+          "type": "NO_CONFLICT_SIGNAL",
+          "severity": "INFO",
+          "message": "No deterministic conflict signal was found; this does not authorize enrichment.",
+          "evidence": {
+            "familyReferenceValid": true,
+            "evidenceDetailAvailable": true
+          }
+        }
+      ],
+      "recommendedPlanningDisposition": "LOW_RISK_REVIEW_CANDIDATE"
+    },
+    {
+      "capabilityId": "benefits-realisation",
+      "capabilityName": "benefits-realisation",
+      "canonicalFamilyId": "strategy-transformation",
+      "currentSufficiency": "MODERATE",
+      "currentRouting": "AUTO_GENERATION_CANDIDATE",
+      "signals": [
+        {
+          "type": "NO_CONFLICT_SIGNAL",
+          "severity": "INFO",
+          "message": "No deterministic conflict signal was found; this does not authorize enrichment.",
+          "evidence": {
+            "familyReferenceValid": true,
+            "evidenceDetailAvailable": true
+          }
+        }
+      ],
+      "recommendedPlanningDisposition": "LOW_RISK_REVIEW_CANDIDATE"
+    },
+    {
+      "capabilityId": "change-leadership",
+      "capabilityName": "change-leadership",
+      "canonicalFamilyId": "strategy-transformation",
+      "currentSufficiency": "INSUFFICIENT",
+      "currentRouting": "ONTOLOGY_ENRICHMENT_REQUIRED",
+      "signals": [
+        {
+          "type": "EVIDENCE_INSUFFICIENCY_HOLD",
+          "severity": "REVIEW",
+          "message": "Current evidence is insufficient for low-risk enrichment classification.",
+          "evidence": {
+            "currentSufficiency": "INSUFFICIENT",
+            "currentRouting": "ONTOLOGY_ENRICHMENT_REQUIRED"
+          }
+        }
+      ],
+      "recommendedPlanningDisposition": "TARGETED_REVIEW_HOLD"
+    },
+    {
+      "capabilityId": "market-strategy",
+      "capabilityName": "market-strategy",
+      "canonicalFamilyId": "strategy-transformation",
+      "currentSufficiency": "INSUFFICIENT",
+      "currentRouting": "ONTOLOGY_ENRICHMENT_REQUIRED",
+      "signals": [
+        {
+          "type": "EVIDENCE_INSUFFICIENCY_HOLD",
+          "severity": "REVIEW",
+          "message": "Current evidence is insufficient for low-risk enrichment classification.",
+          "evidence": {
+            "currentSufficiency": "INSUFFICIENT",
+            "currentRouting": "ONTOLOGY_ENRICHMENT_REQUIRED"
+          }
+        }
+      ],
+      "recommendedPlanningDisposition": "TARGETED_REVIEW_HOLD"
+    },
+    {
+      "capabilityId": "operating-model",
+      "capabilityName": "operating-model",
+      "canonicalFamilyId": "strategy-transformation",
+      "currentSufficiency": "INSUFFICIENT",
+      "currentRouting": "ONTOLOGY_ENRICHMENT_REQUIRED",
+      "signals": [
+        {
+          "type": "EVIDENCE_INSUFFICIENCY_HOLD",
+          "severity": "REVIEW",
+          "message": "Current evidence is insufficient for low-risk enrichment classification.",
+          "evidence": {
+            "currentSufficiency": "INSUFFICIENT",
+            "currentRouting": "ONTOLOGY_ENRICHMENT_REQUIRED"
+          }
+        }
+      ],
+      "recommendedPlanningDisposition": "TARGETED_REVIEW_HOLD"
+    },
+    {
+      "capabilityId": "operating-strategy",
+      "capabilityName": "operating-strategy",
+      "canonicalFamilyId": "strategy-transformation",
+      "currentSufficiency": "INSUFFICIENT",
+      "currentRouting": "ONTOLOGY_ENRICHMENT_REQUIRED",
+      "signals": [
+        {
+          "type": "EVIDENCE_INSUFFICIENCY_HOLD",
+          "severity": "REVIEW",
+          "message": "Current evidence is insufficient for low-risk enrichment classification.",
+          "evidence": {
+            "currentSufficiency": "INSUFFICIENT",
+            "currentRouting": "ONTOLOGY_ENRICHMENT_REQUIRED"
+          }
+        }
+      ],
+      "recommendedPlanningDisposition": "TARGETED_REVIEW_HOLD"
+    },
+    {
+      "capabilityId": "partner-strategy",
+      "capabilityName": "partner-strategy",
+      "canonicalFamilyId": "strategy-transformation",
+      "currentSufficiency": "INSUFFICIENT",
+      "currentRouting": "ONTOLOGY_ENRICHMENT_REQUIRED",
+      "signals": [
+        {
+          "type": "EVIDENCE_INSUFFICIENCY_HOLD",
+          "severity": "REVIEW",
+          "message": "Current evidence is insufficient for low-risk enrichment classification.",
+          "evidence": {
+            "currentSufficiency": "INSUFFICIENT",
+            "currentRouting": "ONTOLOGY_ENRICHMENT_REQUIRED"
+          }
+        }
+      ],
+      "recommendedPlanningDisposition": "TARGETED_REVIEW_HOLD"
+    },
+    {
+      "capabilityId": "strategic-analysis",
+      "capabilityName": "strategic-analysis",
+      "canonicalFamilyId": "strategy-transformation",
+      "currentSufficiency": "STRONG",
+      "currentRouting": "AUTO_GENERATION_CANDIDATE",
+      "signals": [
+        {
+          "type": "NO_CONFLICT_SIGNAL",
+          "severity": "INFO",
+          "message": "No deterministic conflict signal was found; this does not authorize enrichment.",
+          "evidence": {
+            "familyReferenceValid": true,
+            "evidenceDetailAvailable": true
+          }
+        }
+      ],
+      "recommendedPlanningDisposition": "LOW_RISK_REVIEW_CANDIDATE"
+    }
+  ],
+  "wave2DispositionSummary": {
+    "lowRiskReviewCandidates": [
+      "insight-synthesis",
+      "marketing-effectiveness",
+      "measurement-design",
+      "research-design",
+      "audience-insight",
+      "customer-adoption",
+      "customer-segmentation",
+      "tooling-enablement",
+      "analytics-governance",
+      "investment-governance",
+      "people-leadership",
+      "cross-functional-delivery",
+      "process-improvement",
+      "product-insights",
+      "product-cadence",
+      "roadmap-governance",
+      "benefits-realisation",
+      "strategic-analysis"
+    ],
+    "targetedReviewHoldCandidates": [
+      "forecasting",
+      "scenario-modelling",
+      "variance-analysis",
+      "account-growth",
+      "commercial-negotiation",
+      "commercial-partnerships",
+      "consultative-selling",
+      "pipeline-management",
+      "education-partnerships",
+      "legal-technology",
+      "architecture-governance",
+      "operating-control",
+      "policy-governance",
+      "regulatory-compliance",
+      "risk-controls",
+      "business-ownership",
+      "commercial-leadership",
+      "education-delivery",
+      "dependency-management",
+      "ecosystem-operations",
+      "operating-rhythm",
+      "service-performance",
+      "employee-relations",
+      "hr-systems",
+      "organisation-design",
+      "people-process",
+      "talent-planning",
+      "workforce-advisory",
+      "change-leadership",
+      "market-strategy",
+      "operating-model",
+      "operating-strategy",
+      "partner-strategy"
+    ],
+    "conflictReviewHoldCandidates": []
+  },
+  "limitations": [
+    "This scanner is deterministic and read-only.",
+    "It does not evaluate full semantic drift.",
+    "It does not authorize ontology writes.",
+    "It does not use embeddings, LLMs, or human semantic judgment.",
+    "The current compiler output does not include capability display names, so runtime name checks use canonical capability IDs as deterministic name proxies.",
+    "Exact equality after conservative name normalisation is the only near-duplicate threshold; broader semantic similarity remains untested."
+  ],
+  "nonGoalsConfirmed": {
+    "ontologyModified": false,
+    "roleKnowledgeModified": false,
+    "productionAppModified": false,
+    "semanticPolicyModified": false,
+    "packageFilesModified": false,
+    "holdModified": false
+  },
+  "recommendedNextMode": "PLANNING / SOURCE_CENSUS_WAVE2_REPLAN_WITH_CONFLICT_SIGNALS"
+}

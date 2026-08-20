@@ -1,0 +1,17 @@
+{
+  "reportVersion": "structured-inference-holdout-evaluation/1.0.0",
+  "label": "founder-transformation-holdout-current-prompt",
+  "promptVersion": "career-capability-inference-prompt/1.0.0",
+  "model": "gemini-3.6-flash",
+  "stateSha256": "0A9043BA497E7C1F3B05E74F14937B6E9C309F0F1B0DC59BCCB134B8EB5E9C8D",
+  "evidenceId": "evidence:bundle:career-source-revision:schema-1.0.0:normalisation-lf-bom-1.0.0:sha256:4c4167cd25057c715c29a7c4531459ac73cee90cfed3d23c34f00dd9aa02516d:2",
+  "evidenceTextSha256": "B485AFA1D38CD30D598B1612BB0668FC2CEC6C14C7A843D194024ABAD046055A",
+  "validEvidenceResultCount": 1,
+  "rejectedEvidenceResultCount": 0,
+  "responseIssueCodes": [],
+  "evidenceLinkExact": true,
+  "capabilityIds": [
+    "analytics-governance",
+    "tooling-enablement"
+  ]
+}

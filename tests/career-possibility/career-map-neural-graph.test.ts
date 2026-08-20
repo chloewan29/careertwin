@@ -399,6 +399,35 @@ async function testJ_roleGapProgressiveDisclosure() {
 }
 
 // ---------------------------------------------------------------------------
+// Test K — MVP Step 2K Layout Restrictions (Radial Topology & Detail Panel)
+// ---------------------------------------------------------------------------
+
+async function testK_step2K_layoutTopologies() {
+  const source = readFileSync(RENDERER_SOURCE_PATH, "utf8");
+  
+  // Owned skills inner ring (150px)
+  assert.match(source, /node\.nodeType === "CAPABILITY"\) return 150 \*/, "K: owned capabilities form an inner ring");
+  
+  // Roles outer ring (500px)
+  assert.match(source, /node\.nodeType === "ROLE"\) return 500 \*/, "K: future roles placed strictly on the outer ring");
+  
+  // Gaps on the outermost ring (650px)
+  assert.match(source, /node\.nodeType === "ROLE_ONLY_CAPABILITY"\) return 650 \*/, "K: role gaps placed on the outermost band");
+  
+  // Evidence on its own ring (260px)
+  assert.match(source, /node\.nodeType === "EVIDENCE"\) return 260 \*/, "K: evidence nodes placed in a discrete band outside capabilities");
+
+  // Capability evidence disclosure (EVIDENCE nodes in focusSet show labels)
+  assert.match(source, /node\.nodeType === "EVIDENCE" && !!focusSet && focusSet\.has\(id\)/, "K: focused evidence nodes explicitly render their text labels");
+
+  // Selected-role detail layout not obscuring the graph (moved to side panel)
+  assert.doesNotMatch(source, /absolute bottom-4 left-4[\s\S]*?SelectedNodeDetail/, "K: SelectedNodeDetail must not occupy the bottom center to avoid obscuring focused nodes");
+  assert.match(source, /absolute right-4 top-16[\s\S]*?SelectedNodeDetail/, "K: SelectedNodeDetail must be placed on the side to provide a graph-safe viewport");
+
+  console.log("  K. Radial depth topology and side-panel presentation — PASSED");
+}
+
+// ---------------------------------------------------------------------------
 // Main
 // ---------------------------------------------------------------------------
 
@@ -416,6 +445,7 @@ async function main() {
   await testH_initialCapabilitiesRemainVisible();
   await testI_capabilityFirstVisualHierarchy();
   await testJ_roleGapProgressiveDisclosure();
+  await testK_step2K_layoutTopologies();
   console.log("All career-map-neural-graph renderer contract tests passed.");
 }
 

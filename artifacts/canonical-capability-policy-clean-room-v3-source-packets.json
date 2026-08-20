@@ -1,0 +1,493 @@
+[
+  {
+    "CANONICAL_ID": "insight-synthesis",
+    "LABEL": "Insight Synthesis",
+    "FAMILY": "Analytics & Insight",
+    "FAMILY_CONTEXT": "Measurement, analysis, modelling, research methods, and synthesis used to generate evidence and insight.",
+    "ROLE_USAGES": [
+      {
+        "roleFamilyId": "customer-insights-lead",
+        "canonicalTitle": "Customer Insights Lead",
+        "roleSource": "REPRESENTATIVE_ARCHETYPE",
+        "importance": "must",
+        "expectedEvidence": "Integrated customer evidence into a decision-ready point of view.",
+        "minimumProofLevel": "demonstrated"
+      },
+      {
+        "roleFamilyId": "analytics-manager",
+        "canonicalTitle": "Analytics Manager",
+        "roleSource": "REPRESENTATIVE_ARCHETYPE",
+        "importance": "must",
+        "expectedEvidence": "Synthesised analysis into a clear decision direction.",
+        "minimumProofLevel": "demonstrated"
+      }
+    ],
+    "MAPPING_CLUES": [
+      "direct_evidence when action=synthesised_findings AND outcome=informed_decision: The evidence explicitly connects synthesised findings to a decision.",
+      "direct_evidence when action=synthesised_executive_insight: The evidence explicitly records synthesising insight for an executive audience."
+    ],
+    "EVIDENCE_SIGNAL_CLUES": [
+      "synthesised_findings: synthesised research/customer/study findings/insights/evidence",
+      "synthesised_findings: synthesised/translated analysis/findings/evidence/insights into recommendations",
+      "synthesised_findings: combined/integrated multiple data/evidence sources to identify findings",
+      "informed_decision: to inform/enable/support a business/commercial/product/customer decision",
+      "synthesised_executive_insight: translated/converted/connected/synthesised analysis/findings/insights/evidence into executive narrative/recommendations/decisions/actions",
+      "synthesised_executive_insight: presented analysis/findings/insights/evidence and recommendations/decisions/actions to executives/senior leaders"
+    ],
+    "SIBLING_CANDIDATES": [
+      "strategic-analysis",
+      "audience-insight",
+      "data-storytelling",
+      "decision-storytelling"
+    ],
+    "PRIVATE_ID_COLLISIONS": [],
+    "ROLE_USAGE_COUNT": 2,
+    "RICH_ARCHETYPE_USAGE_COUNT": 2,
+    "SEEDED_USAGE_COUNT": 0,
+    "EXPECTED_EVIDENCE_COUNT": 2,
+    "MAPPING_CLUE_COUNT": 2,
+    "EVIDENCE_CLUE_COUNT": 6,
+    "SIBLING_EVIDENCE_COUNT": 4,
+    "SOURCE_SUFFICIENCY": "STRONG",
+    "SOURCE_SUFFICIENCY_REASON": "Supported by 2 rich archetype definitions and very detailed mapping/evidence rules clearly defining the semantic boundary.",
+    "GENERATION_DECISION": "GENERATE"
+  },
+  {
+    "CANONICAL_ID": "measurement-design",
+    "LABEL": "Measurement Design",
+    "FAMILY": "Analytics & Insight",
+    "FAMILY_CONTEXT": "Measurement, analysis, modelling, research methods, and synthesis used to generate evidence and insight.",
+    "ROLE_USAGES": [
+      {
+        "roleFamilyId": "analytics-manager",
+        "canonicalTitle": "Analytics Manager",
+        "roleSource": "REPRESENTATIVE_ARCHETYPE",
+        "importance": "must",
+        "expectedEvidence": "Owned an analytical measurement approach tied to a decision.",
+        "minimumProofLevel": "demonstrated"
+      },
+      {
+        "roleFamilyId": "marketing-analytics-lead",
+        "canonicalTitle": "Marketing Analytics Lead",
+        "roleSource": "REPRESENTATIVE_ARCHETYPE",
+        "importance": "must",
+        "expectedEvidence": "Designed a measurement framework suited to marketing decisions.",
+        "minimumProofLevel": "demonstrated"
+      }
+    ],
+    "MAPPING_CLUES": [
+      "direct_evidence when action=designed_measurement_framework: The evidence explicitly records designing a measurement framework or methodology."
+    ],
+    "EVIDENCE_SIGNAL_CLUES": [
+      "designed_measurement_framework: designed/created/developed/established/built measurement/evaluation/attribution/incrementality/analytical framework/methodology/approach (excludes using/applied)"
+    ],
+    "SIBLING_CANDIDATES": [
+      "research-design",
+      "marketing-effectiveness",
+      "analytics-governance"
+    ],
+    "PRIVATE_ID_COLLISIONS": [],
+    "ROLE_USAGE_COUNT": 2,
+    "RICH_ARCHETYPE_USAGE_COUNT": 2,
+    "SEEDED_USAGE_COUNT": 0,
+    "EXPECTED_EVIDENCE_COUNT": 2,
+    "MAPPING_CLUE_COUNT": 1,
+    "EVIDENCE_CLUE_COUNT": 1,
+    "SIBLING_EVIDENCE_COUNT": 3,
+    "SOURCE_SUFFICIENCY": "STRONG",
+    "SOURCE_SUFFICIENCY_REASON": "Supported by 2 rich archetype definitions and explicit mapping/evidence rules that define creation vs usage boundaries.",
+    "GENERATION_DECISION": "GENERATE"
+  },
+  {
+    "CANONICAL_ID": "analytics-governance",
+    "LABEL": "Analytics Governance",
+    "FAMILY": "Governance & Risk",
+    "FAMILY_CONTEXT": "Decision rights, controls, compliance, risk, assurance, and formal oversight capabilities.",
+    "ROLE_USAGES": [
+      {
+        "roleFamilyId": "analytics-manager",
+        "canonicalTitle": "Analytics Manager",
+        "roleSource": "REPRESENTATIVE_ARCHETYPE",
+        "importance": "must",
+        "expectedEvidence": "Established trusted definitions, quality controls, or analytical standards.",
+        "minimumProofLevel": "demonstrated"
+      },
+      {
+        "roleFamilyId": "marketing-analytics-lead",
+        "canonicalTitle": "Marketing Analytics Lead",
+        "roleSource": "REPRESENTATIVE_ARCHETYPE",
+        "importance": "should",
+        "expectedEvidence": "Maintained trusted marketing metrics and measurement definitions.",
+        "minimumProofLevel": "demonstrated"
+      },
+      {
+        "roleFamilyId": "data-product-manager",
+        "canonicalTitle": "Data Product Manager",
+        "roleSource": "REPRESENTATIVE_ARCHETYPE",
+        "importance": "should",
+        "expectedEvidence": "Applied trust and governance expectations to data-product decisions.",
+        "minimumProofLevel": "demonstrated"
+      }
+    ],
+    "MAPPING_CLUES": [
+      "direct_evidence when action=established_analytics_governance: The evidence explicitly records establishing analytics governance."
+    ],
+    "EVIDENCE_SIGNAL_CLUES": [
+      "established_analytics_governance: aligned/defined/established/standardised/governed/reviewed KPI/metric/source logic/semantic layer/dashboard portfolio/reporting definition/logic/governance/standards/consistency/consolidation",
+      "established_analytics_governance: implemented/established/created/defined QA/quality assurance/documentation routine/standard/governance/controls"
+    ],
+    "SIBLING_CANDIDATES": [
+      "roadmap-governance",
+      "measurement-design"
+    ],
+    "PRIVATE_ID_COLLISIONS": [],
+    "ROLE_USAGE_COUNT": 3,
+    "RICH_ARCHETYPE_USAGE_COUNT": 3,
+    "SEEDED_USAGE_COUNT": 0,
+    "EXPECTED_EVIDENCE_COUNT": 3,
+    "MAPPING_CLUE_COUNT": 1,
+    "EVIDENCE_CLUE_COUNT": 2,
+    "SIBLING_EVIDENCE_COUNT": 2,
+    "SOURCE_SUFFICIENCY": "STRONG",
+    "SOURCE_SUFFICIENCY_REASON": "Supported by 3 rich archetype definitions across domains and explicit evidence rules defining definition/QA/governance actions.",
+    "GENERATION_DECISION": "GENERATE"
+  },
+  {
+    "CANONICAL_ID": "cross-functional-delivery",
+    "LABEL": "Cross-functional Delivery",
+    "FAMILY": "Operations & Delivery",
+    "FAMILY_CONTEXT": "Capabilities for planning, coordinating, delivering, operating, and improving services or work.",
+    "ROLE_USAGES": [
+      {
+        "roleFamilyId": "transformation-manager",
+        "canonicalTitle": "Transformation Manager",
+        "roleSource": "SEEDED_PROFILE",
+        "importance": "should",
+        "expectedEvidence": "A concrete example showing applied cross-functional delivery.",
+        "minimumProofLevel": "demonstrated"
+      },
+      {
+        "roleFamilyId": "analytics-manager",
+        "canonicalTitle": "Analytics Manager",
+        "roleSource": "REPRESENTATIVE_ARCHETYPE",
+        "importance": "should",
+        "expectedEvidence": "Coordinated analytical delivery across business and technical partners.",
+        "minimumProofLevel": "demonstrated"
+      },
+      {
+        "roleFamilyId": "customer-insights-lead",
+        "canonicalTitle": "Customer Insights Lead",
+        "roleSource": "REPRESENTATIVE_ARCHETYPE",
+        "importance": "should",
+        "expectedEvidence": "Worked across functions to embed customer evidence in delivery.",
+        "minimumProofLevel": "demonstrated"
+      },
+      {
+        "roleFamilyId": "data-product-manager",
+        "canonicalTitle": "Data Product Manager",
+        "roleSource": "REPRESENTATIVE_ARCHETYPE",
+        "importance": "must",
+        "expectedEvidence": "Aligned data, engineering, analytics, and business contributors around outcomes.",
+        "minimumProofLevel": "demonstrated"
+      }
+    ],
+    "MAPPING_CLUES": [
+      "direct_evidence when action=coordinated_cross_functional_delivery AND ownership=owned_delivery: The evidence explicitly records owned cross-functional delivery."
+    ],
+    "EVIDENCE_SIGNAL_CLUES": [
+      "coordinated_cross_functional_delivery: coordinated/drove/led/managed a cross-functional delivery/initiative/project (excludes supported)",
+      "coordinated_cross_functional_delivery: coordinated/aligned the delivery/stakeholders across [groups] (excludes supported)",
+      "owned_delivery: owned/drove/led/managed/was responsible for a cross-functional delivery/initiative/project",
+      "cross_functional: cross-functional or partnered/collaborated/worked with/across [group A] and [group B]"
+    ],
+    "SIBLING_CANDIDATES": [
+      "dependency-management",
+      "program-planning",
+      "engineering-delivery"
+    ],
+    "PRIVATE_ID_COLLISIONS": [],
+    "ROLE_USAGE_COUNT": 4,
+    "RICH_ARCHETYPE_USAGE_COUNT": 3,
+    "SEEDED_USAGE_COUNT": 1,
+    "EXPECTED_EVIDENCE_COUNT": 4,
+    "MAPPING_CLUE_COUNT": 1,
+    "EVIDENCE_CLUE_COUNT": 4,
+    "SIBLING_EVIDENCE_COUNT": 3,
+    "SOURCE_SUFFICIENCY": "STRONG",
+    "SOURCE_SUFFICIENCY_REASON": "Supported by 3 rich archetypes + 1 seeded, plus mapping rules explicitly demanding both cross-functional coordination and delivery ownership.",
+    "GENERATION_DECISION": "GENERATE"
+  },
+  {
+    "CANONICAL_ID": "strategic-analysis",
+    "LABEL": "Strategic Analysis",
+    "FAMILY": "Strategy & Transformation",
+    "FAMILY_CONTEXT": "Direction-setting, prioritisation, operating-model change, and planned transformation capabilities.",
+    "ROLE_USAGES": [
+      {
+        "roleFamilyId": "strategy-operations-manager",
+        "canonicalTitle": "Strategy & Operations Manager",
+        "roleSource": "SEEDED_PROFILE",
+        "importance": "must",
+        "expectedEvidence": "A specific owned outcome demonstrating strategic analysis.",
+        "minimumProofLevel": "owned_outcome"
+      },
+      {
+        "roleFamilyId": "analytics-manager",
+        "canonicalTitle": "Analytics Manager",
+        "roleSource": "REPRESENTATIVE_ARCHETYPE",
+        "importance": "should",
+        "expectedEvidence": "Used structured analysis to shape priorities and trade-offs.",
+        "minimumProofLevel": "demonstrated"
+      },
+      {
+        "roleFamilyId": "customer-insights-lead",
+        "canonicalTitle": "Customer Insights Lead",
+        "roleSource": "REPRESENTATIVE_ARCHETYPE",
+        "importance": "should",
+        "expectedEvidence": "Translated customer evidence into strategic implications.",
+        "minimumProofLevel": "demonstrated"
+      },
+      {
+        "roleFamilyId": "marketing-analytics-lead",
+        "canonicalTitle": "Marketing Analytics Lead",
+        "roleSource": "REPRESENTATIVE_ARCHETYPE",
+        "importance": "must",
+        "expectedEvidence": "Connected marketing evidence to growth or allocation trade-offs.",
+        "minimumProofLevel": "demonstrated"
+      }
+    ],
+    "MAPPING_CLUES": [
+      "direct_evidence when action=performed_strategic_analysis: The evidence explicitly records performed strategic analysis."
+    ],
+    "EVIDENCE_SIGNAL_CLUES": [
+      "performed_strategic_analysis: scoped/evaluated/analysed/assessed/identified commercial/business/strategic problem/case/trend/risk/opportunity/driver",
+      "performed_strategic_analysis: developed/built/created analytical/commercial/business case for strategic decisions",
+      "performed_strategic_analysis: bounded combination of performed analysis, business or strategic context, and an explicit risk, opportunity, driver, trend, root cause, or decision case."
+    ],
+    "SIBLING_CANDIDATES": [
+      "insight-synthesis",
+      "commercial-analysis"
+    ],
+    "PRIVATE_ID_COLLISIONS": [],
+    "ROLE_USAGE_COUNT": 4,
+    "RICH_ARCHETYPE_USAGE_COUNT": 3,
+    "SEEDED_USAGE_COUNT": 1,
+    "EXPECTED_EVIDENCE_COUNT": 4,
+    "MAPPING_CLUE_COUNT": 1,
+    "EVIDENCE_CLUE_COUNT": 3,
+    "SIBLING_EVIDENCE_COUNT": 2,
+    "SOURCE_SUFFICIENCY": "STRONG",
+    "SOURCE_SUFFICIENCY_REASON": "Supported by 3 rich archetypes and rigorous evidence signals linking analytical assessment to strategic/commercial contexts.",
+    "GENERATION_DECISION": "GENERATE"
+  },
+  {
+    "CANONICAL_ID": "audience-insight",
+    "LABEL": "Audience Insight",
+    "FAMILY": "Customer & Market",
+    "FAMILY_CONTEXT": "Capabilities for understanding customer, audience, and market behaviour and needs.",
+    "ROLE_USAGES": [
+      {
+        "roleFamilyId": "marketing-strategy-manager",
+        "canonicalTitle": "Marketing Strategy Manager",
+        "roleSource": "SEEDED_PROFILE",
+        "importance": "must",
+        "expectedEvidence": "A concrete example showing applied audience insight.",
+        "minimumProofLevel": "demonstrated"
+      },
+      {
+        "roleFamilyId": "customer-insights-lead",
+        "canonicalTitle": "Customer Insights Lead",
+        "roleSource": "REPRESENTATIVE_ARCHETYPE",
+        "importance": "should",
+        "expectedEvidence": "Connected behavioural or attitudinal evidence to customer choices.",
+        "minimumProofLevel": "demonstrated"
+      },
+      {
+        "roleFamilyId": "marketing-analytics-lead",
+        "canonicalTitle": "Marketing Analytics Lead",
+        "roleSource": "REPRESENTATIVE_ARCHETYPE",
+        "importance": "should",
+        "expectedEvidence": "Used audience evidence to interpret marketing performance.",
+        "minimumProofLevel": "demonstrated"
+      }
+    ],
+    "MAPPING_CLUES": [],
+    "EVIDENCE_SIGNAL_CLUES": [],
+    "SIBLING_CANDIDATES": [
+      "customer-segmentation",
+      "product-insights",
+      "market-strategy"
+    ],
+    "PRIVATE_ID_COLLISIONS": [],
+    "ROLE_USAGE_COUNT": 3,
+    "RICH_ARCHETYPE_USAGE_COUNT": 2,
+    "SEEDED_USAGE_COUNT": 1,
+    "EXPECTED_EVIDENCE_COUNT": 3,
+    "MAPPING_CLUE_COUNT": 0,
+    "EVIDENCE_CLUE_COUNT": 0,
+    "SIBLING_EVIDENCE_COUNT": 3,
+    "SOURCE_SUFFICIENCY": "MODERATE",
+    "SOURCE_SUFFICIENCY_REASON": "No mapping clues, but 2 rich archetype contexts provide sufficient semantic contrast against customer-segmentation and product-insights.",
+    "GENERATION_DECISION": "GENERATE"
+  },
+  {
+    "CANONICAL_ID": "customer-segmentation",
+    "LABEL": "Customer Segmentation",
+    "FAMILY": "Customer & Market",
+    "FAMILY_CONTEXT": "Capabilities for understanding customer, audience, and market behaviour and needs.",
+    "ROLE_USAGES": [
+      {
+        "roleFamilyId": "customer-insights-lead",
+        "canonicalTitle": "Customer Insights Lead",
+        "roleSource": "REPRESENTATIVE_ARCHETYPE",
+        "importance": "must",
+        "expectedEvidence": "Used meaningful customer groups to change strategy or experience decisions.",
+        "minimumProofLevel": "demonstrated"
+      }
+    ],
+    "MAPPING_CLUES": [],
+    "EVIDENCE_SIGNAL_CLUES": [],
+    "SIBLING_CANDIDATES": [
+      "audience-insight"
+    ],
+    "PRIVATE_ID_COLLISIONS": [],
+    "ROLE_USAGE_COUNT": 1,
+    "RICH_ARCHETYPE_USAGE_COUNT": 1,
+    "SEEDED_USAGE_COUNT": 0,
+    "EXPECTED_EVIDENCE_COUNT": 1,
+    "MAPPING_CLUE_COUNT": 0,
+    "EVIDENCE_CLUE_COUNT": 0,
+    "SIBLING_EVIDENCE_COUNT": 1,
+    "SOURCE_SUFFICIENCY": "WEAK",
+    "SOURCE_SUFFICIENCY_REASON": "Only a single rich archetype usage exists with no mapping or evidence rules. The limited cross-role triangulation and missing explicit rules suggest abstention.",
+    "GENERATION_DECISION": "ABSTAIN"
+  },
+  {
+    "CANONICAL_ID": "research-design",
+    "LABEL": "Research Design",
+    "FAMILY": "Analytics & Insight",
+    "FAMILY_CONTEXT": "Measurement, analysis, modelling, research methods, and synthesis used to generate evidence and insight.",
+    "ROLE_USAGES": [
+      {
+        "roleFamilyId": "customer-insights-lead",
+        "canonicalTitle": "Customer Insights Lead",
+        "roleSource": "REPRESENTATIVE_ARCHETYPE",
+        "importance": "must",
+        "expectedEvidence": "Owned research designed around a consequential customer question.",
+        "minimumProofLevel": "demonstrated"
+      }
+    ],
+    "MAPPING_CLUES": [
+      "direct_evidence when action=designed_research",
+      "transferable_signal when action=supported_research_delivery: The evidence records supporting research delivery without claiming research design ownership."
+    ],
+    "EVIDENCE_SIGNAL_CLUES": [
+      "designed_research: designed/developed a research study/programme",
+      "designed_research: built/created/implemented/established a structured research framework/methodology/approach or experiment/test/survey design",
+      "supported_research_delivery: supported/assisted/contributed to the delivery of research"
+    ],
+    "SIBLING_CANDIDATES": [
+      "measurement-design"
+    ],
+    "PRIVATE_ID_COLLISIONS": [],
+    "ROLE_USAGE_COUNT": 1,
+    "RICH_ARCHETYPE_USAGE_COUNT": 1,
+    "SEEDED_USAGE_COUNT": 0,
+    "EXPECTED_EVIDENCE_COUNT": 1,
+    "MAPPING_CLUE_COUNT": 2,
+    "EVIDENCE_CLUE_COUNT": 3,
+    "SIBLING_EVIDENCE_COUNT": 1,
+    "SOURCE_SUFFICIENCY": "MODERATE",
+    "SOURCE_SUFFICIENCY_REASON": "Although only one rich archetype role exists, explicit mapping rules and evidence definitions strongly define the transferability boundary (supporting vs designing).",
+    "GENERATION_DECISION": "GENERATE"
+  },
+  {
+    "CANONICAL_ID": "product-insights",
+    "LABEL": "Product Insights",
+    "FAMILY": "Product",
+    "FAMILY_CONTEXT": "Product discovery, decision systems, operating cadence, and product-specific capability development.",
+    "ROLE_USAGES": [
+      {
+        "roleFamilyId": "product-operations-manager",
+        "canonicalTitle": "Product Operations Manager",
+        "roleSource": "SEEDED_PROFILE",
+        "importance": "must",
+        "expectedEvidence": "A concrete example showing applied product insights.",
+        "minimumProofLevel": "demonstrated"
+      },
+      {
+        "roleFamilyId": "data-product-manager",
+        "canonicalTitle": "Data Product Manager",
+        "roleSource": "REPRESENTATIVE_ARCHETYPE",
+        "importance": "must",
+        "expectedEvidence": "Used user and product evidence to define a data-product problem.",
+        "minimumProofLevel": "demonstrated"
+      }
+    ],
+    "MAPPING_CLUES": [],
+    "EVIDENCE_SIGNAL_CLUES": [
+      "framed_business_problem: framed/defined ambiguous business/commercial/operational/customer/product question/problem (might relate)"
+    ],
+    "SIBLING_CANDIDATES": [
+      "customer-insights",
+      "audience-insight"
+    ],
+    "PRIVATE_ID_COLLISIONS": [],
+    "ROLE_USAGE_COUNT": 2,
+    "RICH_ARCHETYPE_USAGE_COUNT": 1,
+    "SEEDED_USAGE_COUNT": 1,
+    "EXPECTED_EVIDENCE_COUNT": 2,
+    "MAPPING_CLUE_COUNT": 0,
+    "EVIDENCE_CLUE_COUNT": 1,
+    "SIBLING_EVIDENCE_COUNT": 2,
+    "SOURCE_SUFFICIENCY": "WEAK",
+    "SOURCE_SUFFICIENCY_REASON": "Only one rich archetype, one boilerplate seed, and no definitive explicit mapping rules for this capability specifically.",
+    "GENERATION_DECISION": "ABSTAIN"
+  },
+  {
+    "CANONICAL_ID": "tooling-enablement",
+    "LABEL": "Tooling Enablement",
+    "FAMILY": "Data & Technology",
+    "FAMILY_CONTEXT": "Reusable technology application, architecture, automation, systems, and tooling-enablement capabilities.",
+    "ROLE_USAGES": [
+      {
+        "roleFamilyId": "product-operations-manager",
+        "canonicalTitle": "Product Operations Manager",
+        "roleSource": "SEEDED_PROFILE",
+        "importance": "should",
+        "expectedEvidence": "A concrete example showing applied tooling enablement.",
+        "minimumProofLevel": "demonstrated"
+      },
+      {
+        "roleFamilyId": "data-product-manager",
+        "canonicalTitle": "Data Product Manager",
+        "roleSource": "REPRESENTATIVE_ARCHETYPE",
+        "importance": "should",
+        "expectedEvidence": "Enabled reliable use of reusable data capabilities.",
+        "minimumProofLevel": "demonstrated"
+      }
+    ],
+    "MAPPING_CLUES": [
+      "transferable_signal when action=built_reusable_tooling: Building reusable tooling is transferable evidence for tooling enablement without claiming that users adopted it or that it delivered a full enablement outcome."
+    ],
+    "EVIDENCE_SIGNAL_CLUES": [
+      "built_reusable_tooling: built/created/developed reusable/repeatable tool/tools/tooling/template/templates/component/components",
+      "enabled_platform_adoption: enabled/drove/led/increased platform/system adoption/rollout/onboarding"
+    ],
+    "SIBLING_CANDIDATES": [
+      "roadmap-governance",
+      "product-operations"
+    ],
+    "PRIVATE_ID_COLLISIONS": [],
+    "ROLE_USAGE_COUNT": 2,
+    "RICH_ARCHETYPE_USAGE_COUNT": 1,
+    "SEEDED_USAGE_COUNT": 1,
+    "EXPECTED_EVIDENCE_COUNT": 2,
+    "MAPPING_CLUE_COUNT": 1,
+    "EVIDENCE_CLUE_COUNT": 2,
+    "SIBLING_EVIDENCE_COUNT": 2,
+    "SOURCE_SUFFICIENCY": "MODERATE",
+    "SOURCE_SUFFICIENCY_REASON": "One rich archetype usage combined with explicit mapping/evidence rules delineating the transferable boundary (building tool vs enabling usage) provides sufficient semantic grounding.",
+    "GENERATION_DECISION": "GENERATE"
+  }
+]

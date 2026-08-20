@@ -1,0 +1,334 @@
+[
+  {
+    "roleFamilyId": "hr-business-partner",
+    "canonicalTitle": "HR Business Partner",
+    "aliases": [
+      "People Business Partner"
+    ],
+    "searchTitles": [
+      "Senior HR Partner",
+      "Human Resources Business Partner"
+    ],
+    "domain": "people",
+    "seniorityBand": "manager",
+    "description": "Seeded CareerTwin role family profile for HR Business Partner, focused on observable capability and proof requirements in people.",
+    "mustHaveCapabilities": [
+      {
+        "capabilityId": "workforce-advisory",
+        "label": "Workforce Advisory",
+        "importance": "must",
+        "expectedEvidence": "A specific owned outcome demonstrating workforce advisory.",
+        "minimumProofLevel": "owned_outcome"
+      },
+      {
+        "capabilityId": "employee-relations",
+        "label": "Employee Relations",
+        "importance": "must",
+        "expectedEvidence": "A specific owned outcome demonstrating employee relations.",
+        "minimumProofLevel": "demonstrated"
+      }
+    ],
+    "shouldHaveCapabilities": [
+      {
+        "capabilityId": "organisation-design",
+        "label": "Organisation Design",
+        "importance": "should",
+        "expectedEvidence": "A concrete example showing applied organisation design.",
+        "minimumProofLevel": "demonstrated"
+      },
+      {
+        "capabilityId": "talent-planning",
+        "label": "Talent Planning",
+        "importance": "should",
+        "expectedEvidence": "A concrete example showing applied talent planning.",
+        "minimumProofLevel": "demonstrated"
+      }
+    ],
+    "differentiatingCapabilities": [],
+    "allOtherCapabilitiesUsed": [],
+    "privateNoncanonicalIds": [],
+    "relationships": [
+      {
+        "capabilityId": "workforce-advisory",
+        "status": "canonical",
+        "label": "Workforce Advisory",
+        "importance": "must",
+        "currentExpectedEvidence": "A specific owned outcome demonstrating workforce advisory.",
+        "minimumProofLevel": "owned_outcome",
+        "canonicalFamily": "People & Organisation",
+        "sourceSufficiency": "INSUFFICIENT",
+        "mappingClues": [],
+        "signalEvidenceClues": []
+      },
+      {
+        "capabilityId": "employee-relations",
+        "status": "canonical",
+        "label": "Employee Relations",
+        "importance": "must",
+        "currentExpectedEvidence": "A specific owned outcome demonstrating employee relations.",
+        "minimumProofLevel": "demonstrated",
+        "canonicalFamily": "People & Organisation",
+        "sourceSufficiency": "INSUFFICIENT",
+        "mappingClues": [],
+        "signalEvidenceClues": []
+      },
+      {
+        "capabilityId": "organisation-design",
+        "status": "canonical",
+        "label": "Organisation Design",
+        "importance": "should",
+        "currentExpectedEvidence": "A concrete example showing applied organisation design.",
+        "minimumProofLevel": "demonstrated",
+        "canonicalFamily": "People & Organisation",
+        "sourceSufficiency": "INSUFFICIENT",
+        "mappingClues": [],
+        "signalEvidenceClues": []
+      },
+      {
+        "capabilityId": "talent-planning",
+        "status": "canonical",
+        "label": "Talent Planning",
+        "importance": "should",
+        "currentExpectedEvidence": "A concrete example showing applied talent planning.",
+        "minimumProofLevel": "demonstrated",
+        "canonicalFamily": "People & Organisation",
+        "sourceSufficiency": "INSUFFICIENT",
+        "mappingClues": [],
+        "signalEvidenceClues": []
+      }
+    ]
+  },
+  {
+    "roleFamilyId": "sales-account-manager",
+    "canonicalTitle": "Sales / Account Manager",
+    "aliases": [
+      "Strategic Account Manager"
+    ],
+    "searchTitles": [
+      "Enterprise Account Executive",
+      "Client Sales Manager"
+    ],
+    "domain": "sales",
+    "seniorityBand": "manager",
+    "description": "Seeded CareerTwin role family profile for Sales / Account Manager, focused on observable capability and proof requirements in sales.",
+    "mustHaveCapabilities": [
+      {
+        "capabilityId": "account-growth",
+        "label": "Account Growth",
+        "importance": "must",
+        "expectedEvidence": "A specific owned outcome demonstrating account growth.",
+        "minimumProofLevel": "owned_outcome"
+      },
+      {
+        "capabilityId": "consultative-selling",
+        "label": "Consultative Selling",
+        "importance": "must",
+        "expectedEvidence": "A specific owned outcome demonstrating consultative selling.",
+        "minimumProofLevel": "demonstrated"
+      }
+    ],
+    "shouldHaveCapabilities": [
+      {
+        "capabilityId": "pipeline-management",
+        "label": "Pipeline Management",
+        "importance": "should",
+        "expectedEvidence": "A concrete example showing applied pipeline management.",
+        "minimumProofLevel": "demonstrated"
+      },
+      {
+        "capabilityId": "commercial-negotiation",
+        "label": "Commercial Negotiation",
+        "importance": "should",
+        "expectedEvidence": "A concrete example showing applied commercial negotiation.",
+        "minimumProofLevel": "demonstrated"
+      }
+    ],
+    "differentiatingCapabilities": [],
+    "allOtherCapabilitiesUsed": [],
+    "privateNoncanonicalIds": [],
+    "relationships": [
+      {
+        "capabilityId": "account-growth",
+        "status": "canonical",
+        "label": "Account Growth",
+        "importance": "must",
+        "currentExpectedEvidence": "A specific owned outcome demonstrating account growth.",
+        "minimumProofLevel": "owned_outcome",
+        "canonicalFamily": "Commercial",
+        "sourceSufficiency": "INSUFFICIENT",
+        "mappingClues": [],
+        "signalEvidenceClues": []
+      },
+      {
+        "capabilityId": "consultative-selling",
+        "status": "canonical",
+        "label": "Consultative Selling",
+        "importance": "must",
+        "currentExpectedEvidence": "A specific owned outcome demonstrating consultative selling.",
+        "minimumProofLevel": "demonstrated",
+        "canonicalFamily": "Commercial",
+        "sourceSufficiency": "INSUFFICIENT",
+        "mappingClues": [],
+        "signalEvidenceClues": []
+      },
+      {
+        "capabilityId": "pipeline-management",
+        "status": "canonical",
+        "label": "Pipeline Management",
+        "importance": "should",
+        "currentExpectedEvidence": "A concrete example showing applied pipeline management.",
+        "minimumProofLevel": "demonstrated",
+        "canonicalFamily": "Commercial",
+        "sourceSufficiency": "INSUFFICIENT",
+        "mappingClues": [],
+        "signalEvidenceClues": []
+      },
+      {
+        "capabilityId": "commercial-negotiation",
+        "status": "canonical",
+        "label": "Commercial Negotiation",
+        "importance": "should",
+        "currentExpectedEvidence": "A concrete example showing applied commercial negotiation.",
+        "minimumProofLevel": "demonstrated",
+        "canonicalFamily": "Commercial",
+        "sourceSufficiency": "INSUFFICIENT",
+        "mappingClues": [],
+        "signalEvidenceClues": []
+      }
+    ]
+  },
+  {
+    "roleFamilyId": "operations-manager",
+    "canonicalTitle": "Operations Manager",
+    "aliases": [
+      "Business Operations Lead"
+    ],
+    "searchTitles": [
+      "Service Operations Manager",
+      "Operational Excellence Manager"
+    ],
+    "domain": "operations",
+    "seniorityBand": "manager",
+    "description": "Seeded CareerTwin role family profile for Operations Manager, focused on observable capability and proof requirements in operations.",
+    "mustHaveCapabilities": [
+      {
+        "capabilityId": "operating-control",
+        "label": "Operating Control",
+        "importance": "must",
+        "expectedEvidence": "A specific owned outcome demonstrating operating control.",
+        "minimumProofLevel": "owned_outcome"
+      },
+      {
+        "capabilityId": "process-improvement",
+        "label": "Process Improvement",
+        "importance": "must",
+        "expectedEvidence": "A specific owned outcome demonstrating process improvement.",
+        "minimumProofLevel": "demonstrated"
+      }
+    ],
+    "shouldHaveCapabilities": [
+      {
+        "capabilityId": "resource-planning",
+        "label": "Resource Planning",
+        "importance": "should",
+        "expectedEvidence": "A concrete example showing applied resource planning.",
+        "minimumProofLevel": "demonstrated"
+      },
+      {
+        "capabilityId": "service-performance",
+        "label": "Service Performance",
+        "importance": "should",
+        "expectedEvidence": "A concrete example showing applied service performance.",
+        "minimumProofLevel": "demonstrated"
+      }
+    ],
+    "differentiatingCapabilities": [],
+    "allOtherCapabilitiesUsed": [],
+    "privateNoncanonicalIds": [
+      "resource-planning"
+    ],
+    "relationships": [
+      {
+        "capabilityId": "operating-control",
+        "status": "canonical",
+        "label": "Operating Control",
+        "importance": "must",
+        "currentExpectedEvidence": "A specific owned outcome demonstrating operating control.",
+        "minimumProofLevel": "owned_outcome",
+        "canonicalFamily": "Governance & Risk",
+        "sourceSufficiency": "INSUFFICIENT",
+        "mappingClues": [],
+        "signalEvidenceClues": []
+      },
+      {
+        "capabilityId": "process-improvement",
+        "status": "canonical",
+        "label": "Process Improvement",
+        "importance": "must",
+        "currentExpectedEvidence": "A specific owned outcome demonstrating process improvement.",
+        "minimumProofLevel": "demonstrated",
+        "canonicalFamily": "Operations & Delivery",
+        "sourceSufficiency": "MODERATE",
+        "mappingClues": [
+          {
+            "ruleId": "process-improvement/direct/redesigned-process",
+            "ruleVersion": "1.0.0",
+            "capabilityId": "process-improvement",
+            "relationship": "direct_evidence",
+            "requiredSignals": [
+              {
+                "field": "action",
+                "value": "redesigned_process"
+              }
+            ],
+            "excludedSignals": [
+              {
+                "field": "context",
+                "value": "hypothetical"
+              }
+            ],
+            "explanation": "The evidence explicitly records redesigning an operating process."
+          }
+        ],
+        "signalEvidenceClues": [
+          {
+            "ruleId": "signal/action/redesigned-process",
+            "ruleVersion": "1.1.0",
+            "field": "action",
+            "token": "redesigned_process",
+            "sourcePattern": "\\b(?:redesigned|re-engineered|reengineered|overhauled)\\s+(?:a\\s+|the\\s+)?(?:process|workflow|operating process)\\b",
+            "exclusionPatterns": [
+              "\\b(?:planned to|intended to|proposed|would|could)\\b",
+              "\\b(?:required to|must|should|candidate will|role will|responsibilities include|will be responsible for)\\b"
+            ],
+            "explanation": "Explicit source language records redesigning a process."
+          }
+        ]
+      },
+      {
+        "capabilityId": "resource-planning",
+        "status": "private",
+        "label": "Resource Planning",
+        "importance": "should",
+        "currentExpectedEvidence": "A concrete example showing applied resource planning.",
+        "minimumProofLevel": "demonstrated",
+        "canonicalFamily": null,
+        "sourceSufficiency": null,
+        "mappingClues": null,
+        "signalEvidenceClues": null
+      },
+      {
+        "capabilityId": "service-performance",
+        "status": "canonical",
+        "label": "Service Performance",
+        "importance": "should",
+        "currentExpectedEvidence": "A concrete example showing applied service performance.",
+        "minimumProofLevel": "demonstrated",
+        "canonicalFamily": "Operations & Delivery",
+        "sourceSufficiency": "INSUFFICIENT",
+        "mappingClues": [],
+        "signalEvidenceClues": []
+      }
+    ]
+  }
+]
