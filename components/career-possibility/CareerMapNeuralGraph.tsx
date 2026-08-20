@@ -437,7 +437,7 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
     const roleRadius = Math.max(400, Math.min(600, shortSide * 0.65)) * baseScale;
     const gapRadius = roleRadius + Math.max(110, Math.min(180, shortSide * 0.22)) * baseScale;
 
-    const semanticRadialForce = (alpha: number) => {
+    const semanticPolarForce = (alpha: number) => {
       for (const node of graphData.nodes) {
         let targetRadius = 0;
         let strength = 0;
@@ -449,17 +449,20 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
         
         if (strength === 0 || node.x === undefined || node.y === undefined) continue;
         
-        const dx = node.x || 1e-6;
-        const dy = node.y || 1e-6;
-        const r = Math.sqrt(dx * dx + dy * dy);
-        const k = ((targetRadius - r) * strength * alpha) / r;
+        const targetAngle = Math.atan2(node.seedY, node.seedX);
+        const targetX = targetRadius * Math.cos(targetAngle);
+        const targetY = targetRadius * Math.sin(targetAngle);
+        
+        const dx = targetX - node.x;
+        const dy = targetY - node.y;
+        
         if (node.vx !== undefined && node.vy !== undefined) {
-          node.vx += dx * k;
-          node.vy += dy * k;
+          node.vx += dx * strength * alpha;
+          node.vy += dy * strength * alpha;
         }
       }
     };
-    graph.d3Force("radial", semanticRadialForce);
+    graph.d3Force("radial", semanticPolarForce);
 
     const linkForce = graph.d3Force("link") as
       | {
@@ -610,13 +613,7 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
   ) => {
     const id = String(node.id);
 
-    if (node.nodeType === "EVIDENCE") {
-      const selfActive = id === hoveredId || id === selectedId;
-      const parentActive = !!node.parentIds?.some(pid => pid === hoveredId || pid === selectedId);
-      if (!selfActive && !parentActive) {
-        return;
-      }
-    }
+    // EVIDENCE nodes are now rendered by default as part of the visual topology.
 
     const active = !focusSet ? (node.nodeType !== "ROLE_ONLY_CAPABILITY") : (focusSet.has(id) || id === hoveredId);
     const roleOwned = selectedRoleFocus?.ownedCapabilityIds.has(id) ?? false;
@@ -856,13 +853,7 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
     if (node.nodeType === "ROLE_ONLY_CAPABILITY") {
       if (!focusSet || !focusSet.has(id)) return;
     }
-    if (node.nodeType === "EVIDENCE") {
-      const selfActive = id === hoveredId || id === selectedId;
-      const parentActive = !!node.parentIds?.some(pid => pid === hoveredId || pid === selectedId);
-      if (!selfActive && !parentActive) {
-        return;
-      }
-    }
+    // EVIDENCE pointer area is active by default.
     context.fillStyle = color;
     context.beginPath();
     context.arc(node.x ?? 0, node.y ?? 0, Math.max(7, nodeRadius[node.nodeType]), 0, Math.PI * 2);

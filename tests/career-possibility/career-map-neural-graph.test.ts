@@ -426,6 +426,20 @@ async function testK_step2K_layoutTopologies() {
 }
 
 // ---------------------------------------------------------------------------
+// Test L — MVP Step 2L Polar Topology
+// ---------------------------------------------------------------------------
+
+async function testL_step2L_polarTopology() {
+  const source = readFileSync(RENDERER_SOURCE_PATH, "utf8");
+  assert.match(source, /Math\.atan2\(node\.seedY, node\.seedX\)/, "L: layout uses true polar angular targets seeded by adapter");
+  assert.match(source, /const targetX = targetRadius \* Math\.cos\(targetAngle\);/, "L: target X resolves from radius and angle");
+  assert.match(source, /const targetY = targetRadius \* Math\.sin\(targetAngle\);/, "L: target Y resolves from radius and angle");
+  assert.match(source, /node\.vx \+= dx \* strength \* alpha;/, "L: spring physics pulls nodes organically toward true polar targets");
+  assert.doesNotMatch(source, /const parentActive = !!node\.parentIds/, "L: evidence nodes render visibly by default rather than hiding completely");
+  console.log("  L. True polar topology and first-class evidence nodes — PASSED");
+}
+
+// ---------------------------------------------------------------------------
 // Main
 // ---------------------------------------------------------------------------
 
@@ -444,6 +458,7 @@ async function main() {
   await testI_capabilityFirstVisualHierarchy();
   await testJ_roleGapProgressiveDisclosure();
   await testK_step2K_layoutTopologies();
+  await testL_step2L_polarTopology();
   console.log("All career-map-neural-graph renderer contract tests passed.");
 }
 
