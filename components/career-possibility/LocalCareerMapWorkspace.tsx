@@ -3,7 +3,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import type { CareerMapCapabilityDefinition } from "@/lib/career-possibility/reviewed-resume-evidence-map-adapter";
 import { clearLocalCareerMapState, readLocalCareerMapState, type LocalCareerMapReadResult } from "@/lib/career-possibility/local-career-map-storage";
-import { buildEscoCareerMapPresentation } from "@/lib/career-possibility/esco-career-map-presentation-adapter";
+import { getEscoPresentationGraphAction } from "@/lib/career-possibility/esco-server-actions";
 import { canonicalCapabilityFamilyLibrary } from "@/lib/career-possibility/canonical-capability-family-library";
 import { CareerMapNeuralGraph } from "./CareerMapNeuralGraph";
 import { buildPersonalCareerMapPresentation } from "@/lib/career-possibility/local-career-map-presentation-adapter";
@@ -12,15 +12,22 @@ import { buildCareerMapGraphProjection } from "@/lib/career-possibility/career-m
 
 export function LocalCareerMapWorkspace({ definitions, definitionVersion }: { definitions: readonly CareerMapCapabilityDefinition[]; definitionVersion: string }) {
   const [result, setResult] = useState<LocalCareerMapReadResult | null>(null); const refresh = useCallback(() => setResult(readLocalCareerMapState(definitions, definitionVersion)), [definitions, definitionVersion]);
+  const [escoProjection, setEscoProjection] = useState<any>(null);
   useEffect(() => { const id = window.setTimeout(refresh, 0); const visible = () => { if (document.visibilityState === "visible") refresh(); }; window.addEventListener("focus", refresh); window.addEventListener("pageshow", refresh); window.addEventListener("storage", refresh); document.addEventListener("visibilitychange", visible); return () => { window.clearTimeout(id); window.removeEventListener("focus", refresh); window.removeEventListener("pageshow", refresh); window.removeEventListener("storage", refresh); document.removeEventListener("visibilitychange", visible); }; }, [refresh]);
-  function clear() { if (!window.confirm("Clear the Career Map stored in this browser?")) return; if (clearLocalCareerMapState().ok) setResult({ status: "absent" }); }
+  useEffect(() => {
+    if (result?.status === "loaded" && result.state.schemaVersion === "esco/1.0.0") {
+      getEscoPresentationGraphAction(result.state).then(setEscoProjection);
+    }
+  }, [result]);
+  function clear() { if (!window.confirm("Clear the Career Map stored in this browser?")) return; if (clearLocalCareerMapState().ok) { setResult({ status: "absent" }); setEscoProjection(null); } }
   if (!result) return <div className="py-16 text-center text-sm text-cyan-50/45">Loading browser-local Career Map…</div>;
   if (result.status === "loaded") {
     let graphProjection;
     let provisional = false;
 
     if (result.state.schemaVersion === "esco/1.0.0") {
-      graphProjection = buildEscoCareerMapPresentation(result.state);
+      if (!escoProjection) return <div className="py-16 text-center text-sm text-cyan-50/45">Building Career Map...</div>;
+      graphProjection = escoProjection;
       provisional = true;
     } else {
       provisional = result.state.schemaVersion === "2.0.0";
