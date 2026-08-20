@@ -911,7 +911,7 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
       >
         <CareerMapForceGraph
           ref={connectGraph}
-          width={dimensions.width}
+          width={dimensions.width - (selectedNode && dimensions.width >= 640 ? 448 : 0)}
           height={dimensions.height}
           graphData={graphData}
           backgroundColor="rgba(0,0,0,0)"
