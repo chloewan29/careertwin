@@ -463,8 +463,17 @@ async function main() {
 async function testM_step2M_strictTopology() {
   const source = readFileSync(RENDERER_SOURCE_PATH, "utf8");
   assert.match(source, /targetXMap.set\(node.id, px \+ localRadius \* Math\.cos\(localAngle\)\);/, "M: Evidence strictly enforces parent-relative offset targeting");
-  assert.match(source, /if \(!selectedRoleFocus && defaultGapIds\.has\(node\.id\)\) return true;/, "M: Roles permit a bounded default gap silhouette");
+  assert.match(source, /if \(!selectedRoleFocus && defaultGapIds\.has\(node\.id\)\) includedNodeIds\.add\(node\.id\);/, "M: Roles permit a bounded default gap silhouette");
   assert.match(source, /graphRef\.current\?\.centerAt\(0, 0, 700\);/, "M: YOU is rigidly centered replacing zoomToFit drift");
+  
+  // Phase 10 tests for Step 2M.C
+  assert.match(source, /includedNodeIds.has\(parentId\)/, "M.C: Evidence node excluded if parent missing");
+  assert.doesNotMatch(source, /targetXMap.set\(node.id, 0\);\s*targetYMap.set\(node.id, 0\);\s*\} else if \(node.nodeType === "EVIDENCE"\)/, "M.C: Evidence never falls back to origin");
+  
+  const adapterSource = readFileSync(require("path").resolve(__dirname, "../../lib/career-possibility/career-graph-visual-adapter.ts"), "utf8");
+  assert.match(adapterSource, /const boundedGapLinks = gapLinks.slice\(0, 12\);/, "M.C: Selected-role gaps are strictly bounded to display capacity");
+  assert.match(adapterSource, /const scoreA = a.requirementImportance === "must" \? 2 :/, "M.C: Selected-role gaps prioritize essential requirements");
+  
   console.log("  M. Strict polar parent-relative attachment and bounded role gap silhouettes — PASSED");
 }
 

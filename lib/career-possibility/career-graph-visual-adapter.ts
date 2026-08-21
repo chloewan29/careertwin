@@ -524,13 +524,26 @@ export function buildCareerGraphRoleFocusState(
   const familyIds = new Set<string>();
   const relevantLinkIds = new Set<string>();
 
+  const gapLinks = [];
+  
   for (const link of model.links) {
     if (link.source !== roleId || !link.linkType.startsWith("ROLE_")) continue;
     relevantLinkIds.add(link.id);
-    if (link.linkType === "ROLE_ONLY_CAPABILITY") gapCapabilityIds.add(link.target);
+    if (link.linkType === "ROLE_ONLY_CAPABILITY") gapLinks.push(link);
     else ownedCapabilityIds.add(link.target);
     if (link.requirementState === "transferable_signal") transferableCapabilityIds.add(link.target);
     for (const familyId of nodesById.get(link.target)?.familyIds ?? []) familyIds.add(familyId);
+  }
+
+  gapLinks.sort((a, b) => {
+    const scoreA = a.requirementImportance === "must" ? 2 : a.requirementImportance === "should" ? 1 : 0;
+    const scoreB = b.requirementImportance === "must" ? 2 : b.requirementImportance === "should" ? 1 : 0;
+    return scoreB - scoreA;
+  });
+
+  const boundedGapLinks = gapLinks.slice(0, 12);
+  for (const link of boundedGapLinks) {
+    gapCapabilityIds.add(link.target);
   }
 
   const focusNodeIds = new Set<string>([

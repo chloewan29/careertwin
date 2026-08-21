@@ -351,16 +351,28 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
     () => {
       void layoutRevision;
       
-      const activeNodes = visualModel.nodes.filter(node => {
+      const includedNodeIds = new Set<string>();
+      visualModel.nodes.forEach(node => {
         if (node.nodeType === "ROLE_ONLY_CAPABILITY") {
-          if (selectedRoleFocus?.gapCapabilityIds.has(node.id)) return true;
-          if (!selectedRoleFocus && defaultGapIds.has(node.id)) return true;
-          return false;
+          if (selectedRoleFocus?.gapCapabilityIds.has(node.id)) includedNodeIds.add(node.id);
+          else if (!selectedRoleFocus && defaultGapIds.has(node.id)) includedNodeIds.add(node.id);
+        } else if (node.nodeType !== "EVIDENCE") {
+          includedNodeIds.add(node.id);
         }
-        return true;
+      });
+      
+      const activeNodes = visualModel.nodes.filter(node => {
+        if (node.nodeType === "EVIDENCE") {
+          const parentId = node.parentIds?.[0];
+          if (!parentId || !includedNodeIds.has(parentId)) return false;
+          includedNodeIds.add(node.id);
+          return true;
+        }
+        return includedNodeIds.has(node.id);
       });
       
       const activeLinks = visualModel.links.filter(link => {
+        if (!includedNodeIds.has(link.source) || !includedNodeIds.has(link.target)) return false;
         if (link.linkType === "ROLE_ONLY_CAPABILITY") {
           if (selectedRoleFocus?.relevantLinkIds.has(link.id)) return true;
           if (!selectedRoleFocus && defaultGapIds.has(link.target)) return true;
