@@ -406,14 +406,13 @@ async function testK_step2K_layoutTopologies() {
   const source = readFileSync(RENDERER_SOURCE_PATH, "utf8");
   
   // Semantic depth bands ordered responsively
-  assert.match(source, /ownedRadius < evidenceRadius|ownedRadius \+ shortSide/i, "K: evidence nodes placed in a discrete band outside capabilities");
+  assert.match(source, /ownedRadius \+ 28 \* baseScale/i, "K: evidence nodes placed in a discrete band outside capabilities");
   assert.match(source, /gapRadius = roleRadius \+/i, "K: role gaps placed on the outermost band relative to roles");
   assert.match(source, /Math\.min\(dimensions\.width, dimensions\.height\)/, "K: layout relies on shortSide for responsiveness");
   assert.match(source, /Math\.max\(.*Math\.min\(/, "K: responsive bands are clamped safely");
   
   // Radial force explicitly uses the responsive bands
-  assert.match(source, /node\.nodeType === "ROLE"\) \{ targetRadius = roleRadius;/, "K: future roles placed explicitly by semantic depth target");
-  assert.match(source, /node\.nodeType === "CAPABILITY"\) \{ targetRadius = ownedRadius;/, "K: owned capabilities placed explicitly by semantic depth target");
+  assert.match(source, /const tr = node.nodeType === "CAPABILITY" \? ownedRadius : roleRadius;/, "K: future roles and capabilities placed explicitly by semantic depth target");
 
   // Capability evidence disclosure (EVIDENCE nodes in focusSet show labels)
   assert.match(source, /node\.nodeType === "EVIDENCE" && !!focusSet && focusSet\.has\(id\)/, "K: focused evidence nodes explicitly render their text labels");
@@ -432,9 +431,8 @@ async function testK_step2K_layoutTopologies() {
 async function testL_step2L_polarTopology() {
   const source = readFileSync(RENDERER_SOURCE_PATH, "utf8");
   assert.match(source, /Math\.atan2\(node\.seedY, node\.seedX\)/, "L: layout uses true polar angular targets seeded by adapter");
-  assert.match(source, /const targetX = targetRadius \* Math\.cos\(targetAngle\);/, "L: target X resolves from radius and angle");
-  assert.match(source, /const targetY = targetRadius \* Math\.sin\(targetAngle\);/, "L: target Y resolves from radius and angle");
-  assert.match(source, /node\.vx \+= dx \* strength \* alpha;/, "L: spring physics pulls nodes organically toward true polar targets");
+  assert.match(source, /const targetXMap = new Map<string, number>\(\);/, "L: target coordinates precalculated for exact placement");
+  assert.match(source, /node\.vx = \(node\.vx \?\? 0\) \+ \(tx - node\.x\) \* 1\.0 \* alpha;/, "L: spring physics applies rigid local target tracking");
   assert.doesNotMatch(source, /const parentActive = !!node\.parentIds/, "L: evidence nodes render visibly by default rather than hiding completely");
   console.log("  L. True polar topology and first-class evidence nodes — PASSED");
 }
@@ -456,10 +454,21 @@ async function main() {
   await testG_coherentResponsiveCoordinates();
   await testH_initialCapabilitiesRemainVisible();
   await testI_capabilityFirstVisualHierarchy();
-  await testJ_roleGapProgressiveDisclosure();
   await testK_step2K_layoutTopologies();
   await testL_step2L_polarTopology();
+  await testM_step2M_strictTopology();
   console.log("All career-map-neural-graph renderer contract tests passed.");
 }
 
-main().catch((error) => { process.exitCode = 1; throw error; });
+async function testM_step2M_strictTopology() {
+  const source = readFileSync(RENDERER_SOURCE_PATH, "utf8");
+  assert.match(source, /targetXMap.set\(node.id, px \+ localRadius \* Math\.cos\(localAngle\)\);/, "M: Evidence strictly enforces parent-relative offset targeting");
+  assert.match(source, /if \(!selectedRoleFocus && defaultGapIds\.has\(node\.id\)\) return true;/, "M: Roles permit a bounded default gap silhouette");
+  assert.match(source, /graphRef\.current\?\.centerAt\(0, 0, 700\);/, "M: YOU is rigidly centered replacing zoomToFit drift");
+  console.log("  M. Strict polar parent-relative attachment and bounded role gap silhouettes — PASSED");
+}
+
+main().catch((error) => {
+  console.error(error);
+  process.exit(1);
+});

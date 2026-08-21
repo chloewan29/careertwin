@@ -335,36 +335,51 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
     [selectedNode, visualModel],
   );
   
-  const graphData = useMemo(
+  const defaultGapIds = useMemo(() => {
+    const defaultIds = new Set<string>();
+    const roles = visualModel.nodes.filter(n => n.nodeType === "ROLE");
+    for (const role of roles) {
+      const gaps = visualModel.nodes.filter(n => n.nodeType === "ROLE_ONLY_CAPABILITY" && n.roleIds?.includes(role.id));
+      for (const gap of gaps.slice(0, 4)) {
+        defaultIds.add(gap.id);
+      }
+    }
+    return defaultIds;
+  }, [visualModel]);
+
+  const { graphData, focusSet } = useMemo(
     () => {
       void layoutRevision;
       
       const activeNodes = visualModel.nodes.filter(node => {
         if (node.nodeType === "ROLE_ONLY_CAPABILITY") {
-          return selectedRoleFocus?.gapCapabilityIds.has(node.id) ?? false;
+          if (selectedRoleFocus?.gapCapabilityIds.has(node.id)) return true;
+          if (!selectedRoleFocus && defaultGapIds.has(node.id)) return true;
+          return false;
         }
         return true;
       });
       
       const activeLinks = visualModel.links.filter(link => {
         if (link.linkType === "ROLE_ONLY_CAPABILITY") {
-          return selectedRoleFocus?.relevantLinkIds.has(link.id) ?? false;
+          if (selectedRoleFocus?.relevantLinkIds.has(link.id)) return true;
+          if (!selectedRoleFocus && defaultGapIds.has(link.target)) return true;
+          return false;
         }
         return true;
       });
       
       return {
-        nodes: seedCareerGraphNodes(visualModel, activeNodes),
-        links: activeLinks.map((link) => ({ ...link })) as RenderLink[],
+        graphData: {
+            nodes: seedCareerGraphNodes(visualModel, activeNodes),
+            links: activeLinks.map((link) => ({ ...link })) as RenderLink[],
+        },
+        focusSet: selectedRoleFocus?.focusNodeIds ?? buildCareerGraphFocusSet(visualModel, selectedRoleFocus?.roleId ?? hoveredId ?? selectedId)
       };
     },
     [visualModel, layoutRevision, selectedRoleFocus],
   );
-  const focusId = selectedRoleFocus?.roleId ?? hoveredId ?? selectedId;
-  const focusSet = useMemo(
-    () => selectedRoleFocus?.focusNodeIds ?? buildCareerGraphFocusSet(visualModel, focusId),
-    [visualModel, focusId, selectedRoleFocus],
-  );
+
   const hoveredNode = visualModel.nodes.find((node) => node.id === hoveredId) ?? null;
   const evidenceTextById = useMemo(
     () => new Map(
@@ -433,33 +448,59 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
     const baseScale = dimensions.width < 600 ? 0.85 : 1.0;
     const ownedRadius = Math.max(120, Math.min(180, shortSide * 0.26)) * baseScale;
     const familyRadius = Math.max(170, Math.min(250, shortSide * 0.35)) * baseScale;
-    const evidenceRadius = Math.max(190, Math.min(300, ownedRadius + shortSide * 0.20)) * baseScale;
-    const roleRadius = Math.max(400, Math.min(600, shortSide * 0.65)) * baseScale;
-    const gapRadius = roleRadius + Math.max(110, Math.min(180, shortSide * 0.22)) * baseScale;
+    const evidenceRadius = ownedRadius + 28 * baseScale;
+    const roleRadius = Math.max(260, Math.min(360, shortSide * 0.48)) * baseScale;
+    const gapRadius = roleRadius + Math.max(70, Math.min(110, shortSide * 0.16)) * baseScale;
 
     const semanticPolarForce = (alpha: number) => {
+      const targetXMap = new Map<string, number>();
+      const targetYMap = new Map<string, number>();
+
       for (const node of graphData.nodes) {
-        let targetRadius = 0;
-        let strength = 0;
-        if (node.nodeType === "FAMILY") { targetRadius = familyRadius; strength = 0.8; }
-        else if (node.nodeType === "CAPABILITY") { targetRadius = ownedRadius; strength = 1.0; }
-        else if (node.nodeType === "EVIDENCE") { targetRadius = evidenceRadius; strength = 1.0; }
-        else if (node.nodeType === "ROLE") { targetRadius = roleRadius; strength = 1.0; }
-        else if (node.nodeType === "ROLE_ONLY_CAPABILITY") { targetRadius = gapRadius; strength = 1.0; }
-        
-        if (strength === 0 || node.x === undefined || node.y === undefined) continue;
-        
-        const targetAngle = Math.atan2(node.seedY, node.seedX);
-        const targetX = targetRadius * Math.cos(targetAngle);
-        const targetY = targetRadius * Math.sin(targetAngle);
-        
-        const dx = targetX - node.x;
-        const dy = targetY - node.y;
-        
-        if (node.vx !== undefined && node.vy !== undefined) {
-          node.vx += dx * strength * alpha;
-          node.vy += dy * strength * alpha;
+        if (node.nodeType === "CAPABILITY" || node.nodeType === "ROLE") {
+          const tr = node.nodeType === "CAPABILITY" ? ownedRadius : roleRadius;
+          const targetAngle = Math.atan2(node.seedY, node.seedX);
+          targetXMap.set(node.id, tr * Math.cos(targetAngle));
+          targetYMap.set(node.id, tr * Math.sin(targetAngle));
+        } else if (node.nodeType === "YOU") {
+          targetXMap.set(node.id, 0);
+          targetYMap.set(node.id, 0);
         }
+      }
+
+      for (const node of graphData.nodes) {
+        if (node.nodeType === "EVIDENCE") {
+          const parentId = node.parentIds?.[0];
+          const px = parentId ? (targetXMap.get(parentId) ?? 0) : 0;
+          const py = parentId ? (targetYMap.get(parentId) ?? 0) : 0;
+          const pSeed = graphData.nodes.find(n => n.id === parentId);
+          const dx = pSeed ? node.seedX - pSeed.seedX : node.seedX;
+          const dy = pSeed ? node.seedY - pSeed.seedY : node.seedY;
+          const localAngle = Math.atan2(dy, dx);
+          const localRadius = evidenceRadius - ownedRadius;
+          targetXMap.set(node.id, px + localRadius * Math.cos(localAngle));
+          targetYMap.set(node.id, py + localRadius * Math.sin(localAngle));
+        } else if (node.nodeType === "ROLE_ONLY_CAPABILITY") {
+          const roleId = node.roleIds?.[0];
+          const px = roleId ? (targetXMap.get(roleId) ?? 0) : 0;
+          const py = roleId ? (targetYMap.get(roleId) ?? 0) : 0;
+          const pSeed = graphData.nodes.find(n => n.id === roleId);
+          const dx = pSeed ? node.seedX - pSeed.seedX : node.seedX;
+          const dy = pSeed ? node.seedY - pSeed.seedY : node.seedY;
+          const localAngle = Math.atan2(dy, dx);
+          const localRadius = gapRadius - roleRadius;
+          targetXMap.set(node.id, px + localRadius * Math.cos(localAngle));
+          targetYMap.set(node.id, py + localRadius * Math.sin(localAngle));
+        }
+      }
+
+      for (const node of graphData.nodes) {
+        const tx = targetXMap.get(node.id);
+        const ty = targetYMap.get(node.id);
+        if (tx === undefined || ty === undefined || node.x === undefined || node.y === undefined) continue;
+        
+        node.vx = (node.vx ?? 0) + (tx - node.x) * 1.0 * alpha;
+        node.vy = (node.vy ?? 0) + (ty - node.y) * 1.0 * alpha;
       }
     };
     graph.d3Force("radial", semanticPolarForce);
