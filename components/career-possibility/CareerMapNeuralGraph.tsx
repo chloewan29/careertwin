@@ -530,7 +530,7 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
           const parentAngle = Math.atan2(py, px);
           const siblings = roleId ? (gapSiblings.get(roleId) ?? [node.id]) : [node.id];
           const idx = siblings.indexOf(node.id);
-          const fanSpread = 0.35;
+          const fanSpread = Math.max(0.35, (siblings.length - 1) * 0.16);
           const fanOffset = siblings.length > 1 ? (idx / (siblings.length - 1) - 0.5) * fanSpread : 0;
           
           const localAngle = parentAngle + fanOffset;

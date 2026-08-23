@@ -471,7 +471,7 @@ async function testM_step2M_strictTopology() {
   assert.doesNotMatch(source, /targetXMap.set\(node.id, 0\);\s*targetYMap.set\(node.id, 0\);\s*\} else if \(node.nodeType === "EVIDENCE"\)/, "M.C: Evidence never falls back to origin");
   
   const adapterSource = readFileSync(require("path").resolve(__dirname, "../../lib/career-possibility/career-graph-visual-adapter.ts"), "utf8");
-  assert.match(adapterSource, /const boundedGapLinks = gapLinks.slice\(0, 12\);/, "M.C: Selected-role gaps are strictly bounded to display capacity");
+  assert.match(adapterSource, /const boundedGapLinks = gapLinks.slice\(0, 5\);/, "M.C: Selected-role gaps are strictly bounded to display capacity");
   assert.match(adapterSource, /const scoreA = a.requirementImportance === "must" \? 2 :/, "M.C: Selected-role gaps prioritize essential requirements");
   
   // Phase 11 tests for Step 2O
@@ -488,9 +488,14 @@ async function testM_step2M_strictTopology() {
   const alignmentSource = readFileSync(adapterPath, "utf8");
   assert.match(alignmentSource, /CAREER_MAP_MAX_RECOMMENDATIONS = 6/, "P: Future roles conservatively capped at 6");
   
+  assert.match(adapterSource, /const boundedGapLinks = gapLinks.slice\(0, 5\);/, "Q: Selected graph gap count explicitly bounded to 5 (<= 6 constraint met)");
+  assert.match(source, /Math\.max\(0\.35, \(siblings\.length - 1\) \* 0\.16\);/, "Q: Minimum angular spacing dynamically enforced for gap fan spread");
+  assert.match(adapterSource, /const scoreA = a.requirementImportance === "must" \? 2 :/, "Q: Essential-first sorting is preserved");
+  
   console.log("  M. Strict polar parent-relative attachment and bounded role gap silhouettes — PASSED");
   console.log("  O. True second-layer evidence bounding and localized role gap fans — PASSED");
   console.log("  P. Robust visual grammar for evidence parents and default gaps — PASSED");
+  console.log("  Q. Selected-role visual gap cap and readable fan presentation — PASSED");
 }
 
 main().catch((error) => {

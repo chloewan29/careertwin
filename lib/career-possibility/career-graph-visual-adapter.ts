@@ -541,7 +541,7 @@ export function buildCareerGraphRoleFocusState(
     return scoreB - scoreA;
   });
 
-  const boundedGapLinks = gapLinks.slice(0, 12);
+  const boundedGapLinks = gapLinks.slice(0, 5);
   for (const link of boundedGapLinks) {
     gapCapabilityIds.add(link.target);
   }
