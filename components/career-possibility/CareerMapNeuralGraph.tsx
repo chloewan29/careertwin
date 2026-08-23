@@ -339,9 +339,14 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
     const defaultIds = new Set<string>();
     const roles = visualModel.nodes.filter(n => n.nodeType === "ROLE");
     for (const role of roles) {
-      const gaps = visualModel.nodes.filter(n => n.nodeType === "ROLE_ONLY_CAPABILITY" && n.roleIds?.includes(role.id));
-      for (const gap of gaps.slice(0, 4)) {
-        defaultIds.add(gap.id);
+      const gapLinks = visualModel.links.filter(l => l.linkType === "ROLE_ONLY_CAPABILITY" && l.source === role.id);
+      gapLinks.sort((a, b) => {
+        const scoreA = a.requirementImportance === "must" ? 2 : a.requirementImportance === "should" ? 1 : 0;
+        const scoreB = b.requirementImportance === "must" ? 2 : b.requirementImportance === "should" ? 1 : 0;
+        return scoreB - scoreA;
+      });
+      for (const gap of gapLinks.slice(0, 3)) {
+        defaultIds.add(gap.target);
       }
     }
     return defaultIds;
@@ -460,9 +465,9 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
     const baseScale = dimensions.width < 600 ? 0.85 : 1.0;
     const ownedRadius = Math.max(120, Math.min(180, shortSide * 0.26)) * baseScale;
     const familyRadius = Math.max(170, Math.min(250, shortSide * 0.35)) * baseScale;
-    const evidenceRadius = ownedRadius + 28 * baseScale;
-    const roleRadius = Math.max(260, Math.min(360, shortSide * 0.48)) * baseScale;
-    const gapRadius = roleRadius + Math.max(70, Math.min(110, shortSide * 0.16)) * baseScale;
+    const evidenceRadius = ownedRadius + 32 * baseScale;
+    const roleRadius = evidenceRadius + 60 * baseScale;
+    const gapRadius = roleRadius + 32 * baseScale;
 
     const semanticPolarForce = (alpha: number) => {
       const targetXMap = new Map<string, number>();
@@ -480,15 +485,40 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
         }
       }
 
+      const evidenceSiblings = new Map<string, string[]>();
+      const gapSiblings = new Map<string, string[]>();
+
+      for (const node of graphData.nodes) {
+        if (node.nodeType === "EVIDENCE") {
+          const parentId = node.parentIds?.[0];
+          if (parentId) {
+            const arr = evidenceSiblings.get(parentId) ?? [];
+            arr.push(node.id);
+            evidenceSiblings.set(parentId, arr);
+          }
+        } else if (node.nodeType === "ROLE_ONLY_CAPABILITY") {
+          const roleId = node.roleIds?.[0];
+          if (roleId) {
+            const arr = gapSiblings.get(roleId) ?? [];
+            arr.push(node.id);
+            gapSiblings.set(roleId, arr);
+          }
+        }
+      }
+
       for (const node of graphData.nodes) {
         if (node.nodeType === "EVIDENCE") {
           const parentId = node.parentIds?.[0];
           const px = parentId ? (targetXMap.get(parentId) ?? 0) : 0;
           const py = parentId ? (targetYMap.get(parentId) ?? 0) : 0;
-          const pSeed = graphData.nodes.find(n => n.id === parentId);
-          const dx = pSeed ? node.seedX - pSeed.seedX : node.seedX;
-          const dy = pSeed ? node.seedY - pSeed.seedY : node.seedY;
-          const localAngle = Math.atan2(dy, dx);
+          
+          const parentAngle = Math.atan2(py, px);
+          const siblings = parentId ? (evidenceSiblings.get(parentId) ?? [node.id]) : [node.id];
+          const idx = siblings.indexOf(node.id);
+          const fanSpread = 0.25;
+          const fanOffset = siblings.length > 1 ? (idx / (siblings.length - 1) - 0.5) * fanSpread : 0;
+          
+          const localAngle = parentAngle + fanOffset;
           const localRadius = evidenceRadius - ownedRadius;
           targetXMap.set(node.id, px + localRadius * Math.cos(localAngle));
           targetYMap.set(node.id, py + localRadius * Math.sin(localAngle));
@@ -496,10 +526,14 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
           const roleId = node.roleIds?.[0];
           const px = roleId ? (targetXMap.get(roleId) ?? 0) : 0;
           const py = roleId ? (targetYMap.get(roleId) ?? 0) : 0;
-          const pSeed = graphData.nodes.find(n => n.id === roleId);
-          const dx = pSeed ? node.seedX - pSeed.seedX : node.seedX;
-          const dy = pSeed ? node.seedY - pSeed.seedY : node.seedY;
-          const localAngle = Math.atan2(dy, dx);
+          
+          const parentAngle = Math.atan2(py, px);
+          const siblings = roleId ? (gapSiblings.get(roleId) ?? [node.id]) : [node.id];
+          const idx = siblings.indexOf(node.id);
+          const fanSpread = 0.35;
+          const fanOffset = siblings.length > 1 ? (idx / (siblings.length - 1) - 0.5) * fanSpread : 0;
+          
+          const localAngle = parentAngle + fanOffset;
           const localRadius = gapRadius - roleRadius;
           targetXMap.set(node.id, px + localRadius * Math.cos(localAngle));
           targetYMap.set(node.id, py + localRadius * Math.sin(localAngle));

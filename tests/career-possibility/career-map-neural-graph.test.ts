@@ -406,7 +406,7 @@ async function testK_step2K_layoutTopologies() {
   const source = readFileSync(RENDERER_SOURCE_PATH, "utf8");
   
   // Semantic depth bands ordered responsively
-  assert.match(source, /ownedRadius \+ 28 \* baseScale/i, "K: evidence nodes placed in a discrete band outside capabilities");
+  assert.match(source, /ownedRadius \+ 32 \* baseScale/i, "K: evidence nodes placed in a discrete band outside capabilities");
   assert.match(source, /gapRadius = roleRadius \+/i, "K: role gaps placed on the outermost band relative to roles");
   assert.match(source, /Math\.min\(dimensions\.width, dimensions\.height\)/, "K: layout relies on shortSide for responsiveness");
   assert.match(source, /Math\.max\(.*Math\.min\(/, "K: responsive bands are clamped safely");
@@ -474,7 +474,15 @@ async function testM_step2M_strictTopology() {
   assert.match(adapterSource, /const boundedGapLinks = gapLinks.slice\(0, 12\);/, "M.C: Selected-role gaps are strictly bounded to display capacity");
   assert.match(adapterSource, /const scoreA = a.requirementImportance === "must" \? 2 :/, "M.C: Selected-role gaps prioritize essential requirements");
   
+  // Phase 11 tests for Step 2O
+  assert.match(source, /const parentAngle = Math\.atan2\(py, px\);/, "O: Evidence and gaps derive primary angle from exact parent coordinate relative to YOU");
+  assert.match(source, /const roleRadius = evidenceRadius \+ 60 \* baseScale;/, "O: Role radius strictly bounded by personal graph boundary rather than loose constraints");
+  assert.match(source, /gapLinks\.sort/, "O: Gap silhouettes properly derive from and sort by link properties");
+  assert.match(source, /const fanOffset = siblings\.length > 1 \?/, "O: Sibling evidence/gaps form a tangential fan around their parent");
+  assert.match(source, /const localAngle = parentAngle \+ fanOffset;/, "O: Sibling evidence/gaps strictly use tangential offset logic");
+  
   console.log("  M. Strict polar parent-relative attachment and bounded role gap silhouettes — PASSED");
+  console.log("  O. True second-layer evidence bounding and localized role gap fans — PASSED");
 }
 
 main().catch((error) => {
