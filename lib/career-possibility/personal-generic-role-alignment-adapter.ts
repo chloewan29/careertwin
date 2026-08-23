@@ -15,7 +15,7 @@ import {
 export const PERSONAL_GENERIC_ROLE_ALIGNMENT_ADAPTER_VERSION =
   "personal-generic-role-alignment-adapter/1.0.0" as const;
 
-export const CAREER_MAP_MAX_RECOMMENDATIONS = 4 as const;
+export const CAREER_MAP_MAX_RECOMMENDATIONS = 6 as const;
 
 export type PersonalGenericRoleAlignment = {
   readonly version: typeof PERSONAL_GENERIC_ROLE_ALIGNMENT_ADAPTER_VERSION;

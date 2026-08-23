@@ -1007,12 +1007,12 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
             const source = endpointId(link.source);
             const target = endpointId(link.target);
             if (link.linkType === "CAPABILITY_EVIDENCE") {
-              if (source === selectedId || target === selectedId) return "rgba(167,139,250,0.45)";
-              if (source === hoveredId || target === hoveredId) return "rgba(167,139,250,0.25)";
-              return "rgba(167,139,250,0.4)";
+              if (source === selectedId || target === selectedId) return "rgba(167,139,250,0.65)";
+              if (source === hoveredId || target === hoveredId) return "rgba(167,139,250,0.55)";
+              return "rgba(167,139,250,0.45)";
             }
             const active = !focusSet || (focusSet.has(source) && focusSet.has(target));
-            if (!active) return "rgba(116,148,148,0.055)";
+            if (!active) return "rgba(116,148,148,0.04)";
             const hoveredRoleLink = !selectedRoleFocus
               && hoveredNode?.nodeType === "ROLE"
               && (source === hoveredNode.id || target === hoveredNode.id);
@@ -1025,14 +1025,15 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
               return `rgba(255,180,109,${alpha})`;
             }
             if (link.linkType === "ROLE_ONLY_CAPABILITY") {
-              if (!focusSet || (!focusSet.has(source) && !focusSet.has(target))) {
-                return "rgba(0,0,0,0)";
-              }
               const alpha = selectedRoleFocus
                 ? rolePresentation.selectedGapLinkAlpha
                 : hoveredRoleLink
                   ? rolePresentation.hoverGapLinkAlpha
                   : rolePresentation.defaultGapLinkAlpha;
+              
+              if (!focusSet || (!focusSet.has(source) && !focusSet.has(target))) {
+                return `rgba(203,213,225,${alpha * 0.7})`;
+              }
               return `rgba(203,213,225,${alpha})`;
             }
             if (selectedRoleFocus) return "rgba(105,220,204,0.48)";
@@ -1044,12 +1045,12 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
             const source = endpointId(link.source);
             const target = endpointId(link.target);
             if (link.linkType === "CAPABILITY_EVIDENCE") {
-              if (source === selectedId || target === selectedId) return 1.2;
-              if (source === hoveredId || target === hoveredId) return 0.7;
-              return 0;
+              if (source === selectedId || target === selectedId) return 1.6;
+              if (source === hoveredId || target === hoveredId) return 1.4;
+              return 1.1;
             }
             const active = !focusSet || (focusSet.has(source) && focusSet.has(target));
-            if (!active) return 0.6;
+            if (!active) return 0.4;
             const hoveredRoleLink = !selectedRoleFocus
               && hoveredNode?.nodeType === "ROLE"
               && (source === hoveredNode.id || target === hoveredNode.id);
@@ -1061,7 +1062,9 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
                   : rolePresentation.defaultLinkWidth;
             }
             if (link.linkType === "ROLE_ONLY_CAPABILITY") {
-              if (!focusSet || (!focusSet.has(source) && !focusSet.has(target))) return 0;
+              if (!focusSet || (!focusSet.has(source) && !focusSet.has(target))) {
+                return rolePresentation.defaultLinkWidth;
+              }
               return selectedRoleFocus
                 ? rolePresentation.selectedGapLinkWidth
                 : hoveredRoleLink

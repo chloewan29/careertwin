@@ -481,8 +481,16 @@ async function testM_step2M_strictTopology() {
   assert.match(source, /const fanOffset = siblings\.length > 1 \?/, "O: Sibling evidence/gaps form a tangential fan around their parent");
   assert.match(source, /const localAngle = parentAngle \+ fanOffset;/, "O: Sibling evidence/gaps strictly use tangential offset logic");
   
+  assert.match(source, /return `rgba\(203,213,225,\$\{alpha \* 0\.7\}\)`;/, "P: Default gap links remain visible and legible without focus");
+  assert.match(source, /return 1\.1;/, "P: Default evidence parent links are robustly visible without hover/selection");
+  
+  const adapterPath = require("path").resolve(__dirname, "../../lib/career-possibility/personal-generic-role-alignment-adapter.ts");
+  const alignmentSource = readFileSync(adapterPath, "utf8");
+  assert.match(alignmentSource, /CAREER_MAP_MAX_RECOMMENDATIONS = 6/, "P: Future roles conservatively capped at 6");
+  
   console.log("  M. Strict polar parent-relative attachment and bounded role gap silhouettes — PASSED");
   console.log("  O. True second-layer evidence bounding and localized role gap fans — PASSED");
+  console.log("  P. Robust visual grammar for evidence parents and default gaps — PASSED");
 }
 
 main().catch((error) => {
