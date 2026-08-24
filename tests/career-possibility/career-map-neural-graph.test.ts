@@ -496,17 +496,17 @@ async function testM_step2M_strictTopology() {
   assert.match(source, /const resetGraph = useCallback/, "R: resetGraph owner exists and manages layout/camera defaults");
   assert.match(source, /if \(!selected\) {\s*return null;\s*}/, "R: Detail pane gracefully handles null selection from reset");
   
-  assert.doesNotMatch(source, /isOrbitingCapability/, "T: Shared skills explicitly excluded from naive gap orbit math");
-  assert.match(source, /const gapIds = Array\.from\(selectedRoleFocus\.gapCapabilityIds\)/, "T: Gaps explicitly processed as outer fan");
-  assert.match(source, /const sharedIds = Array\.from\(selectedRoleFocus\.ownedCapabilityIds\)/, "T: Shared skills explicitly processed as inner arc");
-  assert.match(source, /if \(!selectedRoleFocus\) {/, "T: Semantic force disabled for anchor logic in selected role mode");
+  assert.doesNotMatch(source, /const roleAnchorX = -1/, "T: Hard-coded role focus teleport coordinate removed");
+  assert.match(source, /const tr = node.nodeType === "CAPABILITY" \? ownedRadius : roleRadius;/, "T: Roles natively use their default world target");
+  assert.match(source, /graph\.centerAt\(roleNode\.x \+ worldOffsetX, roleNode\.y, 600\);/, "T: Detail pane safe area managed by camera offset, not node teleport");
+  assert.match(source, /const gapRadius = roleRadius \+ 32 \* baseScale;/, "T: Gaps bloom locally outside the selected role");
   
   console.log("  M. Strict polar parent-relative attachment and bounded role gap silhouettes — PASSED");
   console.log("  O. True second-layer evidence bounding and localized role gap fans — PASSED");
   console.log("  P. Robust visual grammar for evidence parents and default gaps — PASSED");
   console.log("  Q. Selected-role visual gap cap and readable fan presentation — PASSED");
   console.log("  R. Shared interaction reset boundary and YOU-click state clearing — PASSED");
-  console.log("  T. Selected role deterministic constellation layout — PASSED");
+  console.log("  T. Continuity-preserving role focus and local gap bloom — PASSED");
 }
 
 main().catch((error) => {
