@@ -489,7 +489,7 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
     linkForce
       ?.strength((link) => {
         if (link.linkType === "CAPABILITY_EVIDENCE") return 0.02; // Nullified D3 symmetry. Handled asymmetrically below.
-        if (link.linkType === "ROLE_ONLY_CAPABILITY") return 0.55; // High affinity to selected role
+        if (link.linkType === "ROLE_ONLY_CAPABILITY") return 0.08; // Soften link so cluster can organically spread out without collapsing
         if (link.linkType === "ROLE_OWNED_CAPABILITY") return 0.01; // Ultra-soft bridge, prevents collapsing personal skills
         return 0.42;
       });
@@ -572,16 +572,17 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
           const distance = Math.max(0.01, Math.hypot(dx, dy));
           
           const isEvidenceCluster = (left.nodeType === "EVIDENCE" && right.nodeType === "EVIDENCE");
-          const isCapabilityCluster = (left.nodeType === "CAPABILITY" && right.nodeType === "CAPABILITY");
+          const leftHasLabel = (left.nodeType === "CAPABILITY" || left.nodeType === "ROLE_ONLY_CAPABILITY");
+          const rightHasLabel = (right.nodeType === "CAPABILITY" || right.nodeType === "ROLE_ONLY_CAPABILITY");
           
           let minimum = nodeRadius[left.nodeType] + nodeRadius[right.nodeType]
             + (left.nodeType === "ROLE" || right.nodeType === "ROLE" ? 34 : 
                isEvidenceCluster ? 4 : 16); // Evidence packs tightly together
                
-          if (isCapabilityCluster) {
-             // Label footprint safety margin. Typical capability label is 100-140px wide.
-             // We give an extra 110px padding for capabilities to prevent multi-node pile-ups.
-             minimum += 110 * baseScale;
+          if (leftHasLabel && rightHasLabel) {
+             // Label footprint safety margin. Both Capabilities and Gaps have wide text labels.
+             // We add ~100px padding to prevent multi-node label pile-ups.
+             minimum += 100 * baseScale;
           }
                
           if (distance >= minimum) continue;
