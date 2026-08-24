@@ -499,7 +499,7 @@ async function testM_step2M_strictTopology() {
   assert.match(source, /graph\.d3Force\("radial", null\);/, "W: Rigid deterministic polar force completely removed");
   assert.match(source, /if \(node\.nodeType === "ROLE_ONLY_CAPABILITY"\) {/, "W: Outward hemisphere bias applied softly to gaps");
   assert.match(source, /if \(link\.linkType === "CAPABILITY_EVIDENCE"\) return 36 \* layoutScale;/, "W: Evidence forms tight note-like cluster around skills");
-  assert.match(source, /graph\.d3Force\("charge", d3\.forceManyBody\(\)\.strength/, "W: Natural ManyBody charge force introduced for Obsidian-like repulsion");
+  assert.match(source, /charge\?\.strength\(\(node\) => {/, "W: Natural ManyBody charge force introduced for Obsidian-like repulsion");
   
   console.log("  M. Strict polar parent-relative attachment and bounded role gap silhouettes — PASSED");
   console.log("  O. True second-layer evidence bounding and localized role gap fans — PASSED");

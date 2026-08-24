@@ -457,9 +457,9 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
       if (node.nodeType === "YOU") return -340;
       if (node.nodeType === "ROLE") return -180;
       if (node.nodeType === "FAMILY") return -130;
-      if (node.nodeType === "EVIDENCE") return -24;
-      if (node.nodeType === "ROLE_ONLY_CAPABILITY") return -42;
-      return -76;
+      if (node.nodeType === "EVIDENCE") return -5;
+      if (node.nodeType === "ROLE_ONLY_CAPABILITY") return -60;
+      return -30;
     });
     const shortSide = Math.min(dimensions.width, dimensions.height);
     const baseScale = dimensions.width < 600 ? 0.85 : 1.0;
@@ -582,19 +582,11 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
     };
     graph.d3Force("career-semantic-bias", semanticForce);
     graph.d3Force("radial", null); // Ensure deterministic polar is totally purged
-    
-    // Add charge force for natural spreading (Obsidian feel)
-    graph.d3Force("charge", d3.forceManyBody().strength(node => {
-      if (node.nodeType === "EVIDENCE") return -5; // Evidence clusters softly
-      if (node.nodeType === "ROLE_ONLY_CAPABILITY") return -60; // Gaps repel slightly more to form clear blooms
-      return -30;
-    }));
 
     graph.d3ReheatSimulation();
 
     return () => {
       graph.d3Force("career-semantic-bias", null);
-      graph.d3Force("charge", null);
     };
   }, [dimensions.width, engineReady, graphData]);
 
