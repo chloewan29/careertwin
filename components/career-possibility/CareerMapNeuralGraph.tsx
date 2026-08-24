@@ -666,34 +666,40 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
     }, 560);
   }, [dimensions.width]);
 
-  const selectNode = useCallback((id: string) => {
-    const deselecting = selectedId === id;
-    setSelectedId(deselecting ? null : id);
-    const node = graphData.nodes.find((candidate) => candidate.id === id);
-    const roleFocus = !deselecting && node?.nodeType === "ROLE"
-      ? buildCareerGraphRoleFocusState(visualModel, id)
-      : null;
-    if (roleFocus) {
-      frameRoleFocus(roleFocus);
-      return;
-    }
-    if (deselecting) {
-      graphRef.current?.centerAt(0, 0, 520);
-      graphRef.current?.zoom(dimensions.width < 600 ? 0.75 : 1.15, 520);
-      return;
-    }
-    if (node?.x !== undefined && node.y !== undefined) {
-      graphRef.current?.centerAt(node.x, node.y, 420);
-      if ((graphRef.current?.zoom() ?? 1) < 1.35) graphRef.current?.zoom(1.35, 420);
-    }
-  }, [dimensions.width, frameRoleFocus, graphData.nodes, selectedId, visualModel]);
-
   const resetGraph = useCallback(() => {
     setSelectedId(null);
     setHoveredId(null);
     setSettled(false);
     setLayoutRevision((revision) => revision + 1);
-  }, []);
+    graphRef.current?.centerAt(0, 0, 520);
+    graphRef.current?.zoom(dimensions.width < 600 ? 0.75 : 1.15, 520);
+  }, [dimensions.width]);
+
+  const selectNode = useCallback((id: string) => {
+    const deselecting = selectedId === id;
+    const node = graphData.nodes.find((candidate) => candidate.id === id);
+    
+    if (deselecting || node?.nodeType === "YOU") {
+      resetGraph();
+      return;
+    }
+    
+    setSelectedId(id);
+    
+    const roleFocus = node?.nodeType === "ROLE"
+      ? buildCareerGraphRoleFocusState(visualModel, id)
+      : null;
+      
+    if (roleFocus) {
+      frameRoleFocus(roleFocus);
+      return;
+    }
+    
+    if (node?.x !== undefined && node.y !== undefined) {
+      graphRef.current?.centerAt(node.x, node.y, 420);
+      if ((graphRef.current?.zoom() ?? 1) < 1.35) graphRef.current?.zoom(1.35, 420);
+    }
+  }, [graphData.nodes, resetGraph, selectedId, visualModel, frameRoleFocus]);
 
   const drawNode = useCallback((
     node: NodeObject<CareerGraphVisualNode>,

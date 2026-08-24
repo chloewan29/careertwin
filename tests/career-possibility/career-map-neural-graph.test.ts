@@ -492,10 +492,15 @@ async function testM_step2M_strictTopology() {
   assert.match(source, /Math\.max\(0\.35, \(siblings\.length - 1\) \* 0\.16\);/, "Q: Minimum angular spacing dynamically enforced for gap fan spread");
   assert.match(adapterSource, /const scoreA = a.requirementImportance === "must" \? 2 :/, "Q: Essential-first sorting is preserved");
   
+  assert.match(source, /if \(deselecting \|\| node\?\.nodeType === "YOU"\) {/, "R: Clicking YOU delegates to shared interaction reset boundary");
+  assert.match(source, /const resetGraph = useCallback/, "R: resetGraph owner exists and manages layout/camera defaults");
+  assert.match(source, /if \(!selected\) {\s*return null;\s*}/, "R: Detail pane gracefully handles null selection from reset");
+  
   console.log("  M. Strict polar parent-relative attachment and bounded role gap silhouettes — PASSED");
   console.log("  O. True second-layer evidence bounding and localized role gap fans — PASSED");
   console.log("  P. Robust visual grammar for evidence parents and default gaps — PASSED");
   console.log("  Q. Selected-role visual gap cap and readable fan presentation — PASSED");
+  console.log("  R. Shared interaction reset boundary and YOU-click state clearing — PASSED");
 }
 
 main().catch((error) => {
