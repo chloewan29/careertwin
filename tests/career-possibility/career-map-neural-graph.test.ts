@@ -496,16 +496,17 @@ async function testM_step2M_strictTopology() {
   assert.match(source, /const resetGraph = useCallback/, "R: resetGraph owner exists and manages layout/camera defaults");
   assert.match(source, /if \(!selected\) {\s*return null;\s*}/, "R: Detail pane gracefully handles null selection from reset");
   
-  assert.doesNotMatch(source, /isOrbitingCapability/, "T: Shared skills explicitly excluded from role orbit math");
-  assert.match(source, /const gapSiblings = new Map<string, string\[\]>\(\);/, "T: Orbit array is strictly for gapSiblings");
-  assert.doesNotMatch(source, /\|\| isOrbitingCapability/, "T: Shared skills retain default personal coordinates");
+  assert.doesNotMatch(source, /isOrbitingCapability/, "T: Shared skills explicitly excluded from naive gap orbit math");
+  assert.match(source, /const gapIds = Array\.from\(selectedRoleFocus\.gapCapabilityIds\)/, "T: Gaps explicitly processed as outer fan");
+  assert.match(source, /const sharedIds = Array\.from\(selectedRoleFocus\.ownedCapabilityIds\)/, "T: Shared skills explicitly processed as inner arc");
+  assert.match(source, /if \(!selectedRoleFocus\) {/, "T: Semantic force disabled for anchor logic in selected role mode");
   
   console.log("  M. Strict polar parent-relative attachment and bounded role gap silhouettes — PASSED");
   console.log("  O. True second-layer evidence bounding and localized role gap fans — PASSED");
   console.log("  P. Robust visual grammar for evidence parents and default gaps — PASSED");
   console.log("  Q. Selected-role visual gap cap and readable fan presentation — PASSED");
   console.log("  R. Shared interaction reset boundary and YOU-click state clearing — PASSED");
-  console.log("  T. Shared skills remain anchored to YOU during role focus — PASSED");
+  console.log("  T. Selected role deterministic constellation layout — PASSED");
 }
 
 main().catch((error) => {
