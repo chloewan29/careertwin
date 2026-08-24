@@ -496,11 +496,16 @@ async function testM_step2M_strictTopology() {
   assert.match(source, /const resetGraph = useCallback/, "R: resetGraph owner exists and manages layout/camera defaults");
   assert.match(source, /if \(!selected\) {\s*return null;\s*}/, "R: Detail pane gracefully handles null selection from reset");
   
+  assert.match(source, /const isOrbitingCapability = node\.nodeType === "CAPABILITY" && selectedRoleFocus &&/, "S: Focused capabilities join the role orbit evaluation");
+  assert.match(source, /roleOrbitSiblings\.get\(roleId\) \?\? \[\];/, "S: Gap and capability nodes unify into roleOrbitSiblings");
+  assert.match(source, /} else if \(node\.nodeType === "ROLE_ONLY_CAPABILITY" \|\| isOrbitingCapability\) {/, "S: Orbiting capabilities share local radius assignment with gaps");
+  
   console.log("  M. Strict polar parent-relative attachment and bounded role gap silhouettes — PASSED");
   console.log("  O. True second-layer evidence bounding and localized role gap fans — PASSED");
   console.log("  P. Robust visual grammar for evidence parents and default gaps — PASSED");
   console.log("  Q. Selected-role visual gap cap and readable fan presentation — PASSED");
   console.log("  R. Shared interaction reset boundary and YOU-click state clearing — PASSED");
+  console.log("  S. Role focus capability orbit and geometric layout repair — PASSED");
 }
 
 main().catch((error) => {

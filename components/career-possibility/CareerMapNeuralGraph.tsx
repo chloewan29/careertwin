@@ -474,7 +474,8 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
       const targetYMap = new Map<string, number>();
 
       for (const node of graphData.nodes) {
-        if (node.nodeType === "CAPABILITY" || node.nodeType === "ROLE") {
+        const isOrbitingCapability = node.nodeType === "CAPABILITY" && selectedRoleFocus && (selectedRoleFocus.ownedCapabilityIds.has(node.id) || selectedRoleFocus.transferableCapabilityIds.has(node.id));
+        if (node.nodeType === "ROLE" || (node.nodeType === "CAPABILITY" && !isOrbitingCapability)) {
           const tr = node.nodeType === "CAPABILITY" ? ownedRadius : roleRadius;
           const targetAngle = Math.atan2(node.seedY, node.seedX);
           targetXMap.set(node.id, tr * Math.cos(targetAngle));
@@ -486,7 +487,7 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
       }
 
       const evidenceSiblings = new Map<string, string[]>();
-      const gapSiblings = new Map<string, string[]>();
+      const roleOrbitSiblings = new Map<string, string[]>();
 
       for (const node of graphData.nodes) {
         if (node.nodeType === "EVIDENCE") {
@@ -497,16 +498,22 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
             evidenceSiblings.set(parentId, arr);
           }
         } else if (node.nodeType === "ROLE_ONLY_CAPABILITY") {
-          const roleId = node.roleIds?.[0];
+          const roleId = selectedRoleFocus?.roleId ?? node.roleIds?.[0];
           if (roleId) {
-            const arr = gapSiblings.get(roleId) ?? [];
+            const arr = roleOrbitSiblings.get(roleId) ?? [];
             arr.push(node.id);
-            gapSiblings.set(roleId, arr);
+            roleOrbitSiblings.set(roleId, arr);
           }
+        } else if (node.nodeType === "CAPABILITY" && selectedRoleFocus && (selectedRoleFocus.ownedCapabilityIds.has(node.id) || selectedRoleFocus.transferableCapabilityIds.has(node.id))) {
+          const roleId = selectedRoleFocus.roleId;
+          const arr = roleOrbitSiblings.get(roleId) ?? [];
+          arr.push(node.id);
+          roleOrbitSiblings.set(roleId, arr);
         }
       }
 
       for (const node of graphData.nodes) {
+        const isOrbitingCapability = node.nodeType === "CAPABILITY" && selectedRoleFocus && (selectedRoleFocus.ownedCapabilityIds.has(node.id) || selectedRoleFocus.transferableCapabilityIds.has(node.id));
         if (node.nodeType === "EVIDENCE") {
           const parentId = node.parentIds?.[0];
           const px = parentId ? (targetXMap.get(parentId) ?? 0) : 0;
@@ -522,13 +529,13 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
           const localRadius = evidenceRadius - ownedRadius;
           targetXMap.set(node.id, px + localRadius * Math.cos(localAngle));
           targetYMap.set(node.id, py + localRadius * Math.sin(localAngle));
-        } else if (node.nodeType === "ROLE_ONLY_CAPABILITY") {
-          const roleId = node.roleIds?.[0];
+        } else if (node.nodeType === "ROLE_ONLY_CAPABILITY" || isOrbitingCapability) {
+          const roleId = selectedRoleFocus?.roleId ?? (node.nodeType === "ROLE_ONLY_CAPABILITY" ? node.roleIds?.[0] : undefined);
           const px = roleId ? (targetXMap.get(roleId) ?? 0) : 0;
           const py = roleId ? (targetYMap.get(roleId) ?? 0) : 0;
           
           const parentAngle = Math.atan2(py, px);
-          const siblings = roleId ? (gapSiblings.get(roleId) ?? [node.id]) : [node.id];
+          const siblings = roleId ? (roleOrbitSiblings.get(roleId) ?? [node.id]) : [node.id];
           const idx = siblings.indexOf(node.id);
           const fanSpread = Math.max(0.35, (siblings.length - 1) * 0.16);
           const fanOffset = siblings.length > 1 ? (idx / (siblings.length - 1) - 0.5) * fanSpread : 0;
