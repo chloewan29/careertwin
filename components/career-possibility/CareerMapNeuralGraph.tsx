@@ -529,11 +529,17 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
           const parentAngle = Math.atan2(py, px);
           const siblings = roleId ? (gapSiblings.get(roleId) ?? [node.id]) : [node.id];
           const idx = siblings.indexOf(node.id);
-          const fanSpread = Math.max(0.35, (siblings.length - 1) * 0.16);
-          const fanOffset = siblings.length > 1 ? (idx / (siblings.length - 1) - 0.5) * fanSpread : 0;
+          const N = siblings.length;
           
+          const arcRadians = Math.min(Math.PI * 0.9, (N - 1) * (Math.PI / 4.5));
+          const fanOffset = N > 1 ? (idx / (N - 1) - 0.5) * arcRadians : 0;
           const localAngle = parentAngle + fanOffset;
-          const localRadius = gapRadius - roleRadius;
+          
+          const requiredArcSpacing = 170 * baseScale; 
+          const requiredRadiusForSpacing = arcRadians > 0 ? (requiredArcSpacing * (N - 1)) / arcRadians : 0;
+          const minLocalRadius = 90 * baseScale;
+          const localRadius = Math.max(minLocalRadius, requiredRadiusForSpacing);
+          
           targetXMap.set(node.id, px + localRadius * Math.cos(localAngle));
           targetYMap.set(node.id, py + localRadius * Math.sin(localAngle));
         }
@@ -563,13 +569,19 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
         if (link.linkType === "FAMILY_CAPABILITY") return 104 * layoutScale;
         if (link.linkType === "CAPABILITY_EVIDENCE") return 72 * layoutScale;
         if (link.linkType === "ROLE_OWNED_CAPABILITY") return 340 * layoutScale;
-        if (link.linkType === "ROLE_ONLY_CAPABILITY") return 72 * layoutScale;
+        if (link.linkType === "ROLE_ONLY_CAPABILITY") {
+          if (selectedRoleFocus && (link.source as any).id === selectedRoleFocus.roleId) return 240 * layoutScale;
+          return 72 * layoutScale;
+        }
         return 96 * layoutScale;
       });
     linkForce
       ?.strength((link) => {
         if (link.linkType === "CAPABILITY_EVIDENCE") return 0.38;
-        if (link.linkType === "ROLE_ONLY_CAPABILITY") return 0.62;
+        if (link.linkType === "ROLE_ONLY_CAPABILITY") {
+          if (selectedRoleFocus && (link.source as any).id === selectedRoleFocus.roleId) return 0.05;
+          return 0.62;
+        }
         if (link.linkType === "ROLE_OWNED_CAPABILITY") return 0.012;
         return 0.42;
       });

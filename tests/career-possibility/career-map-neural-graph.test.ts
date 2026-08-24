@@ -489,7 +489,7 @@ async function testM_step2M_strictTopology() {
   assert.match(alignmentSource, /CAREER_MAP_MAX_RECOMMENDATIONS = 6/, "P: Future roles conservatively capped at 6");
   
   assert.match(adapterSource, /const boundedGapLinks = gapLinks.slice\(0, 5\);/, "Q: Selected graph gap count explicitly bounded to 5 (<= 6 constraint met)");
-  assert.match(source, /Math\.max\(0\.35, \(siblings\.length - 1\) \* 0\.16\);/, "Q: Minimum angular spacing dynamically enforced for gap fan spread");
+  assert.match(source, /const arcRadians = Math\.min/, "Q: Minimum angular spacing dynamically enforced via wide-arc");
   assert.match(adapterSource, /const scoreA = a.requirementImportance === "must" \? 2 :/, "Q: Essential-first sorting is preserved");
   
   assert.match(source, /if \(deselecting \|\| node\?\.nodeType === "YOU"\) {/, "R: Clicking YOU delegates to shared interaction reset boundary");
@@ -499,7 +499,11 @@ async function testM_step2M_strictTopology() {
   assert.doesNotMatch(source, /const roleAnchorX = -1/, "T: Hard-coded role focus teleport coordinate removed");
   assert.match(source, /const tr = node.nodeType === "CAPABILITY" \? ownedRadius : roleRadius;/, "T: Roles natively use their default world target");
   assert.match(source, /graph\.centerAt\(roleNode\.x \+ worldOffsetX, roleNode\.y, 600\);/, "T: Detail pane safe area managed by camera offset, not node teleport");
-  assert.match(source, /const gapRadius = roleRadius \+ 32 \* baseScale;/, "T: Gaps bloom locally outside the selected role");
+  
+  assert.match(source, /const arcRadians = Math\.min\(Math\.PI \* 0\.9, \(N - 1\) \* \(Math\.PI \/ 4\.5\)\);/, "V: Selected gaps receive wide deterministic angular slots");
+  assert.match(source, /const localRadius = Math\.max\(minLocalRadius, requiredRadiusForSpacing\);/, "V: Local gap radius is dynamically adaptive for label spacing");
+  assert.match(source, /if \(selectedRoleFocus && \(link\.source as any\)\.id === selectedRoleFocus\.roleId\) return 0\.05;/, "V: Ordinary force minimized so gap targets do not collapse");
+  assert.match(source, /const fanOffset = N > 1 \? \(idx \/ \(N - 1\) - 0\.5\) \* arcRadians : 0;/, "V: All gaps positioned cleanly across the outward half-space");
   
   console.log("  M. Strict polar parent-relative attachment and bounded role gap silhouettes — PASSED");
   console.log("  O. True second-layer evidence bounding and localized role gap fans — PASSED");
@@ -507,6 +511,7 @@ async function testM_step2M_strictTopology() {
   console.log("  Q. Selected-role visual gap cap and readable fan presentation — PASSED");
   console.log("  R. Shared interaction reset boundary and YOU-click state clearing — PASSED");
   console.log("  T. Continuity-preserving role focus and local gap bloom — PASSED");
+  console.log("  V. Selected role wide-arc gap constellation — PASSED");
 }
 
 main().catch((error) => {
