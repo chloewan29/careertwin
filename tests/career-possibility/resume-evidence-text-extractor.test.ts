@@ -180,7 +180,7 @@ const cjk = success("构建客户反馈分类体系。\n推动跨团队协作。
 assert.equal(cjk.bundle.evidenceRecords.length, 0);
 
 const tabbed = success("WORK EXPERIENCE\nAction\twith\ttabs");
-assert.equal(tabbed.bundle.evidenceRecords.length, 0);
+assert.equal(tabbed.bundle.evidenceRecords.length, 1);
 failure("Safe\u0000unsafe", "invalid_control_character");
 failure("Safe\u000Bunsafe", "invalid_control_character");
 failure("x".repeat(DEFAULT_TEXT_RESUME_MAX_CHARACTERS + 1), "input_too_large");

@@ -51,13 +51,14 @@ function hasEvidenceContent(text: string): boolean {
 }
 
 const performedResponsibilityProse = /^(?:(?:responsible|accountable)\s+(?:for|to)|reporting\s+(?:to|into|across|on))\b/i;
-const performedActionProse = /^\p{L}+(?:ed|ing)\b[\s\S]*\b(?:and|with|across|through|using|including|into|for|to|of|the|a|an)\b/iu;
+const performedActionProse = /^\p{L}+\b[\s\S]*\b(?:and|with|across|through|using|including|into|for|to|of|the|a|an)\b/iu;
 
 function qualifiesAsPerformedProfessionalEvidence(candidate: Candidate): boolean {
   if (!hasEvidenceContent(candidate.text)) return false;
   if (candidate.bullet) return true;
   const firstLine = candidate.text.split("\n", 1)[0].trim();
   if (isStructuralBoundaryLine(firstLine)) return false;
+  if (/^(?:summary|profile|overview|introduction)\b/i.test(firstLine)) return false;
   return performedResponsibilityProse.test(firstLine) || performedActionProse.test(firstLine);
 }
 
@@ -99,6 +100,7 @@ const workHistoryHeading = /^(?:work|professional|career|employment)\s+(?:experi
 const nonEmploymentSectionHeading = /^(?:education|skills|key skills|technical skills|core skills|qualifications?|certifications|certificates|projects|awards|honors|honours|languages|interests|volunteering|volunteer|publications|activities|leadership|affiliations|memberships|references)$/i;
 const dateRange = /\b((?:(?:jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|jul(?:y)?|aug(?:ust)?|sep(?:tember)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?)\s+)?(?:19|20)\d{2})\s*[-–—]\s*((?:(?:jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|jul(?:y)?|aug(?:ust)?|sep(?:tember)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?)\s+)?(?:19|20)\d{2}|present|current)\b/i;
 const companySuffix = /\b(?:inc\.?|llc|ltd\.?|limited|corp\.?|corporation|company|co\.?|group|plc|pty\.?\s+ltd\.?)$/i;
+const hasCompanyKeyword = /\b(?:inc\.?|llc|ltd\.?|limited|corp\.?|corporation|company|co\.?|group|plc|pty\.?\s+ltd\.?)\b/i;
 
 
 function sourced(value: string, sourceSpanId: string, methodVersion: string): ProvenancedField<string> {
@@ -131,6 +133,27 @@ function previousNonBlankLine(lines: ReturnType<typeof sourceLines>, beforeIndex
   return undefined;
 }
 
+function nextNonBlankLine(lines: ReturnType<typeof sourceLines>, afterIndex: number, ordinal = 1) {
+  let remaining = ordinal;
+  for (let index = afterIndex + 1; index < lines.length; index += 1) {
+    if (!lines[index].text.trim()) continue;
+    remaining -= 1;
+    if (remaining === 0) return { line: lines[index], index };
+  }
+  return undefined;
+}
+
+function isLikelyEmployerOrProject(val: string): boolean {
+  if (companySuffix.test(val)) return true;
+  if (val.length <= 150 && !performedActionProse.test(val) && !performedResponsibilityProse.test(val)) {
+    return true;
+  }
+  if (hasCompanyKeyword.test(val) && !performedActionProse.test(val) && !performedResponsibilityProse.test(val)) {
+    return true;
+  }
+  return false;
+}
+
 /** Conservative structural boundaries only; values are copied from explicit headings. */
 function employmentBoundaries(text: string): EmploymentBoundary[] {
   const lines = sourceLines(text);
@@ -154,16 +177,34 @@ function employmentBoundaries(text: string): EmploymentBoundary[] {
       continue;
     }
     // DOCX tab-stop format: "Role Title\tMonth Year – Month Year"
-    // Word documents frequently align dates using tab stops, producing a single line
-    // with the role title before the tab and the date range after it.
     const tabIdx = value.indexOf("\t");
     if (tabIdx > 0) {
       const beforeTab = value.slice(0, tabIdx).trim();
       const afterTab = value.slice(tabIdx + 1).trim();
       const tabDates = dateRange.exec(afterTab);
       if (tabDates && beforeTab && !workHistoryHeading.test(beforeTab) && !nonEmploymentSectionHeading.test(sectionHeadingCandidate(beforeTab))) {
-        const contentStart = line.end < text.length ? line.end + 1 : line.end;
-        boundaries.push({ startOffset: line.start, contentStartOffset: contentStart, evidenceEligible: true, roleTitle: beforeTab, startDate: tabDates[1], endDate: tabDates[2] });
+        let contentStart = line.end < text.length ? line.end + 1 : line.end;
+        let startOff = line.start;
+        let employer: string | undefined;
+
+        const previous = lines[index - 1];
+        if (previous && companySuffix.test(previous.text.trim()) && !workHistoryHeading.test(previous.text.trim())) {
+          employer = previous.text.trim();
+          startOff = previous.start;
+        } else {
+          const next = nextNonBlankLine(lines, index);
+          if (next) {
+            const nextVal = next.line.text.trim();
+            if (!isBulletLine(nextVal) && !dateRange.test(nextVal) && !workHistoryHeading.test(nextVal) && !nonEmploymentSectionHeading.test(sectionHeadingCandidate(nextVal))) {
+              if (isLikelyEmployerOrProject(nextVal)) {
+                employer = nextVal;
+                contentStart = next.line.end < text.length ? next.line.end + 1 : next.line.end;
+                index = next.index;
+              }
+            }
+          }
+        }
+        boundaries.push({ startOffset: startOff, contentStartOffset: contentStart, evidenceEligible: true, roleTitle: beforeTab, startDate: tabDates[1], endDate: tabDates[2], ...(employer ? { employer } : {}) });
         continue;
       }
     }
@@ -180,10 +221,29 @@ function employmentBoundaries(text: string): EmploymentBoundary[] {
     const roleWithDates = /^(.+?)\s*[|,]\s*(.+)$/.exec(value);
     const dates = dateRange.exec(roleWithDates?.[2] ?? "");
     if (roleWithDates && dates) {
+      let contentStart = line.end < text.length ? line.end + 1 : line.end;
+      let startOff = line.start;
+      let employer: string | undefined;
+
       const previous = lines[index - 1];
       const previousValue = previous?.text.trim() ?? "";
-      const explicitEmployer = previousValue && companySuffix.test(previousValue) && !workHistoryHeading.test(previousValue) ? previous : undefined;
-      boundaries.push({ startOffset: explicitEmployer?.start ?? line.start, contentStartOffset: line.end < text.length ? line.end + 1 : line.end, evidenceEligible: true, ...(explicitEmployer ? { employer: previousValue } : {}), roleTitle: roleWithDates[1].trim(), startDate: dates[1], endDate: dates[2] });
+      if (previousValue && companySuffix.test(previousValue) && !workHistoryHeading.test(previousValue)) {
+        employer = previousValue;
+        startOff = previous.start;
+      } else {
+        const next = nextNonBlankLine(lines, index);
+        if (next) {
+          const nextVal = next.line.text.trim();
+          if (!isBulletLine(nextVal) && !dateRange.test(nextVal) && !workHistoryHeading.test(nextVal) && !nonEmploymentSectionHeading.test(sectionHeadingCandidate(nextVal))) {
+            if (isLikelyEmployerOrProject(nextVal)) {
+              employer = nextVal;
+              contentStart = next.line.end < text.length ? next.line.end + 1 : next.line.end;
+              index = next.index;
+            }
+          }
+        }
+      }
+      boundaries.push({ startOffset: startOff, contentStartOffset: contentStart, evidenceEligible: true, ...(employer ? { employer } : {}), roleTitle: roleWithDates[1].trim(), startDate: dates[1], endDate: dates[2] });
       continue;
     }
     const standaloneDates = dateRange.exec(value);
