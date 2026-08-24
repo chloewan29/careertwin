@@ -510,6 +510,12 @@ async function testM_step2M_strictTopology() {
   assert.match(source, /if \(link\.linkType === "ROLE_ONLY_CAPABILITY"\) return 0\.08;/, "X: Role-gap spring significantly softened to allow local cluster bloom");
   assert.match(source, /minimum \+= 100 \* baseScale;/, "X: Selected gaps utilize the same label-aware footprint padding as capabilities");
   
+  // Phase 16 tests for Step 2Y (Presentation Architecture Lock)
+  assert.match(source, /PRESENTATION ARCHITECTURE LOCKED/, "Y: Architecture lock comment physically present in primary renderer file");
+  assert.match(source, /node\.nodeType === "YOU"/, "Y: YOU remains the primary personal anchor");
+  assert.match(source, /const parent = forceNodes\.find\(n => n\.id === node\.parentIds!\[0\]\);/, "Y: Evidence requires and strictly resolves valid parent");
+  assert.doesNotMatch(source, /linkType === "USER_ONLY_CAPABILITY"/, "Y: Gaps do not semantically link to YOU");
+  
   console.log("  M. Strict polar parent-relative attachment and bounded role gap silhouettes — PASSED");
   console.log("  O. True second-layer evidence bounding and localized role gap fans — PASSED");
   console.log("  P. Robust visual grammar for evidence parents and default gaps — PASSED");
@@ -519,6 +525,7 @@ async function testM_step2M_strictTopology() {
   console.log("  W. Obsidian-like organic force-graph presentation — PASSED");
   console.log("  W.S Organic personal-skill capability spacing repair — PASSED");
   console.log("  X. Selected role organic gap cluster spacing repair — PASSED");
+  console.log("  Y. Career Map Presentation Architecture Lock invariants — PASSED");
 }
 
 main().catch((error) => {

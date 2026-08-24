@@ -39,3 +39,9 @@ evidence_pieces
 - Legacy endpoints still exist (`/api/match-job`, `/api/job-copilot`, `/api/job-search`) for backward compatibility and debugging.
 - The repository currently contains both new canonical matcher modules and older matcher/recommendation modules.
 
+## Career Map Presentation Governance
+
+CAREER MAP PRESENTATION ARCHITECTURE: LOCKED
+
+AUTHORITATIVE DOCUMENT:
+`docs/architecture/career-map-presentation-architecture.md`

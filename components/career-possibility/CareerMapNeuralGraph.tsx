@@ -1,5 +1,14 @@
 "use client";
 
+// ============================================================================
+// PRESENTATION ARCHITECTURE LOCKED
+// See: docs/architecture/career-map-presentation-architecture.md
+//
+// Semantic changes must adapt through presentation adapters.
+// Do not change visual topology, layout mechanics, or interaction behavior 
+// without explicit Founder-approved presentation work.
+// ============================================================================
+
 import dynamic from "next/dynamic";
 import {
   useCallback,

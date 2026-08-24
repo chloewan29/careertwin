@@ -242,3 +242,13 @@ Separate clearly:
 - what is still unproven
 - what is being recommended
 - why this is the smallest safe next step
+
+## L) Career Map Presentation Governance
+
+Before any task that may affect Career Map, READ:
+`docs/architecture/career-map-presentation-architecture.md`
+
+The presentation architecture is locked.
+Semantic/backend tasks must preserve it.
+If a task requires changing it without explicit Founder authorization: STOP.
+Do not silently redesign Career Map presentation.
