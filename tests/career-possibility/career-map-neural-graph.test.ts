@@ -412,7 +412,7 @@ async function testK_step2K_layoutTopologies() {
   assert.match(source, /Math\.max\(.*Math\.min\(/, "K: responsive bands are clamped safely");
   
   // Radial force explicitly uses the responsive bands
-  assert.match(source, /const tr = node.nodeType === "CAPABILITY" \? ownedRadius : roleRadius;/, "K: future roles and capabilities placed explicitly by semantic depth target");
+  assert.match(source, /if \(node\.nodeType === "CAPABILITY"\) {\s*targetRadius = ownedRadius;/, "K: future roles and capabilities placed explicitly by semantic depth target");
 
   // Capability evidence disclosure (EVIDENCE nodes in focusSet show labels)
   assert.match(source, /node\.nodeType === "EVIDENCE" && !!focusSet && focusSet\.has\(id\)/, "K: focused evidence nodes explicitly render their text labels");
@@ -425,14 +425,13 @@ async function testK_step2K_layoutTopologies() {
 }
 
 // ---------------------------------------------------------------------------
-// Test L — MVP Step 2L Polar Topology
+// Test L — MVP Step 2L Polar Topology (Replaced by W: Organic Zones)
 // ---------------------------------------------------------------------------
 
 async function testL_step2L_polarTopology() {
   const source = readFileSync(RENDERER_SOURCE_PATH, "utf8");
   assert.match(source, /Math\.atan2\(node\.seedY, node\.seedX\)/, "L: layout uses true polar angular targets seeded by adapter");
-  assert.match(source, /const targetXMap = new Map<string, number>\(\);/, "L: target coordinates precalculated for exact placement");
-  assert.match(source, /node\.vx = \(node\.vx \?\? 0\) \+ \(tx - node\.x\) \* 1\.0 \* alpha;/, "L: spring physics applies rigid local target tracking");
+  assert.match(source, /const angleStrength = \(node\.nodeType === "CAPABILITY"\)/, "L: seed angle tracking is softly maintained");
   assert.doesNotMatch(source, /const parentActive = !!node\.parentIds/, "L: evidence nodes render visibly by default rather than hiding completely");
   console.log("  L. True polar topology and first-class evidence nodes — PASSED");
 }
@@ -462,9 +461,8 @@ async function main() {
 
 async function testM_step2M_strictTopology() {
   const source = readFileSync(RENDERER_SOURCE_PATH, "utf8");
-  assert.match(source, /targetXMap.set\(node.id, px \+ localRadius \* Math\.cos\(localAngle\)\);/, "M: Evidence strictly enforces parent-relative offset targeting");
-  assert.match(source, /if \(!selectedRoleFocus && defaultGapIds\.has\(node\.id\)\) includedNodeIds\.add\(node\.id\);/, "M: Roles permit a bounded default gap silhouette");
-  assert.match(source, /graphRef\.current\?\.centerAt\(0, 0, 700\);/, "M: YOU is rigidly centered replacing zoomToFit drift");
+  assert.match(source, /if \(link\.linkType === "CAPABILITY_EVIDENCE"\) return 36 \* layoutScale;/, "M: Evidence strictly bound tightly by organic link force");
+  assert.match(source, /const isEvidenceCluster = \(left\.nodeType === "EVIDENCE" && right\.nodeType === "EVIDENCE"\);/, "M: Evidence collision boundary respected in organic layout");
   
   // Phase 10 tests for Step 2M.C
   assert.match(source, /includedNodeIds.has\(parentId\)/, "M.C: Evidence node excluded if parent missing");
@@ -475,11 +473,9 @@ async function testM_step2M_strictTopology() {
   assert.match(adapterSource, /const scoreA = a.requirementImportance === "must" \? 2 :/, "M.C: Selected-role gaps prioritize essential requirements");
   
   // Phase 11 tests for Step 2O
-  assert.match(source, /const parentAngle = Math\.atan2\(py, px\);/, "O: Evidence and gaps derive primary angle from exact parent coordinate relative to YOU");
   assert.match(source, /const roleRadius = evidenceRadius \+ 60 \* baseScale;/, "O: Role radius strictly bounded by personal graph boundary rather than loose constraints");
   assert.match(source, /gapLinks\.sort/, "O: Gap silhouettes properly derive from and sort by link properties");
-  assert.match(source, /const fanOffset = siblings\.length > 1 \?/, "O: Sibling evidence/gaps form a tangential fan around their parent");
-  assert.match(source, /const localAngle = parentAngle \+ fanOffset;/, "O: Sibling evidence/gaps strictly use tangential offset logic");
+  assert.match(source, /if \(node\.nodeType === "ROLE_ONLY_CAPABILITY"\) {/, "O: Sibling gaps forcefully pushed outward by hemisphere bias");
   
   assert.match(source, /return `rgba\(203,213,225,\$\{alpha \* 0\.7\}\)`;/, "P: Default gap links remain visible and legible without focus");
   assert.match(source, /return 1\.1;/, "P: Default evidence parent links are robustly visible without hover/selection");
@@ -489,7 +485,7 @@ async function testM_step2M_strictTopology() {
   assert.match(alignmentSource, /CAREER_MAP_MAX_RECOMMENDATIONS = 6/, "P: Future roles conservatively capped at 6");
   
   assert.match(adapterSource, /const boundedGapLinks = gapLinks.slice\(0, 5\);/, "Q: Selected graph gap count explicitly bounded to 5 (<= 6 constraint met)");
-  assert.match(source, /const arcRadians = Math\.min/, "Q: Minimum angular spacing dynamically enforced via wide-arc");
+  assert.match(source, /if \(node\.nodeType === "ROLE_ONLY_CAPABILITY"\) return -60;/, "Q: Minimum spacing dynamically enforced via organic charge repulsion");
   assert.match(adapterSource, /const scoreA = a.requirementImportance === "must" \? 2 :/, "Q: Essential-first sorting is preserved");
   
   assert.match(source, /if \(deselecting \|\| node\?\.nodeType === "YOU"\) {/, "R: Clicking YOU delegates to shared interaction reset boundary");
@@ -497,13 +493,13 @@ async function testM_step2M_strictTopology() {
   assert.match(source, /if \(!selected\) {\s*return null;\s*}/, "R: Detail pane gracefully handles null selection from reset");
   
   assert.doesNotMatch(source, /const roleAnchorX = -1/, "T: Hard-coded role focus teleport coordinate removed");
-  assert.match(source, /const tr = node.nodeType === "CAPABILITY" \? ownedRadius : roleRadius;/, "T: Roles natively use their default world target");
+  assert.match(source, /targetRadius = roleRadius;/, "T: Roles natively use their default soft radius zone");
   assert.match(source, /graph\.centerAt\(roleNode\.x \+ worldOffsetX, roleNode\.y, 600\);/, "T: Detail pane safe area managed by camera offset, not node teleport");
   
-  assert.match(source, /const arcRadians = Math\.min\(Math\.PI \* 0\.9, \(N - 1\) \* \(Math\.PI \/ 4\.5\)\);/, "V: Selected gaps receive wide deterministic angular slots");
-  assert.match(source, /const localRadius = Math\.max\(minLocalRadius, requiredRadiusForSpacing\);/, "V: Local gap radius is dynamically adaptive for label spacing");
-  assert.match(source, /if \(selectedRoleFocus && \(link\.source as any\)\.id === selectedRoleFocus\.roleId\) return 0\.05;/, "V: Ordinary force minimized so gap targets do not collapse");
-  assert.match(source, /const fanOffset = N > 1 \? \(idx \/ \(N - 1\) - 0\.5\) \* arcRadians : 0;/, "V: All gaps positioned cleanly across the outward half-space");
+  assert.match(source, /graph\.d3Force\("radial", null\);/, "W: Rigid deterministic polar force completely removed");
+  assert.match(source, /if \(node\.nodeType === "ROLE_ONLY_CAPABILITY"\) {/, "W: Outward hemisphere bias applied softly to gaps");
+  assert.match(source, /if \(link\.linkType === "CAPABILITY_EVIDENCE"\) return 36 \* layoutScale;/, "W: Evidence forms tight note-like cluster around skills");
+  assert.match(source, /graph\.d3Force\("charge", d3\.forceManyBody\(\)\.strength/, "W: Natural ManyBody charge force introduced for Obsidian-like repulsion");
   
   console.log("  M. Strict polar parent-relative attachment and bounded role gap silhouettes — PASSED");
   console.log("  O. True second-layer evidence bounding and localized role gap fans — PASSED");
@@ -511,7 +507,7 @@ async function testM_step2M_strictTopology() {
   console.log("  Q. Selected-role visual gap cap and readable fan presentation — PASSED");
   console.log("  R. Shared interaction reset boundary and YOU-click state clearing — PASSED");
   console.log("  T. Continuity-preserving role focus and local gap bloom — PASSED");
-  console.log("  V. Selected role wide-arc gap constellation — PASSED");
+  console.log("  W. Obsidian-like organic force-graph presentation — PASSED");
 }
 
 main().catch((error) => {

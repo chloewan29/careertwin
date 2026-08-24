@@ -469,93 +469,7 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
     const roleRadius = evidenceRadius + 60 * baseScale;
     const gapRadius = roleRadius + 32 * baseScale;
 
-    const semanticPolarForce = (alpha: number) => {
-      const targetXMap = new Map<string, number>();
-      const targetYMap = new Map<string, number>();
-      for (const node of graphData.nodes) {
-        if (node.nodeType === "CAPABILITY" || node.nodeType === "ROLE") {
-          const tr = node.nodeType === "CAPABILITY" ? ownedRadius : roleRadius;
-          const targetAngle = Math.atan2(node.seedY, node.seedX);
-          targetXMap.set(node.id, tr * Math.cos(targetAngle));
-          targetYMap.set(node.id, tr * Math.sin(targetAngle));
-        } else if (node.nodeType === "YOU") {
-          targetXMap.set(node.id, 0);
-          targetYMap.set(node.id, 0);
-        }
-      }
-
-      const evidenceSiblings = new Map<string, string[]>();
-      const gapSiblings = new Map<string, string[]>();
-
-      for (const node of graphData.nodes) {
-        if (node.nodeType === "EVIDENCE") {
-          const parentId = node.parentIds?.[0];
-          if (parentId) {
-            const arr = evidenceSiblings.get(parentId) ?? [];
-            arr.push(node.id);
-            evidenceSiblings.set(parentId, arr);
-          }
-        } else if (node.nodeType === "ROLE_ONLY_CAPABILITY") {
-          const roleId = node.roleIds?.[0];
-          if (roleId) {
-            const arr = gapSiblings.get(roleId) ?? [];
-            arr.push(node.id);
-            gapSiblings.set(roleId, arr);
-          }
-        }
-      }
-
-      for (const node of graphData.nodes) {
-        if (node.nodeType === "EVIDENCE") {
-          const parentId = node.parentIds?.[0];
-          const px = parentId ? (targetXMap.get(parentId) ?? 0) : 0;
-          const py = parentId ? (targetYMap.get(parentId) ?? 0) : 0;
-          
-          const parentAngle = Math.atan2(py, px);
-          const siblings = parentId ? (evidenceSiblings.get(parentId) ?? [node.id]) : [node.id];
-          const idx = siblings.indexOf(node.id);
-          const fanSpread = 0.25;
-          const fanOffset = siblings.length > 1 ? (idx / (siblings.length - 1) - 0.5) * fanSpread : 0;
-          
-          const localAngle = parentAngle + fanOffset;
-          const localRadius = evidenceRadius - ownedRadius;
-          targetXMap.set(node.id, px + localRadius * Math.cos(localAngle));
-          targetYMap.set(node.id, py + localRadius * Math.sin(localAngle));
-        } else if (node.nodeType === "ROLE_ONLY_CAPABILITY") {
-          const roleId = node.roleIds?.[0];
-          const px = roleId ? (targetXMap.get(roleId) ?? 0) : 0;
-          const py = roleId ? (targetYMap.get(roleId) ?? 0) : 0;
-          
-          const parentAngle = Math.atan2(py, px);
-          const siblings = roleId ? (gapSiblings.get(roleId) ?? [node.id]) : [node.id];
-          const idx = siblings.indexOf(node.id);
-          const N = siblings.length;
-          
-          const arcRadians = Math.min(Math.PI * 0.9, (N - 1) * (Math.PI / 4.5));
-          const fanOffset = N > 1 ? (idx / (N - 1) - 0.5) * arcRadians : 0;
-          const localAngle = parentAngle + fanOffset;
-          
-          const requiredArcSpacing = 170 * baseScale; 
-          const requiredRadiusForSpacing = arcRadians > 0 ? (requiredArcSpacing * (N - 1)) / arcRadians : 0;
-          const minLocalRadius = 90 * baseScale;
-          const localRadius = Math.max(minLocalRadius, requiredRadiusForSpacing);
-          
-          targetXMap.set(node.id, px + localRadius * Math.cos(localAngle));
-          targetYMap.set(node.id, py + localRadius * Math.sin(localAngle));
-        }
-      }
-
-      for (const node of graphData.nodes) {
-        const tx = targetXMap.get(node.id);
-        const ty = targetYMap.get(node.id);
-        if (tx === undefined || ty === undefined || node.x === undefined || node.y === undefined) continue;
-        
-        node.vx = (node.vx ?? 0) + (tx - node.x) * 1.0 * alpha;
-        node.vy = (node.vy ?? 0) + (ty - node.y) * 1.0 * alpha;
-      }
-    };
-    graph.d3Force("radial", semanticPolarForce);
-
+    // Force 1: Links (creates organic parent-child clusters)
     const linkForce = graph.d3Force("link") as
       | {
           distance: (value: (link: RenderLink) => number) => unknown;
@@ -567,42 +481,73 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
         if (link.linkType === "USER_FAMILY") return 155 * layoutScale;
         if (link.linkType === "USER_CAPABILITY") return 135 * layoutScale;
         if (link.linkType === "FAMILY_CAPABILITY") return 104 * layoutScale;
-        if (link.linkType === "CAPABILITY_EVIDENCE") return 72 * layoutScale;
-        if (link.linkType === "ROLE_OWNED_CAPABILITY") return 340 * layoutScale;
-        if (link.linkType === "ROLE_ONLY_CAPABILITY") {
-          if (selectedRoleFocus && (link.source as any).id === selectedRoleFocus.roleId) return 240 * layoutScale;
-          return 72 * layoutScale;
-        }
+        if (link.linkType === "CAPABILITY_EVIDENCE") return 36 * layoutScale; // Note-like cluster distance
+        if (link.linkType === "ROLE_OWNED_CAPABILITY") return 180 * layoutScale;
+        if (link.linkType === "ROLE_ONLY_CAPABILITY") return 90 * layoutScale; // Organic gap bloom
         return 96 * layoutScale;
       });
     linkForce
       ?.strength((link) => {
-        if (link.linkType === "CAPABILITY_EVIDENCE") return 0.38;
-        if (link.linkType === "ROLE_ONLY_CAPABILITY") {
-          if (selectedRoleFocus && (link.source as any).id === selectedRoleFocus.roleId) return 0.05;
-          return 0.62;
-        }
-        if (link.linkType === "ROLE_OWNED_CAPABILITY") return 0.012;
+        if (link.linkType === "CAPABILITY_EVIDENCE") return 0.65; // High affinity to parent skill
+        if (link.linkType === "ROLE_ONLY_CAPABILITY") return 0.55; // High affinity to selected role
+        if (link.linkType === "ROLE_OWNED_CAPABILITY") return 0.04; // Soft semantic bridge
         return 0.42;
       });
 
+    // Force 2: Soft Semantic Zones (Organic constraints)
     let forceNodes: RenderNode[] = [];
     const semanticForce = (alpha: number) => {
       for (const node of forceNodes) {
-        if (node.nodeType === "YOU") continue;
-        const attraction = node.nodeType === "ROLE"
-          ? 0.76
-          : node.nodeType === "FAMILY"
-            ? 0.44
-            : node.nodeType === "ROLE_ONLY_CAPABILITY"
-              ? 0.36
-              : node.nodeType === "CAPABILITY"
-                ? 0.32
-                : 0.42;
-        node.vx = (node.vx ?? 0) + (node.seedX * layoutScale * horizontalScale - (node.x ?? 0)) * attraction * alpha;
-        node.vy = (node.vy ?? 0) + (node.seedY * layoutScale * verticalScale - (node.y ?? 0)) * attraction * alpha;
+        if (node.nodeType === "YOU") {
+          node.vx = (node.vx ?? 0) - (node.x ?? 0) * 0.8 * alpha;
+          node.vy = (node.vy ?? 0) - (node.y ?? 0) * 0.8 * alpha;
+          continue;
+        }
+
+        // Radial bias zones
+        let targetRadius = 0;
+        let radialStrength = 0;
+        
+        if (node.nodeType === "CAPABILITY") {
+           targetRadius = ownedRadius;
+           radialStrength = 0.25;
+        } else if (node.nodeType === "ROLE") {
+           targetRadius = roleRadius;
+           radialStrength = 0.20;
+        }
+        
+        const dist = Math.max(0.1, Math.hypot(node.x ?? 0, node.y ?? 0));
+        
+        if (radialStrength > 0) {
+           const targetX = ((node.x ?? 0) / dist) * targetRadius;
+           const targetY = ((node.y ?? 0) / dist) * targetRadius;
+           node.vx = (node.vx ?? 0) + (targetX - (node.x ?? 0)) * radialStrength * alpha;
+           node.vy = (node.vy ?? 0) + (targetY - (node.y ?? 0)) * radialStrength * alpha;
+        }
+
+        // Outward hemisphere bias for gaps
+        if (node.nodeType === "ROLE_ONLY_CAPABILITY") {
+           const pushX = ((node.x ?? 0) / dist) * gapRadius;
+           const pushY = ((node.y ?? 0) / dist) * gapRadius;
+           node.vx = (node.vx ?? 0) + (pushX - (node.x ?? 0)) * 0.18 * alpha;
+           node.vy = (node.vy ?? 0) + (pushY - (node.y ?? 0)) * 0.18 * alpha;
+        }
+        
+        // Soft seed-angle maintenance (prevents total chaos, maintains semantic sorting)
+        if (node.seedX !== undefined && node.seedY !== undefined) {
+           const targetAngle = Math.atan2(node.seedY, node.seedX);
+           const idealX = dist * Math.cos(targetAngle);
+           const idealY = dist * Math.sin(targetAngle);
+           
+           const angleStrength = (node.nodeType === "CAPABILITY") ? 0.06 : (node.nodeType === "ROLE") ? 0.04 : 0;
+           if (angleStrength > 0) {
+             node.vx = (node.vx ?? 0) + (idealX - (node.x ?? 0)) * angleStrength * alpha;
+             node.vy = (node.vy ?? 0) + (idealY - (node.y ?? 0)) * angleStrength * alpha;
+           }
+        }
       }
 
+      // Local Collision Avoidance (Spacing)
       for (let leftIndex = 0; leftIndex < forceNodes.length; leftIndex += 1) {
         const left = forceNodes[leftIndex]!;
         for (let rightIndex = leftIndex + 1; rightIndex < forceNodes.length; rightIndex += 1) {
@@ -610,12 +555,15 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
           const dx = (right.x ?? 0) - (left.x ?? 0);
           const dy = (right.y ?? 0) - (left.y ?? 0);
           const distance = Math.max(0.01, Math.hypot(dx, dy));
-          const differentClusters = left.clusterId && right.clusterId && left.clusterId !== right.clusterId;
+          
+          const isEvidenceCluster = (left.nodeType === "EVIDENCE" && right.nodeType === "EVIDENCE");
           const minimum = nodeRadius[left.nodeType] + nodeRadius[right.nodeType]
-            + (left.nodeType === "ROLE" || right.nodeType === "ROLE" ? 34 : 16)
-            + (differentClusters ? 12 : 0);
+            + (left.nodeType === "ROLE" || right.nodeType === "ROLE" ? 34 : 
+               isEvidenceCluster ? 4 : 16); // Evidence packs tightly together
+               
           if (distance >= minimum) continue;
-          const pressure = ((minimum - distance) / distance) * 0.22 * alpha;
+          
+          const pressure = ((minimum - distance) / distance) * (isEvidenceCluster ? 0.1 : 0.22) * alpha;
           const pushX = dx * pressure;
           const pushY = dy * pressure;
           if (left.nodeType !== "YOU") {
@@ -633,10 +581,20 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
       forceNodes = nodes as RenderNode[];
     };
     graph.d3Force("career-semantic-bias", semanticForce);
+    graph.d3Force("radial", null); // Ensure deterministic polar is totally purged
+    
+    // Add charge force for natural spreading (Obsidian feel)
+    graph.d3Force("charge", d3.forceManyBody().strength(node => {
+      if (node.nodeType === "EVIDENCE") return -5; // Evidence clusters softly
+      if (node.nodeType === "ROLE_ONLY_CAPABILITY") return -60; // Gaps repel slightly more to form clear blooms
+      return -30;
+    }));
+
     graph.d3ReheatSimulation();
 
     return () => {
       graph.d3Force("career-semantic-bias", null);
+      graph.d3Force("charge", null);
     };
   }, [dimensions.width, engineReady, graphData]);
 
