@@ -498,8 +498,13 @@ async function testM_step2M_strictTopology() {
   
   assert.match(source, /graph\.d3Force\("radial", null\);/, "W: Rigid deterministic polar force completely removed");
   assert.match(source, /if \(node\.nodeType === "ROLE_ONLY_CAPABILITY"\) {/, "W: Outward hemisphere bias applied softly to gaps");
-  assert.match(source, /if \(link\.linkType === "CAPABILITY_EVIDENCE"\) return 36 \* layoutScale;/, "W: Evidence forms tight note-like cluster around skills");
+  assert.match(source, /if \(link\.linkType === "CAPABILITY_EVIDENCE"\) return 0\.02;/, "W: Evidence forms tight note-like cluster without symmetric parent drag");
   assert.match(source, /charge\?\.strength\(\(node\) => {/, "W: Natural ManyBody charge force introduced for Obsidian-like repulsion");
+  
+  // Phase 14 tests for Step 2W.S (Organic Spacing)
+  assert.match(source, /if \(isCapabilityCluster\) \{[\s\S]*minimum \+= 110 \* baseScale;/, "W.S: Label-aware footprint buffers personal skill capability collision");
+  assert.match(source, /if \(node\.nodeType === "EVIDENCE" && node\.parentIds\?\.\[0\]\) \{/, "W.S: Asymmetric parent attraction natively implemented for evidence");
+  assert.match(source, /if \(link\.linkType === "ROLE_OWNED_CAPABILITY"\) return 0\.01;/, "W.S: Role-owned link drastically softened to avoid collapsing personal skills");
   
   console.log("  M. Strict polar parent-relative attachment and bounded role gap silhouettes — PASSED");
   console.log("  O. True second-layer evidence bounding and localized role gap fans — PASSED");
@@ -508,6 +513,7 @@ async function testM_step2M_strictTopology() {
   console.log("  R. Shared interaction reset boundary and YOU-click state clearing — PASSED");
   console.log("  T. Continuity-preserving role focus and local gap bloom — PASSED");
   console.log("  W. Obsidian-like organic force-graph presentation — PASSED");
+  console.log("  W.S Organic personal-skill capability spacing repair — PASSED");
 }
 
 main().catch((error) => {

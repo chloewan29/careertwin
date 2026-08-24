@@ -488,9 +488,9 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
       });
     linkForce
       ?.strength((link) => {
-        if (link.linkType === "CAPABILITY_EVIDENCE") return 0.65; // High affinity to parent skill
+        if (link.linkType === "CAPABILITY_EVIDENCE") return 0.02; // Nullified D3 symmetry. Handled asymmetrically below.
         if (link.linkType === "ROLE_ONLY_CAPABILITY") return 0.55; // High affinity to selected role
-        if (link.linkType === "ROLE_OWNED_CAPABILITY") return 0.04; // Soft semantic bridge
+        if (link.linkType === "ROLE_OWNED_CAPABILITY") return 0.01; // Ultra-soft bridge, prevents collapsing personal skills
         return 0.42;
       });
 
@@ -545,6 +545,21 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
              node.vy = (node.vy ?? 0) + (idealY - (node.y ?? 0)) * angleStrength * alpha;
            }
         }
+        // Asymmetric Evidence -> Capability attraction (Evidence follows Capability, Capability is stable)
+        if (node.nodeType === "EVIDENCE" && node.parentIds?.[0]) {
+           const parent = forceNodes.find(n => n.id === node.parentIds![0]);
+           if (parent) {
+             const dx = (parent.x ?? 0) - (node.x ?? 0);
+             const dy = (parent.y ?? 0) - (node.y ?? 0);
+             const targetDist = 36 * layoutScale;
+             const currentDist = Math.hypot(dx, dy);
+             if (currentDist > 0.01) {
+                const pull = (currentDist - targetDist) / currentDist * 0.45 * alpha;
+                node.vx = (node.vx ?? 0) + dx * pull;
+                node.vy = (node.vy ?? 0) + dy * pull;
+             }
+           }
+        }
       }
 
       // Local Collision Avoidance (Spacing)
@@ -557,9 +572,17 @@ export function CareerMapNeuralGraph({ projection }: CareerMapNeuralGraphProps) 
           const distance = Math.max(0.01, Math.hypot(dx, dy));
           
           const isEvidenceCluster = (left.nodeType === "EVIDENCE" && right.nodeType === "EVIDENCE");
-          const minimum = nodeRadius[left.nodeType] + nodeRadius[right.nodeType]
+          const isCapabilityCluster = (left.nodeType === "CAPABILITY" && right.nodeType === "CAPABILITY");
+          
+          let minimum = nodeRadius[left.nodeType] + nodeRadius[right.nodeType]
             + (left.nodeType === "ROLE" || right.nodeType === "ROLE" ? 34 : 
                isEvidenceCluster ? 4 : 16); // Evidence packs tightly together
+               
+          if (isCapabilityCluster) {
+             // Label footprint safety margin. Typical capability label is 100-140px wide.
+             // We give an extra 110px padding for capabilities to prevent multi-node pile-ups.
+             minimum += 110 * baseScale;
+          }
                
           if (distance >= minimum) continue;
           
