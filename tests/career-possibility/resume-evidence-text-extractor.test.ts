@@ -493,4 +493,69 @@ const pmText = "WORK EXPERIENCE\nDelivery Agency — Program Manager | 2018 - 20
 const pm = success(pmText);
 assert.equal(pm.bundle.evidenceRecords.length >= 1, true, "DOMAIN_PM: program-delivery-domain evidence extracted");
 
+// ===================================================================
+// MVP Step 3A — privacy-safe role-boundary contract fixtures
+// ===================================================================
+
+// A: TITLE / COMPANY / DATE / multiple bullets.
+const step3aA = success("PROFESSIONAL EXPERIENCE\nOperations Director\nExample Services Ltd\nJan 2020 Dec 2023\n- Led a multi-region service redesign.\n- Reduced customer resolution time by 30 percent.");
+assert.equal(step3aA.bundle.employmentRecords.length, 1);
+assert.equal(step3aA.bundle.evidenceRecords.length, 2);
+assert.equal(step3aA.bundle.employmentRecords[0].roleTitle?.value, "Operations Director");
+assert.equal(step3aA.bundle.employmentRecords[0].employerName?.value, "Example Services Ltd");
+
+// B: COMPANY / TITLE / DATE / multiple bullets.
+const step3aB = success("WORK EXPERIENCE\nHarbour Systems Ltd\nProgramme Manager\n2017 2019\n- Coordinated three delivery workstreams.\n- Introduced a monthly governance cadence.");
+assert.equal(step3aB.bundle.employmentRecords.length, 1);
+assert.equal(step3aB.bundle.evidenceRecords.length, 2);
+assert.equal(step3aB.bundle.employmentRecords[0].employerName?.value, "Harbour Systems Ltd");
+assert.equal(step3aB.bundle.employmentRecords[0].roleTitle?.value, "Programme Manager");
+
+// C: TITLE | COMPANY followed by a tabular date cell.
+const step3aC = success("PROFESSIONAL EXPERIENCE\nInsights Lead | Northstar Studio\nFeb 2021 Nov 2024\n- Built a customer research programme.");
+assert.equal(step3aC.bundle.employmentRecords.length, 1);
+assert.equal(step3aC.bundle.employmentRecords[0].roleTitle?.value, "Insights Lead");
+assert.equal(step3aC.bundle.employmentRecords[0].employerName?.value, "Northstar Studio");
+
+// D: open-ended/current role in a dedicated tab-aligned date cell.
+const step3aD = success("CAREER HISTORY\nProduct Lead\tMar 2024 Present\n- Shaped a cross-functional product roadmap.\n- Established outcome reviews with senior stakeholders.");
+assert.equal(step3aD.bundle.employmentRecords.length, 1);
+assert.equal(step3aD.bundle.employmentRecords[0].endDate?.value, "Present");
+assert.equal(step3aD.bundle.evidenceRecords.length, 2);
+const step3aDParserSeparator = success("CAREER HISTORY\nService Lead\tApr 2018 ΓÇô May 2020\n- Improved service quality across four regions.");
+assert.equal(step3aDParserSeparator.bundle.employmentRecords.length, 1);
+assert.equal(step3aDParserSeparator.bundle.evidenceRecords.length, 1);
+
+// E: year-only and explicit 'to' alternatives.
+const step3aE = success("EMPLOYMENT HISTORY\nDelivery Lead | Example Group | 2014 2017\n- Improved delivery predictability.\nSenior Delivery Lead | Example Company | 2018 to 2021\n- Managed a portfolio of transformation work.");
+assert.equal(step3aE.bundle.employmentRecords.length, 2);
+assert.equal(step3aE.bundle.evidenceRecords.length, 2);
+
+// F: mixed consecutive headers stay separate and evidence cannot cross roles.
+const step3aF = success("WORK EXPERIENCE\nExample Operations Ltd\nOperations Manager\n2019 2021\n- ROLE_A delivered a service improvement.\nCommercial Lead | Harbour Partners | Jan 2022 Present\n- ROLE_B negotiated a strategic agreement.");
+assert.equal(step3aF.bundle.employmentRecords.length, 2);
+assert.equal(step3aF.bundle.evidenceRecords.length, 2);
+const step3aRoleA = step3aF.bundle.evidenceRecords.find((record) => record.sourceText.includes("ROLE_A"))!;
+const step3aRoleB = step3aF.bundle.evidenceRecords.find((record) => record.sourceText.includes("ROLE_B"))!;
+assert.equal(step3aRoleA.employmentRecordId, step3aF.bundle.employmentRecords[0].id);
+assert.equal(step3aRoleB.employmentRecordId, step3aF.bundle.employmentRecords[1].id);
+assert.notEqual(step3aRoleA.employmentRecordId, step3aRoleB.employmentRecordId);
+
+// G: a structurally dated personal project is a separate professional boundary.
+const step3aG = success("WORK EXPERIENCE\nExample Company Ltd — Analyst | 2020 - 2022\n- Automated a weekly reporting process.\nPERSONAL PROJECTS\nCommunity Planning Toolkit\tJan 2023 Current\nDesigned a reusable planning toolkit for volunteer organisations.\n- Piloted the toolkit with three community groups.\n- Published implementation guidance for future contributors.\nEDUCATION\nSynthetic degree");
+assert.equal(step3aG.bundle.employmentRecords.length, 2);
+assert.equal(step3aG.bundle.evidenceRecords.length, 4);
+assert.equal(step3aG.bundle.evidenceRecords.filter((record) => record.employmentRecordId === step3aG.bundle.employmentRecords[1].id).length, 3);
+
+// H/I: later education dates and skill/tool lists cannot become roles or evidence.
+const step3aHI = success("WORK EXPERIENCE\nExample Company Ltd\nService Manager\n2018 2022\n- Led a customer support transformation.\nEDUCATION\nExample University\n2012 2015\nBachelor of Example Studies\nSKILLS\nSQL\nPython\nService design");
+assert.equal(step3aHI.bundle.employmentRecords.length, 1);
+assert.deepEqual(step3aHI.bundle.evidenceRecords.map((record) => record.sourceText), ["- Led a customer support transformation."]);
+
+// Non-evidence context stays in the source-provenanced employment span and is
+// explicitly classified instead of silently disappearing.
+const step3aContext = success("WORK EXPERIENCE\nExample Company Ltd\nOperations Manager\n2020 2022\nCareer focus\n\n- Led a service redesign.");
+assert.equal(step3aContext.bundle.sourceSpans.some((span) => span.employmentRecordId && span.originalText.includes("Career focus")), true);
+assert.equal(step3aContext.warnings.some((warning) => warning.severity === "info" && warning.message.includes("classified as non-evidence/context")), true);
+
 originalLog("resume-evidence-text-extractor.test passed");

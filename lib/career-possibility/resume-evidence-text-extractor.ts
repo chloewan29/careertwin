@@ -70,7 +70,7 @@ function isHeadingLike(text: string): boolean {
 function isStructuralBoundaryLine(text: string): boolean {
   const value = text.trim();
   if (!value) return true;
-  if (isHeadingLike(value) || workHistoryHeading.test(value) || dateRange.test(value)) return true;
+  if (isHeadingLike(value) || isProfessionalSectionHeading(value) || isNonEmploymentSectionHeading(value) || dateRange.test(value) || parseDatePeriod(value, true)) return true;
   if (/^(.+?)\s+[-â€“â€”]\s+(.+?)(?:\s*[|,]\s*(.+))?$/.test(value)) return true;
   return /^.+?\s*[|,]\s*.+?(?:19|20)\d{2}\s*[-â€“â€”]/.test(value);
 }
@@ -96,11 +96,56 @@ function stableCandidateFingerprint(value: string): string {
 }
 
 const workHistoryHeading = /^(?:work|professional|career|employment)\s+(?:experience|history)$|^experience$/i;
+const professionalProjectHeading = /^(?:(?:personal|professional|selected|independent)\s+)?projects?(?:\s+(?:experience|portfolio))?$/i;
 /** Non-employment sections must not inherit employment provenance; they get their own provenance-free boundary. */
-const nonEmploymentSectionHeading = /^(?:education|skills|key skills|technical skills|core skills|qualifications?|certifications|certificates|projects|awards|honors|honours|languages|interests|volunteering|volunteer|publications|activities|leadership|affiliations|memberships|references)$/i;
-const dateRange = /\b((?:(?:jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|jul(?:y)?|aug(?:ust)?|sep(?:tember)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?)\s+)?(?:19|20)\d{2})\s*[-–—]\s*((?:(?:jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|jul(?:y)?|aug(?:ust)?|sep(?:tember)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?)\s+)?(?:19|20)\d{2}|present|current)\b/i;
+const nonEmploymentSectionHeading = /^(?:education|skills|key skills|technical skills|core skills|qualifications?|certifications|certificates|awards|honors|honours|languages|interests|volunteering|volunteer|publications|activities|leadership|affiliations|memberships|references)$/i;
+const monthName = "(?:jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|jul(?:y)?|aug(?:ust)?|sep(?:tember)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?)";
+const datedPoint = `(?:${monthName}\\s+)?(?:19|20)\\d{2}`;
+const datedEndPoint = `(?:${datedPoint}|present|current|now)`;
+const dateRange = new RegExp(`\\b(${datedPoint})\\s*(?:[-\\u2013\\u2014]|to)\\s*(${datedEndPoint})\\b`, "i");
+const tabularDateRange = new RegExp(`^\\s*(${datedPoint})\\s+(?:[^\\s\\d]{1,4}\\s+)?(${datedEndPoint})\\s*$`, "i");
 const companySuffix = /\b(?:inc\.?|llc|ltd\.?|limited|corp\.?|corporation|company|co\.?|group|plc|pty\.?\s+ltd\.?)$/i;
-const hasCompanyKeyword = /\b(?:inc\.?|llc|ltd\.?|limited|corp\.?|corporation|company|co\.?|group|plc|pty\.?\s+ltd\.?)\b/i;
+const roleTitleKeyword = /\b(?:accountant|administrator|advisor|analyst|architect|consultant|controller|coordinator|developer|director|engineer|executive|head|lead|manager|officer|owner|partner|producer|researcher|scientist|specialist|strategist|supervisor|designer)\b/i;
+
+type ParsedDatePeriod = { startDate: string; endDate: string };
+type EmploymentMetadata = Pick<EmploymentBoundary, "employer" | "roleTitle">;
+
+function parseDatePeriod(value: string, allowTabularWhitespace = false): ParsedDatePeriod | undefined {
+  const trimmed = value.trim();
+  const explicit = dateRange.exec(trimmed);
+  if (explicit && explicit.index === 0 && explicit[0].length === trimmed.length) {
+    return { startDate: explicit[1], endDate: explicit[2] };
+  }
+  if (!allowTabularWhitespace) return undefined;
+  const tabular = tabularDateRange.exec(trimmed);
+  return tabular ? { startDate: tabular[1], endDate: tabular[2] } : undefined;
+}
+
+function isProfessionalSectionHeading(value: string): boolean {
+  return workHistoryHeading.test(value) || professionalProjectHeading.test(value);
+}
+
+function isNonEmploymentSectionHeading(value: string): boolean {
+  return nonEmploymentSectionHeading.test(sectionHeadingCandidate(value));
+}
+
+function isLikelyRoleTitle(value: string): boolean {
+  return roleTitleKeyword.test(value);
+}
+
+function orderedEmploymentMetadata(first: string, second: string, defaultOrder: "title_company" | "company_title"): EmploymentMetadata {
+  if (companySuffix.test(first) || (isLikelyRoleTitle(second) && !isLikelyRoleTitle(first))) return { employer: first, roleTitle: second };
+  if (companySuffix.test(second) || (isLikelyRoleTitle(first) && !isLikelyRoleTitle(second))) return { employer: second, roleTitle: first };
+  return defaultOrder === "title_company" ? { roleTitle: first, employer: second } : { employer: first, roleTitle: second };
+}
+
+function employmentMetadataFromHeader(value: string, defaultOrder: "title_company" | "company_title" = "title_company"): EmploymentMetadata {
+  const parts = value.split("|").map((part) => part.trim()).filter(Boolean);
+  if (parts.length === 2) return orderedEmploymentMetadata(parts[0], parts[1], defaultOrder);
+  const dashParts = /^(.+?)\s+[-\u2013\u2014]\s+(.+)$/.exec(value);
+  if (dashParts) return orderedEmploymentMetadata(dashParts[1].trim(), dashParts[2].trim(), "company_title");
+  return value ? { roleTitle: value } : {};
+}
 
 
 function sourced(value: string, sourceSpanId: string, methodVersion: string): ProvenancedField<string> {
@@ -143,15 +188,19 @@ function nextNonBlankLine(lines: ReturnType<typeof sourceLines>, afterIndex: num
   return undefined;
 }
 
-function isLikelyEmployerOrProject(val: string): boolean {
-  if (companySuffix.test(val)) return true;
-  if (val.length <= 150 && !performedActionProse.test(val) && !performedResponsibilityProse.test(val)) {
-    return true;
-  }
-  if (hasCompanyKeyword.test(val) && !performedActionProse.test(val) && !performedResponsibilityProse.test(val)) {
-    return true;
-  }
-  return false;
+function isLikelyEmploymentMetadataLine(value: string): boolean {
+  const words = value.match(/\p{L}+/gu) ?? [];
+  return value.length <= 80
+    && words.length > 0
+    && words.length <= 10
+    && !/[.!?;]/.test(value)
+    && !isBulletLine(value)
+    && !parseDatePeriod(value, true)
+    && !isProfessionalSectionHeading(value)
+    && !isNonEmploymentSectionHeading(value)
+    && !performedActionProse.test(value)
+    && !performedResponsibilityProse.test(value)
+    && !/^\p{L}+(?:ed|ing)\b/iu.test(value);
 }
 
 /** Conservative structural boundaries only; values are copied from explicit headings. */
@@ -160,51 +209,77 @@ function employmentBoundaries(text: string): EmploymentBoundary[] {
   const boundaries: Array<Omit<EmploymentBoundary, "endOffset">> = [];
   const hasEligibleBoundaryFrom = (startOffset: number) => boundaries.some((boundary) => boundary.evidenceEligible && boundary.startOffset >= startOffset);
   let workSectionStart: number | undefined;
+  let sectionMode: "unscoped" | "professional" | "project" | "non_employment" = "unscoped";
+  const closeUnboundedWorkSection = () => {
+    if (workSectionStart !== undefined && !hasEligibleBoundaryFrom(workSectionStart)) {
+      boundaries.push({ startOffset: workSectionStart, contentStartOffset: workSectionStart, evidenceEligible: true });
+    }
+    workSectionStart = undefined;
+  };
   for (let index = 0; index < lines.length; index += 1) {
     const line = lines[index];
     const value = line.text.trim();
     if (!value) continue;
     if (workHistoryHeading.test(value)) {
       workSectionStart = line.end < text.length ? line.end + 1 : line.end;
+      sectionMode = "professional";
       continue;
     }
-    if (nonEmploymentSectionHeading.test(sectionHeadingCandidate(value))) {
-      if (workSectionStart !== undefined && !hasEligibleBoundaryFrom(workSectionStart)) {
-        boundaries.push({ startOffset: workSectionStart, contentStartOffset: workSectionStart, evidenceEligible: true });
-      }
+    if (professionalProjectHeading.test(sectionHeadingCandidate(value))) {
+      closeUnboundedWorkSection();
       boundaries.push({ startOffset: line.start, contentStartOffset: line.end < text.length ? line.end + 1 : line.end, evidenceEligible: false });
-      workSectionStart = undefined;
+      sectionMode = "project";
       continue;
     }
-    // DOCX tab-stop format: "Role Title\tMonth Year – Month Year"
+    if (isNonEmploymentSectionHeading(value)) {
+      closeUnboundedWorkSection();
+      boundaries.push({ startOffset: line.start, contentStartOffset: line.end < text.length ? line.end + 1 : line.end, evidenceEligible: false });
+      sectionMode = "non_employment";
+      continue;
+    }
+    if (sectionMode === "non_employment") continue;
+
+    // Tabular format: "Role or employer\tMonth Year [separator] Month Year".
+    // A dedicated date cell is structural enough to accept whitespace between
+    // date endpoints when document extraction has discarded the visual dash.
     const tabIdx = value.indexOf("\t");
     if (tabIdx > 0) {
       const beforeTab = value.slice(0, tabIdx).trim();
       const afterTab = value.slice(tabIdx + 1).trim();
-      const tabDates = dateRange.exec(afterTab);
+      const tabDates = parseDatePeriod(afterTab, true);
       if (tabDates && beforeTab && !workHistoryHeading.test(beforeTab) && !nonEmploymentSectionHeading.test(sectionHeadingCandidate(beforeTab))) {
         let contentStart = line.end < text.length ? line.end + 1 : line.end;
-        let startOff = line.start;
-        let employer: string | undefined;
+        let metadata: EmploymentMetadata = employmentMetadataFromHeader(beforeTab);
+        const next = nextNonBlankLine(lines, index);
+        if (next && isLikelyEmploymentMetadataLine(next.line.text.trim())) {
+          metadata = orderedEmploymentMetadata(beforeTab, next.line.text.trim(), "company_title");
+          contentStart = next.line.end < text.length ? next.line.end + 1 : next.line.end;
+          index = next.index;
+        }
+        boundaries.push({ startOffset: line.start, contentStartOffset: contentStart, evidenceEligible: true, ...metadata, ...tabDates });
+        continue;
+      }
+    }
 
-        const previous = lines[index - 1];
-        if (previous && companySuffix.test(previous.text.trim()) && !workHistoryHeading.test(previous.text.trim())) {
-          employer = previous.text.trim();
-          startOff = previous.start;
-        } else {
-          const next = nextNonBlankLine(lines, index);
-          if (next) {
-            const nextVal = next.line.text.trim();
-            if (!isBulletLine(nextVal) && !dateRange.test(nextVal) && !workHistoryHeading.test(nextVal) && !nonEmploymentSectionHeading.test(sectionHeadingCandidate(nextVal))) {
-              if (isLikelyEmployerOrProject(nextVal)) {
-                employer = nextVal;
-                contentStart = next.line.end < text.length ? next.line.end + 1 : next.line.end;
-                index = next.index;
-              }
-            }
+    // Explicit pipe format: TITLE | COMPANY | DATE (or COMPANY | TITLE | DATE).
+    const pipeParts = value.split("|").map((part) => part.trim()).filter(Boolean);
+    if (pipeParts.length >= 2) {
+      const pipeDates = parseDatePeriod(pipeParts.at(-1)!, true);
+      if (pipeDates) {
+        const headerParts = pipeParts.slice(0, -1);
+        let metadata: EmploymentMetadata = headerParts.length >= 2
+          ? orderedEmploymentMetadata(headerParts[0], headerParts.slice(1).join(" | "), "title_company")
+          : employmentMetadataFromHeader(headerParts[0] ?? "");
+        let startOffset = line.start;
+        if (!metadata.employer) {
+          const previous = previousNonBlankLine(lines, index);
+          const previousValue = previous?.text.trim() ?? "";
+          if (previous && companySuffix.test(previousValue) && !isProfessionalSectionHeading(previousValue)) {
+            metadata = { ...metadata, employer: previousValue };
+            startOffset = previous.start;
           }
         }
-        boundaries.push({ startOffset: startOff, contentStartOffset: contentStart, evidenceEligible: true, roleTitle: beforeTab, startDate: tabDates[1], endDate: tabDates[2], ...(employer ? { employer } : {}) });
+        boundaries.push({ startOffset, contentStartOffset: line.end < text.length ? line.end + 1 : line.end, evidenceEligible: true, ...metadata, ...pipeDates });
         continue;
       }
     }
@@ -213,13 +288,13 @@ function employmentBoundaries(text: string): EmploymentBoundary[] {
 
     // combined[2] is a date range with no third component: "Role – DateRange"
     if (combined && (dateRange.test(combined[3] ?? "") || companySuffix.test(combined[1]) || (dateRange.test(combined[2]) && combined[3] === undefined))) {
-      const dates = dateRange.exec(combined[3] ?? combined[2]);
-      const isRoleDateFormat = combined[3] === undefined && dateRange.test(combined[2]);
-      boundaries.push({ startOffset: line.start, contentStartOffset: line.end < text.length ? line.end + 1 : line.end, evidenceEligible: true, ...(isRoleDateFormat ? { roleTitle: combined[1].trim() } : { employer: combined[1].trim(), roleTitle: combined[2].trim() }), ...(dates ? { startDate: dates[1], endDate: dates[2] } : {}) });
+      const dates = parseDatePeriod(combined[3] ?? combined[2]);
+      const isRoleDateFormat = combined[3] === undefined && Boolean(parseDatePeriod(combined[2]));
+      boundaries.push({ startOffset: line.start, contentStartOffset: line.end < text.length ? line.end + 1 : line.end, evidenceEligible: true, ...(isRoleDateFormat ? { roleTitle: combined[1].trim() } : { employer: combined[1].trim(), roleTitle: combined[2].trim() }), ...(dates ?? {}) });
       continue;
     }
     const roleWithDates = /^(.+?)\s*[|,]\s*(.+)$/.exec(value);
-    const dates = dateRange.exec(roleWithDates?.[2] ?? "");
+    const dates = parseDatePeriod(roleWithDates?.[2] ?? "");
     if (roleWithDates && dates) {
       let contentStart = line.end < text.length ? line.end + 1 : line.end;
       let startOff = line.start;
@@ -234,8 +309,8 @@ function employmentBoundaries(text: string): EmploymentBoundary[] {
         const next = nextNonBlankLine(lines, index);
         if (next) {
           const nextVal = next.line.text.trim();
-          if (!isBulletLine(nextVal) && !dateRange.test(nextVal) && !workHistoryHeading.test(nextVal) && !nonEmploymentSectionHeading.test(sectionHeadingCandidate(nextVal))) {
-            if (isLikelyEmployerOrProject(nextVal)) {
+          if (!isBulletLine(nextVal) && !parseDatePeriod(nextVal, true) && !isProfessionalSectionHeading(nextVal) && !isNonEmploymentSectionHeading(nextVal)) {
+            if (isLikelyEmploymentMetadataLine(nextVal)) {
               employer = nextVal;
               contentStart = next.line.end < text.length ? next.line.end + 1 : next.line.end;
               index = next.index;
@@ -243,22 +318,28 @@ function employmentBoundaries(text: string): EmploymentBoundary[] {
           }
         }
       }
-      boundaries.push({ startOffset: startOff, contentStartOffset: contentStart, evidenceEligible: true, ...(employer ? { employer } : {}), roleTitle: roleWithDates[1].trim(), startDate: dates[1], endDate: dates[2] });
+      boundaries.push({ startOffset: startOff, contentStartOffset: contentStart, evidenceEligible: true, ...(employer ? { employer } : {}), roleTitle: roleWithDates[1].trim(), ...dates });
       continue;
     }
-    const standaloneDates = dateRange.exec(value);
-    if (standaloneDates?.index === 0 && standaloneDates[0].length === value.length) {
+    const standaloneDates = parseDatePeriod(value, true);
+    if (standaloneDates) {
       const roleLine = previousNonBlankLine(lines, index);
       const roleTitle = roleLine?.text.trim() ?? "";
-      if (roleLine && roleTitle && !isBulletLine(roleLine.text) && !workHistoryHeading.test(roleTitle) && !nonEmploymentSectionHeading.test(sectionHeadingCandidate(roleTitle)) && !dateRange.test(roleTitle)) {
+      if (roleLine && roleTitle && !isBulletLine(roleLine.text) && !isProfessionalSectionHeading(roleTitle) && !isNonEmploymentSectionHeading(roleTitle) && !parseDatePeriod(roleTitle, true)) {
         const employerLine = previousNonBlankLine(lines, index, 2);
         const employer = employerLine?.text.trim() ?? "";
-        const explicitEmployer = employerLine && companySuffix.test(employer) && !workHistoryHeading.test(employer) ? employerLine : undefined;
-        boundaries.push({ startOffset: explicitEmployer?.start ?? roleLine.start, contentStartOffset: line.end < text.length ? line.end + 1 : line.end, evidenceEligible: true, ...(explicitEmployer ? { employer } : {}), roleTitle, startDate: standaloneDates[1], endDate: standaloneDates[2] });
+        const hasSecondMetadataLine = employerLine
+          && isLikelyEmploymentMetadataLine(employer)
+          && !isProfessionalSectionHeading(employer)
+          && !isNonEmploymentSectionHeading(employer);
+        const metadata = hasSecondMetadataLine
+          ? orderedEmploymentMetadata(employer, roleTitle, "company_title")
+          : employmentMetadataFromHeader(roleTitle);
+        boundaries.push({ startOffset: hasSecondMetadataLine ? employerLine.start : roleLine.start, contentStartOffset: line.end < text.length ? line.end + 1 : line.end, evidenceEligible: true, ...metadata, ...standaloneDates });
       }
     }
   }
-  if (workSectionStart !== undefined && !hasEligibleBoundaryFrom(workSectionStart)) boundaries.push({ startOffset: workSectionStart, contentStartOffset: workSectionStart, evidenceEligible: true });
+  closeUnboundedWorkSection();
   return boundaries.map((boundary, index) => ({ ...boundary, endOffset: boundaries[index + 1]?.startOffset ?? text.length })).filter((boundary) => boundary.endOffset > boundary.contentStartOffset);
 }
 
@@ -391,8 +472,12 @@ export function extractResumeEvidenceFromText(
       warnings: [],
     });
     const localCandidates = segmentCandidates(canonicalText.slice(boundary.contentStartOffset, boundary.endOffset)).map((candidate) => ({ ...candidate, startOffset: candidate.startOffset + boundary.contentStartOffset, endOffset: candidate.endOffset + boundary.contentStartOffset }));
-    for (const candidate of localCandidates) {
-      if (!qualifiesAsPerformedProfessionalEvidence(candidate)) continue;
+    for (let candidateIndex = 0; candidateIndex < localCandidates.length; candidateIndex += 1) {
+      const candidate = localCandidates[candidateIndex];
+      if (!qualifiesAsPerformedProfessionalEvidence(candidate)) {
+        warnings.push(issue("ambiguous_segmentation", "info", `employmentRecords[${employmentRecords.length - 1}].contextCandidates[${candidateIndex}]`, "A substantive source unit was retained in its employment source span and classified as non-evidence/context."));
+        continue;
+      }
       const index = evidenceRecords.length;
       const sequence = index + 1;
       const spanId = `span:${input.documentId}:${sequence}`;
