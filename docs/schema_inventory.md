@@ -21,7 +21,6 @@ This inventory lists important persisted tables and core exported data types cur
 | `job_matches` | Persisted fit result between a career and a job. | `id`, `career_id`, `job_id`, `match_score`, `gap_summary`, `matched_capabilities`, `status` | Matching Engine | core |
 | `job_snapshots` | Raw extension job page snapshots and normalized JD text. | `job_snapshot_id`, `source_platform`, `job_url`, `job_description_raw`, `job_description_normalized`, `content_hash`, `job_signals_json` | Copilot Layer | core |
 | `user_job_interactions` | Source-of-truth pipeline events from extension job views/applications. | `interaction_id`, `profile_id`, `job_snapshot_id`, `pipeline_status`, `match_score`, `verdict`, `selected_evidence_ids` | Copilot Layer | core |
-| `resume_copilot_outcome_events` | Post-launch Resume Copilot event + feedback telemetry linked to profile/job/resume generation context. | `event_id`, `profile_id`, `event_name`, `job_id`, `job_snapshot_id`, `job_match_id`, `resume_generation_instance_id`, `feedback_credible`, `feedback_relevant`, `feedback_use_to_apply`, `payload` | Copilot Layer | core |
 
 ### Supporting/compatibility tables
 
@@ -31,8 +30,7 @@ This inventory lists important persisted tables and core exported data types cur
 | `skills` | Canonical skill dictionary for profile skill links. | `id`, `name`, `category` | Career Memory Engine | derived |
 | `user_skills` | Profile/user to skill link table. | `id`, `user_id`, `skill_id`, `proficiency` | Career Memory Engine | derived |
 | `capability_evidence_links` | Legacy direct capability-to-evidence link table (parallel to signal links). | `capability_id`, `evidence_piece_id`, `link_strength` | Capability Engine | temporary / debug / experimental |
-| `user_job_actions` | Legacy write-only action log (`saved/applied/dismissed`) retained for compatibility/audit. | `id`, `user_id`, `profile_id`, `job_title`, `action`, `match_score`, `verdict` | Copilot Layer | temporary / debug / experimental |
-| `user_job_feed_memory` | Legacy feed de-dup memory table from old provider-driven job feed flow. | `id`, `user_id`, `canonical_job_id`, `is_new`, `first_seen_at`, `last_seen_at` | Copilot Layer | temporary / debug / experimental |
+| `user_job_actions` | Legacy write-only action log (`saved/applied/dismissed`) retained for compatibility/audit. | `id`, `user_id`, `profile_id`, `job_title`, `action` | Copilot Layer | temporary / debug / experimental |
 
 ### Likely unused/legacy artifacts still present in SQL files
 
@@ -41,6 +39,8 @@ This inventory lists important persisted tables and core exported data types cur
 | `career_data` | Early all-in-one parsed resume payload table from MVP prototype. | `id`, `resume_id`, `skills`, `experience`, `education` | Legacy prototype | temporary / debug / experimental |
 | `job_descriptions` | Early stored JD text table from MVP prototype. | `id`, `profile_id`, `raw_text`, `required_skills` | Legacy prototype | temporary / debug / experimental |
 | `match_results` | Early match output table tied to `career_data` + `job_descriptions`. | `id`, `career_data_id`, `job_description_id`, `overall_score` | Legacy prototype | temporary / debug / experimental |
+| `user_job_feed_memory` | Retired feed de-dup table preserved only in historical migration provenance; absent from the canonical chain. | `id`, `user_id`, `canonical_job_id`, `is_new`, `first_seen_at`, `last_seen_at` | Copilot Layer | retired / provenance-only |
+| `resume_copilot_outcome_events` | Proposed outcome-telemetry table not created by B0, R0, or atomic; it is not part of the canonical runtime schema. | `event_id`, `profile_id`, `event_name` | Copilot Layer | absent / non-canonical |
 | `tailored_resumes` | Planned canonical tailored resume persistence table. Not used by current runtime code paths. | `id`, `career_id`, `job_id`, `resume_document`, `evidence_piece_ids` | Copilot Layer | temporary / debug / experimental |
 
 ## B) Exported core data types used in product code
@@ -80,15 +80,18 @@ This inventory lists important persisted tables and core exported data types cur
 ### Unclear naming
 
 - `job_matches` means different shapes across SQL artifacts (legacy fields vs canonical `career_id/job_id` relational form).
-- `confidence`, `confidence_score`, and `confidence_level` are all present on capability/evidence surfaces.
+- `evidence_pieces.confidence`, `evidence_signals.confidence_score`, and `capabilities.confidence_level` are distinct canonical fields; no `evidence_pieces.confidence_level` column exists.
 - `source_type` and `evidence_source_type` coexist on evidence concepts.
 - `profileId` is often used as a user fallback in older code paths, while canonical graph ownership is `user_id -> career_id`.
 
 ### Probable schema drift risks
 
-- Multiple schema entrypoints are present: `supabase/migration.sql`, `supabase/migationcodex.sql`, and `supabase/migrations/*`.
-- Important runtime columns (for example `resumes.parsed_json`) are used in code but not clearly represented in the migration chain.
-- New migrations alter/reference tables (`careers`, `capabilities`, `evidence_pieces`) that are not created in the same ordered migration series.
+- The executable chain is now bounded to the B0 -> R0 -> atomic migrations under `supabase/migrations/*`.
+- The first 13 migrations are preserved unchanged under `supabase/migration-provenance/pre-canonical-baseline/` and are non-executable.
+- `supabase/migration.sql` and `supabase/migationcodex.sql` remain legacy references and must not be used for new runtime paths.
+- The canonical chain was locally verified both from empty construction and against the preserved public-data checkpoint.
+- Production migration-history registration and live application remain unperformed and require a separate authorization and equivalence gate.
+- The application-owned public function inventory is exactly one function, `public.set_updated_at()`, with eight dependent update triggers. The prior count of ten was a measurement error caused by counting lines of its multiline `pg_get_functiondef` result.
 - Legacy APIs still query old `job_matches` columns (`user_id`, `matched_skills`, `missing_skills`, `gap_analysis`) while newer flows use relational `career_id/job_id`.
 
 ### Unused or experimental artifacts

@@ -6,6 +6,7 @@ export type Career = {
     headline: string | null;
     summary: string | null;
     total_years_experience: number | null;
+    active_resume_id?: string | null;
     created_at: string;
     updated_at: string;
 };
@@ -20,6 +21,10 @@ export type Experience = {
     summary: string | null;
     source_type: "resume" | "linkedin" | "manual" | null;
     sort_order: number | null;
+    resume_id?: string | null;
+    source_revision_sha256?: string | null;
+    source_role_ref?: string | null;
+    materialization_version?: string | null;
     created_at: string;
     updated_at: string;
 };
@@ -52,6 +57,25 @@ export type EvidencePiece = {
     missing_fields?: string[] | null;
     memory_status?: "candidate" | "confirmed" | "promoted" | "deprecated" | null;
     evidence_authority_scope?: "single_job" | "role_family" | "global_user" | null;
+    resume_id?: string | null;
+    source_revision_sha256?: string | null;
+    source_role_ref?: string | null;
+    source_unit_id?: string | null;
+    source_unit_ref?: string | null;
+    source_unit_sha256?: string | null;
+    source_quote?: string | null;
+    source_span_start?: number | null;
+    source_span_end?: number | null;
+    atomic_index?: number | null;
+    atomic_statement?: string | null;
+    context?: string | null;
+    outcome?: string | null;
+    source_supported_metrics?: string[] | null;
+    extraction_confidence?: number | null;
+    provider?: string | null;
+    provider_model?: string | null;
+    provider_version?: string | null;
+    review_status?: "machine_validated" | "needs_review" | "confirmed" | "rejected" | null;
     sort_order: number | null;
     created_at: string;
     updated_at: string;
@@ -72,19 +96,30 @@ type EvidencePieceRow = {
     stakeholders: string[] | null;
     tools_methods: string[] | null;
     business_context: string | null;
-    org_scope: "team" | "department" | "cross_functional" | "enterprise" | null;
-    stakeholder_scope: "internal" | "cross_team" | "executive" | "external" | null;
-    leadership_scope: "individual_contribution" | "technical_lead" | "team_lead" | "program_lead" | "org_lead" | null;
-    delivery_level: "task" | "project" | "product" | "program" | "platform" | null;
-    impact_scale: "small" | "medium" | "large" | "enterprise" | null;
     impact_type: "revenue" | "cost" | "operational" | "strategic" | null;
-    confidence_level: "low" | "medium" | "high" | null;
     inferred_scale: Record<string, unknown> | null;
     inferred_scope: Record<string, unknown> | null;
     confidence: number | null;
     missing_fields: string[] | null;
-    memory_status: "candidate" | "confirmed" | "promoted" | "deprecated" | null;
-    evidence_authority_scope: "single_job" | "role_family" | "global_user" | null;
+    resume_id: string | null;
+    source_revision_sha256: string | null;
+    source_role_ref: string | null;
+    source_unit_id: string | null;
+    source_unit_ref: string | null;
+    source_unit_sha256: string | null;
+    source_quote: string | null;
+    source_span_start: number | null;
+    source_span_end: number | null;
+    atomic_index: number | null;
+    atomic_statement: string | null;
+    context: string | null;
+    outcome: string | null;
+    source_supported_metrics: unknown;
+    extraction_confidence: number | null;
+    provider: string | null;
+    provider_model: string | null;
+    provider_version: string | null;
+    review_status: "machine_validated" | "needs_review" | "confirmed" | "rejected" | null;
 };
 
 export type EvidenceSignal = {
@@ -212,6 +247,14 @@ export type CareerGraph = {
     evidenceByCapabilityViaSignals?: Record<string, EvidencePiece[]>;
 };
 
+export type CareerGraphSchemaMode = "canonical" | "legacy_compatibility";
+
+export const DEFAULT_CAREER_GRAPH_SCHEMA_MODE: CareerGraphSchemaMode = "canonical";
+
+export type LoadCareerGraphOptions = {
+    schemaMode?: CareerGraphSchemaMode;
+};
+
 function toStringArray(value: unknown): string[] {
     if (!Array.isArray(value)) return [];
     return value.filter((item): item is string => typeof item === "string");
@@ -231,25 +274,30 @@ function isMissingRelationError(error: unknown): boolean {
     return maybeError.code === "42P01" || maybeError.code === "PGRST205" || /relation .* does not exist/i.test(maybeError.message ?? "");
 }
 
-export async function loadCareerGraph(profileId: string): Promise<CareerGraph> {
+export async function loadCareerGraph(profileId: string, options: LoadCareerGraphOptions = {}): Promise<CareerGraph> {
     if (!profileId || profileId.trim().length === 0) {
         throw new Error("profileId is required");
     }
 
     const supabase = createServerSupabaseClient();
+    const schemaMode = options.schemaMode ?? DEFAULT_CAREER_GRAPH_SCHEMA_MODE;
     const evidenceSelectExpanded = [
         "id", "experience_id", "career_id", "company", "role", "date_range", "raw_text", "source_type",
         "summary", "action", "impact", "stakeholders", "tools_methods", "business_context",
-        "org_scope", "stakeholder_scope", "leadership_scope", "delivery_level", "impact_scale", "impact_type",
-        "confidence_level", "inferred_scale", "inferred_scope", "confidence", "missing_fields",
-        "memory_status", "evidence_authority_scope",
+        "impact_type", "inferred_scale", "inferred_scope", "confidence", "missing_fields",
+        "resume_id", "source_revision_sha256", "source_role_ref",
+        "source_unit_id", "source_unit_ref", "source_unit_sha256", "source_quote", "source_span_start", "source_span_end",
+        "atomic_index", "atomic_statement", "context", "outcome", "source_supported_metrics", "extraction_confidence",
+        "provider", "provider_model", "provider_version", "review_status",
     ].join(", ");
     const evidenceSelectExpandedNoBusinessContext = [
         "id", "experience_id", "career_id", "company", "role", "date_range", "raw_text", "source_type",
         "summary", "action", "impact", "stakeholders", "tools_methods",
-        "org_scope", "stakeholder_scope", "leadership_scope", "delivery_level", "impact_scale", "impact_type",
-        "confidence_level", "inferred_scale", "inferred_scope", "confidence", "missing_fields",
-        "memory_status", "evidence_authority_scope",
+        "impact_type", "inferred_scale", "inferred_scope", "confidence", "missing_fields",
+        "resume_id", "source_revision_sha256", "source_role_ref",
+        "source_unit_id", "source_unit_ref", "source_unit_sha256", "source_quote", "source_span_start", "source_span_end",
+        "atomic_index", "atomic_statement", "context", "outcome", "source_supported_metrics", "extraction_confidence",
+        "provider", "provider_model", "provider_version", "review_status",
     ].join(", ");
     const evidenceSelectLegacy = "id, experience_id, career_id, raw_text, source_type";
 
@@ -274,7 +322,7 @@ export async function loadCareerGraph(profileId: string): Promise<CareerGraph> {
     const userId = profile?.user_id ?? profileId;
     const { data: careers, error: careerError } = await supabase
         .from("careers")
-        .select("id, user_id, headline, summary, total_years_experience, created_at, updated_at")
+        .select("id, user_id, headline, summary, total_years_experience, active_resume_id, created_at, updated_at")
         .eq("user_id", userId)
         .order("created_at", { ascending: false })
         .limit(1);
@@ -304,22 +352,29 @@ export async function loadCareerGraph(profileId: string): Promise<CareerGraph> {
         };
     }
 
-    const [experiencesResult, capabilitiesExpandedResult, evidenceExpandedResult, evidenceSignalsResult, careerGoalSignalsResult] = await Promise.all([
-        supabase
+    const experienceQuery = supabase
             .from("experiences")
-            .select("id, career_id, company, title, date_range, location, summary, source_type, sort_order, created_at, updated_at")
-            .eq("career_id", career.id)
-            .order("sort_order", { ascending: true }),
+            .select("id, career_id, company, title, date_range, location, summary, source_type, sort_order, resume_id, source_revision_sha256, source_role_ref, materialization_version, created_at, updated_at")
+            .eq("career_id", career.id);
+    const activeExperienceQuery = career.active_resume_id
+        ? experienceQuery.eq("resume_id", career.active_resume_id)
+        : experienceQuery;
+    const evidenceQuery = supabase
+            .from("evidence_pieces")
+            .select(evidenceSelectExpanded)
+            .eq("career_id", career.id);
+    const activeEvidenceQuery = career.active_resume_id
+        ? evidenceQuery.eq("resume_id", career.active_resume_id)
+        : evidenceQuery;
+
+    const [experiencesResult, capabilitiesExpandedResult, evidenceExpandedResult, evidenceSignalsResult, careerGoalSignalsResult] = await Promise.all([
+        activeExperienceQuery.order("sort_order", { ascending: true }),
         supabase
             .from("capabilities")
             .select(capabilitySelectExpanded)
             .eq("career_id", career.id)
             .order("created_at", { ascending: true }),
-        supabase
-            .from("evidence_pieces")
-            .select(evidenceSelectExpanded)
-            .eq("career_id", career.id)
-            .order("id", { ascending: true }),
+        activeEvidenceQuery.order("id", { ascending: true }),
         supabase
             .from("evidence_signals")
             .select("id, career_id, evidence_piece_id, action, domain, initiative_type, scope_level, ownership_level, stakeholder_scope, tool_signals, capability_hints, team_signal, impact_signal, confidence_score, created_at, updated_at")
@@ -338,6 +393,9 @@ export async function loadCareerGraph(profileId: string): Promise<CareerGraph> {
 
     let capabilitiesData: Capability[] = [];
     if (capabilitiesExpandedResult.error) {
+        if (schemaMode === "canonical") {
+            throw new Error(`Canonical capabilities query failed: ${capabilitiesExpandedResult.error.message}`);
+        }
         const capabilitiesLegacyResult = await supabase
             .from("capabilities")
             .select(capabilitySelectLegacy)
@@ -353,11 +411,16 @@ export async function loadCareerGraph(profileId: string): Promise<CareerGraph> {
 
     let evidenceRows: EvidencePieceRow[] = [];
     if (evidenceExpandedResult.error) {
-        const expandedNoBusinessContextResult = await supabase
+        if (schemaMode === "canonical") {
+            throw new Error(`Canonical evidence_pieces query failed: ${evidenceExpandedResult.error.message}`);
+        }
+        const expandedNoBusinessContextQuery = supabase
             .from("evidence_pieces")
             .select(evidenceSelectExpandedNoBusinessContext)
-            .eq("career_id", career.id)
-            .order("id", { ascending: true });
+            .eq("career_id", career.id);
+        const expandedNoBusinessContextResult = await (career.active_resume_id
+            ? expandedNoBusinessContextQuery.eq("resume_id", career.active_resume_id)
+            : expandedNoBusinessContextQuery).order("id", { ascending: true });
 
         if (!expandedNoBusinessContextResult.error) {
             evidenceRows = ((expandedNoBusinessContextResult.data ?? []) as unknown as Array<Omit<EvidencePieceRow, "business_context">>)
@@ -366,11 +429,13 @@ export async function loadCareerGraph(profileId: string): Promise<CareerGraph> {
                     business_context: null,
                 }));
         } else {
-            const legacyEvidenceResult = await supabase
+            const legacyEvidenceQuery = supabase
                 .from("evidence_pieces")
                 .select(evidenceSelectLegacy)
-                .eq("career_id", career.id)
-                .order("id", { ascending: true });
+                .eq("career_id", career.id);
+            const legacyEvidenceResult = await (career.active_resume_id
+                ? legacyEvidenceQuery.eq("resume_id", career.active_resume_id)
+                : legacyEvidenceQuery).order("id", { ascending: true });
             if (legacyEvidenceResult.error) {
                 throw new Error(`Failed to load evidence_pieces for career graph: ${legacyEvidenceResult.error.message}`);
             }
@@ -391,19 +456,30 @@ export async function loadCareerGraph(profileId: string): Promise<CareerGraph> {
                 stakeholders: null,
                 tools_methods: null,
                 business_context: null,
-                org_scope: null,
-                stakeholder_scope: null,
-                leadership_scope: null,
-                delivery_level: null,
-                impact_scale: null,
                 impact_type: null,
-                confidence_level: null,
                 inferred_scale: null,
                 inferred_scope: null,
                 confidence: null,
                 missing_fields: null,
-                memory_status: null,
-                evidence_authority_scope: null,
+                resume_id: null,
+                source_revision_sha256: null,
+                source_role_ref: null,
+                source_unit_id: null,
+                source_unit_ref: null,
+                source_unit_sha256: null,
+                source_quote: null,
+                source_span_start: null,
+                source_span_end: null,
+                atomic_index: null,
+                atomic_statement: null,
+                context: null,
+                outcome: null,
+                source_supported_metrics: [],
+                extraction_confidence: null,
+                provider: null,
+                provider_model: null,
+                provider_version: null,
+                review_status: null,
             }));
         }
     } else {
@@ -415,6 +491,10 @@ export async function loadCareerGraph(profileId: string): Promise<CareerGraph> {
         evidenceSignalRows = (evidenceSignalsResult.data ?? []) as EvidenceSignalRow[];
     } else if (!isMissingRelationError(evidenceSignalsResult.error)) {
         throw new Error(`Failed to load evidence_signals for career graph: ${evidenceSignalsResult.error.message}`);
+    }
+    if (career.active_resume_id) {
+        const activeEvidenceIds = new Set(evidenceRows.map((row) => row.id));
+        evidenceSignalRows = evidenceSignalRows.filter((row) => activeEvidenceIds.has(row.evidence_piece_id));
     }
 
     let careerGoalSignalRows: CareerGoalSignalRow[] = [];
@@ -459,15 +539,6 @@ export async function loadCareerGraph(profileId: string): Promise<CareerGraph> {
     const resolvedExperiences = (experiencesResult.data ?? []) as Experience[];
     const experiencesById = new Map<string, Experience>(resolvedExperiences.map((experience) => [experience.id, experience]));
 
-    const resolveMemoryStatus = (value: EvidencePieceRow["memory_status"]): EvidencePiece["memory_status"] => {
-        if (value === "candidate" || value === "confirmed" || value === "promoted" || value === "deprecated") return value;
-        return null;
-    };
-    const resolveEvidenceAuthorityScope = (value: EvidencePieceRow["evidence_authority_scope"]): EvidencePiece["evidence_authority_scope"] => {
-        if (value === "single_job" || value === "role_family" || value === "global_user") return value;
-        return null;
-    };
-
     const resolvedEvidencePieces: EvidencePiece[] = evidenceRows.map((row, index) => {
         const experience = experiencesById.get(row.experience_id);
         return {
@@ -485,19 +556,30 @@ export async function loadCareerGraph(profileId: string): Promise<CareerGraph> {
             stakeholders: row.stakeholders ?? null,
             tools_methods: row.tools_methods ?? null,
             business_context: row.business_context ?? null,
-            org_scope: row.org_scope ?? null,
-            stakeholder_scope: row.stakeholder_scope ?? null,
-            leadership_scope: row.leadership_scope ?? null,
-            delivery_level: row.delivery_level ?? null,
-            impact_scale: row.impact_scale ?? null,
             impact_type: row.impact_type ?? null,
-            confidence_level: row.confidence_level ?? null,
             inferred_scale: row.inferred_scale ?? null,
             inferred_scope: row.inferred_scope ?? null,
             confidence: row.confidence ?? null,
             missing_fields: row.missing_fields ?? null,
-            memory_status: resolveMemoryStatus(row.memory_status),
-            evidence_authority_scope: resolveEvidenceAuthorityScope(row.evidence_authority_scope),
+            resume_id: row.resume_id,
+            source_revision_sha256: row.source_revision_sha256,
+            source_role_ref: row.source_role_ref,
+            source_unit_id: row.source_unit_id,
+            source_unit_ref: row.source_unit_ref,
+            source_unit_sha256: row.source_unit_sha256,
+            source_quote: row.source_quote,
+            source_span_start: row.source_span_start,
+            source_span_end: row.source_span_end,
+            atomic_index: row.atomic_index,
+            atomic_statement: row.atomic_statement,
+            context: row.context,
+            outcome: row.outcome,
+            source_supported_metrics: toStringArray(row.source_supported_metrics),
+            extraction_confidence: row.extraction_confidence,
+            provider: row.provider,
+            provider_model: row.provider_model,
+            provider_version: row.provider_version,
+            review_status: row.review_status,
             sort_order: index,
             created_at: career.created_at,
             updated_at: career.updated_at,
