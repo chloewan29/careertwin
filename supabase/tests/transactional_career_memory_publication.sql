@@ -38,6 +38,7 @@ BEGIN
         'expected_previous_active_resume_id', p_expected,
         'profile', jsonb_build_object(
             'id', v_profile, 'user_id', v_user,
+            'display_name', 'Transactional Tester ' || p_sequence,
             'current_title', 'Transactional Test ' || p_sequence,
             'years_experience', 10, 'seniority_level', 'senior', 'industry', 'testing',
             'summary', 'Transactional publication test', 'companies', jsonb_build_array('Test Co'),
@@ -47,7 +48,13 @@ BEGIN
         'resume', jsonb_build_object(
             'id', v_resume, 'user_id', v_user, 'profile_id', v_profile,
             'file_name', 'transactional-test.pdf', 'file_url', NULL, 'raw_text', 'Delivered test outcome.',
-            'parsed_json', jsonb_build_object('sequence', p_sequence), 'content_sha256', v_revision
+            'parsed_json', jsonb_build_object(
+                'sequence', p_sequence,
+                'alpha', jsonb_build_object('enabled', true),
+                'omega', 'root-state',
+                'ordered_steps', jsonb_build_array('first', 'second')
+            ),
+            'content_sha256', v_revision
         ),
         'career', jsonb_build_object(
             'id', v_career, 'user_id', v_user,
@@ -123,13 +130,26 @@ INSERT INTO public.profiles (id, user_id) VALUES (
 );
 
 DO $$
-DECLARE v_result JSONB;
+DECLARE v_result JSONB; v_before JSONB; v_after JSONB;
 BEGIN
     SET LOCAL ROLE service_role;
     v_result := public.publish_atomic_career_memory(public.careertwin_test_publication_payload(1, NULL));
     IF v_result->>'outcome' <> 'PUBLISHED' THEN RAISE EXCEPTION 'initial publication did not publish: %', v_result; END IF;
+    SELECT jsonb_build_object(
+        'profile', (SELECT to_jsonb(p) FROM public.profiles p WHERE p.id = '40000000-0000-4000-8000-000000000002'),
+        'resume', (SELECT to_jsonb(r) FROM public.resumes r WHERE r.id = '40000000-0000-4000-8000-000000000021'),
+        'career', (SELECT to_jsonb(c) FROM public.careers c WHERE c.id = '40000000-0000-4000-8000-000000000003'),
+        'capabilities', (SELECT jsonb_agg(to_jsonb(c) ORDER BY c.id) FROM public.capabilities c WHERE c.career_id = '40000000-0000-4000-8000-000000000003')
+    ) INTO v_before;
     v_result := public.publish_atomic_career_memory(public.careertwin_test_publication_payload(1, NULL));
     IF v_result->>'outcome' <> 'COMPLETE_REPLAY' THEN RAISE EXCEPTION 'exact retry was not COMPLETE_REPLAY: %', v_result; END IF;
+    SELECT jsonb_build_object(
+        'profile', (SELECT to_jsonb(p) FROM public.profiles p WHERE p.id = '40000000-0000-4000-8000-000000000002'),
+        'resume', (SELECT to_jsonb(r) FROM public.resumes r WHERE r.id = '40000000-0000-4000-8000-000000000021'),
+        'career', (SELECT to_jsonb(c) FROM public.careers c WHERE c.id = '40000000-0000-4000-8000-000000000003'),
+        'capabilities', (SELECT jsonb_agg(to_jsonb(c) ORDER BY c.id) FROM public.capabilities c WHERE c.career_id = '40000000-0000-4000-8000-000000000003')
+    ) INTO v_after;
+    IF v_after IS DISTINCT FROM v_before THEN RAISE EXCEPTION 'exact replay performed a database write'; END IF;
 END;
 $$;
 
@@ -144,6 +164,224 @@ BEGIN
        OR NOT has_function_privilege('service_role', 'public.publish_atomic_career_memory(jsonb)', 'EXECUTE') THEN
         RAISE EXCEPTION 'publication RPC privilege boundary is incorrect';
     END IF;
+END;
+$$;
+
+CREATE OR REPLACE FUNCTION public.careertwin_test_publication_state(
+    p_profile UUID, p_resume UUID, p_career UUID
+)
+RETURNS JSONB
+LANGUAGE sql
+AS $$
+    SELECT jsonb_build_object(
+        'profile', (SELECT to_jsonb(p) FROM public.profiles p WHERE p.id = p_profile),
+        'resume', (SELECT to_jsonb(r) FROM public.resumes r WHERE r.id = p_resume),
+        'career', (SELECT to_jsonb(c) FROM public.careers c WHERE c.id = p_career),
+        'experiences', (SELECT COALESCE(jsonb_agg(to_jsonb(x) ORDER BY x.id), '[]'::JSONB) FROM public.experiences x WHERE x.career_id = p_career),
+        'source_units', (SELECT COALESCE(jsonb_agg(to_jsonb(x) ORDER BY x.id), '[]'::JSONB) FROM public.career_source_units x WHERE x.career_id = p_career),
+        'evidence', (SELECT COALESCE(jsonb_agg(to_jsonb(x) ORDER BY x.id), '[]'::JSONB) FROM public.evidence_pieces x WHERE x.career_id = p_career),
+        'signals', (SELECT COALESCE(jsonb_agg(to_jsonb(x) ORDER BY x.id), '[]'::JSONB) FROM public.evidence_signals x WHERE x.career_id = p_career),
+        'capabilities', (SELECT COALESCE(jsonb_agg(to_jsonb(x) ORDER BY x.id), '[]'::JSONB) FROM public.capabilities x WHERE x.career_id = p_career),
+        'evidence_links', (SELECT COALESCE(jsonb_agg(to_jsonb(x) ORDER BY x.capability_id, x.evidence_piece_id), '[]'::JSONB)
+            FROM public.capability_evidence_links x JOIN public.capabilities c ON c.id = x.capability_id WHERE c.career_id = p_career),
+        'signal_links', (SELECT COALESCE(jsonb_agg(to_jsonb(x) ORDER BY x.id), '[]'::JSONB)
+            FROM public.capability_signal_links x JOIN public.capabilities c ON c.id = x.capability_id WHERE c.career_id = p_career)
+    );
+$$;
+
+CREATE OR REPLACE FUNCTION public.careertwin_test_assert_replay_rejected(
+    p_payload JSONB,
+    p_mutation_sql TEXT,
+    p_restore_sql TEXT,
+    p_expected_error TEXT,
+    p_private_value TEXT DEFAULT NULL
+)
+RETURNS VOID
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    v_profile UUID := (p_payload->'profile'->>'id')::UUID;
+    v_resume UUID := (p_payload->'resume'->>'id')::UUID;
+    v_career UUID := (p_payload->'career'->>'id')::UUID;
+    v_before JSONB;
+    v_after JSONB;
+    v_message TEXT;
+    v_failed BOOLEAN := false;
+    v_result JSONB;
+BEGIN
+    EXECUTE p_mutation_sql;
+    v_before := public.careertwin_test_publication_state(v_profile, v_resume, v_career);
+    BEGIN
+        PERFORM public.publish_atomic_career_memory(p_payload);
+    EXCEPTION WHEN OTHERS THEN
+        v_failed := true;
+        v_message := SQLERRM;
+    END;
+    IF NOT v_failed OR position(p_expected_error IN COALESCE(v_message, '')) = 0 THEN
+        RAISE EXCEPTION 'root tamper did not fail as expected: expected %, observed %', p_expected_error, v_message;
+    END IF;
+    IF p_private_value IS NOT NULL AND position(p_private_value IN v_message) > 0 THEN
+        RAISE EXCEPTION 'root mismatch diagnostic leaked private mutated content';
+    END IF;
+    v_after := public.careertwin_test_publication_state(v_profile, v_resume, v_career);
+    IF v_after IS DISTINCT FROM v_before THEN
+        RAISE EXCEPTION 'rejected replay changed persisted root or derived state';
+    END IF;
+    EXECUTE p_restore_sql;
+    v_result := public.publish_atomic_career_memory(p_payload);
+    IF v_result->>'outcome' <> 'COMPLETE_REPLAY' THEN
+        RAISE EXCEPTION 'restored exact state did not replay completely';
+    END IF;
+END;
+$$;
+
+INSERT INTO public.users (id) VALUES ('40000000-0000-4000-8000-000000000009');
+
+DO $$
+DECLARE
+    payload JSONB := public.careertwin_test_publication_payload(1, NULL);
+    result JSONB;
+    resume_id UUID := (public.careertwin_test_publication_payload(1, NULL)->'resume'->>'id')::UUID;
+    capability_id UUID := (public.careertwin_test_publication_payload(1, NULL)->'capabilities'->0->>'id')::UUID;
+    fingerprint TEXT;
+BEGIN
+    -- Profile: scalar, nullable, normalized/defaulted JSON, conditional display name, and ownership.
+    PERFORM public.careertwin_test_assert_replay_rejected(payload,
+        $sql$UPDATE public.profiles SET current_title = 'private-profile-title' WHERE id = '40000000-0000-4000-8000-000000000002'$sql$,
+        $sql$UPDATE public.profiles SET current_title = 'Transactional Test 1' WHERE id = '40000000-0000-4000-8000-000000000002'$sql$,
+        'profile root mismatch', 'private-profile-title');
+    PERFORM public.careertwin_test_assert_replay_rejected(payload,
+        $sql$UPDATE public.profiles SET summary = NULL WHERE id = '40000000-0000-4000-8000-000000000002'$sql$,
+        $sql$UPDATE public.profiles SET summary = 'Transactional publication test' WHERE id = '40000000-0000-4000-8000-000000000002'$sql$,
+        'profile root mismatch');
+    PERFORM public.careertwin_test_assert_replay_rejected(payload,
+        $sql$UPDATE public.profiles SET companies = '[]'::JSONB WHERE id = '40000000-0000-4000-8000-000000000002'$sql$,
+        $sql$UPDATE public.profiles SET companies = '["Test Co"]'::JSONB WHERE id = '40000000-0000-4000-8000-000000000002'$sql$,
+        'profile root mismatch');
+    PERFORM public.careertwin_test_assert_replay_rejected(payload,
+        $sql$UPDATE public.profiles SET display_name = 'private-display-name' WHERE id = '40000000-0000-4000-8000-000000000002'$sql$,
+        $sql$UPDATE public.profiles SET display_name = 'Transactional Tester 1' WHERE id = '40000000-0000-4000-8000-000000000002'$sql$,
+        'profile root mismatch', 'private-display-name');
+    PERFORM public.careertwin_test_assert_replay_rejected(payload,
+        $sql$UPDATE public.profiles SET user_id = '40000000-0000-4000-8000-000000000009' WHERE id = '40000000-0000-4000-8000-000000000002'$sql$,
+        $sql$UPDATE public.profiles SET user_id = '40000000-0000-4000-8000-000000000001' WHERE id = '40000000-0000-4000-8000-000000000002'$sql$,
+        'profile/user ownership mismatch');
+
+    -- Resume: source content, candidate JSON, reserved metadata, identity, and completion state.
+    PERFORM public.careertwin_test_assert_replay_rejected(payload,
+        format('UPDATE public.resumes SET raw_text = %L WHERE id = %L', 'private-resume-text', resume_id),
+        format('UPDATE public.resumes SET raw_text = %L WHERE id = %L', 'Delivered test outcome.', resume_id),
+        'resume root mismatch', 'private-resume-text');
+    PERFORM public.careertwin_test_assert_replay_rejected(payload,
+        format('UPDATE public.resumes SET file_name = %L WHERE id = %L', 'private-name.pdf', resume_id),
+        format('UPDATE public.resumes SET file_name = %L WHERE id = %L', 'transactional-test.pdf', resume_id),
+        'resume root mismatch', 'private-name.pdf');
+    PERFORM public.careertwin_test_assert_replay_rejected(payload,
+        format('UPDATE public.resumes SET file_url = %L WHERE id = %L', 'https://private.invalid/resume', resume_id),
+        format('UPDATE public.resumes SET file_url = NULL WHERE id = %L', resume_id),
+        'resume root mismatch', 'https://private.invalid/resume');
+    PERFORM public.careertwin_test_assert_replay_rejected(payload,
+        format('UPDATE public.resumes SET parsed_json = jsonb_set(parsed_json, ''{sequence}'', ''999''::JSONB) WHERE id = %L', resume_id),
+        format('UPDATE public.resumes SET parsed_json = jsonb_set(parsed_json, ''{sequence}'', ''1''::JSONB) WHERE id = %L', resume_id),
+        'resume root mismatch');
+    PERFORM public.careertwin_test_assert_replay_rejected(payload,
+        format('UPDATE public.resumes SET parsed_json = parsed_json - ''alpha'' WHERE id = %L', resume_id),
+        format('UPDATE public.resumes SET parsed_json = jsonb_set(parsed_json, ''{alpha}'', ''{"enabled":true}''::JSONB) WHERE id = %L', resume_id),
+        'resume root mismatch');
+    PERFORM public.careertwin_test_assert_replay_rejected(payload,
+        format('UPDATE public.resumes SET parsed_json = jsonb_set(parsed_json, ''{private_extra}'', ''"private-extra"''::JSONB) WHERE id = %L', resume_id),
+        format('UPDATE public.resumes SET parsed_json = parsed_json - ''private_extra'' WHERE id = %L', resume_id),
+        'resume root mismatch', 'private-extra');
+    PERFORM public.careertwin_test_assert_replay_rejected(payload,
+        format('UPDATE public.resumes SET parsed_json = jsonb_set(parsed_json, ''{ordered_steps}'', ''["second","first"]''::JSONB) WHERE id = %L', resume_id),
+        format('UPDATE public.resumes SET parsed_json = jsonb_set(parsed_json, ''{ordered_steps}'', ''["first","second"]''::JSONB) WHERE id = %L', resume_id),
+        'resume root mismatch');
+    SELECT parsed_json #>> '{_career_memory_publication,fingerprint}' INTO fingerprint
+    FROM public.resumes WHERE id = resume_id;
+    PERFORM public.careertwin_test_assert_replay_rejected(payload,
+        format('UPDATE public.resumes SET parsed_json = (parsed_json - ''_career_memory_publication'') || jsonb_build_object(''_career_memory_publication'', jsonb_build_object(''fingerprint'', %L)) WHERE id = %L', fingerprint, resume_id),
+        format('UPDATE public.resumes SET parsed_json = jsonb_set(parsed_json, ''{_career_memory_publication}'', %L::JSONB) WHERE id = %L',
+            (SELECT parsed_json->'_career_memory_publication' FROM public.resumes WHERE id = resume_id)::TEXT, resume_id),
+        'reserved publication metadata mismatch');
+    PERFORM public.careertwin_test_assert_replay_rejected(payload,
+        format('UPDATE public.resumes SET parsed_json = jsonb_set(parsed_json, ''{_career_memory_publication,fingerprint}'', to_jsonb(repeat(''f'', 64))) WHERE id = %L', resume_id),
+        format('UPDATE public.resumes SET parsed_json = jsonb_set(parsed_json, ''{_career_memory_publication,fingerprint}'', to_jsonb(%L::TEXT)) WHERE id = %L', fingerprint, resume_id),
+        'active candidate fingerprint differs');
+    PERFORM public.careertwin_test_assert_replay_rejected(payload,
+        format('UPDATE public.resumes SET materialization_status = ''pending'' WHERE id = %L', resume_id),
+        format('UPDATE public.resumes SET materialization_status = ''completed'' WHERE id = %L', resume_id),
+        'completion or activation state differs');
+    PERFORM public.careertwin_test_assert_replay_rejected(payload,
+        format('UPDATE public.resumes SET materialization_version = ''private-version'' WHERE id = %L', resume_id),
+        format('UPDATE public.resumes SET materialization_version = ''career-memory-atomic-materialization/1.0.0'' WHERE id = %L', resume_id),
+        'resume root mismatch', 'private-version');
+    PERFORM public.careertwin_test_assert_replay_rejected(payload,
+        format('UPDATE public.resumes SET content_sha256 = repeat(''f'', 64) WHERE id = %L', resume_id),
+        format('UPDATE public.resumes SET content_sha256 = %L WHERE id = %L', payload->>'revision', resume_id),
+        'resume root mismatch');
+    PERFORM public.careertwin_test_assert_replay_rejected(payload,
+        format('UPDATE public.resumes SET user_id = %L WHERE id = %L', '40000000-0000-4000-8000-000000000009', resume_id),
+        format('UPDATE public.resumes SET user_id = %L WHERE id = %L', '40000000-0000-4000-8000-000000000001', resume_id),
+        'resume root mismatch');
+
+    -- Career: ownership, aggregate, activation, and descriptive root fields.
+    PERFORM public.careertwin_test_assert_replay_rejected(payload,
+        $sql$UPDATE public.careers SET user_id = '40000000-0000-4000-8000-000000000009' WHERE id = '40000000-0000-4000-8000-000000000003'$sql$,
+        $sql$UPDATE public.careers SET user_id = '40000000-0000-4000-8000-000000000001' WHERE id = '40000000-0000-4000-8000-000000000003'$sql$,
+        'CTPUB_CAREER_CONFLICT');
+    PERFORM public.careertwin_test_assert_replay_rejected(payload,
+        $sql$UPDATE public.careers SET total_years_experience = 99 WHERE id = '40000000-0000-4000-8000-000000000003'$sql$,
+        $sql$UPDATE public.careers SET total_years_experience = 10 WHERE id = '40000000-0000-4000-8000-000000000003'$sql$,
+        'career root mismatch');
+    PERFORM public.careertwin_test_assert_replay_rejected(payload,
+        $sql$UPDATE public.careers SET headline = 'private-career-headline' WHERE id = '40000000-0000-4000-8000-000000000003'$sql$,
+        $sql$UPDATE public.careers SET headline = 'Transactional Test 1' WHERE id = '40000000-0000-4000-8000-000000000003'$sql$,
+        'career root mismatch', 'private-career-headline');
+    PERFORM public.careertwin_test_assert_replay_rejected(payload,
+        $sql$UPDATE public.careers SET active_resume_id = NULL WHERE id = '40000000-0000-4000-8000-000000000003'$sql$,
+        format('UPDATE public.careers SET active_resume_id = %L WHERE id = %L', resume_id, '40000000-0000-4000-8000-000000000003'),
+        'active pointer differs');
+
+    -- Root/derived combinations.
+    PERFORM public.careertwin_test_assert_replay_rejected(payload,
+        format('UPDATE public.capabilities SET name = %L WHERE id = %L', 'private-derived-name', capability_id),
+        format('UPDATE public.capabilities SET name = %L WHERE id = %L', 'Test Capability 1', capability_id),
+        'active candidate value or relationship differs', 'private-derived-name');
+    PERFORM public.careertwin_test_assert_replay_rejected(payload,
+        format('WITH root_change AS (UPDATE public.resumes SET raw_text = %L WHERE id = %L RETURNING id) UPDATE public.capabilities SET name = %L WHERE id = %L',
+            'private-combined-root', resume_id, 'private-combined-derived', capability_id),
+        format('WITH root_restore AS (UPDATE public.resumes SET raw_text = %L WHERE id = %L RETURNING id) UPDATE public.capabilities SET name = %L WHERE id = %L',
+            'Delivered test outcome.', resume_id, 'Test Capability 1', capability_id),
+        'resume root mismatch', 'private-combined-root');
+
+    -- Object key order is non-semantic for jsonb.
+    payload := jsonb_set(payload, '{resume,parsed_json}',
+        '{"omega":"root-state","ordered_steps":["first","second"],"alpha":{"enabled":true},"sequence":1}'::JSONB);
+    result := public.publish_atomic_career_memory(payload);
+    IF result->>'outcome' <> 'COMPLETE_REPLAY' THEN RAISE EXCEPTION 'object-key reorder did not replay'; END IF;
+
+    -- Server-managed timestamps and unassigned legacy fields remain outside replay ownership.
+    UPDATE public.profiles SET updated_at = updated_at + interval '1 second', education = '{"independent":true}'::JSONB
+    WHERE id = '40000000-0000-4000-8000-000000000002';
+    UPDATE public.resumes SET updated_at = updated_at + interval '1 second', materialized_at = materialized_at + interval '1 second'
+    WHERE id = resume_id;
+    UPDATE public.careers SET updated_at = updated_at + interval '1 second'
+    WHERE id = '40000000-0000-4000-8000-000000000003';
+    result := public.publish_atomic_career_memory(payload);
+    IF result->>'outcome' <> 'COMPLETE_REPLAY'
+       OR (SELECT education FROM public.profiles WHERE id = '40000000-0000-4000-8000-000000000002')
+            IS DISTINCT FROM '{"independent":true}'::JSONB THEN
+        RAISE EXCEPTION 'server-managed or independently mutable root field caused drift or was overwritten';
+    END IF;
+
+    -- Caller content cannot hide under the reserved server namespace.
+    BEGIN
+        PERFORM public.publish_atomic_career_memory(jsonb_set(payload, '{resume,parsed_json,_career_memory_publication}', '{"private":"hidden"}'::JSONB));
+        RAISE EXCEPTION 'caller-supplied reserved metadata was accepted';
+    EXCEPTION WHEN OTHERS THEN
+        IF position('reserved publication metadata must not be caller supplied' IN SQLERRM) = 0 THEN RAISE; END IF;
+        IF position('hidden' IN SQLERRM) > 0 THEN RAISE EXCEPTION 'reserved metadata rejection leaked private content'; END IF;
+    END;
 END;
 $$;
 
@@ -385,10 +623,13 @@ DELETE FROM public.careers WHERE id = '40000000-0000-4000-8000-000000000003';
 DELETE FROM public.resumes WHERE profile_id = '40000000-0000-4000-8000-000000000002';
 DELETE FROM public.profiles WHERE id = '40000000-0000-4000-8000-000000000002';
 DELETE FROM public.users WHERE id = '40000000-0000-4000-8000-000000000001';
+DELETE FROM public.users WHERE id = '40000000-0000-4000-8000-000000000009';
 DELETE FROM public.careers WHERE id = '50000000-0000-4000-8000-000000000003';
 DELETE FROM public.resumes WHERE profile_id = '50000000-0000-4000-8000-000000000002';
 DELETE FROM public.profiles WHERE id = '50000000-0000-4000-8000-000000000002';
 DELETE FROM public.users WHERE id = '50000000-0000-4000-8000-000000000001';
+DROP FUNCTION public.careertwin_test_assert_replay_rejected(JSONB, TEXT, TEXT, TEXT, TEXT);
+DROP FUNCTION public.careertwin_test_publication_state(UUID, UUID, UUID);
 DROP FUNCTION public.careertwin_test_publication_payload(INTEGER, UUID, TEXT);
 DROP FUNCTION public.careertwin_test_deterministic_uuid(TEXT[]);
 DROP EXTENSION dblink;

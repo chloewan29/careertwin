@@ -394,7 +394,7 @@ BEGIN
     )
     SELECT count(*), md5(string_agg(semantic_value, E'\n' ORDER BY semantic_value))
     INTO actual_count, actual_fingerprint FROM rows;
-    IF actual_count <> 2 OR actual_fingerprint <> '80ef57bf62cafe0a3e8d2d23623e6377' THEN
+    IF actual_count <> 2 OR actual_fingerprint <> '14c77f56c954c9216c86409799b33b04' THEN
         RAISE EXCEPTION 'application-owned public function semantics drifted: count %, fingerprint %', actual_count, actual_fingerprint;
     END IF;
 

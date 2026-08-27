@@ -216,3 +216,51 @@ test("route contains one transactional publication boundary and no direct derive
     assert.match(route, /idempotentReplay: publicationResult\.outcome === "COMPLETE_REPLAY"/);
     assert.match(route, /success: true,[\s\S]*atomicEvidence: atomicEvidenceSummary,[\s\S]*resume: \{/);
 });
+
+test("every root column written by the publication RPC is covered by the replay ownership manifest", async () => {
+    const migration = await readFile(new URL(
+        "../../supabase/migrations/20260827100000_add_transactional_career_memory_publication.sql",
+        import.meta.url,
+    ), "utf8");
+
+    const insertColumns = (table: string): string[] => {
+        const match = migration.match(new RegExp(`INSERT INTO public\\.${table} \\(([\\s\\S]*?)\\)\\s*(?:VALUES|SELECT)`));
+        assert.ok(match, `missing ${table} insert`);
+        return match[1].split(",").map((value) => value.trim()).filter(Boolean);
+    };
+    const updateColumns = (table: string): string[] => {
+        const blocks = [...migration.matchAll(new RegExp(`UPDATE public\\.${table} SET([\\s\\S]*?)(?:WHERE|;\\n)`, "g"))];
+        return blocks.flatMap((match) => [...match[1].matchAll(/(?:^|,)\s*([a-z_][a-z0-9_]*)\s*=/gm)]
+            .map((column) => column[1]));
+    };
+    const uniqueSorted = (values: string[]) => [...new Set(values)].sort();
+
+    assert.deepEqual(uniqueSorted([...insertColumns("careers"), ...updateColumns("careers")]), [
+        "active_resume_id", "headline", "id", "summary", "total_years_experience", "user_id",
+    ]);
+    assert.deepEqual(uniqueSorted(updateColumns("profiles")), [
+        "capabilities", "capability_evidence", "companies", "current_title", "display_name",
+        "industry", "seniority_level", "summary", "years_experience",
+    ]);
+    assert.deepEqual(uniqueSorted([...insertColumns("resumes"), ...updateColumns("resumes")]), [
+        "content_sha256", "file_name", "file_url", "id", "materialization_status",
+        "materialization_version", "materialized_at", "parsed_json", "profile_id", "raw_text", "user_id",
+    ]);
+
+    for (const token of [
+        "v_expected_profile_root", "v_actual_profile_root", "profile root mismatch",
+        "v_expected_resume_root", "v_actual_resume_root", "resume root mismatch",
+        "v_expected_career_root", "v_actual_career_root", "career root mismatch",
+        "v_expected_publication_metadata", "v_actual_publication_metadata",
+        "reserved publication metadata mismatch", "materialization_status = 'completed'",
+        "materialized_at IS NOT NULL", "active_resume_id = v_resume_id",
+    ]) {
+        assert.equal(migration.includes(token), true, `missing replay ownership coverage: ${token}`);
+    }
+    for (const reservedKey of ["version", "fingerprint", "counts", "expected_previous_active_resume_id"]) {
+        assert.match(migration, new RegExp(`'${reservedKey}'`));
+    }
+    assert.match(migration, /created_at\/updated_at and the exact materialized_at timestamp are server-managed/);
+    assert.match(migration, /Unassigned legacy columns are independently mutable/);
+    assert.match(migration, /display_name is conditionally[\s\S]*publication-owned/);
+});

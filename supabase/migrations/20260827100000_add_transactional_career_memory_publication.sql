@@ -23,6 +23,15 @@ DECLARE
     v_fingerprint TEXT;
     v_stored_fingerprint TEXT;
     v_counts JSONB;
+    v_candidate_resume_parsed JSONB;
+    v_expected_profile_root JSONB;
+    v_actual_profile_root JSONB;
+    v_expected_resume_root JSONB;
+    v_actual_resume_root JSONB;
+    v_expected_career_root JSONB;
+    v_actual_career_root JSONB;
+    v_expected_publication_metadata JSONB;
+    v_actual_publication_metadata JSONB;
     v_count INTEGER;
     v_item JSONB;
     v_ordinal BIGINT;
@@ -71,6 +80,16 @@ BEGIN
         RAISE EXCEPTION 'CTPUB_INVALID_PAYLOAD: root identity, revision, or status mismatch';
     END IF;
 
+    v_candidate_resume_parsed := p_payload->'resume'->'parsed_json';
+    IF v_candidate_resume_parsed IS NULL OR v_candidate_resume_parsed = 'null'::JSONB THEN
+        v_candidate_resume_parsed := '{}'::JSONB;
+    ELSIF jsonb_typeof(v_candidate_resume_parsed) <> 'object' THEN
+        RAISE EXCEPTION 'CTPUB_INVALID_PAYLOAD: resume parsed_json must be an object or null';
+    END IF;
+    IF v_candidate_resume_parsed ? '_career_memory_publication' THEN
+        RAISE EXCEPTION 'CTPUB_INVALID_PAYLOAD: reserved publication metadata must not be caller supplied';
+    END IF;
+
     IF jsonb_array_length(p_payload->'experiences') NOT BETWEEN 1 AND 100
        OR jsonb_array_length(p_payload->'source_units') NOT BETWEEN 1 AND 2000
        OR jsonb_array_length(p_payload->'evidence') > 5000
@@ -96,7 +115,8 @@ BEGIN
     FROM public.careers c WHERE c.id = v_career_id AND c.user_id = v_user_id
     FOR UPDATE;
     IF NOT FOUND THEN
-        IF EXISTS (SELECT 1 FROM public.careers c WHERE c.user_id = v_user_id) THEN
+        IF EXISTS (SELECT 1 FROM public.careers c WHERE c.id = v_career_id)
+           OR EXISTS (SELECT 1 FROM public.careers c WHERE c.user_id = v_user_id) THEN
             RAISE EXCEPTION 'CTPUB_CAREER_CONFLICT: submitted career is not the canonical career for this user';
         END IF;
         INSERT INTO public.careers (id, user_id, headline, summary, total_years_experience)
@@ -117,6 +137,15 @@ BEGIN
         'capability_signal_links', jsonb_array_length(p_payload->'capability_signal_links')
     );
 
+    IF v_current_active IS DISTINCT FROM v_resume_id AND EXISTS (
+        SELECT 1 FROM public.resumes r
+        WHERE r.id = v_resume_id
+          AND r.materialization_status = 'completed'
+          AND r.parsed_json #>> '{_career_memory_publication,fingerprint}' = v_fingerprint
+    ) THEN
+        RAISE EXCEPTION 'CTPUB_ACTIVE_CONFLICT: active pointer differs';
+    END IF;
+
     -- A committed response-loss retry must be a read-only classification.
     IF v_current_active = v_resume_id THEN
         SELECT r.parsed_json #>> '{_career_memory_publication,fingerprint}'
@@ -124,13 +153,111 @@ BEGIN
         IF v_stored_fingerprint IS DISTINCT FROM v_fingerprint THEN
             RAISE EXCEPTION 'CTPUB_ACTIVE_CONFLICT: active candidate fingerprint differs';
         END IF;
-        IF NOT EXISTS (
-            SELECT 1 FROM public.resumes r
-            WHERE r.id = v_resume_id AND r.profile_id = v_profile_id AND r.content_sha256 = v_revision
-              AND r.materialization_status = 'completed' AND r.materialized_at IS NOT NULL
-        ) THEN
-            RAISE EXCEPTION 'CTPUB_ACTIVE_CONFLICT: active candidate completion state differs';
+
+        -- Root replay reconciliation manifest:
+        -- profile: identity/ownership plus every payload-assigned attribute;
+        -- resume: identity/source/content plus normalized candidate parsed_json and materialization version;
+        -- career: identity/ownership plus every payload-assigned descriptive aggregate.
+        -- created_at/updated_at and the exact materialized_at timestamp are server-managed.
+        -- Unassigned legacy columns are independently mutable. display_name is conditionally
+        -- publication-owned only when the candidate supplies a non-empty value.
+        v_expected_profile_root := jsonb_build_object(
+            'id', v_profile_id,
+            'user_id', v_user_id,
+            'current_title', p_payload->'profile'->>'current_title',
+            'years_experience', (NULLIF(p_payload->'profile'->>'years_experience', '')::NUMERIC)::INTEGER,
+            'seniority_level', p_payload->'profile'->>'seniority_level',
+            'industry', p_payload->'profile'->>'industry',
+            'summary', p_payload->'profile'->>'summary',
+            'companies', COALESCE(p_payload->'profile'->'companies', '[]'::JSONB),
+            'capabilities', COALESCE(p_payload->'profile'->'capabilities', '[]'::JSONB),
+            'capability_evidence', COALESCE(p_payload->'profile'->'capability_evidence', '{}'::JSONB)
+        ) || CASE WHEN NULLIF(p_payload->'profile'->>'display_name', '') IS NULL
+            THEN '{}'::JSONB
+            ELSE jsonb_build_object('display_name', p_payload->'profile'->>'display_name')
+        END;
+        SELECT jsonb_build_object(
+            'id', p.id,
+            'user_id', p.user_id,
+            'current_title', p.current_title,
+            'years_experience', p.years_experience,
+            'seniority_level', p.seniority_level,
+            'industry', p.industry,
+            'summary', p.summary,
+            'companies', p.companies,
+            'capabilities', p.capabilities,
+            'capability_evidence', p.capability_evidence
+        ) || CASE WHEN NULLIF(p_payload->'profile'->>'display_name', '') IS NULL
+            THEN '{}'::JSONB
+            ELSE jsonb_build_object('display_name', p.display_name)
+        END
+        INTO v_actual_profile_root
+        FROM public.profiles p
+        WHERE p.id = v_profile_id;
+        IF v_actual_profile_root IS DISTINCT FROM v_expected_profile_root THEN
+            RAISE EXCEPTION 'CTPUB_ACTIVE_CONFLICT: profile root mismatch';
         END IF;
+
+        v_expected_resume_root := jsonb_build_object(
+            'id', v_resume_id,
+            'user_id', v_user_id,
+            'profile_id', v_profile_id,
+            'file_name', p_payload->'resume'->>'file_name',
+            'file_url', p_payload->'resume'->>'file_url',
+            'raw_text', p_payload->'resume'->>'raw_text',
+            'parsed_json', v_candidate_resume_parsed,
+            'content_sha256', v_revision,
+            'materialization_version', 'career-memory-atomic-materialization/1.0.0'
+        );
+        SELECT jsonb_build_object(
+            'id', r.id,
+            'user_id', r.user_id,
+            'profile_id', r.profile_id,
+            'file_name', r.file_name,
+            'file_url', r.file_url,
+            'raw_text', r.raw_text,
+            'parsed_json', r.parsed_json - '_career_memory_publication',
+            'content_sha256', r.content_sha256,
+            'materialization_version', r.materialization_version
+        ), r.parsed_json->'_career_memory_publication'
+        INTO v_actual_resume_root, v_actual_publication_metadata
+        FROM public.resumes r
+        WHERE r.id = v_resume_id;
+        IF v_actual_resume_root IS DISTINCT FROM v_expected_resume_root THEN
+            RAISE EXCEPTION 'CTPUB_ACTIVE_CONFLICT: resume root mismatch';
+        END IF;
+
+        v_expected_publication_metadata := jsonb_build_object(
+            'version', p_payload->>'publication_version',
+            'fingerprint', v_fingerprint,
+            'counts', v_counts,
+            'expected_previous_active_resume_id', v_expected_active
+        );
+        IF v_actual_publication_metadata IS DISTINCT FROM v_expected_publication_metadata THEN
+            RAISE EXCEPTION 'CTPUB_ACTIVE_CONFLICT: reserved publication metadata mismatch';
+        END IF;
+
+        v_expected_career_root := jsonb_build_object(
+            'id', v_career_id,
+            'user_id', v_user_id,
+            'headline', p_payload->'career'->>'headline',
+            'summary', p_payload->'career'->>'summary',
+            'total_years_experience', NULLIF(p_payload->'career'->>'total_years_experience', '')::NUMERIC
+        );
+        SELECT jsonb_build_object(
+            'id', c.id,
+            'user_id', c.user_id,
+            'headline', c.headline,
+            'summary', c.summary,
+            'total_years_experience', c.total_years_experience
+        )
+        INTO v_actual_career_root
+        FROM public.careers c
+        WHERE c.id = v_career_id;
+        IF v_actual_career_root IS DISTINCT FROM v_expected_career_root THEN
+            RAISE EXCEPTION 'CTPUB_ACTIVE_CONFLICT: career root mismatch';
+        END IF;
+
         IF (SELECT count(*) FROM public.experiences e WHERE e.career_id = v_career_id AND e.source_revision_sha256 = v_revision)
                 <> jsonb_array_length(p_payload->'experiences')
            OR (SELECT count(*) FROM public.career_source_units u WHERE u.career_id = v_career_id AND u.source_revision_sha256 = v_revision)
@@ -181,6 +308,17 @@ BEGIN
            OR (SELECT count(*) FROM public.capability_signal_links l JOIN public.capabilities c ON c.id = l.capability_id
             WHERE c.career_id = v_career_id) <> jsonb_array_length(p_payload->'capability_signal_links') THEN
             RAISE EXCEPTION 'CTPUB_ACTIVE_CONFLICT: active derived multiplicity differs';
+        END IF;
+        IF NOT EXISTS (
+            SELECT 1 FROM public.resumes r
+            WHERE r.id = v_resume_id AND r.user_id = v_user_id AND r.profile_id = v_profile_id
+              AND r.content_sha256 = v_revision
+              AND r.materialization_status = 'completed' AND r.materialized_at IS NOT NULL
+        ) OR NOT EXISTS (
+            SELECT 1 FROM public.careers c
+            WHERE c.id = v_career_id AND c.user_id = v_user_id AND c.active_resume_id = v_resume_id
+        ) THEN
+            RAISE EXCEPTION 'CTPUB_ACTIVE_CONFLICT: active candidate completion or activation state differs';
         END IF;
         RETURN jsonb_build_object(
             'outcome', 'COMPLETE_REPLAY', 'career_id', v_career_id, 'resume_id', v_resume_id,
@@ -400,7 +538,7 @@ BEGIN
     ) VALUES (
         v_resume_id, v_user_id, v_profile_id, p_payload->'resume'->>'file_name',
         p_payload->'resume'->>'file_url', p_payload->'resume'->>'raw_text',
-        COALESCE(p_payload->'resume'->'parsed_json', '{}'::JSONB), v_revision,
+        v_candidate_resume_parsed, v_revision,
         'career-memory-atomic-materialization/1.0.0', 'pending'
     ) ON CONFLICT (profile_id, content_sha256) DO UPDATE SET
         file_name = EXCLUDED.file_name, file_url = EXCLUDED.file_url, raw_text = EXCLUDED.raw_text,
@@ -478,7 +616,7 @@ BEGIN
         UPDATE public.resumes SET
             materialization_version = 'career-memory-atomic-materialization/1.0.0',
             materialization_status = 'needs_review', materialized_at = NULL,
-            parsed_json = COALESCE(p_payload->'resume'->'parsed_json', '{}'::JSONB)
+            parsed_json = v_candidate_resume_parsed
         WHERE id = v_resume_id;
         RETURN jsonb_build_object(
             'outcome', 'NEEDS_REVIEW', 'career_id', v_career_id, 'resume_id', v_resume_id,
@@ -571,7 +709,7 @@ BEGIN
     UPDATE public.resumes SET
         materialization_version = 'career-memory-atomic-materialization/1.0.0',
         materialization_status = 'completed', materialized_at = clock_timestamp(),
-        parsed_json = COALESCE(p_payload->'resume'->'parsed_json', '{}'::JSONB) || jsonb_build_object(
+        parsed_json = v_candidate_resume_parsed || jsonb_build_object(
             '_career_memory_publication', jsonb_build_object(
                 'version', p_payload->>'publication_version', 'fingerprint', v_fingerprint, 'counts', v_counts,
                 'expected_previous_active_resume_id', v_expected_active
