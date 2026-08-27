@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient } from "@/lib/db/supabase/server";
+import { createClient } from "@supabase/supabase-js";
 import mammoth from "mammoth";
-import { createHash } from "node:crypto";
+import { createHash, randomUUID } from "node:crypto";
 import type {
     AtomicEvidenceMaterialization,
     AtomicEvidenceReload,
@@ -258,70 +259,45 @@ export async function POST(request: NextRequest) {
             { matched_evidence: [], missing_evidence: [] }
         );
 
-        // 4b. Save resume record to database
+        // 4b. Reserve a stable candidate identity. The resume row itself is
+        // persisted only inside publish_atomic_career_memory.
         const parsedJsonWithNarrative = parsedResume ? { ...parsedResume, narrative: profileNarrative } : null;
-        const resumeWrite = existingResumeRevision
-            ? { data: existingResumeRevision, error: null }
-            : await supabase
-                .from("resumes")
-                .insert({
-                    profile_id: profileId,
-                    file_name: fileName,
-                    file_url: publicUrl,
-                    raw_text: rawText,
-                    content_sha256: sourceRevisionSha256,
-                    materialization_version: "career-memory-atomic-materialization/1.0.0",
-                    materialization_status: "pending",
-                    ...(parsedJsonWithNarrative ? { parsed_json: parsedJsonWithNarrative } : {})
-                })
-                .select()
-                .single();
-        const { data: resume, error: dbError } = resumeWrite;
+        const resume = existingResumeRevision ?? {
+            id: randomUUID(),
+            profile_id: profileId,
+            file_name: fileName,
+            file_url: publicUrl ?? null,
+            raw_text: rawText,
+            parsed_json: parsedJsonWithNarrative,
+            content_sha256: sourceRevisionSha256,
+            materialization_status: null,
+        };
 
-        if (dbError || !resume) {
-            console.error("Database insert error:", dbError);
-            return NextResponse.json(
-                { error: `Failed to save resume: ${dbError?.message ?? "resume row unavailable"}` },
-                { status: 500 }
-            );
-        }
-
-        // 5. Save structured profile data
+        // 5. Resolve publication ownership. Candidate profile fields are written
+        // inside publish_atomic_career_memory with the rest of the publication.
         // Null out summary if it looks like a date, location, or company line (not a real summary)
         const summaryIsWeak = !parsedResume?.summary
             || parsedResume.summary.length < 30
             || /^\d{4}|^(?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)/i.test(parsedResume.summary)
             || /,\s+[A-Z][a-z]/.test(parsedResume.summary) && parsedResume.summary.split(" ").length < 5;
 
-        const { data: updatedProfile, error: profileError } = await supabase
+        const { data: publicationProfile, error: profileError } = await supabase
             .from("profiles")
-            .update({
-                current_title: parsedResume?.current_title ?? null,
-                years_experience: parsedResume?.years_experience ?? null,
-                seniority_level: careerProfile.seniority_level ?? null,
-                industry: parsedResume?.industry ?? null,
-                summary: summaryIsWeak ? null : parsedResume!.summary,
-                companies: parsedResume?.companies ?? [],
-                capabilities: parsedResume?.capabilities ?? [],
-                capability_evidence: capabilityEvidenceMap,
-                // Save parsed name; only overwrites if present — preserves existing user-set name
-                ...(parsedResume?.full_name ? { display_name: parsedResume.full_name } : {}),
-            })
-            .eq("id", profileId)
             .select("user_id")
+            .eq("id", profileId)
             .single();
 
-        let userId = updatedProfile?.user_id as string | null;
-        console.log("[Materialize][Gate] profile update result", {
-            data: updatedProfile,
+        let userId = publicationProfile?.user_id as string | null;
+        console.log("[Materialize][Gate] profile ownership result", {
+            data: publicationProfile,
             error: serializeSupabaseError(profileError),
             hasUserId: Boolean(userId),
         });
-        recordDebug("materialize.gate", updatedProfile, serializeSupabaseError(profileError));
+        recordDebug("materialize.gate", publicationProfile, serializeSupabaseError(profileError));
 
         if (profileError) {
-            console.error("Profile update error:", profileError);
-            throw new Error(`Profile update failed before materialization: ${profileError.message}`);
+            console.error("Profile ownership load error:", profileError);
+            throw new Error(`Profile ownership load failed before materialization: ${profileError.message}`);
         }
 
         if (!userId) {
@@ -353,9 +329,6 @@ export async function POST(request: NextRequest) {
             recordDebug("materialize.start", { reached: true, profileId, userId }, null);
             const hasBusinessContext = await evidencePiecesHasBusinessContext(supabase);
             recordDebug("evidence_pieces.schema.business_context", { exists: hasBusinessContext }, null);
-            const { deriveStructuredEvidenceFields } = await import("@/lib/career-engine/evidence/structured-evidence");
-            const { extractEvidenceSignalsFromPieces } = await import("@/lib/career-engine/evidence/evidence-signals");
-            const { inferCapabilities } = await import("@/lib/career-engine/capability/capability-inference");
 
             const careerUpsertPayload = {
                 user_id: userId,
@@ -364,10 +337,12 @@ export async function POST(request: NextRequest) {
                 total_years_experience: parsedResume?.years_experience ?? null,
             };
 
-            let careerId: string | null = null;
+            let careerId: string;
+            let expectedPreviousActiveResumeId: string | null = null;
+            let currentActiveResumeId: string | null = null;
             const { data: existingCareers, error: careerLoadError } = await supabase
                 .from("careers")
-                .select("id")
+                .select("id, active_resume_id")
                 .eq("user_id", userId)
                 .order("created_at", { ascending: false })
                 .limit(1);
@@ -381,44 +356,21 @@ export async function POST(request: NextRequest) {
                 throw new Error(`careers select failed: ${careerLoadError.message}`);
             } else if (existingCareers && existingCareers.length > 0) {
                 careerId = existingCareers[0].id as string;
-                const { data: careerUpdateData, error: careerUpdateError } = await supabase
-                    .from("careers")
-                    .update(careerUpsertPayload)
-                    .eq("id", careerId)
-                    .select("id, user_id, headline, summary, total_years_experience");
-                console.log("[Materialize][careers.update]", {
-                    data: careerUpdateData,
-                    error: serializeSupabaseError(careerUpdateError),
-                });
-                recordDebug("careers.update", careerUpdateData, serializeSupabaseError(careerUpdateError));
-                if (careerUpdateError) {
-                    throw new Error(`careers update failed: ${careerUpdateError.message}`);
+                currentActiveResumeId = (existingCareers[0].active_resume_id as string | null) ?? null;
+                expectedPreviousActiveResumeId = currentActiveResumeId;
+                if (resume.materialization_status === "completed" && currentActiveResumeId === resume.id) {
+                    const storedExpected = (resume.parsed_json as Record<string, unknown> | null)?._career_memory_publication;
+                    if (storedExpected && typeof storedExpected === "object") {
+                        const value = (storedExpected as Record<string, unknown>).expected_previous_active_resume_id;
+                        expectedPreviousActiveResumeId = typeof value === "string" ? value : null;
+                    }
                 }
             } else {
-                const { data: createdCareer, error: careerCreateError } = await supabase
-                    .from("careers")
-                    .insert(careerUpsertPayload)
-                    .select("id, user_id, headline, summary, total_years_experience")
-                    .single();
-                console.log("[Materialize][careers.insert]", {
-                    data: createdCareer,
-                    error: serializeSupabaseError(careerCreateError),
-                });
-                recordDebug("careers.insert", createdCareer, serializeSupabaseError(careerCreateError));
-                if (careerCreateError) {
-                    throw new Error(`careers insert failed: ${careerCreateError.message}`);
-                } else {
-                    careerId = createdCareer?.id ?? null;
-                }
-            }
-
-            if (!careerId) {
-                throw new Error("Materialization failed: careerId is null after careers write.");
+                careerId = randomUUID();
             }
 
             const {
                 ATOMIC_EVIDENCE_CONTRACT_VERSION,
-                ATOMIC_EVIDENCE_MATERIALIZATION_VERSION,
                 buildAtomicEvidenceSourceUnit,
                 ingestCanonicalAtomicEvidence,
             } = await import("@/lib/career-engine/evidence/atomic-evidence-ingestion");
@@ -457,8 +409,10 @@ export async function POST(request: NextRequest) {
                 })];
             });
 
+            let preparedMaterialization: AtomicEvidenceMaterialization | null = null;
             const atomicRepository: AtomicEvidenceRepository = {
                 async loadBySourceRevision({ careerId: reloadCareerId, sourceRevisionSha256: revision }): Promise<AtomicEvidenceReload | null> {
+                    if (preparedMaterialization) return preparedMaterialization;
                     const [experienceResult, sourceUnitResult, evidenceResult] = await Promise.all([
                         supabase.from("experiences")
                             .select("id, company, title, date_range, sort_order, source_role_ref, source_revision_sha256, materialization_version")
@@ -528,7 +482,7 @@ export async function POST(request: NextRequest) {
                         providerVersion: row.provider_version,
                         reviewStatus: row.review_status,
                     }));
-                    return {
+                    const reload = {
                         careerId: reloadCareerId,
                         resumeId: sourceUnitResult.data[0].resume_id,
                         sourceRevisionSha256: revision,
@@ -536,117 +490,13 @@ export async function POST(request: NextRequest) {
                         sourceUnits: reloadedSourceUnits as AtomicEvidenceReload["sourceUnits"],
                         evidence: reloadedEvidence as AtomicEvidenceReload["evidence"],
                     };
+                    const retryableFailure = reload.sourceUnits.some((unit) => unit.fate === "PROVIDER_FAILURE");
+                    const committedReplay = resume.materialization_status === "completed"
+                        && currentActiveResumeId === resume.id;
+                    return retryableFailure || committedReplay ? reload : null;
                 },
                 async persist(materialization: AtomicEvidenceMaterialization): Promise<void> {
-                    const { error: experienceUpsertError } = await supabase.from("experiences").upsert(
-                        materialization.experiences.map((experience) => ({
-                            id: experience.id,
-                            career_id: materialization.careerId,
-                            resume_id: materialization.resumeId,
-                            company: experience.company,
-                            title: experience.title,
-                            date_range: experience.dateRange,
-                            summary: null,
-                            source_type: "resume",
-                            sort_order: experience.sortOrder,
-                            source_revision_sha256: experience.sourceRevisionSha256,
-                            source_role_ref: experience.roleRef,
-                            materialization_version: experience.materializationVersion,
-                        })),
-                        { onConflict: "career_id,source_revision_sha256,source_role_ref" },
-                    );
-                    if (experienceUpsertError) throw new Error(`Atomic experiences persistence failed: ${experienceUpsertError.message}`);
-
-                    const { error: sourceUnitUpsertError } = await supabase.from("career_source_units").upsert(
-                        materialization.sourceUnits.map((unit) => ({
-                            id: unit.id,
-                            career_id: materialization.careerId,
-                            resume_id: materialization.resumeId,
-                            experience_id: unit.experienceId,
-                            source_revision_sha256: unit.sourceRevisionSha256,
-                            source_role_ref: unit.roleRef,
-                            source_unit_ref: unit.sourceUnitRef,
-                            source_unit_ordinal: unit.sourceUnitOrdinal,
-                            source_unit_sha256: unit.sourceUnitSha256,
-                            source_text: unit.sourceText,
-                            fate: unit.fate,
-                            provider: unit.provider,
-                            model: unit.model,
-                            provider_version: unit.providerVersion,
-                            validation_errors: unit.validationErrors,
-                        })),
-                        { onConflict: "career_id,source_revision_sha256,source_unit_ref" },
-                    );
-                    if (sourceUnitUpsertError) throw new Error(`Atomic source-unit persistence failed: ${sourceUnitUpsertError.message}`);
-
-                    const roleByRef = new Map(materialization.experiences.map((experience) => [experience.roleRef, experience]));
-                    if (materialization.evidence.length > 0) {
-                        const { error: evidenceUpsertError } = await supabase.from("evidence_pieces").upsert(
-                            materialization.evidence.map((item) => {
-                                const role = roleByRef.get(item.roleRef);
-                                if (!role) throw new Error(`Atomic evidence role ${item.roleRef} is unavailable`);
-                                const structured = deriveStructuredEvidenceFields(item.atomicStatement, "resume");
-                                return {
-                                    id: item.id,
-                                    career_id: materialization.careerId,
-                                    resume_id: materialization.resumeId,
-                                    experience_id: item.experienceId,
-                                    company: role.company,
-                                    role: role.title,
-                                    date_range: role.dateRange,
-                                    raw_text: item.atomicStatement,
-                                    source_type: "resume_bullet",
-                                    evidence_source_type: "resume",
-                                    summary: item.atomicStatement,
-                                    action: item.action,
-                                    impact: item.outcome,
-                                    stakeholders: structured.stakeholders,
-                                    tools_methods: structured.tools_methods,
-                                    ...(hasBusinessContext ? { business_context: item.context } : {}),
-                                    inferred_scale: structured.inferred_scale,
-                                    inferred_scope: structured.inferred_scope,
-                                    confidence: item.extractionConfidence,
-                                    missing_fields: structured.missing_fields,
-                                    sort_order: materialization.sourceUnits.findIndex((unit) => unit.id === item.sourceUnitId) * 10 + item.atomicIndex,
-                                    source_revision_sha256: item.sourceRevisionSha256,
-                                    source_role_ref: item.roleRef,
-                                    source_unit_id: item.sourceUnitId,
-                                    source_unit_ref: item.sourceUnitRef,
-                                    source_unit_sha256: materialization.sourceUnits.find((unit) => unit.id === item.sourceUnitId)?.sourceUnitSha256,
-                                    source_quote: item.sourceQuote,
-                                    source_span_start: item.sourceSpanStart,
-                                    source_span_end: item.sourceSpanEnd,
-                                    atomic_index: item.atomicIndex,
-                                    atomic_statement: item.atomicStatement,
-                                    context: item.context,
-                                    outcome: item.outcome,
-                                    source_supported_metrics: item.sourceSupportedMetrics,
-                                    extraction_confidence: item.extractionConfidence,
-                                    provider: item.provider,
-                                    provider_model: item.model,
-                                    provider_version: item.providerVersion,
-                                    review_status: item.reviewStatus,
-                                };
-                            }),
-                            { onConflict: "career_id,source_revision_sha256,source_unit_ref,atomic_index" },
-                        );
-                        if (evidenceUpsertError) throw new Error(`Atomic evidence persistence failed: ${evidenceUpsertError.message}`);
-                    }
-
-                    const hasHardFailure = materialization.sourceUnits.some((unit) => unit.fate === "PROVIDER_FAILURE" || unit.fate === "VALIDATION_REJECTED");
-                    const materializationStatus = hasHardFailure ? "needs_review" : "completed";
-                    const { error: resumeStatusError } = await supabase.from("resumes").update({
-                        materialization_version: ATOMIC_EVIDENCE_MATERIALIZATION_VERSION,
-                        materialization_status: materializationStatus,
-                        materialized_at: new Date().toISOString(),
-                    }).eq("id", materialization.resumeId);
-                    if (resumeStatusError) throw new Error(`Resume materialization status update failed: ${resumeStatusError.message}`);
-                    if (!hasHardFailure) {
-                        const { error: activeResumeError } = await supabase.from("careers")
-                            .update({ active_resume_id: materialization.resumeId })
-                            .eq("id", materialization.careerId);
-                        if (activeResumeError) throw new Error(`Career active resume update failed: ${activeResumeError.message}`);
-                    }
+                    preparedMaterialization = materialization;
                 },
             };
 
@@ -662,400 +512,64 @@ export async function POST(request: NextRequest) {
                 repository: atomicRepository,
             });
             recordDebug("atomic_evidence.reconciliation", atomicIngestion.reconciliation, null);
-            recordDebug("atomic_evidence.idempotency", { idempotentReplay: atomicIngestion.idempotentReplay }, null);
+            const atomicHardFailure = atomicIngestion.materialization.sourceUnits.some(
+                (unit) => unit.fate === "PROVIDER_FAILURE" || unit.fate === "VALIDATION_REJECTED",
+            );
+            const {
+                buildAtomicCareerMemoryPublication,
+                publishAtomicCareerMemory,
+            } = await import("@/lib/career-engine/evidence/transactional-career-memory-publication");
+            const publicationPayload = buildAtomicCareerMemoryPublication({
+                materialization: atomicIngestion.materialization,
+                expectedPreviousActiveResumeId,
+                profile: {
+                    id: profileId,
+                    user_id: userId,
+                    current_title: parsedResume?.current_title ?? null,
+                    years_experience: parsedResume?.years_experience ?? null,
+                    seniority_level: careerProfile.seniority_level ?? null,
+                    industry: parsedResume?.industry ?? null,
+                    summary: summaryIsWeak ? null : parsedResume?.summary ?? null,
+                    companies: parsedResume?.companies ?? [],
+                    capabilities: parsedResume?.capabilities ?? [],
+                    capability_evidence: capabilityEvidenceMap,
+                    ...(parsedResume?.full_name ? { display_name: parsedResume.full_name } : {}),
+                },
+                resume: {
+                    id: resume.id,
+                    user_id: userId,
+                    profile_id: profileId,
+                    file_name: (resume.file_name as string | null) ?? fileName,
+                    file_url: (resume.file_url as string | null) ?? publicUrl ?? null,
+                    raw_text: rawText,
+                    parsed_json: parsedJsonWithNarrative,
+                    content_sha256: sourceRevisionSha256,
+                },
+                career: {
+                    id: careerId,
+                    ...careerUpsertPayload,
+                },
+                hasBusinessContext,
+            });
+            const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+            if (!serviceRoleKey) {
+                throw new Error("Transactional publication requires SUPABASE_SERVICE_ROLE_KEY");
+            }
+            const publicationClient = createClient(supabaseUrl, serviceRoleKey, {
+                auth: { persistSession: false, autoRefreshToken: false },
+            });
+            const publicationResult = await publishAtomicCareerMemory(publicationClient, publicationPayload);
+            recordDebug("atomic_evidence.publication", {
+                outcome: publicationResult.outcome,
+                fingerprint: publicationResult.fingerprint,
+                counts: publicationResult.counts,
+            }, null);
             atomicEvidenceSummary = {
                 ...atomicIngestion.reconciliation,
-                idempotentReplay: atomicIngestion.idempotentReplay,
+                idempotentReplay: publicationResult.outcome === "COMPLETE_REPLAY",
             };
-            const atomicHardFailure = atomicIngestion.materialization.sourceUnits.some(
-                (unit) => unit.fate === "PROVIDER_FAILURE" || unit.fate === "VALIDATION_REJECTED"
-            );
-            if (atomicHardFailure) {
+            if (atomicHardFailure || publicationResult.outcome === "NEEDS_REVIEW") {
                 throw new Error("Atomic evidence materialization was persisted for review but was not admitted downstream");
-            }
-
-            // Rebuild downstream capability materialization only after canonical Career Memory admission.
-            const { data: wipeCapabilitiesData, error: wipeCapabilitiesError } = await supabase
-                .from("capabilities")
-                .delete()
-                .eq("career_id", careerId)
-                .select("id, normalized_name");
-            console.log("[Materialize][capabilities.delete]", {
-                data: wipeCapabilitiesData,
-                error: serializeSupabaseError(wipeCapabilitiesError),
-            });
-            recordDebug("capabilities.delete", wipeCapabilitiesData, serializeSupabaseError(wipeCapabilitiesError));
-            if (wipeCapabilitiesError) {
-                throw new Error(`capabilities delete failed: ${wipeCapabilitiesError.message}`);
-            }
-
-            const roleById = new Map(atomicIngestion.materialization.experiences.map((role) => [role.id, role]));
-            const insertedEvidenceRows = atomicIngestion.materialization.evidence.flatMap((item) => {
-                const role = roleById.get(item.experienceId);
-                if (!role) return [];
-                const structured = deriveStructuredEvidenceFields(item.atomicStatement, "resume");
-                return [{
-                    id: item.id,
-                    raw_text: item.atomicStatement,
-                    company: role.company,
-                    role: role.title,
-                    date_range: role.dateRange,
-                    source_type: "resume_bullet",
-                    business_context: item.context,
-                    inferred_scale: structured.inferred_scale,
-                }];
-            });
-            console.log("[Materialize][atomic_evidence.count]", insertedEvidenceRows.length);
-            recordDebug("atomic_evidence.count", { count: insertedEvidenceRows.length }, null);
-
-            if (insertedEvidenceRows.length > 0) {
-                const { error: staleSignalDeleteError } = await supabase
-                    .from("evidence_signals")
-                    .delete()
-                    .in("evidence_piece_id", insertedEvidenceRows.map((row) => row.id));
-                if (staleSignalDeleteError) {
-                    throw new Error(`Existing evidence signals cleanup failed: ${staleSignalDeleteError.message}`);
-                }
-            }
-
-            const signalInsertRows = extractEvidenceSignalsFromPieces(
-                insertedEvidenceRows.map((row) => ({
-                    id: row.id,
-                    career_id: careerId,
-                    raw_text: row.raw_text,
-                }))
-            );
-            recordDebug(
-                "evidence_signals.insert.payload",
-                { count: signalInsertRows.length, firstFive: signalInsertRows.slice(0, 5) },
-                null
-            );
-
-            let insertedSignalRows: Array<{
-                id: string;
-                evidence_piece_id: string;
-                action: string | null;
-                domain: string | null;
-                initiative_type: string | null;
-                scope_level: string | null;
-                ownership_level: string | null;
-                stakeholder_scope: string[];
-                tool_signals: string[];
-                capability_hints: string[];
-                team_signal: string | null;
-                impact_signal: string | null;
-                confidence_score: number | null;
-            }> = [];
-            if (signalInsertRows.length > 0) {
-                const { data: signalRows, error: signalInsertError } = await supabase
-                    .from("evidence_signals")
-                    .insert(signalInsertRows)
-                    .select("id, evidence_piece_id, action, domain, initiative_type, scope_level, ownership_level, stakeholder_scope, tool_signals, capability_hints, team_signal, impact_signal, confidence_score");
-                console.log("[Materialize][evidence_signals.insert]", {
-                    data: signalRows,
-                    error: serializeSupabaseError(signalInsertError),
-                });
-                recordDebug("evidence_signals.insert", signalRows, serializeSupabaseError(signalInsertError));
-
-                if (signalInsertError) {
-                    throw new Error(`evidence_signals insert failed: ${signalInsertError.message}`);
-                } else {
-                    insertedSignalRows = ((signalRows ?? []) as Array<{
-                        id: string;
-                        evidence_piece_id: string;
-                        action: string | null;
-                        domain: string | null;
-                        initiative_type: string | null;
-                        scope_level: string | null;
-                        ownership_level: string | null;
-                        stakeholder_scope: unknown;
-                        tool_signals: unknown;
-                        capability_hints: unknown;
-                        team_signal: string | null;
-                        impact_signal: string | null;
-                        confidence_score: number | null;
-                    }>).map((row) => ({
-                        ...row,
-                        stakeholder_scope: Array.isArray(row.stakeholder_scope) ? row.stakeholder_scope.filter((v): v is string => typeof v === "string") : [],
-                        tool_signals: Array.isArray(row.tool_signals) ? row.tool_signals.filter((v): v is string => typeof v === "string") : [],
-                        capability_hints: Array.isArray(row.capability_hints) ? row.capability_hints.filter((v): v is string => typeof v === "string") : [],
-                    }));
-                }
-            } else {
-                console.log("[Materialize][evidence_signals.insert]", { data: [], error: null, skipped: true });
-                recordDebug("evidence_signals.insert", { skipped: true, data: [] }, null);
-            }
-
-            recordDebug(
-                "capability.inference.input",
-                {
-                    source: "persisted_evidence_signals",
-                    persistedEvidenceCount: insertedEvidenceRows.length,
-                    persistedSignalCount: insertedSignalRows.length,
-                    fallbackToProfileData: false,
-                },
-                null
-            );
-
-            const memoryCapabilityInference = insertedSignalRows.length > 0
-                ? inferCapabilities({
-                    evidence_signals: insertedSignalRows.map((signal) => ({
-                        id: signal.id,
-                        evidence_piece_id: signal.evidence_piece_id,
-                        career_id: careerId,
-                        action: signal.action,
-                        domain: signal.domain,
-                        initiative_type: signal.initiative_type,
-                        scope_level: signal.scope_level,
-                        ownership_level: signal.ownership_level,
-                        stakeholder_scope: signal.stakeholder_scope,
-                        tool_signals: signal.tool_signals,
-                        capability_hints: signal.capability_hints,
-                        team_signal: signal.team_signal,
-                        impact_signal: signal.impact_signal,
-                        confidence_score: signal.confidence_score,
-                    })),
-                })
-                : { capabilities: [], evidence_map: [] };
-
-            let insertedCapabilities: Array<{ id: string; name: string; normalized_name: string }> = [];
-            if (memoryCapabilityInference.capabilities.length > 0) {
-                const capabilityRows = memoryCapabilityInference.capabilities.map((name) => ({
-                    career_id: careerId,
-                    name,
-                    normalized_name: normalizeCapabilityName(name),
-                    canonical_name: normalizeCapabilityName(name),
-                    display_name: name,
-                    scope_summary: null as string | null,
-                    ownership_summary: null as string | null,
-                    impact_summary: null as string | null,
-                    confidence_score: 0.5,
-                    evidence_signal_count: 0,
-                    evidence_count: 0,
-                    supporting_evidence_ids: [],
-                    context_domains: [],
-                    scale_summary: null,
-                    confidence_level: "low" as const,
-                }));
-
-                const { data: capabilityData, error: capabilityInsertError } = await supabase
-                    .from("capabilities")
-                    .upsert(capabilityRows, { onConflict: "career_id,normalized_name" })
-                    .select("id, name, normalized_name");
-                console.log("[Materialize][capabilities.upsert]", {
-                    data: capabilityData,
-                    error: serializeSupabaseError(capabilityInsertError),
-                });
-                recordDebug("capabilities.upsert", capabilityData, serializeSupabaseError(capabilityInsertError));
-
-                if (capabilityInsertError) {
-                    throw new Error(`capabilities upsert failed: ${capabilityInsertError.message}`);
-                } else {
-                    insertedCapabilities = (capabilityData ?? []) as Array<{ id: string; name: string; normalized_name: string }>;
-                }
-            } else {
-                console.log("[Materialize][capabilities.upsert]", { data: [], error: null, skipped: true });
-                recordDebug("capabilities.upsert", { skipped: true, data: [] }, null);
-            }
-
-            if (insertedCapabilities.length > 0 && insertedSignalRows.length > 0) {
-                const capabilityIdByName = new Map<string, string>();
-                for (const capability of insertedCapabilities) {
-                    capabilityIdByName.set(normalizeCapabilityName(capability.name), capability.id);
-                }
-
-                const signalById = new Map(insertedSignalRows.map((signal) => [signal.id, signal]));
-                const evidenceById = new Map(insertedEvidenceRows.map((evidence) => [evidence.id, evidence]));
-
-                // canonical traceability path for runtime capability inference.
-                const signalLinkRows: Array<{
-                    capability_id: string;
-                    evidence_signal_id: string;
-                    contribution_weight: number;
-                    rationale: string;
-                }> = [];
-                // legacy compatibility-only mirror for direct capability -> evidence links.
-                // do not use for new runtime paths.
-                const legacyEvidenceLinkRows: Array<{ capability_id: string; evidence_piece_id: string; link_strength: number }> = [];
-                const seenSignalLinks = new Set<string>();
-                const seenLegacyLinks = new Set<string>();
-
-                for (const capabilityEvidence of memoryCapabilityInference.evidence_map) {
-                    const capabilityId = capabilityIdByName.get(normalizeCapabilityName(capabilityEvidence.capability));
-                    if (!capabilityId) continue;
-
-                    const evidenceSignalIds = capabilityEvidence.evidence_signal_ids ?? [];
-                    for (const signalId of evidenceSignalIds) {
-                        const signal = signalById.get(signalId);
-                        if (!signal) continue;
-
-                        const dedupeSignalKey = `${capabilityId}::${signal.id}`;
-                        if (!seenSignalLinks.has(dedupeSignalKey)) {
-                            seenSignalLinks.add(dedupeSignalKey);
-                            signalLinkRows.push({
-                                capability_id: capabilityId,
-                                evidence_signal_id: signal.id,
-                                contribution_weight: signal.confidence_score ?? 0.5,
-                                rationale: "Inferred from structured evidence signal.",
-                            });
-                        }
-
-                        const dedupeLegacyKey = `${capabilityId}::${signal.evidence_piece_id}`;
-                        if (!seenLegacyLinks.has(dedupeLegacyKey)) {
-                            seenLegacyLinks.add(dedupeLegacyKey);
-                            legacyEvidenceLinkRows.push({
-                                capability_id: capabilityId,
-                                evidence_piece_id: signal.evidence_piece_id,
-                                link_strength: 1,
-                            });
-                        }
-                    }
-                }
-
-                if (signalLinkRows.length > 0) {
-                    // canonical write path.
-                    const { data: signalLinkData, error: signalLinkInsertError } = await supabase
-                        .from("capability_signal_links")
-                        .upsert(signalLinkRows, { onConflict: "capability_id,evidence_signal_id" })
-                        .select("capability_id, evidence_signal_id, contribution_weight");
-                    console.log("[Materialize][capability_signal_links.upsert]", {
-                        data: signalLinkData,
-                        error: serializeSupabaseError(signalLinkInsertError),
-                    });
-                    recordDebug("capability_signal_links.upsert", signalLinkData, serializeSupabaseError(signalLinkInsertError));
-                    if (signalLinkInsertError) {
-                        throw new Error(`capability_signal_links upsert failed: ${signalLinkInsertError.message}`);
-                    }
-                } else {
-                    console.log("[Materialize][capability_signal_links.upsert]", { data: [], error: null, skipped: true });
-                    recordDebug("capability_signal_links.upsert", { skipped: true, data: [] }, null);
-                }
-
-                if (legacyEvidenceLinkRows.length > 0) {
-                    // legacy compatibility-only write path.
-                    const { data: legacyLinkData, error: legacyLinkInsertError } = await supabase
-                        .from("capability_evidence_links")
-                        .upsert(legacyEvidenceLinkRows, { onConflict: "capability_id,evidence_piece_id" })
-                        .select("capability_id, evidence_piece_id, link_strength");
-                    console.log("[Materialize][capability_evidence_links.upsert]", {
-                        data: legacyLinkData,
-                        error: serializeSupabaseError(legacyLinkInsertError),
-                    });
-                    recordDebug("capability_evidence_links.upsert", legacyLinkData, serializeSupabaseError(legacyLinkInsertError));
-                    if (legacyLinkInsertError) {
-                        throw new Error(`capability_evidence_links upsert failed: ${legacyLinkInsertError.message}`);
-                    }
-                } else {
-                    console.log("[Materialize][capability_evidence_links.upsert]", { data: [], error: null, skipped: true });
-                    recordDebug("capability_evidence_links.upsert", { skipped: true, data: [] }, null);
-                }
-
-                const signalIdsByCapability = new Map<string, string[]>();
-                for (const row of signalLinkRows) {
-                    const bucket = signalIdsByCapability.get(row.capability_id) ?? [];
-                    bucket.push(row.evidence_signal_id);
-                    signalIdsByCapability.set(row.capability_id, bucket);
-                }
-
-                for (const capability of insertedCapabilities) {
-                    const supportingSignalIds = Array.from(new Set(signalIdsByCapability.get(capability.id) ?? []));
-                    const supportingSignals = supportingSignalIds
-                        .map((id) => signalById.get(id))
-                        .filter((row): row is NonNullable<typeof row> => Boolean(row));
-                    const supportingEvidenceIds = Array.from(new Set(supportingSignals.map((signal) => signal.evidence_piece_id)));
-                    const supportingEvidence = supportingEvidenceIds
-                        .map((id) => evidenceById.get(id))
-                        .filter((row): row is NonNullable<typeof row> => Boolean(row));
-
-                    const contextDomains = Array.from(new Set(
-                        supportingSignals
-                            .map((signal) => signal.domain)
-                            .filter((value): value is string => Boolean(value && value.trim().length > 0))
-                    ));
-
-                    const confidenceScore = supportingSignals.length > 0
-                        ? Number((supportingSignals.reduce((sum, signal) => sum + (signal.confidence_score ?? 0.5), 0) / supportingSignals.length).toFixed(4))
-                        : 0.5;
-
-                    const dominant = (values: string[]): string => {
-                        if (values.length === 0) return "unknown";
-                        const counts = new Map<string, number>();
-                        for (const value of values) counts.set(value, (counts.get(value) ?? 0) + 1);
-                        return Array.from(counts.entries()).sort((a, b) => b[1] - a[1])[0][0];
-                    };
-
-                    const scopeSummary = dominant(
-                        supportingSignals
-                            .map((signal) => signal.scope_level ?? "")
-                            .filter((value) => value.length > 0)
-                    );
-                    const ownershipSummary = dominant(
-                        supportingSignals
-                            .map((signal) => signal.ownership_level ?? "")
-                            .filter((value) => value.length > 0)
-                    );
-                    const impactSummary = dominant(
-                        supportingSignals
-                            .map((signal) => signal.impact_signal ?? "")
-                            .filter((value) => value.length > 0)
-                    );
-
-                    const confidenceLevel = confidenceScore >= 0.75
-                        ? "high"
-                        : confidenceScore >= 0.5
-                            ? "medium"
-                            : "low";
-
-                    const teamValues = supportingEvidence
-                        .map((row) => (row.inferred_scale ?? {}) as Record<string, unknown>)
-                        .map((scale) => (typeof scale.team_scope === "string" ? scale.team_scope : "unknown"))
-                        .filter((value) => value !== "unknown");
-                    const businessValues = supportingEvidence
-                        .map((row) => (row.inferred_scale ?? {}) as Record<string, unknown>)
-                        .map((scale) => (typeof scale.business_scope === "string" ? scale.business_scope : "unknown"))
-                        .filter((value) => value !== "unknown");
-                    const impactValues = supportingEvidence
-                        .map((row) => (row.inferred_scale ?? {}) as Record<string, unknown>)
-                        .map((scale) => (typeof scale.impact_scope === "string" ? scale.impact_scope : "unknown"))
-                        .filter((value) => value !== "unknown");
-
-                    const scaleSummary = {
-                        dominant_team_scope: dominant(teamValues),
-                        max_team_scope_seen: dominant(teamValues),
-                        dominant_business_scope: dominant(businessValues),
-                        max_business_scope_seen: dominant(businessValues),
-                        dominant_impact_scope: dominant(impactValues),
-                        scale_confidence: confidenceLevel,
-                    };
-
-                    const { error: capabilityAggregateError } = await supabase
-                        .from("capabilities")
-                        .update({
-                            canonical_name: normalizeCapabilityName(capability.name),
-                            display_name: capability.name,
-                            scope_summary: scopeSummary === "unknown" ? null : scopeSummary,
-                            ownership_summary: ownershipSummary === "unknown" ? null : ownershipSummary,
-                            impact_summary: impactSummary === "unknown" ? null : impactSummary,
-                            confidence_score: confidenceScore,
-                            evidence_signal_count: supportingSignalIds.length,
-                            confidence: confidenceScore,
-                            evidence_count: supportingEvidenceIds.length,
-                            supporting_evidence_ids: supportingEvidenceIds,
-                            context_domains: contextDomains,
-                            scale_summary: scaleSummary,
-                            confidence_level: confidenceLevel,
-                        })
-                        .eq("id", capability.id);
-
-                    if (capabilityAggregateError) {
-                        throw new Error(`capabilities aggregate update failed: ${capabilityAggregateError.message}`);
-                    }
-                }
-            } else {
-                console.log("[Materialize][capability_signal_links.upsert]", { data: [], error: null, skipped: true });
-                recordDebug("capability_signal_links.upsert", { skipped: true, data: [] }, null);
-                console.log("[Materialize][capability_evidence_links.upsert]", { data: [], error: null, skipped: true });
-                recordDebug("capability_evidence_links.upsert", { skipped: true, data: [] }, null);
             }
         }
 

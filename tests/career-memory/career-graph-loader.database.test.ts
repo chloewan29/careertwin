@@ -11,7 +11,7 @@ const anonKey = process.env.CAREERTWIN_TEST_SUPABASE_ANON_KEY;
 const serviceRoleKey = process.env.CAREERTWIN_TEST_SUPABASE_SERVICE_ROLE_KEY;
 const hasDatabase = Boolean(url && anonKey && serviceRoleKey);
 
-test("canonical career graph reload uses the expanded B0 -> R0 -> atomic contract", { skip: !hasDatabase }, async () => {
+test("canonical career graph reload uses the stable B0 -> R0 -> atomic -> publication contract", { skip: !hasDatabase }, async () => {
     assert.equal(DEFAULT_CAREER_GRAPH_SCHEMA_MODE, "canonical");
 
     process.env.NEXT_PUBLIC_SUPABASE_URL = url;

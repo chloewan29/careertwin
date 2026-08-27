@@ -86,12 +86,12 @@ This inventory lists important persisted tables and core exported data types cur
 
 ### Probable schema drift risks
 
-- The executable chain is now bounded to the B0 -> R0 -> atomic migrations under `supabase/migrations/*`.
+- The executable chain is now bounded to B0 -> R0 -> atomic -> transactional publication under `supabase/migrations/*`.
 - The first 13 migrations are preserved unchanged under `supabase/migration-provenance/pre-canonical-baseline/` and are non-executable.
 - `supabase/migration.sql` and `supabase/migationcodex.sql` remain legacy references and must not be used for new runtime paths.
-- The canonical chain was locally verified both from empty construction and against the preserved public-data checkpoint.
+- The canonical chain was locally verified from empty construction through the transactional publication migration; the earlier production preflight covered only B0/R0/atomic and does not admit the new publication migration.
 - Production migration-history registration and live application remain unperformed and require a separate authorization and equivalence gate.
-- The application-owned public function inventory is exactly one function, `public.set_updated_at()`, with eight dependent update triggers. The prior count of ten was a measurement error caused by counting lines of its multiline `pg_get_functiondef` result.
+- The application-owned public function inventory is exactly two functions: `public.set_updated_at()` with eight dependent update triggers, plus service-role-only `public.publish_atomic_career_memory(jsonb)`. The prior count of ten was a measurement error caused by counting lines of one multiline `pg_get_functiondef` result.
 - Legacy APIs still query old `job_matches` columns (`user_id`, `matched_skills`, `missing_skills`, `gap_analysis`) while newer flows use relational `career_id/job_id`.
 
 ### Unused or experimental artifacts

@@ -228,15 +228,50 @@ function reconciliationFor(materialization: AtomicEvidenceReload, expected?: Ato
         "ATOMIC_EVIDENCE_CREATED", "VALID_NO_EVIDENCE", "AMBIGUOUS", "PROVIDER_FAILURE", "VALIDATION_REJECTED",
     ]);
     const unknownFateCount = materialization.sourceUnits.filter((unit) => !knownFates.has(unit.fate)).length;
+    const expectedExperienceIds = expected
+        ? new Set(expected.roles.map((role) => deterministicUuid("experience", expected.careerId, expected.sourceRevisionSha256, role.roleRef)))
+        : null;
+    const expectedSourceUnitIds = expected
+        ? new Set(expected.sourceUnits.map((unit) => deterministicUuid("source-unit", expected.careerId, expected.sourceRevisionSha256, unit.sourceUnitRef)))
+        : null;
+    const evidenceBySourceUnit = new Map<string, AtomicEvidenceRow[]>();
+    for (const item of materialization.evidence) {
+        const bucket = evidenceBySourceUnit.get(item.sourceUnitId) ?? [];
+        bucket.push(item);
+        evidenceBySourceUnit.set(item.sourceUnitId, bucket);
+    }
+    const invalidEvidenceRelationshipCount = materialization.evidence.filter((item) => {
+        const unit = sourceById.get(item.sourceUnitId);
+        if (!unit) return true;
+        return item.sourceRevisionSha256 !== materialization.sourceRevisionSha256
+            || item.experienceId !== unit.experienceId
+            || item.roleRef !== unit.roleRef
+            || item.sourceUnitRef !== unit.sourceUnitRef
+            || item.id !== deterministicUuid("atomic-evidence", materialization.careerId, materialization.sourceRevisionSha256, item.sourceUnitRef, item.atomicIndex);
+    }).length;
+    const invalidSourceUnitFateCount = materialization.sourceUnits.filter((unit) => {
+        const items = (evidenceBySourceUnit.get(unit.id) ?? []).sort((a, b) => a.atomicIndex - b.atomicIndex);
+        if (unit.fate === "ATOMIC_EVIDENCE_CREATED") {
+            return items.length === 0 || items.some((item, index) => item.atomicIndex !== index);
+        }
+        return items.length !== 0;
+    }).length;
     const reloadMatches = !expected || (
         materialization.careerId === expected.careerId
+        && materialization.resumeId === expected.resumeId
         && materialization.sourceRevisionSha256 === expected.sourceRevisionSha256
         && materialization.experiences.length === expected.roles.length
         && materialization.sourceUnits.length === expected.sourceUnits.length
         && new Set(materialization.sourceUnits.map((unit) => unit.sourceUnitRef)).size === expected.sourceUnits.length
+        && materialization.experiences.every((row) => expectedExperienceIds?.has(row.id) && row.sourceRevisionSha256 === expected.sourceRevisionSha256)
+        && materialization.sourceUnits.every((row) => expectedSourceUnitIds?.has(row.id)
+            && row.sourceRevisionSha256 === expected.sourceRevisionSha256
+            && row.sourceUnitSha256 === expected.sourceUnits.find((unit) => unit.sourceUnitRef === row.sourceUnitRef)?.sourceUnitSha256)
         && duplicateEvidenceIdCount === 0
         && crossRoleAttributionCount === 0
         && unknownFateCount === 0
+        && invalidEvidenceRelationshipCount === 0
+        && invalidSourceUnitFateCount === 0
     );
     return {
         roleCount: materialization.experiences.length,

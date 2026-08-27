@@ -1,5 +1,28 @@
 # Project State
 
+## Transactional Career Memory publication (2026-08-27)
+
+- The local executable chain is B0 -> R0 -> atomic -> transactional publication.
+- `public.publish_atomic_career_memory(jsonb)` is a `SECURITY INVOKER` RPC whose
+  direct execution is limited to `service_role` plus function-owner semantics;
+  `PUBLIC`, `anon`, and `authenticated` are explicitly revoked.
+- The RPC validates deterministic identities, ownership, cardinality, graph
+  relationships and derived aggregates before career-wide replacement. It uses
+  a database-enforced per-user creation lock and career-row lock, then completes
+  and promotes the candidate only inside the same transaction.
+- Exact response-loss retries return `COMPLETE_REPLAY`; incomplete review state,
+  stale writers, identity conflicts and active-state drift fail closed.
+- The canonical loader uses a bounded before/after publication-token guard so
+  independent REST reads cannot be accepted across a publication boundary.
+- Disposable fault injection covers rollback at twelve durable phases, exact
+  retry/replay, same-career concurrency, conflicting revisions, and independent
+  publication for different careers.
+- Application-owned public functions: 2. Direct function ACL rows: 7. Table and
+  postgres/public default ACL rows remain 640 and 48.
+- Production remains untouched. The prior production admission audit did not
+  include `20260827100000_add_transactional_career_memory_publication.sql`; that
+  migration requires a new read-only production preflight before any execution.
+
 ## Canonical database baseline update (2026-08-25)
 
 - Step 3C architecture decision: `BASELINE_DECISION_READY`.

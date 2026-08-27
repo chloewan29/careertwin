@@ -118,6 +118,10 @@ BEGIN
             false AS is_grantable,
             'postgres'::text AS grantor_name
         FROM (VALUES ('PUBLIC'), ('postgres'), ('anon'), ('authenticated'), ('service_role')) roles(role_name)
+        UNION ALL
+        SELECT 'public'::text, 'publish_atomic_career_memory'::text, 'p_payload jsonb'::text,
+            'postgres'::text, roles.role_name, 'EXECUTE'::text, false, 'postgres'::text
+        FROM (VALUES ('postgres'), ('service_role')) roles(role_name)
     ), actual AS (
         SELECT n.nspname AS schema_name,
             p.proname AS function_name,
@@ -134,8 +138,11 @@ BEGIN
         LEFT JOIN pg_roles grantee_role ON grantee_role.oid = acl.grantee
         JOIN pg_roles grantor_role ON grantor_role.oid = acl.grantor
         WHERE n.nspname = 'public'
-          AND p.proname = 'set_updated_at'
-          AND pg_get_function_identity_arguments(p.oid) = ''
+          AND (
+              (p.proname = 'set_updated_at' AND pg_get_function_identity_arguments(p.oid) = '')
+              OR (p.proname = 'publish_atomic_career_memory'
+                  AND pg_get_function_identity_arguments(p.oid) = 'p_payload jsonb')
+          )
     ), differences AS (
         SELECT 'missing'::text AS direction, missing.* FROM (
             SELECT * FROM expected
@@ -157,7 +164,7 @@ BEGIN
     ) INTO drift
     FROM differences;
     IF drift IS NOT NULL THEN
-        RAISE EXCEPTION 'public.set_updated_at direct function ACL drift: %', drift;
+        RAISE EXCEPTION 'canonical direct function ACL drift: %', drift;
     END IF;
 
     WITH expected_privileges(object_type, privilege_name) AS (
@@ -387,7 +394,7 @@ BEGIN
     )
     SELECT count(*), md5(string_agg(semantic_value, E'\n' ORDER BY semantic_value))
     INTO actual_count, actual_fingerprint FROM rows;
-    IF actual_count <> 1 OR actual_fingerprint <> '941d39812c228c1956f8abcd462272c8' THEN
+    IF actual_count <> 2 OR actual_fingerprint <> '80ef57bf62cafe0a3e8d2d23623e6377' THEN
         RAISE EXCEPTION 'application-owned public function semantics drifted: count %, fingerprint %', actual_count, actual_fingerprint;
     END IF;
 
@@ -397,6 +404,17 @@ BEGIN
           AND pg_get_function_identity_arguments(p.oid) = '' AND pg_get_function_result(p.oid) = 'trigger'
     ) THEN
         RAISE EXCEPTION 'required application function public.set_updated_at() is missing or mistyped';
+    END IF;
+
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_proc p JOIN pg_namespace n ON n.oid = p.pronamespace
+        WHERE n.nspname = 'public' AND p.proname = 'publish_atomic_career_memory'
+          AND pg_get_function_identity_arguments(p.oid) = 'p_payload jsonb'
+          AND pg_get_function_result(p.oid) = 'jsonb'
+          AND NOT p.prosecdef
+          AND p.proconfig = ARRAY['search_path=pg_catalog, public']
+    ) THEN
+        RAISE EXCEPTION 'transactional publication RPC signature or SECURITY INVOKER/search_path boundary drifted';
     END IF;
 
     WITH rows AS (

@@ -131,6 +131,21 @@ test("same-revision ingestion is idempotent and preserves evidence identities", 
     assert.deepEqual(second.materialization.sourceUnits.map((item) => item.id), first.materialization.sourceUnits.map((item) => item.id));
 });
 
+test("same-revision reconciliation rejects conflicting deterministic evidence identity and ownership", async () => {
+    const repository = new MemoryRepository();
+    const request = requestFor();
+    const provider = providerFor(SYNTHETIC_ATOMIC_PROVIDER_RESPONSE);
+    const first = await ingestCanonicalAtomicEvidence(request, { provider, repository });
+    const corrupted = clone(first.materialization);
+    corrupted.evidence[0].id = "00000000-0000-4000-8000-999999999999";
+    corrupted.evidence[1].sourceUnitId = corrupted.sourceUnits[1].id;
+    repository.materializations.set(`${request.careerId}::${request.sourceRevisionSha256}`, corrupted);
+    await assert.rejects(
+        ingestCanonicalAtomicEvidence(request, { provider, repository }),
+        /failed reconciliation/,
+    );
+});
+
 test("a new source revision creates a distinct versioned materialization", async () => {
     const repository = new MemoryRepository();
     const provider = providerFor(SYNTHETIC_ATOMIC_PROVIDER_RESPONSE);

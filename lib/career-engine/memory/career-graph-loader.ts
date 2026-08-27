@@ -274,7 +274,49 @@ function isMissingRelationError(error: unknown): boolean {
     return maybeError.code === "42P01" || maybeError.code === "PGRST205" || /relation .* does not exist/i.test(maybeError.message ?? "");
 }
 
-export async function loadCareerGraph(profileId: string, options: LoadCareerGraphOptions = {}): Promise<CareerGraph> {
+export async function loadWithStablePublicationToken<T>(
+    readToken: () => Promise<string>,
+    loadOnce: () => Promise<T>,
+    maxAttempts = 3,
+): Promise<T> {
+    for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+        const before = await readToken();
+        const value = await loadOnce();
+        const after = await readToken();
+        if (before === after) return value;
+    }
+    throw new Error("Career graph publication changed during every bounded read attempt");
+}
+
+async function readCareerGraphPublicationToken(profileId: string): Promise<string> {
+    const supabase = createServerSupabaseClient();
+    const { data: profile, error: profileError } = await supabase
+        .from("profiles")
+        .select("id, user_id")
+        .eq("id", profileId)
+        .single();
+    if (profileError) throw new Error(`Failed to load profile publication token: ${profileError.message}`);
+    const userId = profile?.user_id ?? profileId;
+    const { data: careers, error: careerError } = await supabase
+        .from("careers")
+        .select("id, active_resume_id")
+        .eq("user_id", userId)
+        .order("created_at", { ascending: false })
+        .limit(1);
+    if (careerError) throw new Error(`Failed to load career publication token: ${careerError.message}`);
+    const career = careers?.[0];
+    if (!career) return `${userId}:no-career`;
+    if (!career.active_resume_id) return `${career.id}:no-active-resume`;
+    const { data: resume, error: resumeError } = await supabase
+        .from("resumes")
+        .select("id, content_sha256, materialization_status, materialized_at")
+        .eq("id", career.active_resume_id)
+        .single();
+    if (resumeError) throw new Error(`Failed to load resume publication token: ${resumeError.message}`);
+    return [career.id, resume.id, resume.content_sha256, resume.materialization_status, resume.materialized_at].join(":");
+}
+
+async function loadCareerGraphOnce(profileId: string, options: LoadCareerGraphOptions = {}): Promise<CareerGraph> {
     if (!profileId || profileId.trim().length === 0) {
         throw new Error("profileId is required");
     }
@@ -717,4 +759,12 @@ export async function loadCareerGraph(profileId: string, options: LoadCareerGrap
         evidenceByCapability,
         evidenceByCapabilityViaSignals,
     };
+}
+
+export async function loadCareerGraph(profileId: string, options: LoadCareerGraphOptions = {}): Promise<CareerGraph> {
+    if (!profileId || profileId.trim().length === 0) throw new Error("profileId is required");
+    return loadWithStablePublicationToken(
+        () => readCareerGraphPublicationToken(profileId),
+        () => loadCareerGraphOnce(profileId, options),
+    );
 }
