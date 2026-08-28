@@ -1,5 +1,60 @@
 # Project State
 
+## Transactional Career Memory publication (2026-08-27)
+
+- The local executable chain is B0 -> R0 -> atomic -> transactional publication.
+- `public.publish_atomic_career_memory(jsonb)` is a `SECURITY INVOKER` RPC whose
+  direct execution is limited to `service_role` plus function-owner semantics;
+  `PUBLIC`, `anon`, and `authenticated` are explicitly revoked.
+- The RPC validates deterministic identities, ownership, cardinality, graph
+  relationships and derived aggregates before career-wide replacement. It uses
+  a database-enforced per-user creation lock and career-row lock, then completes
+  and promotes the candidate only inside the same transaction.
+- Exact response-loss retries return `COMPLETE_REPLAY`; incomplete review state,
+  stale writers, identity conflicts and active-state drift fail closed.
+- The canonical loader uses a bounded before/after publication-token guard so
+  independent REST reads cannot be accepted across a publication boundary.
+- Disposable fault injection covers rollback at twelve durable phases, exact
+  retry/replay, same-career concurrency, conflicting revisions, and independent
+  publication for different careers.
+- Application-owned public functions: 2. Direct function ACL rows: 7. Table and
+  postgres/public default ACL rows remain 640 and 48.
+- Production remains untouched. The prior production admission audit did not
+  include `20260827100000_add_transactional_career_memory_publication.sql`; that
+  migration requires a new read-only production preflight before any execution.
+
+## Canonical database baseline update (2026-08-25)
+
+- Step 3C architecture decision: `BASELINE_DECISION_READY`.
+- Local implementation chain:
+  - B0 canonical pre-atomic application baseline
+  - R0 forward-only runtime-schema reconciliation
+  - atomic-evidence ingestion migration
+- The first 13 historical migrations are retained unchanged as non-executable provenance.
+- Local verification covers both empty construction and preserved public-data compatibility.
+- Founder admission correction records one application-owned public function,
+  `public.set_updated_at()`, and eight dependent triggers. The earlier count of
+  ten was line-counting of one multiline function definition, not ten functions.
+- Canonical graph loading now excludes unsupported legacy/future evidence-piece
+  columns and fails closed instead of silently using legacy selects by default.
+- Database-backed verification found and corrected missing B0 API-role grants;
+  the canonical contract now compares exact normalized direct table/function
+  ACLs and postgres-owned public-schema defaults as well as structural catalog
+  semantics. Owner-implicit and role-membership-derived access and
+  Supabase-managed global privilege posture remain separate boundaries.
+- Canonical constraint and index verification is semantic-name normalized:
+  constraint identifiers and constraint-owned index identifiers may differ when
+  their complete structure and multiplicity are identical, while standalone
+  index identifiers remain exact contract surface.
+- Current database-contract lifecycle risk: `MAINTAIN` is intentionally expected
+  because it exists in the supported PostgreSQL/Supabase catalog captured by the
+  verified baseline, but it is privilege-model/version-sensitive. An engine or
+  intentional privilege-model change requires an explicit contract update,
+  regenerated catalog expectations, local drift probes, review, and production-
+  equivalence verification; expected ACL rows must not be changed silently.
+- Production migration history remains empty and untouched.
+- No production migration, metadata registration, deployment, commit, or push is authorized by this state update.
+
 Document role: **operational snapshot + historical context**.
 This file is not the authoritative default policy source for daily execution.
 For current execution rules and verification defaults, use `AGENTS.md` and `docs/control/verification/verify-strategy.md`.

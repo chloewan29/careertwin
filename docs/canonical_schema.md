@@ -93,3 +93,44 @@ It does not try to list every table or every legacy artifact.
 EvidencePiece -> Capability -> JobRequirement -> MatchResult -> Copilot output
 ```
 
+## Database construction chain
+
+The executable public-schema source of truth is:
+
+1. `20260825070000_canonical_application_baseline.sql`
+2. `20260825080000_reconcile_runtime_schema.sql`
+3. `20260825090000_add_atomic_evidence_ingestion.sql`
+4. `20260827100000_add_transactional_career_memory_publication.sql`
+
+The baseline owns the verified pre-atomic 19-table application schema. The
+reconciliation migration adds the structured evidence and capability fields
+required by the current runtime. The atomic migration adds revision-scoped
+resume, source-unit, and atomic-evidence persistence. The publication migration
+adds the service-role-only `publish_atomic_career_memory(jsonb)` RPC: it validates
+the complete candidate graph, locks per career, replaces canonical and derived
+state transactionally, reconciles exact identities and relationships, and sets
+completion plus `active_resume_id` only at the final promotion boundary.
+
+B0 also preserves the verified Supabase API-role grants and `postgres` public
+default privileges so tables created later in the chain are reachable through
+PostgREST under the same RLS boundary as the preserved application schema.
+
+Files under `supabase/migration-provenance/` and the two root legacy SQL files
+are audit references only. They are not executable schema sources.
+
+Supabase Auth and Storage are separate platform-managed preservation and
+lifecycle boundaries; neither is restored through the public-schema chain.
+
+The application-owned public-function contract contains exactly two functions:
+`public.set_updated_at()`, used by eight update triggers, and the transactional
+publication RPC. An earlier preservation
+summary reported ten functions because it counted the ten output lines of this
+single multiline `pg_get_functiondef` result; it did not represent ten catalog
+function objects.
+
+The canonical career-graph loader reads only fields created by this chain and
+fails closed on a canonical expanded-query error. Its legacy compatibility mode
+is explicit opt-in and is not valid evidence for canonical-schema verification.
+Because its graph is assembled through multiple REST reads, it also compares a
+collision-safe active-resume publication token before and after assembly,
+retries boundedly on a change, and fails closed after repeated instability.
