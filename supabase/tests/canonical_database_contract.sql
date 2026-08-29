@@ -377,13 +377,74 @@ BEGIN
         RAISE EXCEPTION 'canonical policy semantics drifted: count %, fingerprint %', actual_count, actual_fingerprint;
     END IF;
 
-    WITH rows AS (
-        SELECT format('%s|%s|%s|%s|%s|%s|%s|%s|%s', p.proname,
-            pg_get_function_identity_arguments(p.oid), pg_get_function_result(p.oid), l.lanname,
-            p.provolatile, p.proisstrict, p.prosecdef, COALESCE(array_to_string(p.proconfig, ','), ''),
-            regexp_replace(p.prosrc, E'\\s+', ' ', 'g')) AS semantic_value
+    SELECT string_agg(format('%s(%s)', p.proname, pg_get_function_identity_arguments(p.oid)), ', ')
+    INTO drift
+    FROM pg_proc p
+    JOIN pg_namespace n ON n.oid = p.pronamespace
+    WHERE n.nspname = 'public'
+      AND p.proname = 'set_updated_at'
+      AND pg_get_function_identity_arguments(p.oid) = ''
+      AND (
+          strpos(p.prosrc, chr(39)) > 0
+          OR strpos(p.prosrc, chr(34)) > 0
+          OR p.prosrc ~ '--|/\\*|\\*/|[$][$]|[$][A-Za-z_][A-Za-z_0-9]*[$]'
+      );
+    IF drift IS NOT NULL THEN
+        RAISE EXCEPTION 'set_updated_at body is no longer safe for guarded case normalization: %', drift;
+    END IF;
+
+    WITH expected (
+        schema_name, function_name, identity_arguments, result_type, function_kind,
+        owner_name, language_name, volatility, is_strict, parallel_safety,
+        is_leakproof, is_security_definer, configuration, semantic_fingerprint
+    ) AS (
+        VALUES
+            ('public', 'set_updated_at', '', 'trigger', 'f', 'postgres', 'plpgsql',
+                'v', false, 'u', false, false, '', '675cfa644a49924a7f0730cf6dd0ab27'),
+            ('public', 'publish_atomic_career_memory', 'p_payload jsonb', 'jsonb', 'f',
+                'postgres', 'plpgsql', 'v', false, 'u', false, false,
+                'search_path=pg_catalog, public', '86a1e53b7cce468df22595f4ca6c3d7c')
+    ), actual AS (
+        SELECT n.nspname AS schema_name,
+            p.proname AS function_name,
+            pg_get_function_identity_arguments(p.oid) AS identity_arguments,
+            pg_get_function_result(p.oid) AS result_type,
+            p.prokind::text AS function_kind,
+            owner_role.rolname AS owner_name,
+            l.lanname AS language_name,
+            p.provolatile::text AS volatility,
+            p.proisstrict AS is_strict,
+            p.proparallel::text AS parallel_safety,
+            p.proleakproof AS is_leakproof,
+            p.prosecdef AS is_security_definer,
+            COALESCE(array_to_string(p.proconfig, ','), '') AS configuration,
+            md5(format('%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s',
+                n.nspname,
+                p.proname,
+                pg_get_function_identity_arguments(p.oid),
+                pg_get_function_result(p.oid),
+                p.prokind,
+                owner_role.rolname,
+                l.lanname,
+                p.provolatile,
+                p.proisstrict,
+                p.proparallel,
+                p.proleakproof,
+                p.prosecdef,
+                COALESCE(array_to_string(p.proconfig, ','), ''),
+                CASE
+                    WHEN p.proname = 'set_updated_at'
+                      AND pg_get_function_identity_arguments(p.oid) = ''
+                    THEN lower(btrim(regexp_replace(
+                        regexp_replace(p.prosrc, E'\\s+', ' ', 'g'),
+                        E'\\s*([().,;:=+*/<>-])\\s*', E'\\1', 'g'
+                    )))
+                    ELSE regexp_replace(p.prosrc, E'\\s+', ' ', 'g')
+                END
+            )) AS semantic_fingerprint
         FROM pg_proc p
         JOIN pg_namespace n ON n.oid = p.pronamespace
+        JOIN pg_roles owner_role ON owner_role.oid = p.proowner
         JOIN pg_language l ON l.oid = p.prolang
         WHERE n.nspname = 'public'
           AND NOT EXISTS (
@@ -391,11 +452,31 @@ BEGIN
               WHERE d.classid = 'pg_proc'::regclass AND d.objid = p.oid
                 AND d.refclassid = 'pg_extension'::regclass AND d.deptype = 'e'
           )
+    ), differences AS (
+        SELECT 'missing'::text AS direction, missing.* FROM (
+            SELECT * FROM expected
+            EXCEPT ALL
+            SELECT * FROM actual
+        ) missing
+        UNION ALL
+        SELECT 'unexpected'::text AS direction, unexpected.* FROM (
+            SELECT * FROM actual
+            EXCEPT ALL
+            SELECT * FROM expected
+        ) unexpected
     )
-    SELECT count(*), md5(string_agg(semantic_value, E'\n' ORDER BY semantic_value))
-    INTO actual_count, actual_fingerprint FROM rows;
-    IF actual_count <> 2 OR actual_fingerprint <> '14c77f56c954c9216c86409799b33b04' THEN
-        RAISE EXCEPTION 'application-owned public function semantics drifted: count %, fingerprint %', actual_count, actual_fingerprint;
+    SELECT string_agg(
+        format('%s:%s.%s(%s):result=%s:kind=%s:owner=%s:language=%s:volatility=%s:strict=%s:parallel=%s:leakproof=%s:security_definer=%s:config=%s:fingerprint=%s',
+            direction, schema_name, function_name, identity_arguments, result_type,
+            function_kind, owner_name, language_name, volatility, is_strict,
+            parallel_safety, is_leakproof, is_security_definer, configuration,
+            semantic_fingerprint),
+        ', ' ORDER BY direction, schema_name, function_name, identity_arguments,
+            semantic_fingerprint
+    ) INTO drift
+    FROM differences;
+    IF drift IS NOT NULL THEN
+        RAISE EXCEPTION 'application-owned public function semantic drift: %', drift;
     END IF;
 
     IF NOT EXISTS (
