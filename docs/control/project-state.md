@@ -19,9 +19,17 @@
   publication for different careers.
 - Application-owned public functions: 2. Direct function ACL rows: 7. Table and
   postgres/public default ACL rows remain 640 and 48.
-- Production remains untouched. The prior production admission audit did not
-  include `20260827100000_add_transactional_career_memory_publication.sql`; that
-  migration requires a new read-only production preflight before any execution.
+- Canonical function verification keeps signatures, ownership, attributes,
+  configuration and ACLs exact. Only the tightly guarded, literal-free body of
+  `public.set_updated_at()` admits whitespace and unquoted-token case-only
+  differences; literals, quoted identifiers, comments or nested dollar-quoted
+  content fail closed. The transactional publication body remains case-sensitive,
+  including its string literals, JSON keys, statuses, fates and error codes.
+  Missing, additional, duplicate and semantically changed functions remain rejected.
+- This guarded rule reconciles exact migration construction with historical
+  production formatting without making production formatting repository authority.
+- Production Stage 4 is applied and verified. It must not be retried; subsequent
+  contract and PostgREST discovery work is read-only and separately authorized.
 
 ## Canonical database baseline update (2026-08-25)
 
