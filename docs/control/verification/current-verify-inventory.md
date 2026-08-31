@@ -18,6 +18,106 @@ For current operating policy, use `AGENTS.md` and `docs/verify-strategy.md`.
 | `supabase/tests/canonical_database_contract.sql` | Manual catalog contract run after B0 -> R0 -> atomic -> transactional publication in an isolated Supabase database. | Level 2 = Database Layer Verify | Compares the complete application-owned schema, including two public application functions and eight triggers. Function structure, ownership, attributes, configuration and ACLs remain exact. Only the guarded, literal-free `set_updated_at()` body admits whitespace and unquoted-token case differences; its guard rejects string literals, quoted identifiers, comments and nested dollar-quoted content. The publication RPC body remains case-sensitive after whitespace normalization, including string literals, JSON keys, statuses, fates and error codes. Missing, additional, duplicate or semantically changed functions remain rejected through per-function multiplicity-sensitive comparison. Constraint-owned identifier normalization remains structure-preserving; standalone index identifiers remain exact. Does not connect to production by itself. |
 | `supabase/tests/transactional_career_memory_publication.sql` | Manual disposable-database suite after the four-migration chain. | Level 2 = Database Layer Verify | Verifies publish/replay, malformed and stale rejection, twelve transactional rollback phases, previous-graph preservation, same-career serialization, conflicting revisions, different-career parallelism, RPC role access, and complete cleanup of test rows/helpers/triggers/extensions. |
 
+## PostgREST OpenAPI metadata verification (PowerShell)
+
+Use this repository-independent procedure for a metadata-only GET of the configured
+PostgREST OpenAPI endpoint. Keep `$openApiUri` and `$requestHeaders` in memory, do
+not print or persist their values, and never send a request to the RPC route itself.
+PowerShell may expose `Invoke-WebRequest.Content` as either `System.Byte[]` or an
+already decoded string. Inspect the runtime type and strictly decode bytes as UTF-8
+before JSON parsing. Never use `$response.Content.ToString()` as a decoding method.
+
+```powershell
+$response = Invoke-WebRequest `
+    -UseBasicParsing `
+    -Method Get `
+    -Uri $openApiUri `
+    -Headers $requestHeaders `
+    -ErrorAction Stop
+
+$mediaType = ([string]$response.Headers['Content-Type'] -split ';', 2)[0].Trim()
+if ($mediaType -cne 'application/openapi+json') {
+    throw "Unexpected OpenAPI media type: $mediaType"
+}
+
+$content = $response.Content
+if ($content -is [byte[]]) {
+    $utf8 = New-Object System.Text.UTF8Encoding -ArgumentList $false, $true
+    $jsonText = $utf8.GetString([byte[]]$content)
+}
+elseif ($content -is [string]) {
+    $jsonText = [string]$content
+}
+else {
+    $contentType = if ($null -eq $content) { '<null>' } else { $content.GetType().FullName }
+    throw "Unexpected OpenAPI response content type: $contentType"
+}
+
+$openApi = ConvertFrom-Json -InputObject $jsonText -ErrorAction Stop
+if ($null -eq $openApi.paths) {
+    throw 'OpenAPI document does not contain paths'
+}
+
+$pathNames = @($openApi.paths.PSObject.Properties.Name)
+$rpcPath = '/rpc/publish_atomic_career_memory'
+$rpcRouteCount = @($pathNames | Where-Object { $_ -ceq $rpcPath }).Count
+if ($rpcRouteCount -ne 1) {
+    throw "Expected exactly one publication RPC route; found $rpcRouteCount"
+}
+
+$rpcRoute = $openApi.paths.PSObject.Properties[$rpcPath].Value
+if ($null -eq $rpcRoute.post) {
+    throw 'Publication RPC does not advertise POST'
+}
+
+$bodyParameters = @($rpcRoute.post.parameters | Where-Object { $_.in -ceq 'body' })
+if ($bodyParameters.Count -ne 1) {
+    throw "Expected exactly one RPC body parameter; found $($bodyParameters.Count)"
+}
+
+$payloadSchema = $bodyParameters[0].schema
+if ($null -ne $payloadSchema.'$ref') {
+    $definitionPrefix = '#/definitions/'
+    if (-not ([string]$payloadSchema.'$ref').StartsWith($definitionPrefix)) {
+        throw 'Unexpected RPC payload schema reference'
+    }
+    $definitionName = ([string]$payloadSchema.'$ref').Substring($definitionPrefix.Length)
+    $definitionProperty = $openApi.definitions.PSObject.Properties[$definitionName]
+    if ($null -eq $definitionProperty) {
+        throw 'Referenced RPC payload definition is missing'
+    }
+    $payloadSchema = $definitionProperty.Value
+}
+
+if ($null -eq $payloadSchema.properties) {
+    throw 'RPC payload schema does not contain properties'
+}
+
+$argumentNames = @($payloadSchema.properties.PSObject.Properties.Name)
+if ($argumentNames.Count -ne 1 -or $argumentNames[0] -cne 'p_payload') {
+    throw "Unexpected RPC argument metadata: $($argumentNames -join ',')"
+}
+
+$payloadProperty = $payloadSchema.properties.PSObject.Properties['p_payload'].Value
+if ([string]$payloadProperty.format -cne 'jsonb') {
+    throw "Expected p_payload JSONB metadata; found '$($payloadProperty.format)'"
+}
+
+$requiredArguments = @($payloadSchema.required)
+if ($requiredArguments.Count -ne 1 -or $requiredArguments[0] -cne 'p_payload') {
+    throw "Unexpected required RPC arguments: $($requiredArguments -join ',')"
+}
+```
+
+This check fails closed on invalid UTF-8, invalid JSON, missing `paths`, absent or
+case-drifted route names, duplicate route metadata, missing `POST`, and unexpected
+payload metadata. Database catalog checks remain authoritative for function
+signature, overload count, ownership, attributes and ACLs; OpenAPI metadata
+complements those checks and does not replace them. The production discovery
+false negative recorded in August 2026 came from treating a byte array as decoded
+text. Strict UTF-8 decoding exposed the complete document: 20 relation routes and
+exactly one publication RPC route.
+
 Identifier differences remain diagnosable through catalog inventory even where they are not equality keys. This normalization does not permit missing, additional, duplicate, or structurally changed constraints or indexes: the comparison remains bidirectional and multiplicity-aware. Any constraint or constraint-owned index name that later becomes application-authoritative requires an explicit contract update rather than implicit normalization.
 
 `MAINTAIN` is intentionally part of the exact table and default-table ACL expectations because it is present in the currently supported PostgreSQL/Supabase privilege catalog captured and verified by the canonical baseline. This privilege is PostgreSQL privilege-model/version-sensitive. An engine upgrade or intentional privilege-model change must not be handled by silently adding, removing, or weakening an expected ACL row; it requires an explicit schema-contract update, regenerated catalog expectations, local drift probes, review, and production-equivalence verification.

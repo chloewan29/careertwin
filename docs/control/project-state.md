@@ -1,5 +1,28 @@
 # Project State
 
+## Production database and PostgREST admission (2026-08-31)
+
+- The exact four-migration production chain is applied once and the normalized
+  canonical database contract passes. No migration should be retried for the
+  current state.
+- The authorized PostgREST schema-cache reload succeeded. PostgREST logs recorded
+  a completed cache build containing 20 relations and two database functions.
+- A correctly decoded service-role OpenAPI response returns HTTP 200, 20 relation
+  routes and exactly one RPC route at
+  `/rpc/publish_atomic_career_memory`. The route advertises `POST` and one required
+  `p_payload` argument with `jsonb` metadata; duplicate/overload route count is zero.
+- The earlier zero-route result was a client-side false negative: PowerShell
+  returned `Invoke-WebRequest.Content` as `System.Byte[]`, and the verification
+  procedure did not strictly decode it as UTF-8 before JSON parsing.
+- Database catalog verification remains authoritative for the RPC signature,
+  overload count, owner, attributes and ACLs. `service_role` can execute;
+  `PUBLIC`, `anon` and `authenticated` cannot.
+- Database and PostgREST discovery have no remaining blocker. No further migration
+  or cache reload is required for the current state.
+- The RPC has not been invoked or smoke-tested. No resume upload, live ingestion,
+  application deployment, Auth mutation or Storage mutation has occurred as part
+  of this admission work. MVP launch is not declared complete.
+
 ## Transactional Career Memory publication (2026-08-27)
 
 - The local executable chain is B0 -> R0 -> atomic -> transactional publication.
@@ -28,8 +51,9 @@
   Missing, additional, duplicate and semantically changed functions remain rejected.
 - This guarded rule reconciles exact migration construction with historical
   production formatting without making production formatting repository authority.
-- Production Stage 4 is applied and verified. It must not be retried; subsequent
-  contract and PostgREST discovery work is read-only and separately authorized.
+- Production Stage 4 is applied and verified. It must not be retried. The exact
+  publication RPC is discoverable through correctly decoded PostgREST OpenAPI
+  metadata; execution remains a separately authorized, not-yet-run smoke test.
 
 ## Canonical database baseline update (2026-08-25)
 
@@ -60,8 +84,12 @@
   intentional privilege-model change requires an explicit contract update,
   regenerated catalog expectations, local drift probes, review, and production-
   equivalence verification; expected ACL rows must not be changed silently.
-- Production migration history remains empty and untouched.
-- No production migration, metadata registration, deployment, commit, or push is authorized by this state update.
+- This historical pre-production statement is superseded by the 2026-08-31
+  production admission above: production now contains the exact four-version
+  migration history. No migration retry or additional production write is implied
+  by this documentation update.
+- No production migration, metadata registration or deployment is authorized by
+  this state update.
 
 Document role: **operational snapshot + historical context**.
 This file is not the authoritative default policy source for daily execution.
